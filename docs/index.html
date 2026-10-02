@@ -1,0 +1,1795 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CMD Academy</title>
+<meta name="description" content="آموزش Windows CMD از صفر تا پیشرفته">
+<meta name="theme-color" content="#0b0d0e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+@font-face{font-family:"Vazirmatn";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/vazirmatn-arabic-400-normal.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC}
+@font-face{font-family:"Vazirmatn";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/vazirmatn-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Vazirmatn";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/vazirmatn-arabic-500-normal.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC}
+@font-face{font-family:"Vazirmatn";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/vazirmatn-latin-500-normal.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Vazirmatn";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/vazirmatn-arabic-700-normal.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC}
+@font-face{font-family:"Vazirmatn";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/vazirmatn-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/jetbrains-mono-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/jetbrains-mono-latin-700-normal.woff2) format("woff2")}
+/* ============================================================
+   ui/styles.css — CMD Academy design tokens + layout
+   Layout: phone = single column + bottom nav;
+           ≥ 960px = sidebar on the right (RTL start) + wide content.
+   Dark-only by design (a terminal-first learning tool).
+   ============================================================ */
+:root {
+  --bg: #0b0d0e;
+  --surface: #131618;
+  --surface-2: #1a1e21;
+  --line: #262c30;
+  --term: #08090a;
+  --fg: #e8ebed;
+  --muted: #8e979e;
+  --green: #4fd18b;
+  --green-soft: rgba(79, 209, 139, 0.12);
+  --blue: #6cb2ff;
+  --blue-soft: rgba(108, 178, 255, 0.12);
+  --warn: #f2b54e;
+  --warn-soft: rgba(242, 181, 78, 0.12);
+  --danger: #ff6f6f;
+  --danger-soft: rgba(255, 111, 111, 0.12);
+
+  --font-fa: "Vazirmatn", "Tahoma", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --nav-h: 64px;
+  --gutter: 16px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-fa);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- code & LTR islands ---------- */
+.mono, code, kbd { font-family: var(--font-mono); }
+.ltr { direction: ltr; unicode-bidi: isolate; text-align: left; }
+code.ic {
+  direction: ltr; unicode-bidi: isolate;
+  font-size: 0.86em; padding: 1px 6px; border-radius: 5px;
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--fg);
+  white-space: nowrap;
+}
+
+/* ---------- app shell ---------- */
+.app { min-height: 100%; }
+.main {
+  padding-inline: var(--gutter);
+  padding-block: 20px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px));
+  max-width: 720px;
+  margin-inline: auto;
+}
+.main.wide { max-width: 1080px; }
+.view { animation: viewIn 0.16s ease-out; }
+@keyframes viewIn { from { opacity: 0.4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.bottom-nav {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 20;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  background: rgba(11, 13, 14, 0.94);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.nav-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  height: var(--nav-h); border: 0; background: none; color: var(--muted);
+  font-size: 11.5px; line-height: 1.2;
+}
+.nav-btn svg { width: 22px; height: 22px; }
+.nav-btn[aria-current="page"] { color: var(--green); }
+
+.sidebar { display: none; }
+
+@media (min-width: 640px) {
+  :root { --gutter: 28px; }
+  body { font-size: 16px; }
+}
+@media (min-width: 960px) {
+  .app { display: grid; grid-template-columns: 240px 1fr; }
+  .bottom-nav { display: none; }
+  .sidebar {
+    display: flex; flex-direction: column; gap: 4px;
+    position: sticky; top: 0; height: 100vh;
+    padding: 28px 16px; border-inline-end: 1px solid var(--line); background: var(--surface);
+  }
+  .sidebar .brand { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.18em; color: var(--green); font-size: 14px; padding: 0 10px 22px; direction: ltr; text-align: right; }
+  .side-btn {
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 0; border-radius: var(--r-sm);
+    background: none; color: var(--muted); text-align: start;
+  }
+  .side-btn svg { width: 20px; height: 20px; }
+  .side-btn:hover { background: var(--surface-2); color: var(--fg); }
+  .side-btn[aria-current="page"] { background: var(--green-soft); color: var(--green); }
+  .side-sep { height: 1px; background: var(--line); margin: 10px 4px; }
+  .main { padding-block: 36px 48px; }
+}
+
+/* ---------- typography ---------- */
+.eyebrow {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted); direction: ltr; unicode-bidi: isolate;
+}
+h1, h2, h3 { margin: 0; line-height: 1.4; text-wrap: balance; }
+h1 { font-size: 24px; font-weight: 700; }
+h2 { font-size: 18px; font-weight: 700; }
+h3 { font-size: 15.5px; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.stack-sm { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.row.between { justify-content: space-between; }
+.wrap { flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+
+/* ---------- surfaces ---------- */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; }
+.card.flat { background: transparent; }
+.tap { transition: border-color 0.15s, background 0.15s; text-align: start; width: 100%; }
+.tap:hover { border-color: #39424a; }
+.tap:active { background: var(--surface-2); }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 18px; border-radius: var(--r-sm);
+  border: 1px solid var(--line); background: var(--surface-2); font-weight: 500;
+}
+.btn.primary { background: var(--green); color: #06120b; border-color: var(--green); font-weight: 700; }
+.btn.ghost { background: transparent; }
+.btn.small { min-height: 38px; padding: 0 12px; font-size: 14px; white-space: nowrap; }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-row > .btn { flex: 1 1 140px; }
+.back {
+  display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--muted);
+  padding: 6px 0; min-height: 40px; font-size: 14px;
+}
+.back svg { width: 18px; height: 18px; }
+
+/* ---------- progress bars ---------- */
+.bar { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--green); border-radius: 99px; transition: width 0.5s ease-out; }
+.blocks { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; direction: ltr; }
+.blocks > i { height: 14px; border-radius: 2px; background: var(--surface-2); }
+.blocks > i.on { background: var(--green); }
+
+/* ---------- terminal ---------- */
+.term {
+  background: var(--term); border: 1px solid var(--line); border-radius: var(--r-md);
+  overflow: hidden; font-family: var(--font-mono);
+}
+.term-bar {
+  display: flex; align-items: center; gap: 8px; direction: ltr;
+  padding: 0 12px; height: 36px; background: var(--surface); border-bottom: 1px solid var(--line);
+  font-size: 12px; color: var(--muted);
+}
+.term-tab {
+  display: flex; align-items: center; gap: 8px; height: 100%;
+  padding: 0 12px; background: var(--term); border-inline: 1px solid var(--line); color: var(--fg);
+}
+.term-tab .ti { color: var(--green); font-weight: 700; }
+.term-bar .spacer { flex: 1; }
+.term-body {
+  direction: ltr; text-align: left; padding: 12px 14px; font-size: 13px; line-height: 1.6;
+  white-space: pre-wrap; word-break: break-word; overflow-x: auto;
+}
+.term-line { min-height: 1.6em; }
+.term-line.err { color: #ff9a9a; }
+.term-line .pr { color: var(--fg); }
+.term-line .cm { color: var(--green); }
+.term-note {
+  direction: rtl; text-align: right; font-family: var(--font-fa); font-size: 13.5px; line-height: 1.8;
+  margin: 6px 0 10px; padding: 8px 12px; border-radius: var(--r-sm);
+  background: var(--blue-soft); color: #cfe5ff; white-space: normal;
+}
+.term-note.warn { background: var(--danger-soft); color: #ffd0d0; }
+.term-note b { font-weight: 700; color: var(--blue); margin-inline-end: 6px; }
+.term-note.warn b { color: var(--danger); }
+.term-input-row { display: flex; align-items: baseline; gap: 0; }
+.term-input-row .pr { white-space: pre; }
+.term-input {
+  flex: 1; min-width: 40px; border: 0; outline: none; background: transparent; color: var(--green);
+  font-family: var(--font-mono); font-size: 16px; padding: 0 0 0 1ch; caret-color: var(--green); direction: ltr;
+}
+.cursor { display: inline-block; width: 0.6em; height: 1.1em; vertical-align: text-bottom; background: var(--green); animation: blink 1.4s steps(1) infinite; margin-left: 2px; }
+@keyframes blink { 50% { opacity: 0; } }
+.keys { display: flex; gap: 6px; padding: 8px 10px; border-top: 1px solid var(--line); background: var(--surface); overflow-x: auto; direction: ltr; }
+.key {
+  flex: 0 0 auto; min-width: 42px; height: 38px; padding: 0 10px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--surface-2); font-family: var(--font-mono); font-size: 15px;
+}
+.key.run { background: var(--green-soft); color: var(--green); border-color: transparent; margin-left: auto; font-family: var(--font-fa); font-size: 14px; }
+
+/* simulator page fills the screen */
+.sim-wrap { display: flex; flex-direction: column; gap: 12px; }
+.sim-wrap .term { display: flex; flex-direction: column; height: calc(100dvh - var(--nav-h) - 170px - env(safe-area-inset-bottom, 0px) - env(safe-area-inset-top, 0px)); min-height: 340px; }
+.sim-wrap .term-body { flex: 1; overflow-y: auto; }
+@media (min-width: 960px) {
+  .sim-wrap .term { height: calc(100vh - 170px); }
+  .sim-wrap .term-body { font-size: 14px; }
+}
+
+/* ---------- home ---------- */
+.brand-title { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.2em; color: var(--green); font-size: 15px; direction: ltr; text-align: right; }
+.hero-line { font-size: 22px; font-weight: 700; line-height: 1.5; }
+.mini-term { cursor: pointer; }
+.mini-term .term-body { padding: 14px 16px 16px; }
+.cards3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.feature { display: flex; align-items: center; gap: 14px; }
+.feature .ico {
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center;
+  background: var(--surface-2); color: var(--green);
+}
+.feature .ico svg { width: 22px; height: 22px; }
+.feature .t { font-family: var(--font-mono); font-weight: 600; font-size: 15px; direction: ltr; unicode-bidi: isolate; text-align: right; }
+.chev { color: var(--muted); width: 18px; height: 18px; flex: 0 0 auto; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (min-width: 640px) { .cards3 { grid-template-columns: repeat(3, 1fr); } .cards3 .feature { flex-direction: column; align-items: flex-start; } .cards3 .chev { display: none; } }
+.big-num { font-family: var(--font-mono); font-size: 28px; font-weight: 700; direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+
+/* ---------- learn ---------- */
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.seg button { min-height: 40px; border: 0; border-radius: 7px; background: none; color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
+.level-head .code { font-family: var(--font-mono); font-size: 22px; font-weight: 700; letter-spacing: 0.08em; direction: ltr; unicode-bidi: isolate; }
+.chapter { padding: 0; overflow: hidden; }
+.chapter-head { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); }
+.lesson-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 16px; min-height: 60px;
+  border: 0; border-bottom: 1px solid var(--line); background: none; text-align: start;
+}
+.lesson-row:last-child { border-bottom: 0; }
+.lesson-row:hover:not(:disabled) { background: var(--surface-2); }
+.lesson-row:disabled { cursor: default; }
+.lesson-row:disabled .lt { color: var(--muted); }
+.st { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; border: 1.5px solid var(--line); color: var(--muted); }
+.st.done { background: var(--green); border-color: var(--green); color: #06120b; font-weight: 700; }
+.st.current { border-color: var(--blue); color: var(--blue); }
+.st.current::after { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
+.st.soon { border-style: dashed; }
+.ln { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); letter-spacing: 0.06em; direction: ltr; unicode-bidi: isolate; }
+.lt { font-weight: 500; line-height: 1.5; }
+.chip { font-family: var(--font-mono); font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.chip.danger { color: var(--danger); border-color: rgba(255, 111, 111, 0.35); }
+.tag { font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); padding: 1px 8px; border-radius: 99px; white-space: nowrap; }
+
+/* ---------- lesson ---------- */
+.term-hero { font-family: var(--font-mono); font-size: 34px; font-weight: 700; color: var(--green); direction: ltr; unicode-bidi: isolate; text-align: right; line-height: 1.25; word-break: break-word; }
+.term-hero.long { font-size: 24px; }
+.full-form { font-family: var(--font-mono); font-size: 14px; color: var(--muted); direction: ltr; unicode-bidi: isolate; text-align: right; }
+.lead { font-size: 16.5px; line-height: 1.9; max-width: 62ch; }
+.facts { display: flex; flex-direction: column; }
+.fact { display: grid; grid-template-columns: 78px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.fact:last-child { border-bottom: 0; }
+.fact .k { font-size: 13px; color: var(--muted); font-weight: 500; padding-top: 2px; }
+.fact .v { min-width: 0; }
+.syntax { font-family: var(--font-mono); font-size: 14px; color: var(--green); direction: ltr; text-align: left; background: var(--term); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+.callout { border-radius: var(--r-sm); padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+.callout svg { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 4px; }
+.callout.tip { background: var(--green-soft); }
+.callout.tip svg { color: var(--green); }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn svg { color: var(--warn); }
+.callout.danger { background: var(--danger-soft); }
+.callout.danger svg { color: var(--danger); }
+details.analogy { border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); }
+details.analogy summary { list-style: none; cursor: pointer; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; font-weight: 500; min-height: 48px; }
+details.analogy summary::-webkit-details-marker { display: none; }
+details.analogy summary svg { width: 16px; height: 16px; color: var(--muted); transition: transform 0.15s; }
+details.analogy[open] summary svg { transform: rotate(180deg); }
+details.analogy > div { padding: 0 14px 14px; color: #cfd5d9; }
+.req { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); }
+.req .dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 11px; }
+.req.ok { color: var(--fg); }
+.req.ok .dot { background: var(--green); border-color: var(--green); color: #06120b; }
+
+/* ---------- practice ---------- */
+.task { font-size: 16.5px; line-height: 1.9; }
+.feedback { border-radius: var(--r-sm); padding: 12px 14px; }
+.feedback.ok { background: var(--green-soft); }
+.feedback.ok .fh { color: var(--green); }
+.feedback.no { background: var(--danger-soft); }
+.feedback.no .fh { color: var(--danger); }
+.feedback.mid { background: var(--blue-soft); }
+.feedback.mid .fh { color: var(--blue); }
+.fh { font-weight: 700; }
+.shake { animation: shake 0.28s ease-in-out; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.pop { animation: pop 0.22s ease-out; }
+@keyframes pop { from { transform: scale(0.97); } to { transform: none; } }
+.answer-code { font-family: var(--font-mono); direction: ltr; text-align: left; background: var(--term); border-radius: 6px; padding: 8px 12px; color: var(--green); white-space: pre-wrap; }
+.task-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 0; border-bottom: 1px solid var(--line); background: none; width: 100%; text-align: start; min-height: 56px; }
+.task-row:last-child { border-bottom: 0; }
+.task-row:hover { background: var(--surface-2); }
+
+/* ---------- quiz ---------- */
+.q-kind { font-size: 12px; color: var(--blue); background: var(--blue-soft); padding: 2px 10px; border-radius: 99px; }
+.q-text { font-size: 17px; font-weight: 500; line-height: 1.85; }
+.q-code { font-family: var(--font-mono); direction: ltr; text-align: left; background: var(--term); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 14px; white-space: pre; overflow-x: auto; font-size: 14px; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 10px 14px;
+  border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface-2); text-align: start;
+}
+.opt .mark { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line); flex: 0 0 auto; display: grid; place-items: center; font-size: 12px; }
+.opt.code { font-family: var(--font-mono); }
+.opt.code .otxt { direction: ltr; unicode-bidi: isolate; }
+.opt.right { border-color: var(--green); background: var(--green-soft); }
+.opt.right .mark { background: var(--green); border-color: var(--green); color: #06120b; }
+.opt.wrong { border-color: var(--danger); background: var(--danger-soft); }
+.opt.wrong .mark { background: var(--danger); border-color: var(--danger); color: #1a0606; }
+.opt:disabled { cursor: default; }
+.text-in {
+  width: 100%; min-height: 50px; padding: 0 14px; border-radius: var(--r-sm); border: 1px solid var(--line);
+  background: var(--term); color: var(--green); font-family: var(--font-mono); font-size: 16px; direction: ltr; text-align: left;
+}
+.score-big { font-family: var(--font-mono); font-size: 48px; font-weight: 700; direction: ltr; unicode-bidi: isolate; color: var(--green); }
+
+/* ---------- progress ---------- */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat .n { font-family: var(--font-mono); font-size: 22px; font-weight: 700; direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+.stat .l { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.04em; direction: ltr; unicode-bidi: isolate; line-height: 1.4; }
+@media (max-width: 420px) { .stat .n { font-size: 18px; } }
+.lvl-line { display: flex; flex-direction: column; gap: 6px; }
+.pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+:root { padding-top: env(safe-area-inset-top, 0px); }
+</style>
+</head>
+<body>
+<div id="app" class="app" dir="rtl" lang="fa"></div>
+<script type="application/json" id="cmd-content">{"curriculum": {"course": "cmd", "levels": [{"id": 1, "code": "BEGINNER", "title": "مبتدی", "chapters": [{"id": 1, "title": "آشنایی با CMD", "lessons": [{"n": 1, "t": "CMD چیست؟"}, {"n": 2, "t": "Terminal، Command Line و Shell"}, {"n": 3, "t": "باز کردن CMD"}, {"n": 4, "t": "ساختار یک Command"}]}, {"id": 2, "title": "فایل، درایو و مسیر", "lessons": [{"n": 5, "t": "File و Folder"}, {"n": 6, "t": "Drive چیست؟"}, {"n": 7, "t": "Directory و Current Directory"}, {"n": 8, "t": "Path چیست؟"}, {"n": 9, "t": "Absolute Path"}, {"n": 10, "t": "Relative Path"}]}, {"id": 3, "title": "جابه‌جایی", "lessons": [{"n": 11, "t": "دیدن محتوای پوشه", "c": "dir"}, {"n": 12, "t": "رفتن به پوشه دیگر", "c": "cd", "aliases": ["chdir"]}, {"n": 13, "t": "برگشت به عقب و ریشه"}, {"n": 14, "t": "تغییر Drive"}, {"n": 15, "t": "پاک کردن صفحه", "c": "cls"}, {"n": 16, "t": "راهنما گرفتن", "c": "help"}, {"n": 17, "t": "Quotes و نام‌های دارای فاصله"}]}, {"id": 4, "title": "مدیریت فایل", "lessons": [{"n": 18, "t": "ساخت پوشه", "c": "mkdir", "aliases": ["md"]}, {"n": 19, "t": "نمایش متن", "c": "echo"}, {"n": 20, "t": "نمایش محتوای فایل", "c": "type"}, {"n": 21, "t": "کپی فایل", "c": "copy"}, {"n": 22, "t": "جابه‌جا کردن فایل", "c": "move"}, {"n": 23, "t": "تغییر نام", "c": "ren", "aliases": ["rename"]}, {"n": 24, "t": "حذف فایل", "c": "del", "aliases": ["erase"], "danger": true}, {"n": 25, "t": "حذف پوشه", "c": "rmdir", "aliases": ["rd"], "danger": true}, {"n": 26, "t": "Wildcard ستاره *"}, {"n": 27, "t": "Wildcard علامت سؤال ?"}]}, {"id": 5, "title": "Redirect و ترکیب دستورها", "lessons": [{"n": 28, "t": "نوشتن خروجی در فایل >"}, {"n": 29, "t": "اضافه کردن به فایل >>"}, {"n": 30, "t": "اجرای پشت‌سرهم &"}, {"n": 31, "t": "اجرای شرطی && و ||"}, {"n": 32, "t": "تمرین ترکیبی Level 1"}]}]}, {"id": 2, "code": "INTERMEDIATE", "title": "متوسط", "chapters": [{"id": 6, "title": "متن، جستجو و کپی", "lessons": [{"n": 33, "t": "Pipe |"}, {"n": 34, "t": "صفحه‌به‌صفحه دیدن", "c": "more"}, {"n": 35, "t": "مرتب کردن", "c": "sort"}, {"n": 36, "t": "ورودی از فایل <"}, {"n": 37, "t": "جستجوی متن", "c": "find"}, {"n": 38, "t": "جستجوی پیشرفته متن", "c": "findstr"}, {"n": 39, "t": "نمایش درختی پوشه‌ها", "c": "tree"}, {"n": 40, "t": "پیدا کردن مکان برنامه", "c": "where"}, {"n": 41, "t": "Attributes و فایل مخفی", "c": "attrib"}, {"n": 42, "t": "مقایسه فایل‌ها", "c": "fc"}, {"n": 43, "t": "کپی پوشه‌ها", "c": "xcopy"}, {"n": 44, "t": "کپی حرفه‌ای", "c": "robocopy", "danger": true}]}, {"id": 7, "title": "متغیرها و اطلاعات سیستم", "lessons": [{"n": 45, "t": "Variable چیست؟", "c": "set"}, {"n": 46, "t": "Environment Variables"}, {"n": 47, "t": "%USERNAME% و %USERPROFILE%"}, {"n": 48, "t": "PATH و %PATH%"}, {"n": 49, "t": "کاربر و نام سیستم", "c": "whoami"}, {"n": 50, "t": "نسخه و اطلاعات سیستم", "c": "systeminfo"}, {"n": 51, "t": "فهرست برنامه‌های در حال اجرا", "c": "tasklist"}, {"n": 52, "t": "بستن Process", "c": "taskkill", "danger": true}]}, {"id": 8, "title": "شبکه", "lessons": [{"n": 53, "t": "IP و شبکه چیست؟"}, {"n": 54, "t": "دیدن IP", "c": "ipconfig"}, {"n": 55, "t": "جزئیات کامل شبکه"}, {"n": 56, "t": "تست اتصال", "c": "ping"}, {"n": 57, "t": "مسیر رسیدن به سرور", "c": "tracert"}, {"n": 58, "t": "DNS و پیدا کردن IP سایت", "c": "nslookup"}, {"n": 59, "t": "اتصال‌های فعال", "c": "netstat"}, {"n": 60, "t": "جدول ARP", "c": "arp"}, {"n": 61, "t": "جدول Route", "c": "route"}]}, {"id": 9, "title": "دستورات حرفه‌ای‌تر", "lessons": [{"n": 62, "t": "Exit Code"}, {"n": 63, "t": "Permissionهای پایه"}, {"n": 64, "t": "Administrator CMD"}, {"n": 65, "t": "خطاهای رایج CMD"}, {"n": 66, "t": "ترکیب چند دستور"}, {"n": 67, "t": "تمرین‌های واقعی Level 2"}]}]}, {"id": 3, "code": "ADVANCED", "title": "پیشرفته", "chapters": [{"id": 10, "title": "مبانی Batch", "lessons": [{"n": 68, "t": "Batch Script چیست؟"}, {"n": 69, "t": "تفاوت .bat و .cmd"}, {"n": 70, "t": "ساخت اولین Batch File"}, {"n": 71, "t": "@echo off و توضیح‌نویسی", "c": "rem"}, {"n": 72, "t": "توقف تا فشردن کلید", "c": "pause"}, {"n": 73, "t": "Variables در Batch"}, {"n": 74, "t": "گرفتن ورودی با set /p"}, {"n": 75, "t": "محاسبه با set /a"}, {"n": 76, "t": "Arguments: %1 و %2"}, {"n": 77, "t": "جابه‌جایی Argumentها", "c": "shift"}]}, {"id": 11, "title": "منطق و حلقه", "lessons": [{"n": 78, "t": "شرط", "c": "if"}, {"n": 79, "t": "if ... else"}, {"n": 80, "t": "if exist"}, {"n": 81, "t": "errorlevel در Batch"}, {"n": 82, "t": "goto و Labels", "c": "goto"}, {"n": 83, "t": "حلقه روی فایل‌ها", "c": "for"}, {"n": 84, "t": "for /l و for /f"}, {"n": 85, "t": "صدا زدن Script دیگر", "c": "call"}, {"n": 86, "t": "منوی انتخاب", "c": "choice"}, {"n": 87, "t": "مکث زمان‌دار", "c": "timeout"}]}, {"id": 12, "title": "پروژه‌ها و تعمیر سیستم", "lessons": [{"n": 88, "t": "Script مدیریت فایل‌ها"}, {"n": 89, "t": "Backup Script"}, {"n": 90, "t": "Rename Script"}, {"n": 91, "t": "Script جستجوی فایل‌ها"}, {"n": 92, "t": "Automation ساده"}, {"n": 93, "t": "بررسی دیسک", "c": "chkdsk", "danger": true}, {"n": 94, "t": "تعمیر فایل‌های سیستم", "c": "sfc"}, {"n": 95, "t": "تعمیر Image ویندوز", "c": "dism"}, {"n": 96, "t": "Recovery Environment"}, {"n": 97, "t": "تعمیر Boot", "c": "bootrec", "danger": true}, {"n": 98, "t": "مدیریت دیسک (شبیه‌سازی)", "c": "diskpart", "danger": true}, {"n": 99, "t": "روند عیب‌یابی پایه Windows"}, {"n": 100, "t": "پروژه نهایی"}]}]}]}, "lessons": [{"n": 1, "term": "CMD", "fullForm": "Command Prompt (cmd.exe)", "summary": "CMD برنامه‌ای در Windows است که به‌جای کلیک کردن، با نوشتن دستور با کامپیوتر کار می‌کنی.", "meaning": "خط فرمان ویندوز؛ پنجره‌ای که دستور (Command) را می‌گیرد، اجرا می‌کند و نتیجه را نشان می‌دهد.", "usage": "کار سریع با فایل‌ها، دیدن اطلاعات سیستم و شبکه، عیب‌یابی و خودکار کردن کارهای تکراری.", "terminal": [{"p": "C:\\Users\\Student>", "c": "ver"}, {"o": ""}, {"o": "Microsoft Windows [Version 10.0.22631.4317]"}], "tip": "CMD به بزرگی و کوچکی حروف حساس نیست؛ `DIR` و `dir` یکی‌اند.", "daily": "کلیک کردن مثل انتخاب غذا از روی عکس منو است. CMD مثل این است که دقیق بگویی چه می‌خواهی؛ سریع‌تر و دقیق‌تر، اگر زبانش را بلد باشی.", "restaurant": "CMD مثل گارسون است: تو سفارش (Command) را می‌گویی، او آن را به آشپزخانه (Windows) می‌برد و نتیجه را برایت می‌آورد.", "practice": [{"id": "P1a", "start": "C:\\Users\\Student", "task": "اولین Command زندگی‌ات را بنویس: نسخه Windows را نمایش بده.", "checks": [{"type": "cmd", "value": "ver"}, {"type": "ok"}], "hints": ["Command موردنظر کوتاه‌شده کلمه Version است.", "سه حرف اول Version را بنویس و Enter بزن."], "answer": "ver"}], "quiz": [{"kind": "mcq", "q": "CMD در Windows برای چیست؟", "options": ["کار با کامپیوتر از طریق نوشتن دستور", "ویرایش عکس", "مرور اینترنت", "پخش موسیقی"], "answer": 0, "explain": "در CMD به‌جای کلیک، دستور می‌نویسی."}, {"kind": "tf", "q": "در CMD، دستور `DIR` با `dir` فرق دارد.", "answer": false, "explain": "CMD به بزرگی و کوچکی حروف حساس نیست."}, {"kind": "type", "q": "دستوری بنویس که نسخه Windows را نشان دهد.", "accept": ["ver"], "explain": "`ver` کوتاه‌شده Version است."}]}, {"n": 2, "term": "Terminal · Shell", "fullForm": "Command Line Interface (CLI)", "summary": "Command Line یعنی کار با نوشتن دستور. Terminal پنجره‌ای است که در آن تایپ می‌کنی. Shell برنامه‌ای است که دستور را می‌فهمد و اجرا می‌کند.", "meaning": "Terminal = پنجره. Shell = مغزی که دستور را اجرا می‌کند. در Windows، `CMD` و `PowerShell` دو Shell هستند و Windows Terminal پنجره‌ای است که هر دو را نشان می‌دهد.", "usage": "وقتی بدانی کدام بخش چه کاری می‌کند، راحت‌تر می‌فهمی چرا یک دستور در CMD کار می‌کند ولی در PowerShell یا Linux نه.", "terminal": [{"p": "C:\\Users\\Student>", "c": "echo Hello"}, {"o": "Hello"}], "tip": "در Windows 11 معمولاً CMD داخل Windows Terminal باز می‌شود. ظاهر فرق دارد ولی دستورها همان‌اند.", "restaurant": "Terminal میز و منوی رستوران است؛ جایی که سفارش می‌دهی. Shell گارسونی است که سفارش را می‌فهمد. Windows آشپزخانه‌ای است که کار اصلی را انجام می‌دهد.", "practice": [{"id": "P2a", "start": "C:\\Users\\Student", "task": "به Shell بگو کلمه Hello را چاپ کند. برای چاپ متن از دستور `echo` استفاده کن.", "checks": [{"type": "cmd", "value": "echo"}, {"type": "argIncludes", "value": "hello"}], "hints": ["اول نام دستور، بعد یک Space، بعد متنی که می‌خواهی نمایش داده شود.", "شکل کلی: `echo` و بعد متن."], "answer": "echo Hello"}], "quiz": [{"kind": "mcq", "q": "کدام گزینه یک Shell است؟", "options": ["CMD", "Monitor", "Keyboard", "File Explorer"], "answer": 0, "explain": "CMD دستور را می‌فهمد و اجرا می‌کند، پس Shell است."}, {"kind": "mcq", "q": "Terminal چیست؟", "options": ["پنجره‌ای که در آن دستور تایپ می‌کنی", "یک نوع فایل", "یک Drive", "یک ویروس"], "answer": 0, "explain": "Terminal رابط نمایشی است؛ Shell داخل آن کار می‌کند."}, {"kind": "tf", "q": "PowerShell هم یک Shell است.", "answer": true, "explain": "PowerShell یک Shell دیگر در Windows است که بعداً در CMD Academy به آن می‌رسیم."}]}, {"n": 3, "term": "Win + R → cmd", "fullForm": "Run dialog", "summary": "سه راه ساده برای باز کردن CMD وجود دارد. وقتی باز شد، خطی مثل `C:\\Users\\Student>` می‌بینی که یعنی CMD آماده دستور است.", "meaning": "روش ۱: منوی Start ← تایپ `cmd` ← Enter. روش ۲: کلید Win + R ← تایپ `cmd` ← Enter. روش ۳: در نوار آدرس File Explorer بنویس `cmd` تا CMD در همان پوشه باز شود.", "usage": "خط `C:\\Users\\Student>` را Prompt می‌گویند. Prompt نشان می‌دهد الان کجا هستی و CMD منتظر دستور توست.", "terminal": [{"o": "Microsoft Windows [Version 10.0.22631.4317]"}, {"o": "(c) Microsoft Corporation. All rights reserved."}, {"o": ""}, {"p": "C:\\Users\\Student>", "c": ""}], "tip": "Prompt جزو دستور نیست. فقط بعد از علامت `>` تایپ کن.", "daily": "Prompt مثل چراغ «آماده» روی دستگاه کارت‌خوان است: تا روشن نباشد، کارت نکش.", "practice": [{"id": "P3a", "start": "C:\\Users\\Student", "preload": [{"p": "C:\\Users\\Student>", "c": "ver"}, {"o": ""}, {"o": "Microsoft Windows [Version 10.0.22631.4317]"}, {"p": "C:\\Users\\Student>", "c": "echo Hello"}, {"o": "Hello"}, {"p": "C:\\Users\\Student>", "c": "echo test test test"}, {"o": "test test test"}], "task": "صفحه CMD شلوغ شده. آن را پاک کن.", "checks": [{"type": "cmd", "value": "cls"}], "hints": ["دستورش کوتاه‌شده Clear Screen است.", "حرف اول Clear و حرف اول و آخر Screen: سه حرف."], "answer": "cls"}], "quiz": [{"kind": "mcq", "q": "کدام کلید میانبر پنجره Run را باز می‌کند؟", "options": ["Win + R", "Ctrl + C", "Alt + F4", "Win + D"], "answer": 0, "explain": "Win + R پنجره Run را باز می‌کند؛ بعد `cmd` بنویس."}, {"kind": "tf", "q": "باید عبارت `C:\\Users\\Student>` را هم خودت تایپ کنی.", "answer": false, "explain": "این Prompt است و CMD خودش آن را نمایش می‌دهد."}, {"kind": "mcq", "q": "در پنجره Run چه بنویسیم تا CMD باز شود؟", "options": ["cmd", "run", "open", "start"], "answer": 0, "code_options": true, "explain": "نام برنامه `cmd` است."}]}, {"n": 4, "term": "command  argument  /switch", "fullForm": "Command · Argument · Switch", "summary": "هر Command سه بخش دارد: نام دستور، Argument (روی چه چیزی) و Switch (چطور). بین بخش‌ها Space می‌گذاریم.", "meaning": "Command: کاری که می‌خواهی انجام شود. Argument: روی چه فایل یا پوشه‌ای. Switch: تنظیم نحوه انجام کار؛ در CMD با `/` شروع می‌شود.", "usage": "وقتی ساختار را بشناسی، هر دستور جدید را راحت می‌خوانی و راهنمای Windows را می‌فهمی.", "syntax": "command [argument] [/switch]", "terminal": [{"p": "C:\\Users\\Student>", "c": "dir Documents /w"}], "tip": "بین بخش‌ها Space لازم است. `dirDocuments` یک کلمه ناشناخته است. با `/?` بعد از هر دستور، راهنمای آن را می‌بینی.", "restaurant": "«قهوه بیار، بدون شکر». «بیار» Command است، «قهوه» Argument (چه چیزی) و «بدون شکر» Switch (چطور).", "practice": [{"id": "P4a", "start": "C:\\Users\\Student", "task": "محتوای پوشه Documents را به شکل فشرده ببین. Command: `dir`، Argument: `Documents`، Switch: `/w`", "checks": [{"type": "cmd", "value": "dir"}, {"type": "argIncludes", "value": "documents"}, {"type": "switch", "value": "/w"}, {"type": "ok"}], "hints": ["سه بخش را به ترتیب بنویس و بینشان Space بگذار.", "اول `dir`، بعد نام پوشه، بعد Switch."], "answer": "dir Documents /w"}, {"id": "P4b", "start": "C:\\Users\\Student", "task": "راهنمای دستور `cd` را ببین. (Switch راهنما `/?` است.)", "checks": [{"type": "cmd", "value": "cd"}, {"type": "switch", "value": "/?"}], "hints": ["نام دستور، یک Space، بعد Switch راهنما.", "Switch راهنما از `/` و علامت سؤال درست شده است."], "answer": "cd /?"}], "quiz": [{"kind": "predict", "q": "در این دستور کدام بخش Switch است؟", "code": "dir Pictures /w", "options": ["/w", "dir", "Pictures", "هیچ‌کدام"], "answer": 0, "code_options": true, "explain": "Switch با `/` شروع می‌شود."}, {"kind": "fix", "q": "این دستور چه مشکلی دارد؟", "code": "dirPictures", "options": ["بین Command و Argument فاصله نیست", "Pictures باید بزرگ نوشته شود", "Switch ندارد", "مشکلی ندارد"], "answer": 0, "explain": "CMD کل `dirPictures` را یک نام دستور ناشناخته می‌بیند."}, {"kind": "tf", "q": "در CMD، Switchها معمولاً با `/` شروع می‌شوند.", "answer": true, "explain": "مثل `/w` یا `/?`"}]}, {"n": 5, "term": "File · Folder", "fullForm": "File · Folder (Directory)", "summary": "File یک سند، عکس یا برنامه است. Folder جعبه‌ای است که File و Folderهای دیگر را نگه می‌دارد.", "meaning": "نام File معمولاً دو بخش دارد: نام و Extension، مثل `report.txt`. در خروجی `dir`، پوشه‌ها با `<DIR>` مشخص می‌شوند.", "usage": "تقریباً همه کارهای CMD با File و Folder است: دیدن، ساختن، کپی، جابه‌جا کردن و حذف.", "terminal": [{"p": "C:\\Users\\Student\\Documents>", "c": "dir"}, {"o": "09/28/2026  10:15 AM    <DIR>          Work"}, {"o": "10/01/2026  06:40 PM                80 menu.txt"}, {"o": "10/01/2026  06:40 PM                55 todo.txt"}], "tip": "Extension نوع File را نشان می‌دهد: `.txt` متن، `.jpg` عکس، `.mp3` صدا، `.exe` برنامه.", "daily": "کمد لباس: هر کشو یک Folder است و هر لباس یک File. کشو می‌تواند کشوی کوچک‌تری هم داخلش داشته باشد.", "restaurant": "در آشپزخانه، قفسه‌ها Folder هستند و ظرف‌های مواد File. برچسب روی ظرف (شکر، نمک) مثل Extension است: می‌گوید داخلش چه نوع چیزی است.", "practice": [{"id": "P5a", "start": "C:\\Users\\Student\\Documents", "task": "داخل Documents هستی. ببین چه File و Folderهایی اینجاست.", "checks": [{"type": "cmd", "value": "dir"}, {"type": "ok"}, {"type": "cwd", "value": "C:\\Users\\Student\\Documents"}], "hints": ["دستوری که در درس‌های قبل برای دیدن محتوا دیدی.", "سه حرف: Directory"], "answer": "dir"}, {"id": "P5b", "start": "C:\\Users\\Student\\Documents", "task": "محتوای فایل `todo.txt` را نمایش بده. (دستور `type` محتوای فایل متنی را نشان می‌دهد.)", "checks": [{"type": "cmd", "value": "type"}, {"type": "argIncludes", "value": "todo.txt"}, {"type": "ok"}], "hints": ["نام دستور، Space، بعد نام کامل فایل همراه Extension.", "شکل کلی: `type` و بعد نام فایل."], "answer": "type todo.txt"}], "quiz": [{"kind": "mcq", "q": "در خروجی `dir`، عبارت `<DIR>` یعنی چه؟", "options": ["این مورد یک Folder است", "فایل خراب است", "فایل مخفی است", "این یک Drive است"], "answer": 0, "explain": "`<DIR>` یعنی Directory، همان Folder."}, {"kind": "mcq", "q": "Extension فایل `song.mp3` کدام است؟", "options": [".mp3", "song", "song.mp3", "mp"], "answer": 0, "code_options": true, "explain": "بخش بعد از آخرین نقطه، Extension است."}, {"kind": "predict", "q": "در این خروجی چند Folder هست؟", "code": "<DIR>          Work\n<DIR>          Photos\n          80 menu.txt", "options": ["2", "1", "3", "0"], "answer": 0, "explain": "دو خط `<DIR>` دارند: Work و Photos."}]}, {"n": 6, "term": "C:  D:  E:", "fullForm": "Drive letter", "summary": "Drive محل ذخیره‌سازی است، مثل هارد یا USB. هر Drive یک حرف دارد و برای رفتن به آن، حرف و دو نقطه را می‌نویسی.", "meaning": "`C:` معمولاً Driveی است که Windows روی آن نصب است. `D:` می‌تواند هارد یا پارتیشن دوم باشد و `E:` اغلب USB.", "usage": "برای کار با فایل‌های USB یا هارد دیگر، اول باید به آن Drive بروی.", "syntax": "D:", "terminal": [{"p": "C:\\Users\\Student>", "c": "D:"}, {"p": "D:\\>", "c": ""}], "tip": "دو نقطه لازم است. اگر فقط `D` بنویسی، CMD آن را یک دستور ناشناخته می‌بیند.", "restaurant": "یک رستوران زنجیره‌ای چند شعبه دارد. هر Drive یک شعبه است با حرف مخصوص خودش. با نوشتن `D:` به شعبه D می‌روی.", "practice": [{"id": "P6a", "start": "C:\\Users\\Student", "task": "به Drive D برو.", "checks": [{"type": "drive", "value": "D"}], "hints": ["حرف Drive و بعد یک علامت دیگر.", "حرف D و دو نقطه."], "answer": "D:"}, {"id": "P6b", "start": "C:\\Users\\Student", "task": "USB مجازی روی Drive E است. به آن برو و محتوایش را ببین.", "checks": [{"type": "drive", "value": "E"}, {"type": "cmd", "value": "dir"}, {"type": "ok"}], "hints": ["دو دستور لازم است: اول رفتن به Drive، بعد دیدن محتوا.", "اول `E:` و Enter، بعد `dir` و Enter."], "multi": true, "answer": ["E:", "dir"]}], "quiz": [{"kind": "mcq", "q": "Windows معمولاً روی کدام Drive نصب است؟", "options": ["C:", "A:", "E:", "Z:"], "answer": 0, "code_options": true, "explain": "به‌طور معمول Windows روی `C:` است."}, {"kind": "type", "q": "دستوری بنویس که به Drive D برود.", "accept": ["d:"], "show": "D:", "explain": "حرف Drive و دو نقطه: `D:`"}, {"kind": "fix", "q": "چرا این دستور کار نمی‌کند؟", "code": "D", "options": ["دو نقطه بعد از حرف Drive جا افتاده", "باید کوچک نوشته شود", "Drive D وجود ندارد", "باید اول cd بنویسیم"], "answer": 0, "explain": "برای تغییر Drive باید `D:` بنویسی."}]}, {"n": 7, "term": "Current Directory", "fullForm": "Directory = Folder", "summary": "Directory همان Folder است. Current Directory پوشه‌ای است که الان در آن هستی و در Prompt نوشته شده.", "meaning": "در `C:\\Users\\Student\\Music>` پوشه فعلی `Music` است. دستورها به‌طور پیش‌فرض روی همین پوشه کار می‌کنند.", "usage": "دستور `cd` بدون هیچ Argument، Current Directory را چاپ می‌کند.", "syntax": "cd", "terminal": [{"p": "C:\\Users\\Student\\Music>", "c": "cd"}, {"o": "C:\\Users\\Student\\Music"}], "tip": "هر Drive، Current Directory مخصوص خودش را به خاطر می‌سپارد. اگر به D بروی و برگردی، روی C همان‌جای قبلی هستی.", "daily": "اگر در آشپزخانه باشی و کسی بگوید «چراغ را روشن کن»، چراغ همان اتاقی را روشن می‌کنی که در آن هستی.", "restaurant": "گارسون فقط از میزی سفارش می‌گیرد که کنارش ایستاده. Current Directory همان میزی است که الان کنارش هستی.", "practice": [{"id": "P7a", "start": "C:\\Users\\Student\\Music", "task": "بدون جابه‌جا شدن، Current Directory را چاپ کن.", "checks": [{"type": "cmd", "value": "cd"}, {"type": "noArgs"}, {"type": "cwd", "value": "C:\\Users\\Student\\Music"}], "hints": ["یک دستور دوحرفی که برای تغییر پوشه هم استفاده می‌شود.", "آن را بدون هیچ Argument بنویس."], "answer": "cd"}], "quiz": [{"kind": "mcq", "q": "در Prompt زیر، Current Directory کدام است؟", "code": "C:\\Users\\Student\\Music>", "options": ["C:\\Users\\Student\\Music", "C:\\", "C:\\Users", "Student"], "answer": 0, "code_options": true, "explain": "هرچه قبل از `>` آمده، Current Directory است."}, {"kind": "tf", "q": "Directory و Folder یک معنی دارند.", "answer": true, "explain": "Directory نام فنی‌تر Folder است."}, {"kind": "type", "q": "دستوری بنویس که Current Directory را نمایش دهد.", "accept": ["cd", "chdir"], "explain": "`cd` بدون Argument."}]}, {"n": 8, "term": "Path", "fullForm": "C:\\Users\\Student\\Documents\\todo.txt", "summary": "Path آدرس یک فایل یا پوشه است. نام پوشه‌ها با `\\` (Backslash) از هم جدا می‌شوند.", "meaning": "Path را از چپ به راست بخوان: Drive `C:` ← پوشه `Users` ← `Student` ← `Documents` ← فایل `todo.txt`.", "usage": "هر بار به CMD می‌گویی با چه فایل یا پوشه‌ای کار کند، در واقع یک Path می‌دهی.", "syntax": "Drive:\\Folder\\Folder\\File", "terminal": [{"p": "C:\\Users\\Student>", "c": "cd Documents\\Work"}, {"p": "C:\\Users\\Student\\Documents\\Work>", "c": ""}], "tip": "Windows برای Path از `\\` استفاده می‌کند. علامت `/` در CMD برای Switch است.", "daily": "Path مثل آدرس پستی است: شهر، خیابان، کوچه، پلاک. هر بخش تو را یک قدم نزدیک‌تر می‌کند.", "practice": [{"id": "P8a", "start": "C:\\Users\\Student", "task": "وارد پوشه Documents شو.", "checks": [{"type": "cwd", "value": "C:\\Users\\Student\\Documents"}], "hints": ["برای رفتن به یک پوشه از `cd` استفاده می‌کنیم.", "`cd`، Space، نام پوشه."], "answer": "cd Documents"}, {"id": "P8b", "start": "C:\\Users\\Student", "task": "با یک دستور مستقیم وارد پوشه Work شو که داخل Documents است.", "checks": [{"type": "cwd", "value": "C:\\Users\\Student\\Documents\\Work"}, {"type": "cmd", "value": "cd"}], "hints": ["دو نام پوشه را با `\\` به هم وصل کن.", "Path موردنظر: `Documents\\Work`"], "answer": "cd Documents\\Work"}], "quiz": [{"kind": "mcq", "q": "جداکننده پوشه‌ها در Path ویندوز کدام است؟", "options": ["\\", "/", "-", "|"], "answer": 0, "code_options": true, "explain": "Windows از Backslash استفاده می‌کند."}, {"kind": "predict", "q": "در این Path، نام فایل کدام است؟", "code": "C:\\Users\\Student\\Pictures\\cat.jpg", "options": ["cat.jpg", "Pictures", "Student", "C:"], "answer": 0, "code_options": true, "explain": "آخرین بخش Path، خود فایل است."}, {"kind": "mcq", "q": "فایل `cat.jpg` در Path بالا داخل کدام پوشه است؟", "options": ["Pictures", "Users", "Student", "C:"], "answer": 0, "code_options": true, "explain": "بخش درست قبل از نام فایل، پوشه آن است."}]}, {"n": 9, "term": "Absolute Path", "fullForm": "C:\\Users\\Student\\Pictures", "summary": "Absolute Path آدرس کامل است که از Drive یا ریشه `\\` شروع می‌شود. مهم نیست الان کجا هستی؛ همیشه به همان مقصد می‌رسد.", "meaning": "اگر Path با حرف Drive (مثل `C:\\`) یا با `\\` شروع شود، Absolute است.", "usage": "وقتی نمی‌دانی الان کجا هستی یا مقصد دور است، Absolute Path مطمئن‌ترین راه است.", "syntax": "cd C:\\Folder\\Folder", "terminal": [{"p": "C:\\Windows\\System32>", "c": "cd C:\\Users\\Student\\Pictures"}, {"p": "C:\\Users\\Student\\Pictures>", "c": ""}], "tip": "`cd` به‌تنهایی Drive را عوض نمی‌کند. اگر مقصد روی Drive دیگری است از `cd /d` استفاده کن (درس ۱۴).", "daily": "آدرس کامل پستی را به هر پیک بدهی، از هر جای شهر به همان خانه می‌رسد.", "restaurant": "«شعبه C، طبقه Users، سالن Student، میز Pictures». هر گارسونی از هر جای رستوران این آدرس را بشنود، به همان میز می‌رسد.", "practice": [{"id": "P9a", "start": "C:\\Windows\\System32", "task": "الان در `C:\\Windows\\System32` هستی. با Absolute Path به `C:\\Users\\Student\\Pictures` برو.", "checks": [{"type": "cwd", "value": "C:\\Users\\Student\\Pictures"}, {"type": "usedCd", "value": "absolute"}], "hints": ["Path کامل را از `C:\\` شروع کن.", "`cd`، Space، بعد کل Path از `C:\\` تا `Pictures`."], "answer": "cd C:\\Users\\Student\\Pictures"}, {"id": "P9b", "start": "C:\\Users\\Student\\Documents\\Work", "task": "به ریشه Drive C برو؛ یعنی `C:\\`", "checks": [{"type": "cwd", "value": "C:\\"}, {"type": "usedCd", "value": "absolute"}], "hints": ["ریشه Drive با یک Backslash نشان داده می‌شود.", "`cd \\` یا `cd C:\\`"], "answer": "cd \\"}], "quiz": [{"kind": "mcq", "q": "کدام گزینه Absolute Path است؟", "options": ["C:\\Users\\Student\\Music", "Music", "..\\Music", "Student\\Music"], "answer": 0, "code_options": true, "explain": "Absolute Path با Drive یا `\\` شروع می‌شود."}, {"kind": "tf", "q": "Absolute Path از هر Current Directory، نتیجه یکسانی دارد.", "answer": true, "explain": "چون آدرس کامل است و به جای فعلی تو وابسته نیست."}, {"kind": "type", "q": "با Absolute Path به پوشه `C:\\Windows` برو.", "show": "cd C:\\Windows", "accept": ["cd c:\\windows", "cd \\windows", "chdir c:\\windows", "cd /d c:\\windows"], "explain": "`cd C:\\Windows`"}]}, {"n": 10, "term": "Relative Path", "fullForm": "Documents\\Work · ..", "summary": "Relative Path نسبت به Current Directory حساب می‌شود. با Drive یا `\\` شروع نمی‌شود و نتیجه‌اش به جای فعلی تو بستگی دارد.", "meaning": "اگر در `C:\\Users\\Student` باشی، `cd Documents` یعنی `C:\\Users\\Student\\Documents`. دو نقطه `..` یعنی پوشه بالاتر (Parent).", "usage": "برای جابه‌جایی کوتاه بین پوشه‌های نزدیک، سریع‌ترین روش است.", "syntax": "cd Folder\\Folder", "terminal": [{"p": "C:\\Users\\Student\\Documents>", "c": "cd Work"}, {"p": "C:\\Users\\Student\\Documents\\Work>", "c": "cd .."}, {"p": "C:\\Users\\Student\\Documents>", "c": ""}], "tip": "اگر خطای `The system cannot find the path specified.` دیدی، اول با `cd` ببین کجا هستی.", "daily": "«دو در بعد از همین اتاق». این آدرس فقط وقتی معنی دارد که بدانی الان کدام اتاق هستی.", "restaurant": "«میز کناری را تمیز کن». کدام میز؟ بستگی دارد گارسون الان کنار کدام میز ایستاده.", "practice": [{"id": "P10a", "start": "C:\\Users\\Student\\Documents", "task": "داخل Documents هستی. با Relative Path وارد پوشه Work شو.", "checks": [{"type": "cwd", "value": "C:\\Users\\Student\\Documents\\Work"}, {"type": "usedCd", "value": "relative"}], "hints": ["Work همین‌جاست؛ لازم نیست آدرس کامل بدهی.", "`cd`، Space، نام پوشه."], "answer": "cd Work"}, {"id": "P10b", "start": "C:\\Users\\Student\\Documents", "task": "از Documents با Relative Path به پوشه Pictures برو و محتوایش را ببین. (Pictures کنار Documents است، نه داخل آن.)", "checks": [{"type": "cwd", "value": "C:\\Users\\Student\\Pictures"}, {"type": "usedCd", "value": "relative"}, {"type": "cmd", "value": "dir"}, {"type": "ok"}], "hints": ["اول باید یک پوشه بالاتر بروی. `..` یعنی پوشه بالاتر.", "Path نسبی: `..\\Pictures` و بعد `dir`"], "multi": true, "answer": ["cd ..\\Pictures", "dir"]}], "quiz": [{"kind": "mcq", "q": "کدام گزینه Relative Path است؟", "options": ["Documents\\Work", "C:\\Users", "\\Windows", "D:\\Backup"], "answer": 0, "code_options": true, "explain": "با Drive یا `\\` شروع نمی‌شود."}, {"kind": "predict", "q": "Current Directory: `C:\\Users\\Student` — این دستور تو را به کجا می‌برد؟", "code": "cd Music", "options": ["C:\\Users\\Student\\Music", "C:\\Music", "D:\\Music", "خطا می‌دهد"], "answer": 0, "code_options": true, "explain": "Relative Path به Current Directory اضافه می‌شود."}, {"kind": "predict", "q": "Current Directory: `C:\\Users` — نتیجه این دستور چیست؟", "code": "cd Music", "options": ["خطا: پوشه پیدا نمی‌شود", "C:\\Users\\Music", "C:\\Users\\Student\\Music", "C:\\Music"], "answer": 0, "explain": "داخل `C:\\Users` پوشه‌ای به نام Music نیست، پس CMD پیغام `The system cannot find the path specified.` می‌دهد."}]}], "shell": {"not_recognized": "این Command در CMD وجود ندارد یا اشتباه تایپ شده است.", "suggest": "شاید منظورت `{cmd}` بود؟", "folder_not_command": "`{name}` نام یک پوشه است، نه یک Command. برای رفتن به آن بنویس: `cd {name}`", "persian_kb": "به نظر می‌رسد کیبورد روی فارسی است. Commandها را با حروف انگلیسی بنویس.", "typed_prompt": "لازم نیست Prompt (مثل `C:\\Users\\Student>`) را تایپ کنی. فقط Command را بنویس.", "path_not_found": "این مسیر وجود ندارد. با `dir` ببین در Current Directory چه پوشه‌هایی هست، یا املای نام را چک کن.", "cd_other_drive": "Current Directory درایو {drive} عوض شد، ولی هنوز روی Drive {cur} هستی. برای رفتن به آن بنویس `{drive}:` یا از `cd /d` استفاده کن.", "dir_name_invalid": "`{name}` یک فایل است، نه پوشه. `cd` فقط وارد پوشه‌ها می‌شود.", "drive_not_found": "Driveی با حرف {drive} در این سیستم نیست. در Simulator فقط `C:` و `D:` و `E:` (USB) وجود دارند.", "missing_colon": "برای تغییر Drive بعد از حرف، دو نقطه بگذار: `{drive}:`", "file_not_found": "فایلی با این نام اینجا نیست. با `dir` نام دقیق را ببین.", "type_dir": "`{name}` یک پوشه است. `type` فقط محتوای فایل متنی را نشان می‌دهد.", "type_binary": "این فایل متنی نیست (.{ext})، پس CMD واقعی کاراکترهای نامفهوم نشان می‌دهد.", "syntax": "این Command به Argument نیاز دارد. برای راهنما بنویس `{cmd} /?`", "already_exists": "پوشه یا فایلی با این نام از قبل اینجا وجود دارد.", "bad_name": "نام پوشه نمی‌تواند این کاراکترها را داشته باشد: < > : \" / \\ | ? *", "later_lesson": "`{cmd}` در درس {n} آموزش داده می‌شود و هنوز در این نسخه Simulator فعال نیست.", "danger": "⚠ `{cmd}` دستوری خطرناک است و می‌تواند اطلاعات را از بین ببرد. Simulator هیچ دستوری را روی دستگاه واقعی اجرا نمی‌کند.", "format_warn": "⚠ `format` یک Drive را کاملاً پاک می‌کند. هرگز آن را روی کامپیوتر واقعی امتحان نکن. Simulator آن را اجرا نمی‌کند.", "operators": "Redirect و Pipe (کاراکترهای > و < و | و &) در درس‌های ۲۸ تا ۳۶ آموزش داده می‌شوند و هنوز در این نسخه فعال نیستند.", "exit": "در Simulator، `exit` پنجره را نمی‌بندد. در CMD واقعی این دستور پنجره CMD را می‌بندد.", "invalid_switch": "این Switch برای `{cmd}` تعریف نشده. با `{cmd} /?` Switchهای درست را ببین.", "help_footer": "برای راهنمای هر دستور بنویس: نام دستور و بعد `/?` ؛ مثلاً `dir /?`", "usage_note": "راهنمای Windows انگلیسی است. بخش‌های داخل [ ] اختیاری‌اند.", "echo_onoff": "`echo on` و `echo off` در Batch Script معنا پیدا می‌کنند (درس ۷۱)."}, "ui": {"app_name": "CMD ACADEMY", "tagline": "Windows Command Line را قدم‌به‌قدم یاد بگیر", "nav_home": "خانه", "nav_learn": "درس‌ها", "nav_practice": "تمرین", "nav_sim": "Simulator", "nav_progress": "پیشرفت", "nav_quiz": "Quiz", "continue": "ادامه", "lesson": "Lesson", "lessons": "Lessons", "chapter": "Chapter", "level": "Level", "coming_soon": "به‌زودی", "back": "بازگشت", "card_learn_title": "Learn", "card_learn_desc": "۱۰۰ درس کوتاه، از صفر تا Batch", "card_practice_title": "Practice", "card_practice_desc": "دستور را خودت بنویس و بررسی شود", "card_sim_title": "CMD Simulator", "card_sim_desc": "یک CMD امن برای آزمایش", "card_quiz_desc": "Mini Quiz و Quiz فصل", "card_progress_desc": "درصد پیشرفت و امتیازها", "tap_to_open": "برای باز کردن Simulator لمس کن", "s_meaning": "معنی", "s_usage": "کاربرد", "s_syntax": "Syntax", "s_example": "مثال", "s_tip": "نکته", "s_warning": "هشدار", "s_daily": "مثال روزمره", "s_restaurant": "مثال رستوران", "btn_practice": "تمرین کن", "btn_quiz": "Mini Quiz", "btn_next_lesson": "درس بعدی", "req_practice": "تمرین‌ها", "req_quiz": "Mini Quiz (حداقل نصف درست)", "lesson_done": "این درس کامل شد", "practice_title": "تمرین", "practice_next": "تمرین بعدی", "practice_all_done": "همه تمرین‌های موجود را انجام داده‌ای. درس‌های بعدی به‌زودی اضافه می‌شوند.", "correct": "✓ درست است", "not_yet": "✕ هنوز درست نیست", "keep_going": "خوب است، ادامه بده.", "hint": "Hint", "show_answer": "نمایش جواب", "answer": "جواب", "restart": "از اول", "next_task": "تمرین بعدی", "back_to_lesson": "برگشت به درس", "type_here": "Command را اینجا بنویس", "sim_title": "CMD Academy Simulator", "sim_badge": "Sandbox · هیچ دستوری روی دستگاه واقعی اجرا نمی‌شود", "sim_reset": "ریست", "sim_reset_done": "Simulator به حالت اول برگشت.", "sim_try": "امتحان کن: dir ، cd Documents ، cd .. ، D: ، help", "quiz_title": "Quiz", "quiz_lessons": "Mini Quiz درس‌ها", "quiz_chapters": "Quiz فصل", "quiz_q_of": "سؤال {i} از {n}", "quiz_correct": "✓ Correct", "quiz_wrong": "✕ Incorrect", "quiz_check": "بررسی", "quiz_next": "سؤال بعدی", "quiz_finish": "دیدن نتیجه", "quiz_result": "نتیجه", "quiz_retry": "دوباره", "quiz_best": "بهترین", "kind_mcq": "چندگزینه‌ای", "kind_tf": "درست/غلط", "kind_type": "نوشتن Command", "kind_fix": "پیدا کردن خطا", "kind_predict": "پیش‌بینی خروجی", "tf_true": "درست", "tf_false": "غلط", "progress_title": "پیشرفت", "overall": "Overall Progress", "stat_lessons": "Lessons Completed", "stat_quiz": "Quiz Score", "stat_practice": "Practice Completed", "reset_progress": "پاک کردن پیشرفت", "reset_confirm": "همه پیشرفت این دستگاه پاک شود؟", "yes_reset": "بله، پاک کن", "cancel": "انصراف", "saved_local": "پیشرفت فقط روی همین مرورگر ذخیره می‌شود.", "storage_off": "ذخیره‌سازی در این مرورگر فعال نیست؛ پیشرفت بعد از بستن صفحه پاک می‌شود."}}</script>
+<script>
+/* ============================================================
+   engine/vfs.js — Virtual File System
+   Everything lives in memory. Nothing touches the real device.
+   Future: becomes src/engine/vfs.ts in the Vite project.
+   ============================================================ */
+const VFS = (() => {
+  const INVALID_NAME = /[<>:"\/\\|?*]/;
+
+  function D(name, t, children = []) {
+    const map = {};
+    children.forEach((c) => { map[c.name.toLowerCase()] = c; });
+    return { type: "dir", name, t, children: map };
+  }
+  function F(name, t, content, size) {
+    const n = { type: "file", name, t };
+    if (typeof content === "string") { n.content = content; n.size = content.length; }
+    else { n.binary = true; n.size = size || 0; }
+    return n;
+  }
+
+  /* The default sandbox disk layout (C:, D:, E: = USB). */
+  function createDefault() {
+    const t1 = "2026-09-20T09:12", t2 = "2026-09-28T10:15", t3 = "2026-10-01T18:40";
+    const C = D("", t1, [
+      D("Program Files", t1, [D("Common Files", t1)]),
+      D("Users", t1, [
+        D("Public", t1),
+        D("Student", t2, [
+          D("Desktop", t2, [F("notes.txt", t3, "Remember: practice CMD every day!\n")]),
+          D("Documents", t2, [
+            D("Work", t2, [F("report.txt", t3, "Monthly report\nSales: 1,240\nStatus: OK\n")]),
+            F("todo.txt", t3, "1. Learn dir\n2. Learn cd\n3. Create a folder with mkdir\n"),
+            F("menu.txt", t3, "Restaurant Menu\n---------------\nPizza      8.50\nPasta      7.00\nSalad      5.50\n"),
+          ]),
+          D("Downloads", t2, [F("setup.exe", t2, null, 5242880)]),
+          D("Music", t2, [F("song.mp3", t2, null, 3145728)]),
+          D("Pictures", t2, [
+            D("Holidays", t2, [F("family.jpg", t2, null, 912384)]),
+            F("beach.jpg", t2, null, 1048576),
+            F("cat.jpg", t3, null, 248311),
+          ]),
+        ]),
+      ]),
+      D("Windows", t1, [
+        D("System32", t1, [F("cmd.exe", t1, null, 289792), F("notepad.exe", t1, null, 201216)]),
+        F("win.ini", t1, "; for 16-bit app support\n[fonts]\n[extensions]\n"),
+      ]),
+    ]);
+    const Dd = D("", t1, [
+      D("Projects", t2, [D("website", t2, [F("index.html", t2, "<h1>Hello CMD Academy</h1>\n")])]),
+      D("Backup", t2, [F("readme.txt", t2, "Backups are stored here.\n")]),
+    ]);
+    const E = D("", t3, [D("Photos", t3), F("info.txt", t3, "USB stick for CMD Academy practice.\n")]);
+    return {
+      drives: {
+        C: { label: "", serial: "1A2B-3C4D", free: "48,213,442,560", root: C },
+        D: { label: "Data", serial: "7E10-22F5", free: "312,904,118,272", root: Dd },
+        E: { label: "USB", serial: "0C3A-91B8", free: "15,021,309,952", root: E },
+      },
+    };
+  }
+
+  function clone(fs) { return JSON.parse(JSON.stringify(fs)); }
+
+  /* Parse a user path into an absolute {drive, parts} using per-drive cwd.
+     cwdMap: { C: ["Users","Student"], D: [], ... }, curDrive: "C" */
+  function parse(input, curDrive, cwdMap) {
+    let s = String(input).replace(/"/g, "").replace(/\//g, "\\").trim();
+    let drive = curDrive, absolute = false, kind = "relative";
+    const m = s.match(/^([a-zA-Z]):(.*)$/);
+    if (m) { drive = m[1].toUpperCase(); s = m[2]; kind = "absolute"; }
+    if (s.startsWith("\\")) { absolute = true; kind = "absolute"; }
+    const base = absolute ? [] : (cwdMap[drive] || []).slice();
+    s.split("\\").forEach((seg) => {
+      const p = seg.trim();
+      if (!p || p === ".") return;
+      if (p === "..") { base.pop(); return; }
+      base.push(p);
+    });
+    return { drive, parts: base, kind };
+  }
+
+  function getDrive(fs, letter) { return fs.drives[letter] || null; }
+
+  /* Walk to a node. Returns {node, canonical:[names]} or {node:null, missingAt} */
+  function resolve(fs, drive, parts) {
+    const d = getDrive(fs, drive);
+    if (!d) return { node: null, noDrive: true };
+    let node = d.root;
+    const canonical = [];
+    for (let i = 0; i < parts.length; i++) {
+      if (node.type !== "dir") return { node: null, missingAt: i, throughFile: true };
+      const next = node.children[parts[i].toLowerCase()];
+      if (!next) return { node: null, missingAt: i, parent: i === parts.length - 1 ? node : null, canonical };
+      canonical.push(next.name);
+      node = next;
+    }
+    return { node, canonical };
+  }
+
+  function fmt(drive, parts) { return drive + ":\\" + parts.join("\\"); }
+
+  function wildcardToRegex(p) {
+    const esc = p.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".");
+    return new RegExp("^" + esc + "$", "i");
+  }
+
+  function mkdirp(fs, drive, parts, t) {
+    const d = getDrive(fs, drive);
+    let node = d.root;
+    for (const p of parts) {
+      let next = node.children[p.toLowerCase()];
+      if (!next) { next = { type: "dir", name: p, t, children: {} }; node.children[p.toLowerCase()] = next; }
+      if (next.type !== "dir") return false;
+      node = next;
+    }
+    return true;
+  }
+
+  function sortedChildren(dir) {
+    return Object.values(dir.children).sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
+  }
+
+  return { createDefault, clone, parse, resolve, fmt, getDrive, wildcardToRegex, mkdirp, sortedChildren, INVALID_NAME };
+})();
+
+/* ============================================================
+   engine/shell.js — Educational CMD interpreter (sandbox only)
+   Parses a command line and runs it against the VFS.
+   No real system command is ever executed.
+   ============================================================ */
+const Shell = (() => {
+  let MSG = {};               // Persian teaching messages (from content)
+  let LESSON_OF = {};         // command -> lesson number (from curriculum)
+  const DANGEROUS = ["del", "erase", "rmdir", "rd", "format", "diskpart", "bootrec", "taskkill", "robocopy", "chkdsk"];
+
+  function setMessages(m) { MSG = m || {}; }
+  function setLessonIndex(idx) { LESSON_OF = idx || {}; }
+  function msg(key, vars = {}) {
+    let s = MSG[key] || key;
+    Object.keys(vars).forEach((k) => { s = s.split("{" + k + "}").join(vars[k]); });
+    return s;
+  }
+
+  function create(opts = {}) {
+    const sh = {
+      fs: opts.fs ? VFS.clone(opts.fs) : VFS.createDefault(),
+      drive: "C",
+      cwd: { C: ["Users", "Student"], D: [], E: [] },
+      env: { USERNAME: "Student", COMPUTERNAME: "ACADEMY-PC", USERPROFILE: "C:\\Users\\Student", OS: "Windows_NT" },
+      log: [],
+    };
+    if (opts.start) setLocation(sh, opts.start);
+    return sh;
+  }
+
+  /* start: "C:\\Users\\Student\\Documents" */
+  function setLocation(sh, path) {
+    const p = VFS.parse(path, sh.drive, sh.cwd);
+    const r = VFS.resolve(sh.fs, p.drive, p.parts);
+    if (r.node && r.node.type === "dir") { sh.drive = p.drive; sh.cwd[p.drive] = r.canonical; }
+  }
+
+  function cwdPath(sh) { return VFS.fmt(sh.drive, sh.cwd[sh.drive]); }
+  function prompt(sh) { return cwdPath(sh) + ">"; }
+
+  /* ---------- tokenizing ---------- */
+  function tokenize(str) {
+    const out = [];
+    let cur = "", inQ = false, quoted = false;
+    const push = () => { if (cur.length || quoted) out.push({ v: cur, q: quoted }); cur = ""; quoted = false; };
+    for (let i = 0; i < str.length; i++) {
+      const c = str[i];
+      if (c === '"') { inQ = !inQ; quoted = true; continue; }
+      if (!inQ && (c === " " || c === "\t")) { push(); continue; }
+      if (!inQ && c === "/" && cur.length) { push(); }
+      cur += c;
+    }
+    push();
+    return out;
+  }
+  function hasOperator(str) {
+    let inQ = false;
+    for (const c of str) {
+      if (c === '"') inQ = !inQ;
+      else if (!inQ && "<>|&".includes(c)) return true;
+    }
+    return false;
+  }
+  function expandEnv(sh, str) {
+    return str.replace(/%([A-Za-z_][A-Za-z0-9_]*)%/g, (m, name) => {
+      const k = Object.keys(sh.env).find((x) => x.toLowerCase() === name.toLowerCase());
+      return k ? sh.env[k] : m;
+    });
+  }
+
+  function levenshtein(a, b) {
+    const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+    for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+    for (let i = 1; i <= a.length; i++)
+      for (let j = 1; j <= b.length; j++)
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return dp[a.length][b.length];
+  }
+
+  /* ---------- output helpers ---------- */
+  const out = (lines, text) => lines.push({ t: "out", text });
+  const err = (lines, text) => lines.push({ t: "err", text });
+  const note = (lines, text) => lines.push({ t: "note", text });
+  const warn = (lines, text) => lines.push({ t: "warn", text });
+
+  function fmtTime(iso) {
+    const d = new Date(iso);
+    const p2 = (n) => String(n).padStart(2, "0");
+    let h = d.getHours(); const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
+    return `${p2(d.getMonth() + 1)}/${p2(d.getDate())}/${d.getFullYear()}  ${p2(h)}:${p2(d.getMinutes())} ${ap}`;
+  }
+  const num = (n) => n.toLocaleString("en-US");
+  function nowIso() { const d = new Date(); d.setSeconds(0, 0); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); }
+
+  /* ---------- commands ---------- */
+  const COMMANDS = {};
+  function def(name, aliases, summary, usage, run) {
+    const c = { name, aliases, summary, usage, run };
+    COMMANDS[name] = c;
+    aliases.forEach((a) => { COMMANDS[a] = c; });
+  }
+  function showUsage(lines, c) {
+    c.usage.split("\n").forEach((l) => out(lines, l));
+    note(lines, msg("usage_note"));
+  }
+
+  def("dir", [], "Displays a list of files and subdirectories in a directory.",
+    "Displays a list of files and subdirectories in a directory.\n\nDIR [drive:][path][filename] [/B] [/W]\n\n  [drive:][path][filename]\n              Specifies drive, directory, and/or files to list.\n  /B          Uses bare format (no heading information or summary).\n  /W          Uses wide list format.",
+    (sh, rest, lines, rec) => {
+      const toks = tokenize(rest);
+      const sw = toks.filter((t) => !t.q && t.v.startsWith("/")).map((t) => t.v.toLowerCase());
+      const args = toks.filter((t) => t.q || !t.v.startsWith("/")).map((t) => t.v);
+      rec.switches = sw; rec.args = args;
+      if (sw.includes("/?")) { showUsage(lines, COMMANDS.dir); return true; }
+      const bad = sw.find((s) => !["/w", "/b"].includes(s));
+      if (bad) { err(lines, `Invalid switch - "${bad.slice(1)}".`); note(lines, msg("invalid_switch", { cmd: "dir" })); return false; }
+      const target = args.join(" ") || ".";
+      let p = VFS.parse(target, sh.drive, sh.cwd);
+      let pattern = null;
+      const last = p.parts[p.parts.length - 1];
+      if (last && /[*?]/.test(last)) { pattern = VFS.wildcardToRegex(last); p = { ...p, parts: p.parts.slice(0, -1) }; }
+      if (!VFS.getDrive(sh.fs, p.drive)) { err(lines, "The system cannot find the path specified."); note(lines, msg("drive_not_found", { drive: p.drive })); return false; }
+      const r = VFS.resolve(sh.fs, p.drive, p.parts);
+      let dirNode, dirParts, entries;
+      if (!r.node) {
+        if (r.parent) { err(lines, "File Not Found"); note(lines, msg("file_not_found")); }
+        else { err(lines, "The system cannot find the path specified."); note(lines, msg("path_not_found")); }
+        return false;
+      }
+      if (r.node.type === "file") {
+        dirParts = r.canonical.slice(0, -1);
+        dirNode = VFS.resolve(sh.fs, p.drive, dirParts).node;
+        entries = [r.node];
+      } else {
+        dirNode = r.node; dirParts = r.canonical;
+        entries = VFS.sortedChildren(dirNode);
+        if (pattern) entries = entries.filter((e) => pattern.test(e.name));
+      }
+      rec.target = VFS.fmt(p.drive, dirParts);
+      if (pattern && !entries.length) { err(lines, "File Not Found"); note(lines, msg("file_not_found")); return false; }
+      const drv = VFS.getDrive(sh.fs, p.drive);
+      const isRoot = dirParts.length === 0;
+      const showDots = !isRoot && !pattern && r.node.type === "dir";
+      const files = entries.filter((e) => e.type === "file");
+      const dirs = entries.filter((e) => e.type === "dir");
+      if (sw.includes("/b")) { entries.forEach((e) => out(lines, e.name)); return true; }
+      out(lines, drv.label ? ` Volume in drive ${p.drive} is ${drv.label}` : ` Volume in drive ${p.drive} has no label.`);
+      out(lines, ` Volume Serial Number is ${drv.serial}`);
+      out(lines, "");
+      out(lines, ` Directory of ${VFS.fmt(p.drive, dirParts)}`);
+      out(lines, "");
+      const dirCount = dirs.length + (showDots ? 2 : 0);
+      if (sw.includes("/w")) {
+        const names = (showDots ? ["[.]", "[..]"] : []).concat(entries.map((e) => (e.type === "dir" ? `[${e.name}]` : e.name)));
+        const w = Math.max(15, ...names.map((n) => n.length + 2));
+        const cols = Math.max(1, Math.floor(64 / w));
+        for (let i = 0; i < names.length; i += cols) out(lines, names.slice(i, i + cols).map((n) => n.padEnd(w)).join("").trimEnd());
+      } else {
+        const t = fmtTime(dirNode.t);
+        if (showDots) { out(lines, `${t}    <DIR>          .`); out(lines, `${t}    <DIR>          ..`); }
+        entries.forEach((e) => {
+          if (e.type === "dir") out(lines, `${fmtTime(e.t)}    <DIR>          ${e.name}`);
+          else out(lines, `${fmtTime(e.t)}${num(e.size).padStart(18)} ${e.name}`);
+        });
+      }
+      const bytes = files.reduce((s, f) => s + f.size, 0);
+      out(lines, `${String(files.length).padStart(16)} File(s) ${num(bytes).padStart(14)} bytes`);
+      out(lines, `${String(dirCount).padStart(16)} Dir(s) ${drv.free.padStart(15)} bytes free`);
+      return true;
+    });
+
+  def("cd", ["chdir"], "Displays the name of or changes the current directory.",
+    "Displays the name of or changes the current directory.\n\nCHDIR [/D] [drive:][path]\nCHDIR [..]\nCD [/D] [drive:][path]\nCD [..]\n\n  ..   Specifies that you want to change to the parent directory.\n\nType CD drive: to display the current directory in the specified drive.\nType CD without parameters to display the current drive and directory.\n\nUse the /D switch to change current drive in addition to changing current\ndirectory for a drive.",
+    (sh, rest, lines, rec) => {
+      let s = rest.trim();
+      rec.switches = [];
+      if (s === "/?") { rec.switches = ["/?"]; showUsage(lines, COMMANDS.cd); return true; }
+      let changeDrive = false;
+      const md = s.match(/^\/d(\s+|$)/i);
+      if (md) { changeDrive = true; rec.switches = ["/d"]; s = s.slice(md[0].length).trim(); }
+      s = s.replace(/"/g, "").trim();
+      rec.args = s ? [s] : [];
+      if (!s) { out(lines, cwdPath(sh)); rec.printed = true; return true; }
+      const onlyDrive = s.match(/^([a-zA-Z]):$/);
+      if (onlyDrive && !changeDrive) {
+        const L = onlyDrive[1].toUpperCase();
+        if (!VFS.getDrive(sh.fs, L)) { err(lines, "The system cannot find the drive specified."); note(lines, msg("drive_not_found", { drive: L })); return false; }
+        out(lines, VFS.fmt(L, sh.cwd[L])); return true;
+      }
+      const p = VFS.parse(s, sh.drive, sh.cwd);
+      rec.pathKind = p.kind;
+      if (!VFS.getDrive(sh.fs, p.drive)) { err(lines, "The system cannot find the drive specified."); note(lines, msg("drive_not_found", { drive: p.drive })); return false; }
+      const r = VFS.resolve(sh.fs, p.drive, p.parts);
+      if (!r.node) { err(lines, "The system cannot find the path specified."); note(lines, msg("path_not_found")); return false; }
+      if (r.node.type !== "dir") { err(lines, "The directory name is invalid."); note(lines, msg("dir_name_invalid", { name: r.node.name })); return false; }
+      sh.cwd[p.drive] = r.canonical;
+      rec.target = VFS.fmt(p.drive, r.canonical);
+      if (p.drive !== sh.drive) {
+        if (changeDrive) sh.drive = p.drive;
+        else note(lines, msg("cd_other_drive", { drive: p.drive, cur: sh.drive }));
+      }
+      return true;
+    });
+
+  def("mkdir", ["md"], "Creates a directory.",
+    "Creates a directory.\n\nMKDIR [drive:]path\nMD [drive:]path",
+    (sh, rest, lines, rec) => {
+      const toks = tokenize(rest);
+      rec.args = toks.map((t) => t.v); rec.switches = [];
+      if (toks.length === 1 && toks[0].v === "/?") { showUsage(lines, COMMANDS.mkdir); return true; }
+      if (!toks.length) { err(lines, "The syntax of the command is incorrect."); note(lines, msg("syntax", { cmd: "mkdir" })); return false; }
+      let ok = true;
+      toks.forEach((tk) => {
+        const raw = tk.v.replace(/\//g, "\\");
+        const nameOnly = raw.replace(/^[a-zA-Z]:/, "");
+        if (nameOnly.split("\\").some((seg) => VFS.INVALID_NAME.test(seg)) || (tk.v.startsWith("/") && !tk.q)) {
+          err(lines, "The filename, directory name, or volume label syntax is incorrect."); note(lines, msg("bad_name")); ok = false; return;
+        }
+        const p = VFS.parse(raw, sh.drive, sh.cwd);
+        if (!VFS.getDrive(sh.fs, p.drive)) { err(lines, "The system cannot find the path specified."); note(lines, msg("drive_not_found", { drive: p.drive })); ok = false; return; }
+        const r = VFS.resolve(sh.fs, p.drive, p.parts);
+        if (r.node) { err(lines, `A subdirectory or file ${tk.v} already exists.`); note(lines, msg("already_exists")); ok = false; return; }
+        if (!VFS.mkdirp(sh.fs, p.drive, p.parts, nowIso())) { err(lines, "The system cannot find the path specified."); ok = false; return; }
+        rec.created = (rec.created || []).concat(VFS.fmt(p.drive, p.parts));
+      });
+      return ok;
+    });
+
+  def("type", [], "Displays the contents of a text file.",
+    "Displays the contents of a text file or files.\n\nTYPE [drive:][path]filename",
+    (sh, rest, lines, rec) => {
+      const toks = tokenize(rest);
+      rec.args = toks.map((t) => t.v); rec.switches = [];
+      if (toks.length === 1 && toks[0].v === "/?") { showUsage(lines, COMMANDS.type); return true; }
+      if (!toks.length) { err(lines, "The syntax of the command is incorrect."); note(lines, msg("syntax", { cmd: "type" })); return false; }
+      let ok = true;
+      toks.forEach((tk) => {
+        const p = VFS.parse(tk.v, sh.drive, sh.cwd);
+        const r = VFS.resolve(sh.fs, p.drive, p.parts);
+        if (!r.node) { err(lines, "The system cannot find the file specified."); note(lines, msg("file_not_found")); ok = false; return; }
+        if (r.node.type === "dir") { err(lines, "Access is denied."); note(lines, msg("type_dir", { name: r.node.name })); ok = false; return; }
+        if (toks.length > 1) { out(lines, ""); out(lines, tk.v); out(lines, ""); out(lines, ""); }
+        if (r.node.binary) { out(lines, "ÿØÿà JFIF  ☺☺ ` `  ÿÛ C ☻☺☺☻☺..."); note(lines, msg("type_binary", { ext: r.node.name.split(".").pop() })); return; }
+        r.node.content.replace(/\n$/, "").split("\n").forEach((l) => out(lines, l));
+      });
+      return ok;
+    });
+
+  def("echo", [], "Displays messages, or turns command-echoing on or off.",
+    "Displays messages, or turns command-echoing on or off.\n\n  ECHO [ON | OFF]\n  ECHO [message]",
+    (sh, rest, lines, rec) => {
+      rec.switches = [];
+      if (rest.trim() === "/?") { showUsage(lines, COMMANDS.echo); return true; }
+      if (/^[.(]/.test(rest)) { out(lines, rest.slice(1)); rec.args = rest.slice(1) ? [rest.slice(1)] : []; return true; }
+      const text = rest.replace(/^\s/, "");
+      rec.args = text.trim() ? [text] : [];
+      if (!text.trim()) { out(lines, "ECHO is on."); return true; }
+      if (/^(on|off)$/i.test(text.trim())) { note(lines, msg("echo_onoff")); return true; }
+      out(lines, text);
+      return true;
+    });
+
+  def("cls", [], "Clears the screen.", "Clears the screen.\n\nCLS",
+    (sh, rest, lines, rec) => {
+      if (rest.trim() === "/?") { showUsage(lines, COMMANDS.cls); return true; }
+      rec.clear = true; return true;
+    });
+
+  def("ver", [], "Displays the Windows version.", "Displays the Windows version.\n\nVER",
+    (sh, rest, lines) => {
+      if (rest.trim() === "/?") { showUsage(lines, COMMANDS.ver); return true; }
+      out(lines, ""); out(lines, "Microsoft Windows [Version 10.0.22631.4317]"); return true;
+    });
+
+  def("help", [], "Provides Help information for Windows commands.",
+    "Provides help information for Windows commands.\n\nHELP [command]\n\n    command - displays help information on that command.",
+    (sh, rest, lines, rec) => {
+      const a = rest.trim().toLowerCase();
+      rec.args = a ? [a] : [];
+      if (a === "/?") { showUsage(lines, COMMANDS.help); return true; }
+      if (a) {
+        if (COMMANDS[a]) { showUsage(lines, COMMANDS[a]); return true; }
+        out(lines, "This command is not supported by the help utility.  Try \"x /?\".".replace("x", a));
+        return false;
+      }
+      out(lines, "For more information on a specific command, type HELP command-name");
+      const seen = new Set();
+      Object.values(COMMANDS).forEach((c) => {
+        if (seen.has(c.name) || c.hidden) return; seen.add(c.name);
+        out(lines, c.name.toUpperCase().padEnd(15) + c.summary);
+      });
+      note(lines, msg("help_footer"));
+      return true;
+    });
+
+  def("whoami", [], "Displays the current user name.", "WHOAMI\n\nDisplays user, group and privileges information for the user who is currently logged on.",
+    (sh, rest, lines) => { out(lines, "academy-pc\\student"); return true; });
+  COMMANDS.whoami.hidden = true;
+
+  def("hostname", [], "Prints the name of the current host.", "Prints the name of the current host.\n\nhostname",
+    (sh, rest, lines) => { out(lines, sh.env.COMPUTERNAME); return true; });
+  COMMANDS.hostname.hidden = true;
+
+  def("exit", [], "Quits the CMD.EXE program.", "Quits the CMD.EXE program (command interpreter).\n\nEXIT",
+    (sh, rest, lines) => { note(lines, msg("exit")); return true; });
+  COMMANDS.exit.hidden = true;
+
+  /* ---------- main entry ---------- */
+  function run(sh, rawLine) {
+    const lines = [];
+    const line = rawLine.replace(/\u200c/g, "").trim();
+    const rec = { raw: line, name: null, args: [], switches: [], ok: false };
+    const done = (ok) => { rec.ok = ok; sh.log.push(rec); return { lines, clear: !!rec.clear, rec }; };
+    if (!line) return { lines, clear: false, rec: null };
+
+    if (/^[a-zA-Z]:\\[^>]*>/.test(line)) { note(lines, msg("typed_prompt")); return done(false); }
+
+    // Drive switch: "D:"
+    const dm = line.match(/^([a-zA-Z]):\s*$/);
+    if (dm) {
+      const L = dm[1].toUpperCase();
+      rec.name = "drive";
+      rec.args = [L + ":"];
+      if (!VFS.getDrive(sh.fs, L)) { err(lines, "The system cannot find the drive specified."); note(lines, msg("drive_not_found", { drive: L })); return done(false); }
+      sh.drive = L; rec.target = cwdPath(sh); return done(true);
+    }
+    if (/^[a-zA-Z]$/.test(line) && VFS.getDrive(sh.fs, line.toUpperCase())) {
+      err(lines, `'${line}' is not recognized as an internal or external command,`);
+      err(lines, "operable program or batch file.");
+      note(lines, msg("missing_colon", { drive: line.toUpperCase() }));
+      return done(false);
+    }
+
+    const expanded = expandEnv(sh, line);
+    const m = expanded.match(/^([^\s\\\/."]+)(.*)$/s);
+    const firstWord = expanded.split(/\s+/)[0];
+    const name = (m ? m[1] : firstWord).toLowerCase();
+    let rest = m ? m[2] : "";
+    rec.name = name;
+
+    if (/[\u0600-\u06FF]/.test(firstWord)) {
+      err(lines, `'${firstWord}' is not recognized as an internal or external command,`);
+      err(lines, "operable program or batch file.");
+      note(lines, msg("persian_kb"));
+      return done(false);
+    }
+
+    if (hasOperator(rest)) { note(lines, msg("operators")); return done(false); }
+
+    const c = COMMANDS[name];
+    if (c) {
+      rec.name = c.name;
+      // "dir/w", "cd.." and "cd\" style glued arguments are legal in CMD
+      if (rest && !/^\s/.test(rest) && name !== "echo") rest = " " + rest;
+      try { return done(!!c.run(sh, rest, lines, rec)); }
+      catch (e) { err(lines, "Simulator error: " + e.message); return done(false); }
+    }
+
+    if (name === "format" || name === "diskpart" || DANGEROUS.includes(name)) {
+      warn(lines, name === "format" ? msg("format_warn") : msg("danger", { cmd: name }));
+      if (LESSON_OF[name]) note(lines, msg("later_lesson", { cmd: name, n: LESSON_OF[name] }));
+      return done(false);
+    }
+    if (LESSON_OF[name]) { note(lines, msg("later_lesson", { cmd: name, n: LESSON_OF[name] })); return done(false); }
+
+    err(lines, `'${firstWord}' is not recognized as an internal or external command,`);
+    err(lines, "operable program or batch file.");
+    const known = Object.keys(COMMANDS).concat(Object.keys(LESSON_OF));
+    let best = null, bestD = 3;
+    known.forEach((k) => { const d = levenshtein(name, k); if (d < bestD) { bestD = d; best = k; } });
+    const here = VFS.resolve(sh.fs, sh.drive, sh.cwd[sh.drive]).node;
+    const folder = here && here.children[line.replace(/"/g, "").toLowerCase()];
+    if (folder && folder.type === "dir") note(lines, msg("folder_not_command", { name: folder.name }));
+    else note(lines, msg("not_recognized") + (best && bestD <= 2 ? " " + msg("suggest", { cmd: best }) : ""));
+    return done(false);
+  }
+
+  function banner() {
+    return [
+      { t: "out", text: "Microsoft Windows [Version 10.0.22631.4317]" },
+      { t: "out", text: "(c) Microsoft Corporation. All rights reserved." },
+      { t: "out", text: "" },
+    ];
+  }
+
+  return { create, run, prompt, cwdPath, setLocation, setMessages, setLessonIndex, banner, COMMANDS };
+})();
+
+/* ============================================================
+   engine/checker.js — checks a practice task against the
+   sandbox state, not against exact text. So "md X" and
+   "mkdir X" are both accepted when the folder X exists.
+   ============================================================ */
+const Checker = (() => {
+  const norm = (s) => String(s || "").toLowerCase().replace(/\\+$/, "");
+
+  function last(attempt) { return attempt.length ? attempt[attempt.length - 1] : null; }
+
+  const RULES = {
+    cmd: (c, sh, a) => { const l = last(a); return !!l && l.name === c.value; },
+    ok: (c, sh, a) => { const l = last(a); return !!l && l.ok; },
+    switch: (c, sh, a) => { const l = last(a); return !!l && (l.switches || []).includes(c.value.toLowerCase()); },
+    argIncludes: (c, sh, a) => { const l = last(a); return !!l && (l.args || []).join(" ").toLowerCase().includes(c.value.toLowerCase()); },
+    noArgs: (c, sh, a) => { const l = last(a); return !!l && !(l.args || []).length; },
+    cwd: (c, sh) => norm(Shell.cwdPath(sh)) === norm(c.value),
+    drive: (c, sh) => sh.drive === c.value.toUpperCase(),
+    dirExists: (c, sh) => {
+      const p = VFS.parse(c.path, sh.drive, sh.cwd);
+      const r = VFS.resolve(sh.fs, p.drive, p.parts);
+      return !!r.node && r.node.type === "dir";
+    },
+    usedCd: (c, sh, a) => a.some((r) => r.name === "cd" && r.ok && r.pathKind === c.value),
+  };
+
+  /* Returns true when every check passes. */
+  function evaluate(checks, sh, attempt) {
+    return checks.every((c) => {
+      const f = RULES[c.type];
+      return f ? f(c, sh, attempt) : false;
+    });
+  }
+
+  /* Normalize a typed answer for quiz "write the command" questions. */
+  function sameCommand(input, accepted) {
+    const n = (s) => String(s).trim().replace(/\s+/g, " ").toLowerCase();
+    return accepted.some((a) => n(a) === n(input));
+  }
+
+  return { evaluate, sameCommand };
+})();
+
+/* ============================================================
+   data/content.js — read-only access to course content.
+   The UI never hard-codes lessons; it asks Content.
+   ============================================================ */
+const Content = (() => {
+  let D = null;
+  const byNum = {};
+  let order = [];
+
+  function init(json) {
+    D = json;
+    const full = {};
+    D.lessons.forEach((l) => { full[l.n] = l; });
+    D.curriculum.levels.forEach((lv) => {
+      lv.chapters.forEach((ch) => {
+        ch.lessons.forEach((o) => {
+          byNum[o.n] = { ...o, level: lv.id, chapter: ch.id, chapterTitle: ch.title, full: full[o.n] || null };
+          order.push(o.n);
+        });
+      });
+    });
+  }
+
+  const levels = () => D.curriculum.levels;
+  const lesson = (n) => byNum[n] || null;
+  const all = () => order.map((n) => byNum[n]);
+  const available = () => all().filter((l) => l.full);
+  const total = () => order.length;
+  const levelLessons = (id) => all().filter((l) => l.level === id);
+  const chapterLessons = (id) => all().filter((l) => l.chapter === id);
+  const chapter = (id) => {
+    for (const lv of D.curriculum.levels) for (const ch of lv.chapters) if (ch.id === id) return { ...ch, level: lv.id };
+    return null;
+  };
+  const tasks = () => available().flatMap((l) => l.full.practice.map((p) => ({ ...p, lesson: l.n })));
+  const task = (id) => tasks().find((t) => t.id === id) || null;
+  const nextLesson = (n) => { const i = order.indexOf(n); return i >= 0 && i < order.length - 1 ? byNum[order[i + 1]] : null; };
+
+  /* Quizzes: "L3" = lesson 3 mini quiz, "C1" = chapter 1 quiz */
+  function quiz(id) {
+    if (id[0] === "L") {
+      const l = lesson(+id.slice(1));
+      return l && l.full ? { id, title: l.t, lesson: l.n, questions: l.full.quiz } : null;
+    }
+    if (id[0] === "C") {
+      const ch = chapter(+id.slice(1));
+      if (!ch) return null;
+      const qs = chapterLessons(ch.id).filter((l) => l.full).flatMap((l) => l.full.quiz);
+      return qs.length ? { id, title: ch.title, chapter: ch.id, questions: qs } : null;
+    }
+    return null;
+  }
+  const chapterQuizzes = () => {
+    const out = [];
+    D.curriculum.levels.forEach((lv) => lv.chapters.forEach((ch) => { const q = quiz("C" + ch.id); if (q) out.push(q); }));
+    return out;
+  };
+
+  /* command -> lesson number, so the Simulator can say "taught in lesson N" */
+  function shellIndex() {
+    const idx = {};
+    all().forEach((l) => {
+      if (l.c) idx[l.c] = l.n;
+      (l.aliases || []).forEach((a) => { idx[a] = l.n; });
+    });
+    return idx;
+  }
+
+  function t(key, vars = {}) {
+    let s = D.ui[key] != null ? String(D.ui[key]) : key;
+    Object.keys(vars).forEach((k) => { s = s.split("{" + k + "}").join(vars[k]); });
+    return s;
+  }
+
+  return { init, levels, lesson, all, available, total, levelLessons, chapterLessons, chapter, tasks, task, nextLesson, quiz, chapterQuizzes, shellIndex, t, shellMessages: () => D.shell };
+})();
+
+/* ============================================================
+   store/progress.js — progress saved on this device only.
+   One small interface so Cloud Sync can replace it later.
+   ============================================================ */
+const Store = (() => {
+  const KEY = "cmdacademy.progress.v1";
+  const empty = () => ({ v: 1, practice: {}, quiz: {}, seen: {} });
+  let s = empty();
+  let persistent = true;
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) s = Object.assign(empty(), JSON.parse(raw));
+    } catch (e) { persistent = false; }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(s)); persistent = true; } catch (e) { persistent = false; }
+  }
+
+  const markPractice = (id) => { s.practice[id] = true; save(); };
+  const practiceDone = (id) => !!s.practice[id];
+  const markSeen = (n) => { if (!s.seen[n]) { s.seen[n] = true; save(); } };
+  function setQuiz(id, score, total) {
+    const prev = s.quiz[id];
+    if (!prev || score / total >= prev.best / prev.total) s.quiz[id] = { best: score, total };
+    save();
+  }
+  const quizBest = (id) => s.quiz[id] || null;
+
+  /* A lesson is done when all its practice tasks are solved
+     and its Mini Quiz was passed with at least half correct. */
+  function lessonParts(l) {
+    if (!l || !l.full) return null;
+    const ids = l.full.practice.map((p) => p.id);
+    const done = ids.filter(practiceDone).length;
+    const q = quizBest("L" + l.n);
+    return { practiceDone: done, practiceTotal: ids.length, quizOk: !!q && q.best / q.total >= 0.5, quiz: q };
+  }
+  function lessonDone(l) {
+    const p = lessonParts(l);
+    return !!p && p.practiceDone === p.practiceTotal && p.quizOk;
+  }
+  function currentLesson() {
+    return Content.available().find((l) => !lessonDone(l)) || null;
+  }
+  function lessonStatus(l) {
+    if (!l.full) return "soon";
+    if (lessonDone(l)) return "done";
+    const c = currentLesson();
+    return c && c.n === l.n ? "current" : "open";
+  }
+
+  function reset() { s = empty(); save(); }
+  const isPersistent = () => persistent;
+
+  return { load, markPractice, practiceDone, markSeen, setQuiz, quizBest, lessonParts, lessonDone, currentLesson, lessonStatus, reset, isPersistent };
+})();
+
+/* ============================================================
+   ui/dom.js — tiny DOM helpers + icons (React-like h()).
+   ============================================================ */
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  if (props) {
+    for (const [k, v] of Object.entries(props)) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else if (k.startsWith("on")) el.addEventListener(k.slice(2).toLowerCase(), v);
+      else if (k === "style" && typeof v === "object") Object.assign(el.style, v);
+      else el.setAttribute(k, v === true ? "" : v);
+    }
+  }
+  append(el, kids);
+  return el;
+}
+function append(el, kids) {
+  kids.flat(Infinity).forEach((k) => {
+    if (k == null || k === false) return;
+    el.appendChild(k instanceof Node ? k : document.createTextNode(String(k)));
+  });
+  return el;
+}
+
+/* Persian text with `code` islands -> nodes. Code is always LTR. */
+function fmt(text) {
+  const frag = document.createDocumentFragment();
+  String(text || "").split(/(`[^`]+`)/g).forEach((part) => {
+    if (!part) return;
+    if (part.startsWith("`") && part.endsWith("`")) frag.appendChild(h("code", { class: "ic", dir: "ltr" }, part.slice(1, -1)));
+    else frag.appendChild(document.createTextNode(part));
+  });
+  return frag;
+}
+const fa = (n) => String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
+
+const ICONS = {
+  home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  learn: '<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20"/><path d="M8 7h8M8 11h6"/>',
+  practice: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3"/><path d="M12 15h5"/>',
+  sim: '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M2.5 8h19"/><path d="M6 12.5h.01M9 12.5h6"/><path d="M6 16h3"/>',
+  progress: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  quiz: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7"/><path d="M12 17h.01"/>',
+  back: '<path d="m9 6 6 6-6 6"/>',
+  chev: '<path d="m15 6-6 6 6 6"/>',
+  down: '<path d="m6 9 6 6 6-6"/>',
+  tip: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
+  warn: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/>',
+  reset: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+};
+function icon(name, cls) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 24 24");
+  s.setAttribute("fill", "none");
+  s.setAttribute("stroke", "currentColor");
+  s.setAttribute("stroke-width", "1.8");
+  s.setAttribute("stroke-linecap", "round");
+  s.setAttribute("stroke-linejoin", "round");
+  s.setAttribute("aria-hidden", "true");
+  if (cls) s.setAttribute("class", cls);
+  s.innerHTML = ICONS[name] || "";
+  return s;
+}
+function shuffle(a) {
+  const r = a.slice();
+  for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+  return r;
+}
+
+/* ============================================================
+   ui/terminal.js — reusable terminal component.
+   Used by Simulator, Practice and lesson examples.
+   ============================================================ */
+
+/* Static example terminal (lesson cards, home). lines: [{p,c}|{o}] */
+function StaticTerminal(lines, opts = {}) {
+  const body = h("div", { class: "term-body" });
+  lines.forEach((ln, i) => {
+    if (ln.p != null) {
+      const isLast = i === lines.length - 1;
+      body.appendChild(h("div", { class: "term-line" },
+        h("span", { class: "pr" }, ln.p), ln.c ? h("span", { class: "cm" }, ln.c) : null,
+        (!ln.c && isLast && opts.cursor !== false) ? h("span", { class: "cursor" }) : null));
+    } else body.appendChild(h("div", { class: "term-line" }, ln.o));
+  });
+  return h("div", { class: "term" + (opts.cls ? " " + opts.cls : ""), dir: "ltr" },
+    termBar(opts.title || "Command Prompt"), body);
+}
+
+function termBar(title, extra) {
+  return h("div", { class: "term-bar" },
+    h("div", { class: "term-tab" }, h("span", { class: "ti" }, ">_"), title),
+    h("div", { class: "spacer" }), extra || null);
+}
+
+/* Interactive terminal bound to a Shell instance. */
+function InteractiveTerminal({ sh, preload, banner, title, onCommand, keys = true }) {
+  const body = h("div", { class: "term-body", role: "log", "aria-live": "polite" });
+  const prompt = h("span", { class: "pr" });
+  const input = h("input", {
+    class: "term-input", type: "text", dir: "ltr", autocomplete: "off", autocapitalize: "off",
+    autocorrect: "off", spellcheck: "false", enterkeyhint: "send", "aria-label": Content.t("type_here"),
+  });
+  const form = h("form", { class: "term-input-row" }, prompt, input);
+  const history = [];
+  let hIdx = 0;
+
+  function addLines(lines) {
+    lines.forEach((l) => {
+      if (l.t === "note" || l.t === "warn") {
+        body.insertBefore(h("div", { class: "term-note" + (l.t === "warn" ? " warn" : "") },
+          h("b", null, l.t === "warn" ? "هشدار" : "راهنما"), fmt(l.text)), form);
+      } else if (l.t === "cmd") {
+        body.insertBefore(h("div", { class: "term-line" }, h("span", { class: "pr" }, l.p), h("span", { class: "cm" }, l.c)), form);
+      } else {
+        body.insertBefore(h("div", { class: "term-line" + (l.t === "err" ? " err" : "") }, l.text), form);
+      }
+    });
+  }
+  function refreshPrompt() { prompt.textContent = Shell.prompt(sh); }
+  function clear() { Array.from(body.children).forEach((c) => { if (c !== form) c.remove(); }); }
+  function scroll() {
+    body.scrollTop = body.scrollHeight;
+    if (wrap.isConnected) {
+      const r = form.getBoundingClientRect();
+      if (r.bottom > window.innerHeight - 90 || r.top < 0) form.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = input.value;
+    input.value = "";
+    if (v.trim()) { history.push(v); hIdx = history.length; }
+    addLines([{ t: "cmd", p: Shell.prompt(sh), c: v }]);
+    const r = Shell.run(sh, v);
+    if (r.clear) clear(); else addLines(r.lines);
+    refreshPrompt();
+    scroll();
+    if (onCommand && r.rec) onCommand(r);
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") { e.preventDefault(); recall(-1); }
+    if (e.key === "ArrowDown") { e.preventDefault(); recall(1); }
+  });
+  function recall(d) {
+    if (!history.length) return;
+    hIdx = Math.max(0, Math.min(history.length, hIdx + d));
+    input.value = history[hIdx] || "";
+  }
+  function insert(txt) {
+    const s = input.selectionStart ?? input.value.length, e = input.selectionEnd ?? s;
+    input.value = input.value.slice(0, s) + txt + input.value.slice(e);
+    input.focus();
+    const p = s + txt.length;
+    try { input.setSelectionRange(p, p); } catch (err) {}
+  }
+  body.appendChild(form);
+  body.addEventListener("click", (e) => { if (!window.getSelection().toString()) input.focus(); });
+
+  const keyRow = keys ? h("div", { class: "keys" },
+    ["\\", ":", "..", "/", '"', "*", " "].map((k) => h("button", { type: "button", class: "key", onClick: () => insert(k) }, k === " " ? "␣" : k)),
+    h("button", { type: "button", class: "key", "aria-label": "history", onClick: () => { recall(-1); input.focus(); } }, "↑"),
+    h("button", { type: "button", class: "key run", onClick: () => form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true })) }, "اجرا ↵"),
+  ) : null;
+
+  const wrap = h("div", { class: "term", dir: "ltr" }, termBar(title || "Command Prompt"), body, keyRow);
+
+  function start() {
+    clear();
+    if (banner) addLines(Shell.banner());
+    if (preload) preload.forEach((ln) => addLines([ln.p != null ? { t: "cmd", p: ln.p, c: ln.c } : { t: "out", text: ln.o }]));
+    refreshPrompt();
+  }
+  start();
+
+  return {
+    el: wrap,
+    focus: () => input.focus({ preventScroll: true }),
+    reset(newSh) { sh = newSh; start(); },
+    note(text) { addLines([{ t: "note", text }]); scroll(); },
+  };
+}
+
+/* ============================================================
+   ui/views.js — screens. Each view returns a DOM node.
+   Future: each becomes a React component in src/screens/.
+   ============================================================ */
+const T = (k, v) => Content.t(k, v);
+const pad2 = (n) => String(n).padStart(2, "0");
+
+function backBtn(label, route) {
+  return h("button", { class: "back", onClick: () => App.go(route) }, icon("back"), label);
+}
+function pct(a, b) { return b ? Math.round((a / b) * 100) : 0; }
+
+/* ---------------- HOME ---------------- */
+function HomeView() {
+  const lv1 = Content.levelLessons(1);
+  const done1 = lv1.filter((l) => Store.lessonDone(l)).length;
+  const cur = Store.currentLesson();
+  const p = pct(done1, lv1.length);
+
+  const mini = StaticTerminal([
+    { o: "Microsoft Windows [Version 10.0.22631.4317]" },
+    { o: "" },
+    { p: "C:\\Users\\Student>", c: "" },
+  ], { cls: "mini-term" });
+  mini.addEventListener("click", () => App.go("sim"));
+  mini.setAttribute("role", "button");
+  mini.setAttribute("tabindex", "0");
+  mini.setAttribute("aria-label", T("tap_to_open"));
+  mini.addEventListener("keydown", (e) => { if (e.key === "Enter") App.go("sim"); });
+
+  const feature = (route, ic, title, desc) => h("button", { class: "card tap feature", onClick: () => App.go(route) },
+    h("div", { class: "ico" }, icon(ic)),
+    h("div", { class: "grow" }, h("div", { class: "t" }, title), h("div", { class: "muted small" }, desc)),
+    icon("chev", "chev"));
+
+  return h("div", { class: "stack view" },
+    h("div", { class: "stack-sm" },
+      h("div", { class: "brand-title" }, T("app_name")),
+      h("p", { class: "hero-line" }, T("tagline"))),
+    mini,
+    h("p", { class: "muted small", style: { marginTop: "-8px" } }, T("tap_to_open")),
+    h("div", { class: "card stack-sm" },
+      h("div", { class: "row between" },
+        h("div", { class: "eyebrow", style: { color: "var(--fg)" } }, "Level 1 — Beginner"),
+        h("div", { class: "pct" }, p + "%")),
+      h("div", { class: "row", style: { alignItems: "baseline" } },
+        h("span", { class: "big-num" }, `${done1} / ${lv1.length}`),
+        h("span", { class: "muted mono small", style: { direction: "ltr" } }, T("lessons"))),
+      h("div", { class: "bar" }, h("i", { style: { width: Math.max(p, 1) + "%" } })),
+      cur ? h("button", { class: "btn primary block", style: { marginTop: "8px" }, onClick: () => App.go("lesson" + cur.n) },
+        `${T("continue")}: درس ${fa(cur.n)} · ${cur.t}`) : null),
+    h("div", { class: "cards3" },
+      feature("learn", "learn", T("card_learn_title"), T("card_learn_desc")),
+      feature("practice", "practice", T("card_practice_title"), T("card_practice_desc")),
+      feature("sim", "sim", T("card_sim_title"), T("card_sim_desc"))),
+    h("div", { class: "pair" },
+      h("button", { class: "card tap row", onClick: () => App.go("quiz") },
+        h("span", { style: { color: "var(--blue)", display: "flex" } }, icon("quiz")),
+        h("div", { class: "grow" }, h("div", { class: "mono", style: { fontWeight: 600, direction: "ltr", textAlign: "right" } }, "Quiz"), h("div", { class: "muted small" }, T("card_quiz_desc")))),
+      h("button", { class: "card tap row", onClick: () => App.go("progress") },
+        h("span", { style: { color: "var(--blue)", display: "flex" } }, icon("progress")),
+        h("div", { class: "grow" }, h("div", { class: "mono", style: { fontWeight: 600, direction: "ltr", textAlign: "right" } }, "Progress"), h("div", { class: "muted small" }, T("card_progress_desc"))))),
+  );
+}
+
+/* ---------------- LEARN ---------------- */
+function LearnView() {
+  const lvId = App.state.learnLevel || 1;
+  const lv = Content.levels().find((x) => x.id === lvId);
+  const seg = h("div", { class: "seg", role: "group" },
+    Content.levels().map((x) => h("button", {
+      "aria-pressed": x.id === lvId ? "true" : "false",
+      onClick: () => { App.state.learnLevel = x.id; App.render(); },
+    }, "LEVEL " + x.id)));
+
+  const lessons = Content.levelLessons(lvId);
+  const done = lessons.filter((l) => Store.lessonDone(l)).length;
+
+  const chapters = lv.chapters.map((ch) => {
+    const ls = Content.chapterLessons(ch.id);
+    const d = ls.filter((l) => Store.lessonDone(l)).length;
+    return h("section", { class: "card chapter" },
+      h("div", { class: "chapter-head stack-sm" },
+        h("div", { class: "row between" },
+          h("div", { class: "eyebrow" }, "Chapter " + ch.id),
+          h("div", { class: "pct small muted" }, `${d}/${ls.length}`)),
+        h("h2", null, ch.title),
+        h("div", { class: "bar" }, h("i", { style: { width: pct(d, ls.length) + "%" } }))),
+      ls.map((l) => LessonRow(l)));
+  });
+
+  return h("div", { class: "stack view" },
+    seg,
+    h("div", { class: "level-head stack-sm" },
+      h("div", { class: "eyebrow" }, "LEVEL " + lv.id),
+      h("div", { class: "row between wrap" },
+        h("div", { class: "code" }, lv.code),
+        h("div", { class: "muted small" }, `${lv.title} · ${fa(done)} از ${fa(lessons.length)} درس`))),
+    chapters);
+}
+
+function LessonRow(l) {
+  const st = Store.lessonStatus(l);
+  const mark = st === "done" ? "✓" : "";
+  return h("button", { class: "lesson-row", disabled: st === "soon", onClick: () => App.go("lesson" + l.n) },
+    h("span", { class: "st " + st, "aria-label": st }, mark),
+    h("div", { class: "grow" },
+      h("div", { class: "ln" }, "Lesson " + l.n),
+      h("div", { class: "lt" }, fmt(l.t))),
+    l.c ? h("span", { class: "chip" + (l.danger ? " danger" : "") }, l.c) : null,
+    st === "soon" ? h("span", { class: "tag" }, T("coming_soon")) : null);
+}
+
+/* ---------------- LESSON ---------------- */
+function LessonView(n) {
+  const l = Content.lesson(n);
+  if (!l || !l.full) return NotFound();
+  Store.markSeen(n);
+  const f = l.full;
+  const parts = Store.lessonParts(l);
+  const next = Content.nextLesson(n);
+
+  const fact = (k, v) => v ? h("div", { class: "fact" }, h("div", { class: "k" }, k), h("div", { class: "v" }, v)) : null;
+  const analogy = (label, text) => text ? h("details", { class: "analogy" },
+    h("summary", null, h("span", null, label), icon("down")), h("div", null, fmt(text))) : null;
+
+  return h("article", { class: "stack view" },
+    backBtn(T("nav_learn"), "learn"),
+    h("div", { class: "stack-sm" },
+      h("div", { class: "eyebrow" }, `LESSON ${pad2(l.n)} · CHAPTER ${l.chapter}`),
+      h("h1", null, fmt(l.t))),
+    h("div", null,
+      h("div", { class: "term-hero" + (f.term.length > 14 ? " long" : "") }, f.term),
+      f.fullForm ? h("div", { class: "full-form" }, f.fullForm) : null),
+    h("p", { class: "lead" }, fmt(f.summary)),
+    StaticTerminal(f.terminal),
+    h("div", { class: "card facts" },
+      fact(T("s_meaning"), fmt(f.meaning)),
+      fact(T("s_usage"), fmt(f.usage)),
+      f.syntax ? fact(T("s_syntax"), h("div", { class: "syntax" }, f.syntax)) : null),
+    f.tip ? h("div", { class: "callout tip" }, icon("tip"), h("div", null, h("b", null, T("s_tip") + ": "), fmt(f.tip))) : null,
+    f.warning ? h("div", { class: "callout danger" }, icon("warn"), h("div", null, h("b", null, T("s_warning") + ": "), fmt(f.warning))) : null,
+    analogy(T("s_daily"), f.daily),
+    analogy(T("s_restaurant"), f.restaurant),
+    h("div", { class: "card stack-sm" },
+      h("div", { class: "req" + (parts.practiceDone === parts.practiceTotal ? " ok" : "") },
+        h("span", { class: "dot" }, parts.practiceDone === parts.practiceTotal ? "✓" : ""),
+        `${T("req_practice")} ${fa(parts.practiceDone)}/${fa(parts.practiceTotal)}`),
+      h("div", { class: "req" + (parts.quizOk ? " ok" : "") },
+        h("span", { class: "dot" }, parts.quizOk ? "✓" : ""),
+        T("req_quiz") + (parts.quiz ? ` · ${fa(parts.quiz.best)}/${fa(parts.quiz.total)}` : "")),
+      h("div", { class: "btn-row", style: { marginTop: "6px" } },
+        h("button", { class: "btn primary", onClick: () => {
+          const t = f.practice.find((p) => !Store.practiceDone(p.id)) || f.practice[0];
+          App.go("task-" + t.id);
+        } }, T("btn_practice")),
+        h("button", { class: "btn", onClick: () => App.go("quiz-L" + l.n) }, T("btn_quiz")))),
+    next ? h("button", { class: "btn ghost block", disabled: !next.full, onClick: () => App.go("lesson" + next.n) },
+      `${T("btn_next_lesson")}: ${next.t}` + (next.full ? "" : ` (${T("coming_soon")})`)) : null,
+  );
+}
+
+/* ---------------- PRACTICE LIST ---------------- */
+function PracticeView() {
+  const tasks = Content.tasks();
+  const next = tasks.find((t) => !Store.practiceDone(t.id));
+  const groups = Content.available().map((l) => {
+    const ts = tasks.filter((t) => t.lesson === l.n);
+    return h("section", { class: "card chapter" },
+      h("div", { class: "chapter-head row between" },
+        h("div", null, h("div", { class: "ln" }, "Lesson " + l.n), h("h3", null, fmt(l.t))),
+        h("div", { class: "pct small muted" }, `${ts.filter((t) => Store.practiceDone(t.id)).length}/${ts.length}`)),
+      ts.map((t) => h("button", { class: "task-row", onClick: () => App.go("task-" + t.id) },
+        h("span", { class: "st" + (Store.practiceDone(t.id) ? " done" : "") }, Store.practiceDone(t.id) ? "✓" : ""),
+        h("div", { class: "grow small" }, fmt(t.task)))));
+  });
+  return h("div", { class: "stack view" },
+    h("h1", null, T("practice_title")),
+    next ? h("div", { class: "card stack-sm" },
+      h("div", { class: "eyebrow" }, "NEXT · LESSON " + next.lesson),
+      h("p", { class: "task" }, fmt(next.task)),
+      h("button", { class: "btn primary block", onClick: () => App.go("task-" + next.id) }, T("practice_next")))
+      : h("div", { class: "card" }, T("practice_all_done")),
+    groups);
+}
+
+/* ---------------- PRACTICE TASK ---------------- */
+function TaskView(id) {
+  const task = Content.task(id);
+  if (!task) return NotFound();
+  const lessonTasks = Content.tasks().filter((t) => t.lesson === task.lesson);
+  const idx = lessonTasks.findIndex((t) => t.id === id);
+  const st = { sh: Shell.create({ start: task.start }), attempt: [], fails: 0, solved: false, revealed: false };
+
+  const fb = h("div", { "aria-live": "polite" });
+  const term = InteractiveTerminal({ sh: st.sh, preload: task.preload, onCommand: onCmd });
+  const answerLines = [].concat(task.answer);
+
+  function nextTarget() {
+    const after = Content.tasks().slice(Content.tasks().findIndex((t) => t.id === id) + 1).find((t) => !Store.practiceDone(t.id));
+    return after || null;
+  }
+  function onCmd(r) {
+    st.attempt.push(r.rec);
+    if (st.solved) return;
+    if (Checker.evaluate(task.checks, st.sh, st.attempt)) {
+      st.solved = true;
+      Store.markPractice(task.id);
+      const nt = nextTarget();
+      const sameLesson = nt && nt.lesson === task.lesson;
+      showFb("ok", h("div", { class: "stack-sm" },
+        h("div", { class: "fh" }, T("correct")),
+        h("div", { class: "btn-row" },
+          sameLesson ? h("button", { class: "btn primary", onClick: () => App.go("task-" + nt.id) }, T("next_task")) : null,
+          h("button", { class: sameLesson ? "btn" : "btn primary", onClick: () => App.go(sameLesson ? "lesson" + task.lesson : "quiz-L" + task.lesson) },
+            sameLesson ? T("back_to_lesson") : T("btn_quiz")),
+          !sameLesson ? h("button", { class: "btn", onClick: () => App.go("lesson" + task.lesson) }, T("back_to_lesson")) : null)));
+      return;
+    }
+    if (task.multi && r.rec.ok) { showFb("mid", h("div", { class: "fh" }, T("keep_going"))); return; }
+    st.fails++;
+    const hint = task.hints[Math.min(st.fails - 1, task.hints.length - 1)];
+    showFb("no", h("div", { class: "stack-sm" },
+      h("div", { class: "fh" }, T("not_yet")),
+      h("div", null, h("b", { class: "mono" }, "Hint: "), fmt(hint)),
+      st.fails >= 2 ? answerBox() : null));
+  }
+  function answerBox() {
+    if (st.revealed) return h("div", { class: "answer-code" }, answerLines.join("\n"));
+    const b = h("button", { class: "btn small", onClick: () => { st.revealed = true; b.replaceWith(h("div", { class: "answer-code" }, answerLines.join("\n"))); } }, T("show_answer"));
+    return b;
+  }
+  function showFb(kind, content) {
+    fb.innerHTML = "";
+    const box = h("div", { class: "feedback " + kind + (kind === "no" ? " shake" : " pop") }, content);
+    fb.appendChild(box);
+  }
+
+  const view = h("div", { class: "stack view" },
+    backBtn("درس " + fa(task.lesson), "lesson" + task.lesson),
+    h("div", { class: "row between" },
+      h("div", { class: "eyebrow" }, `PRACTICE · LESSON ${task.lesson} · ${idx + 1}/${lessonTasks.length}`),
+      h("button", { class: "btn small ghost", onClick: () => App.render() }, icon("reset"), T("restart"))),
+    h("div", { class: "card" }, h("p", { class: "task" }, fmt(task.task))),
+    term.el,
+    fb);
+  setTimeout(() => term.focus(), 60);
+  return view;
+}
+
+/* ---------------- SIMULATOR ---------------- */
+function SimView() {
+  if (!App.state.simSh) App.state.simSh = Shell.create();
+  const term = App.state.simTerm || InteractiveTerminal({ sh: App.state.simSh, banner: true, title: T("sim_title") });
+  App.state.simTerm = term;
+  const resetBtn = h("button", { class: "btn small ghost", onClick: () => {
+    App.state.simSh = Shell.create();
+    term.reset(App.state.simSh);
+    term.note(T("sim_reset_done"));
+    term.focus();
+  } }, icon("reset"), T("sim_reset"));
+  setTimeout(() => term.focus(), 60);
+  return h("div", { class: "sim-wrap view" },
+    h("div", { class: "row between wrap" },
+      h("div", { class: "stack-sm", style: { gap: "2px" } },
+        h("h1", { class: "mono", style: { fontSize: "18px", direction: "ltr", textAlign: "right" } }, "CMD Simulator"),
+        h("div", { class: "muted small" }, T("sim_badge"))),
+      resetBtn),
+    term.el,
+    h("div", { class: "muted small" }, fmt("امتحان کن: `dir` ، `cd Documents` ، `cd ..` ، `D:` ، `help`")));
+}
+
+/* ---------------- QUIZ ---------------- */
+function QuizHomeView() {
+  const row = (q, label) => {
+    const b = Store.quizBest(q.id);
+    return h("button", { class: "task-row", onClick: () => App.go("quiz-" + q.id) },
+      h("span", { class: "st" + (b && b.best / b.total >= 0.5 ? " done" : "") }, b && b.best / b.total >= 0.5 ? "✓" : ""),
+      h("div", { class: "grow" }, h("div", { class: "ln" }, label), h("div", { class: "small" }, fmt(q.title))),
+      b ? h("span", { class: "pct small muted" }, `${b.best}/${b.total}`) : null);
+  };
+  return h("div", { class: "stack view" },
+    h("h1", { class: "mono", style: { direction: "ltr", textAlign: "right" } }, "Quiz"),
+    h("section", { class: "card chapter" },
+      h("div", { class: "chapter-head" }, h("h3", null, T("quiz_chapters"))),
+      Content.chapterQuizzes().map((q) => row(q, "Chapter " + q.chapter))),
+    h("section", { class: "card chapter" },
+      h("div", { class: "chapter-head" }, h("h3", null, T("quiz_lessons"))),
+      Content.available().map((l) => row(Content.quiz("L" + l.n), "Lesson " + l.n))));
+}
+
+function QuizRunView(id) {
+  const quiz = Content.quiz(id);
+  if (!quiz) return NotFound();
+  let run = App.state.quizRun;
+  if (!run || run.id !== id) {
+    const qs = id[0] === "C" ? shuffle(quiz.questions).slice(0, 8) : quiz.questions.slice();
+    run = App.state.quizRun = {
+      id, i: 0, score: 0, answered: false,
+      qs: qs.map((q) => {
+        if (q.kind === "tf") return { ...q, opts: [{ txt: T("tf_true"), ok: q.answer === true }, { txt: T("tf_false"), ok: q.answer === false }] };
+        if (q.kind === "type") return { ...q };
+        return { ...q, opts: shuffle(q.options.map((txt, i) => ({ txt, ok: i === q.answer }))) };
+      }),
+    };
+  }
+  const backRoute = quiz.lesson ? "lesson" + quiz.lesson : "quiz";
+  const head = h("div", { class: "stack-sm" },
+    backBtn(quiz.lesson ? "درس " + fa(quiz.lesson) : "Quiz", backRoute),
+    h("div", { class: "eyebrow" }, (quiz.lesson ? "MINI QUIZ · LESSON " + quiz.lesson : "CHAPTER QUIZ · " + quiz.chapter)),
+    h("h1", null, fmt(quiz.title)));
+
+  if (run.i >= run.qs.length) {
+    const total = run.qs.length;
+    if (!run.saved) { Store.setQuiz(id, run.score, total); run.saved = true; }
+    const pass = run.score / total >= 0.5;
+    return h("div", { class: "stack view" }, head,
+      h("div", { class: "card stack-sm pop", style: { alignItems: "center", textAlign: "center", padding: "28px 16px" } },
+        h("div", { class: "eyebrow" }, T("quiz_result")),
+        h("div", { class: "score-big", style: { color: pass ? "var(--green)" : "var(--warn)" } }, `${run.score} / ${total}`),
+        h("p", { class: "muted" }, pass ? "عالی! این Quiz را با موفقیت گذراندی." : "کمتر از نصف درست بود. درس را یک بار دیگر مرور کن و دوباره امتحان کن.")),
+      h("div", { class: "btn-row" },
+        h("button", { class: "btn", onClick: () => { App.state.quizRun = null; App.render(); } }, T("quiz_retry")),
+        quiz.lesson ? h("button", { class: "btn primary", onClick: () => { App.state.quizRun = null; App.go(nextAfterQuiz(quiz.lesson)); } },
+          Content.nextLesson(quiz.lesson) && Content.nextLesson(quiz.lesson).full ? T("btn_next_lesson") : T("back_to_lesson"))
+          : h("button", { class: "btn primary", onClick: () => { App.state.quizRun = null; App.go("quiz"); } }, T("back"))));
+  }
+
+  const q = run.qs[run.i];
+  const fb = h("div", { "aria-live": "polite" });
+  const nextBtn = () => h("button", { class: "btn primary block", onClick: () => { run.i++; run.answered = false; App.render(); } },
+    run.i + 1 >= run.qs.length ? T("quiz_finish") : T("quiz_next"));
+  const verdict = (ok) => {
+    fb.innerHTML = "";
+    fb.appendChild(h("div", { class: "stack-sm" },
+      h("div", { class: "feedback " + (ok ? "ok pop" : "no shake") },
+        h("div", { class: "fh mono", style: { direction: "ltr", textAlign: "right" } }, ok ? T("quiz_correct") : T("quiz_wrong")),
+        q.explain ? h("div", null, fmt(q.explain)) : null),
+      nextBtn()));
+  };
+
+  let answerUI;
+  if (q.kind === "type") {
+    const inp = h("input", { class: "text-in", type: "text", dir: "ltr", autocomplete: "off", autocapitalize: "off", autocorrect: "off", spellcheck: "false", enterkeyhint: "done", placeholder: "C:\\> ..." });
+    const check = h("button", { class: "btn primary", type: "submit" }, T("quiz_check"));
+    answerUI = h("form", { class: "stack-sm", onSubmit: (e) => {
+      e.preventDefault();
+      if (run.answered || !inp.value.trim()) return;
+      run.answered = true;
+      const ok = Checker.sameCommand(inp.value, q.accept);
+      if (ok) run.score++;
+      inp.disabled = true; check.disabled = true;
+      inp.style.borderColor = ok ? "var(--green)" : "var(--danger)";
+      if (!ok) fb.before(h("div", { class: "answer-code" }, q.show || q.accept[0]));
+      verdict(ok);
+    } }, inp, check);
+    setTimeout(() => inp.focus({ preventScroll: true }), 60);
+  } else {
+    const buttons = q.opts.map((o) => {
+      const b = h("button", { class: "opt" + (q.code_options ? " code" : ""), onClick: () => {
+        if (run.answered) return;
+        run.answered = true;
+        if (o.ok) run.score++;
+        buttons.forEach((x, i) => {
+          x.disabled = true;
+          if (q.opts[i].ok) { x.classList.add("right"); x.querySelector(".mark").textContent = "✓"; }
+        });
+        if (!o.ok) { b.classList.add("wrong"); b.querySelector(".mark").textContent = "✕"; }
+        verdict(o.ok);
+      } }, h("span", { class: "mark" }), h("span", { class: "otxt grow" }, q.code_options ? o.txt : fmt(o.txt)));
+      return b;
+    });
+    answerUI = h("div", { class: "opts" }, buttons);
+  }
+
+  return h("div", { class: "stack view" }, head,
+    h("div", { class: "bar" }, h("i", { style: { width: pct(run.i, run.qs.length) + "%" } })),
+    h("div", { class: "card stack" },
+      h("div", { class: "row between" },
+        h("span", { class: "q-kind" }, T("kind_" + q.kind)),
+        h("span", { class: "muted small" }, T("quiz_q_of", { i: fa(run.i + 1), n: fa(run.qs.length) }))),
+      h("p", { class: "q-text" }, fmt(q.q)),
+      q.code ? h("div", { class: "q-code" }, q.code) : null,
+      answerUI),
+    fb);
+}
+function nextAfterQuiz(n) {
+  const nx = Content.nextLesson(n);
+  return nx && nx.full ? "lesson" + nx.n : "lesson" + n;
+}
+
+/* ---------------- PROGRESS ---------------- */
+function ProgressView() {
+  const all = Content.all();
+  const done = all.filter((l) => Store.lessonDone(l)).length;
+  const tasks = Content.tasks();
+  const pdone = tasks.filter((t) => Store.practiceDone(t.id)).length;
+  const quizzes = Content.available().map((l) => Store.quizBest("L" + l.n)).filter(Boolean);
+  const qScore = quizzes.length ? Math.round(quizzes.reduce((s, q) => s + q.best / q.total, 0) / quizzes.length * 100) : 0;
+
+  const levelLine = (lv) => {
+    const ls = Content.levelLessons(lv.id);
+    const d = ls.filter((l) => Store.lessonDone(l)).length;
+    const p = pct(d, ls.length);
+    const on = Math.round(p / 10);
+    return h("div", { class: "lvl-line" },
+      h("div", { class: "row between" },
+        h("span", { class: "mono", style: { direction: "ltr" } }, `Level ${lv.id}`),
+        h("span", { class: "muted small" }, `${lv.title} · ${fa(d)}/${fa(ls.length)}`),
+        h("span", { class: "pct" }, p + "%")),
+      h("div", { class: "blocks", "aria-hidden": "true" }, Array.from({ length: 10 }, (_, i) => h("i", { class: i < on ? "on" : "" }))));
+  };
+
+  const confirmBox = h("div");
+  const resetBtn = h("button", { class: "btn ghost small", onClick: () => {
+    confirmBox.innerHTML = "";
+    confirmBox.appendChild(h("div", { class: "callout warn" }, icon("warn"), h("div", { class: "stack-sm grow" },
+      h("div", null, T("reset_confirm")),
+      h("div", { class: "btn-row" },
+        h("button", { class: "btn small", style: { borderColor: "var(--danger)", color: "var(--danger)" }, onClick: () => { Store.reset(); App.render(); } }, T("yes_reset")),
+        h("button", { class: "btn small", onClick: () => { confirmBox.innerHTML = ""; } }, T("cancel"))))));
+  } }, T("reset_progress"));
+
+  return h("div", { class: "stack view" },
+    h("h1", null, T("progress_title")),
+    h("div", { class: "card stack" },
+      h("div", { class: "row between" },
+        h("div", { class: "eyebrow" }, T("overall")),
+        h("div", { class: "pct big-num", style: { fontSize: "22px" } }, pct(done, all.length) + "%")),
+      h("div", { class: "bar" }, h("i", { style: { width: pct(done, all.length) + "%" } })),
+      Content.levels().map(levelLine)),
+    h("div", { class: "stats" },
+      h("div", { class: "card stat" }, h("div", { class: "n" }, `${done}/${all.length}`), h("div", { class: "l" }, T("stat_lessons"))),
+      h("div", { class: "card stat" }, h("div", { class: "n" }, qScore + "%"), h("div", { class: "l" }, T("stat_quiz"))),
+      h("div", { class: "card stat" }, h("div", { class: "n" }, `${pdone}/${tasks.length}`), h("div", { class: "l" }, T("stat_practice")))),
+    h("p", { class: "muted small" }, Store.isPersistent() ? T("saved_local") : T("storage_off")),
+    h("div", null, resetBtn),
+    confirmBox);
+}
+
+function NotFound() {
+  return h("div", { class: "stack view" }, h("p", { class: "muted" }, "این صفحه پیدا نشد."), h("button", { class: "btn", onClick: () => App.go("") }, T("nav_home")));
+}
+
+/* ============================================================
+   app.js — boot, router and navigation shell.
+   Routes: "" | learn | lessonN | practice | task-ID | sim |
+           quiz | quiz-L3 | quiz-C1 | progress
+   ============================================================ */
+const App = (() => {
+  const state = { route: "", learnLevel: 1, simSh: null, simTerm: null, quizRun: null };
+  let main, navEls = [];
+
+  const NAV = [
+    { route: "", key: "nav_home", icon: "home", match: (r) => r === "" },
+    { route: "learn", key: "nav_learn", icon: "learn", match: (r) => r === "learn" || r.startsWith("lesson") },
+    { route: "practice", key: "nav_practice", icon: "practice", match: (r) => r === "practice" || r.startsWith("task-") },
+    { route: "sim", key: "nav_sim", icon: "sim", match: (r) => r === "sim" },
+    { route: "progress", key: "nav_progress", icon: "progress", match: (r) => r === "progress" },
+  ];
+
+  function view(r) {
+    if (r === "") return HomeView();
+    if (r === "learn") return LearnView();
+    if (/^lesson\d+$/.test(r)) return LessonView(+r.slice(6));
+    if (r === "practice") return PracticeView();
+    if (r.startsWith("task-")) return TaskView(r.slice(5));
+    if (r === "sim") return SimView();
+    if (r === "quiz") return QuizHomeView();
+    if (/^quiz-[LC]\d+$/.test(r)) return QuizRunView(r.slice(5));
+    if (r === "progress") return ProgressView();
+    return NotFound();
+  }
+
+  function render() {
+    main.innerHTML = "";
+    main.classList.toggle("wide", state.route === "sim");
+    main.appendChild(view(state.route));
+    navEls.forEach(({ el, item }) => {
+      if (item.match(state.route)) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
+    });
+  }
+
+  function go(route) {
+    if (route !== state.route && !route.startsWith("quiz-")) state.quizRun = null;
+    if (route.startsWith("quiz-") && state.quizRun && "quiz-" + state.quizRun.id !== route) state.quizRun = null;
+    state.route = route;
+    render();
+    window.scrollTo(0, 0);
+    try { if (location.hash.slice(1) !== route) location.hash = route; } catch (e) {}
+  }
+
+  function boot() {
+    document.documentElement.setAttribute("dir", "rtl");
+    document.documentElement.setAttribute("lang", "fa");
+    const data = JSON.parse(document.getElementById("cmd-content").textContent);
+    Content.init(data);
+    Shell.setMessages(Content.shellMessages());
+    Shell.setLessonIndex(Content.shellIndex());
+    Store.load();
+
+    const sidebar = h("nav", { class: "sidebar", "aria-label": "main" },
+      h("div", { class: "brand" }, Content.t("app_name")));
+    const bottom = h("nav", { class: "bottom-nav", "aria-label": "main" });
+    NAV.forEach((item) => {
+      const s = h("button", { class: "side-btn", onClick: () => go(item.route) }, icon(item.icon), Content.t(item.key));
+      const b = h("button", { class: "nav-btn", onClick: () => go(item.route) }, icon(item.icon), Content.t(item.key));
+      sidebar.appendChild(s); bottom.appendChild(b);
+      navEls.push({ el: s, item }, { el: b, item });
+    });
+    sidebar.appendChild(h("div", { class: "side-sep" }));
+    const quizItem = { match: (r) => r.startsWith("quiz") };
+    const qb = h("button", { class: "side-btn", onClick: () => go("quiz") }, icon("quiz"), "Quiz");
+    sidebar.appendChild(qb); navEls.push({ el: qb, item: quizItem });
+
+    main = h("main", { class: "main" });
+    document.getElementById("app").append(sidebar, main, bottom);
+
+    try { state.route = decodeURIComponent(location.hash.slice(1)); } catch (e) { state.route = ""; }
+    window.addEventListener("hashchange", () => {
+      const r = location.hash.slice(1);
+      if (r !== state.route) { state.route = r; state.quizRun = null; render(); }
+    });
+    render();
+  }
+
+  return { boot, go, render, state };
+})();
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", App.boot);
+else App.boot();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>

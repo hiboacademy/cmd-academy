@@ -1,0 +1,460 @@
+# Lessons 1–10 (Batch 1)
+# Fields: n, term, fullForm, summary, meaning, usage, syntax, terminal,
+#         tip, daily, restaurant, warning, practice[], quiz[]
+# Inline `code` is shown LTR in monospace.
+# Practice checks run against the sandbox (see engine/checker.js).
+
+- n: 1
+  term: CMD
+  fullForm: 'Command Prompt (cmd.exe)'
+  summary: 'CMD برنامه‌ای در Windows است که به‌جای کلیک کردن، با نوشتن دستور با کامپیوتر کار می‌کنی.'
+  meaning: 'خط فرمان ویندوز؛ پنجره‌ای که دستور (Command) را می‌گیرد، اجرا می‌کند و نتیجه را نشان می‌دهد.'
+  usage: 'کار سریع با فایل‌ها، دیدن اطلاعات سیستم و شبکه، عیب‌یابی و خودکار کردن کارهای تکراری.'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'ver'}
+    - {o: ''}
+    - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
+  tip: 'CMD به بزرگی و کوچکی حروف حساس نیست؛ `DIR` و `dir` یکی‌اند.'
+  daily: 'کلیک کردن مثل انتخاب غذا از روی عکس منو است. CMD مثل این است که دقیق بگویی چه می‌خواهی؛ سریع‌تر و دقیق‌تر، اگر زبانش را بلد باشی.'
+  restaurant: 'CMD مثل گارسون است: تو سفارش (Command) را می‌گویی، او آن را به آشپزخانه (Windows) می‌برد و نتیجه را برایت می‌آورد.'
+  practice:
+    - id: P1a
+      start: 'C:\Users\Student'
+      task: 'اولین Command زندگی‌ات را بنویس: نسخه Windows را نمایش بده.'
+      checks: [{type: cmd, value: ver}, {type: ok}]
+      hints:
+        - 'Command موردنظر کوتاه‌شده کلمه Version است.'
+        - 'سه حرف اول Version را بنویس و Enter بزن.'
+      answer: 'ver'
+  quiz:
+    - kind: mcq
+      q: 'CMD در Windows برای چیست؟'
+      options: ['کار با کامپیوتر از طریق نوشتن دستور', 'ویرایش عکس', 'مرور اینترنت', 'پخش موسیقی']
+      answer: 0
+      explain: 'در CMD به‌جای کلیک، دستور می‌نویسی.'
+    - kind: tf
+      q: 'در CMD، دستور `DIR` با `dir` فرق دارد.'
+      answer: false
+      explain: 'CMD به بزرگی و کوچکی حروف حساس نیست.'
+    - kind: type
+      q: 'دستوری بنویس که نسخه Windows را نشان دهد.'
+      accept: ['ver']
+      explain: '`ver` کوتاه‌شده Version است.'
+
+- n: 2
+  term: 'Terminal · Shell'
+  fullForm: 'Command Line Interface (CLI)'
+  summary: 'Command Line یعنی کار با نوشتن دستور. Terminal پنجره‌ای است که در آن تایپ می‌کنی. Shell برنامه‌ای است که دستور را می‌فهمد و اجرا می‌کند.'
+  meaning: 'Terminal = پنجره. Shell = مغزی که دستور را اجرا می‌کند. در Windows، `CMD` و `PowerShell` دو Shell هستند و Windows Terminal پنجره‌ای است که هر دو را نشان می‌دهد.'
+  usage: 'وقتی بدانی کدام بخش چه کاری می‌کند، راحت‌تر می‌فهمی چرا یک دستور در CMD کار می‌کند ولی در PowerShell یا Linux نه.'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'echo Hello'}
+    - {o: 'Hello'}
+  tip: 'در Windows 11 معمولاً CMD داخل Windows Terminal باز می‌شود. ظاهر فرق دارد ولی دستورها همان‌اند.'
+  restaurant: 'Terminal میز و منوی رستوران است؛ جایی که سفارش می‌دهی. Shell گارسونی است که سفارش را می‌فهمد. Windows آشپزخانه‌ای است که کار اصلی را انجام می‌دهد.'
+  practice:
+    - id: P2a
+      start: 'C:\Users\Student'
+      task: 'به Shell بگو کلمه Hello را چاپ کند. برای چاپ متن از دستور `echo` استفاده کن.'
+      checks: [{type: cmd, value: echo}, {type: argIncludes, value: hello}]
+      hints:
+        - 'اول نام دستور، بعد یک Space، بعد متنی که می‌خواهی نمایش داده شود.'
+        - 'شکل کلی: `echo` و بعد متن.'
+      answer: 'echo Hello'
+  quiz:
+    - kind: mcq
+      q: 'کدام گزینه یک Shell است؟'
+      options: ['CMD', 'Monitor', 'Keyboard', 'File Explorer']
+      answer: 0
+      explain: 'CMD دستور را می‌فهمد و اجرا می‌کند، پس Shell است.'
+    - kind: mcq
+      q: 'Terminal چیست؟'
+      options: ['پنجره‌ای که در آن دستور تایپ می‌کنی', 'یک نوع فایل', 'یک Drive', 'یک ویروس']
+      answer: 0
+      explain: 'Terminal رابط نمایشی است؛ Shell داخل آن کار می‌کند.'
+    - kind: tf
+      q: 'PowerShell هم یک Shell است.'
+      answer: true
+      explain: 'PowerShell یک Shell دیگر در Windows است که بعداً در CMD Academy به آن می‌رسیم.'
+
+- n: 3
+  term: 'Win + R → cmd'
+  fullForm: 'Run dialog'
+  summary: 'سه راه ساده برای باز کردن CMD وجود دارد. وقتی باز شد، خطی مثل `C:\Users\Student>` می‌بینی که یعنی CMD آماده دستور است.'
+  meaning: 'روش ۱: منوی Start ← تایپ `cmd` ← Enter. روش ۲: کلید Win + R ← تایپ `cmd` ← Enter. روش ۳: در نوار آدرس File Explorer بنویس `cmd` تا CMD در همان پوشه باز شود.'
+  usage: 'خط `C:\Users\Student>` را Prompt می‌گویند. Prompt نشان می‌دهد الان کجا هستی و CMD منتظر دستور توست.'
+  terminal:
+    - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
+    - {o: '(c) Microsoft Corporation. All rights reserved.'}
+    - {o: ''}
+    - {p: 'C:\Users\Student>', c: ''}
+  tip: 'Prompt جزو دستور نیست. فقط بعد از علامت `>` تایپ کن.'
+  daily: 'Prompt مثل چراغ «آماده» روی دستگاه کارت‌خوان است: تا روشن نباشد، کارت نکش.'
+  practice:
+    - id: P3a
+      start: 'C:\Users\Student'
+      preload:
+        - {p: 'C:\Users\Student>', c: 'ver'}
+        - {o: ''}
+        - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
+        - {p: 'C:\Users\Student>', c: 'echo Hello'}
+        - {o: 'Hello'}
+        - {p: 'C:\Users\Student>', c: 'echo test test test'}
+        - {o: 'test test test'}
+      task: 'صفحه CMD شلوغ شده. آن را پاک کن.'
+      checks: [{type: cmd, value: cls}]
+      hints:
+        - 'دستورش کوتاه‌شده Clear Screen است.'
+        - 'حرف اول Clear و حرف اول و آخر Screen: سه حرف.'
+      answer: 'cls'
+  quiz:
+    - kind: mcq
+      q: 'کدام کلید میانبر پنجره Run را باز می‌کند؟'
+      options: ['Win + R', 'Ctrl + C', 'Alt + F4', 'Win + D']
+      answer: 0
+      explain: 'Win + R پنجره Run را باز می‌کند؛ بعد `cmd` بنویس.'
+    - kind: tf
+      q: 'باید عبارت `C:\Users\Student>` را هم خودت تایپ کنی.'
+      answer: false
+      explain: 'این Prompt است و CMD خودش آن را نمایش می‌دهد.'
+    - kind: mcq
+      q: 'در پنجره Run چه بنویسیم تا CMD باز شود؟'
+      options: ['cmd', 'run', 'open', 'start']
+      answer: 0
+      code_options: true
+      explain: 'نام برنامه `cmd` است.'
+
+- n: 4
+  term: 'command  argument  /switch'
+  fullForm: 'Command · Argument · Switch'
+  summary: 'هر Command سه بخش دارد: نام دستور، Argument (روی چه چیزی) و Switch (چطور). بین بخش‌ها Space می‌گذاریم.'
+  meaning: 'Command: کاری که می‌خواهی انجام شود. Argument: روی چه فایل یا پوشه‌ای. Switch: تنظیم نحوه انجام کار؛ در CMD با `/` شروع می‌شود.'
+  usage: 'وقتی ساختار را بشناسی، هر دستور جدید را راحت می‌خوانی و راهنمای Windows را می‌فهمی.'
+  syntax: 'command [argument] [/switch]'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'dir Documents /w'}
+  tip: 'بین بخش‌ها Space لازم است. `dirDocuments` یک کلمه ناشناخته است. با `/?` بعد از هر دستور، راهنمای آن را می‌بینی.'
+  restaurant: '«قهوه بیار، بدون شکر». «بیار» Command است، «قهوه» Argument (چه چیزی) و «بدون شکر» Switch (چطور).'
+  practice:
+    - id: P4a
+      start: 'C:\Users\Student'
+      task: 'محتوای پوشه Documents را به شکل فشرده ببین. Command: `dir`، Argument: `Documents`، Switch: `/w`'
+      checks: [{type: cmd, value: dir}, {type: argIncludes, value: documents}, {type: switch, value: '/w'}, {type: ok}]
+      hints:
+        - 'سه بخش را به ترتیب بنویس و بینشان Space بگذار.'
+        - 'اول `dir`، بعد نام پوشه، بعد Switch.'
+      answer: 'dir Documents /w'
+    - id: P4b
+      start: 'C:\Users\Student'
+      task: 'راهنمای دستور `cd` را ببین. (Switch راهنما `/?` است.)'
+      checks: [{type: cmd, value: cd}, {type: switch, value: '/?'}]
+      hints:
+        - 'نام دستور، یک Space، بعد Switch راهنما.'
+        - 'Switch راهنما از `/` و علامت سؤال درست شده است.'
+      answer: 'cd /?'
+  quiz:
+    - kind: predict
+      q: 'در این دستور کدام بخش Switch است؟'
+      code: 'dir Pictures /w'
+      options: ['/w', 'dir', 'Pictures', 'هیچ‌کدام']
+      answer: 0
+      code_options: true
+      explain: 'Switch با `/` شروع می‌شود.'
+    - kind: fix
+      q: 'این دستور چه مشکلی دارد؟'
+      code: 'dirPictures'
+      options: ['بین Command و Argument فاصله نیست', 'Pictures باید بزرگ نوشته شود', 'Switch ندارد', 'مشکلی ندارد']
+      answer: 0
+      explain: 'CMD کل `dirPictures` را یک نام دستور ناشناخته می‌بیند.'
+    - kind: tf
+      q: 'در CMD، Switchها معمولاً با `/` شروع می‌شوند.'
+      answer: true
+      explain: 'مثل `/w` یا `/?`'
+
+- n: 5
+  term: 'File · Folder'
+  fullForm: 'File · Folder (Directory)'
+  summary: 'File یک سند، عکس یا برنامه است. Folder جعبه‌ای است که File و Folderهای دیگر را نگه می‌دارد.'
+  meaning: 'نام File معمولاً دو بخش دارد: نام و Extension، مثل `report.txt`. در خروجی `dir`، پوشه‌ها با `<DIR>` مشخص می‌شوند.'
+  usage: 'تقریباً همه کارهای CMD با File و Folder است: دیدن، ساختن، کپی، جابه‌جا کردن و حذف.'
+  terminal:
+    - {p: 'C:\Users\Student\Documents>', c: 'dir'}
+    - {o: '09/28/2026  10:15 AM    <DIR>          Work'}
+    - {o: '10/01/2026  06:40 PM                80 menu.txt'}
+    - {o: '10/01/2026  06:40 PM                55 todo.txt'}
+  tip: 'Extension نوع File را نشان می‌دهد: `.txt` متن، `.jpg` عکس، `.mp3` صدا، `.exe` برنامه.'
+  daily: 'کمد لباس: هر کشو یک Folder است و هر لباس یک File. کشو می‌تواند کشوی کوچک‌تری هم داخلش داشته باشد.'
+  restaurant: 'در آشپزخانه، قفسه‌ها Folder هستند و ظرف‌های مواد File. برچسب روی ظرف (شکر، نمک) مثل Extension است: می‌گوید داخلش چه نوع چیزی است.'
+  practice:
+    - id: P5a
+      start: 'C:\Users\Student\Documents'
+      task: 'داخل Documents هستی. ببین چه File و Folderهایی اینجاست.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: cwd, value: 'C:\Users\Student\Documents'}]
+      hints:
+        - 'دستوری که در درس‌های قبل برای دیدن محتوا دیدی.'
+        - 'سه حرف: Directory'
+      answer: 'dir'
+    - id: P5b
+      start: 'C:\Users\Student\Documents'
+      task: 'محتوای فایل `todo.txt` را نمایش بده. (دستور `type` محتوای فایل متنی را نشان می‌دهد.)'
+      checks: [{type: cmd, value: type}, {type: argIncludes, value: todo.txt}, {type: ok}]
+      hints:
+        - 'نام دستور، Space، بعد نام کامل فایل همراه Extension.'
+        - 'شکل کلی: `type` و بعد نام فایل.'
+      answer: 'type todo.txt'
+  quiz:
+    - kind: mcq
+      q: 'در خروجی `dir`، عبارت `<DIR>` یعنی چه؟'
+      options: ['این مورد یک Folder است', 'فایل خراب است', 'فایل مخفی است', 'این یک Drive است']
+      answer: 0
+      explain: '`<DIR>` یعنی Directory، همان Folder.'
+    - kind: mcq
+      q: 'Extension فایل `song.mp3` کدام است؟'
+      options: ['.mp3', 'song', 'song.mp3', 'mp']
+      answer: 0
+      code_options: true
+      explain: 'بخش بعد از آخرین نقطه، Extension است.'
+    - kind: predict
+      q: 'در این خروجی چند Folder هست؟'
+      code: "<DIR>          Work\n<DIR>          Photos\n          80 menu.txt"
+      options: ['2', '1', '3', '0']
+      answer: 0
+      explain: 'دو خط `<DIR>` دارند: Work و Photos.'
+
+- n: 6
+  term: 'C:  D:  E:'
+  fullForm: 'Drive letter'
+  summary: 'Drive محل ذخیره‌سازی است، مثل هارد یا USB. هر Drive یک حرف دارد و برای رفتن به آن، حرف و دو نقطه را می‌نویسی.'
+  meaning: '`C:` معمولاً Driveی است که Windows روی آن نصب است. `D:` می‌تواند هارد یا پارتیشن دوم باشد و `E:` اغلب USB.'
+  usage: 'برای کار با فایل‌های USB یا هارد دیگر، اول باید به آن Drive بروی.'
+  syntax: 'D:'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'D:'}
+    - {p: 'D:\>', c: ''}
+  tip: 'دو نقطه لازم است. اگر فقط `D` بنویسی، CMD آن را یک دستور ناشناخته می‌بیند.'
+  restaurant: 'یک رستوران زنجیره‌ای چند شعبه دارد. هر Drive یک شعبه است با حرف مخصوص خودش. با نوشتن `D:` به شعبه D می‌روی.'
+  practice:
+    - id: P6a
+      start: 'C:\Users\Student'
+      task: 'به Drive D برو.'
+      checks: [{type: drive, value: D}]
+      hints:
+        - 'حرف Drive و بعد یک علامت دیگر.'
+        - 'حرف D و دو نقطه.'
+      answer: 'D:'
+    - id: P6b
+      start: 'C:\Users\Student'
+      task: 'USB مجازی روی Drive E است. به آن برو و محتوایش را ببین.'
+      checks: [{type: drive, value: E}, {type: cmd, value: dir}, {type: ok}]
+      hints:
+        - 'دو دستور لازم است: اول رفتن به Drive، بعد دیدن محتوا.'
+        - 'اول `E:` و Enter، بعد `dir` و Enter.'
+      multi: true
+      answer: ['E:', 'dir']
+  quiz:
+    - kind: mcq
+      q: 'Windows معمولاً روی کدام Drive نصب است؟'
+      options: ['C:', 'A:', 'E:', 'Z:']
+      answer: 0
+      code_options: true
+      explain: 'به‌طور معمول Windows روی `C:` است.'
+    - kind: type
+      q: 'دستوری بنویس که به Drive D برود.'
+      accept: ['d:']
+      show: 'D:'
+      explain: 'حرف Drive و دو نقطه: `D:`'
+    - kind: fix
+      q: 'چرا این دستور کار نمی‌کند؟'
+      code: 'D'
+      options: ['دو نقطه بعد از حرف Drive جا افتاده', 'باید کوچک نوشته شود', 'Drive D وجود ندارد', 'باید اول cd بنویسیم']
+      answer: 0
+      explain: 'برای تغییر Drive باید `D:` بنویسی.'
+
+- n: 7
+  term: 'Current Directory'
+  fullForm: 'Directory = Folder'
+  summary: 'Directory همان Folder است. Current Directory پوشه‌ای است که الان در آن هستی و در Prompt نوشته شده.'
+  meaning: 'در `C:\Users\Student\Music>` پوشه فعلی `Music` است. دستورها به‌طور پیش‌فرض روی همین پوشه کار می‌کنند.'
+  usage: 'دستور `cd` بدون هیچ Argument، Current Directory را چاپ می‌کند.'
+  syntax: 'cd'
+  terminal:
+    - {p: 'C:\Users\Student\Music>', c: 'cd'}
+    - {o: 'C:\Users\Student\Music'}
+  tip: 'هر Drive، Current Directory مخصوص خودش را به خاطر می‌سپارد. اگر به D بروی و برگردی، روی C همان‌جای قبلی هستی.'
+  daily: 'اگر در آشپزخانه باشی و کسی بگوید «چراغ را روشن کن»، چراغ همان اتاقی را روشن می‌کنی که در آن هستی.'
+  restaurant: 'گارسون فقط از میزی سفارش می‌گیرد که کنارش ایستاده. Current Directory همان میزی است که الان کنارش هستی.'
+  practice:
+    - id: P7a
+      start: 'C:\Users\Student\Music'
+      task: 'بدون جابه‌جا شدن، Current Directory را چاپ کن.'
+      checks: [{type: cmd, value: cd}, {type: noArgs}, {type: cwd, value: 'C:\Users\Student\Music'}]
+      hints:
+        - 'یک دستور دوحرفی که برای تغییر پوشه هم استفاده می‌شود.'
+        - 'آن را بدون هیچ Argument بنویس.'
+      answer: 'cd'
+  quiz:
+    - kind: mcq
+      q: 'در Prompt زیر، Current Directory کدام است؟'
+      code: 'C:\Users\Student\Music>'
+      options: ['C:\Users\Student\Music', 'C:\', 'C:\Users', 'Student']
+      answer: 0
+      code_options: true
+      explain: 'هرچه قبل از `>` آمده، Current Directory است.'
+    - kind: tf
+      q: 'Directory و Folder یک معنی دارند.'
+      answer: true
+      explain: 'Directory نام فنی‌تر Folder است.'
+    - kind: type
+      q: 'دستوری بنویس که Current Directory را نمایش دهد.'
+      accept: ['cd', 'chdir']
+      explain: '`cd` بدون Argument.'
+
+- n: 8
+  term: 'Path'
+  fullForm: 'C:\Users\Student\Documents\todo.txt'
+  summary: 'Path آدرس یک فایل یا پوشه است. نام پوشه‌ها با `\` (Backslash) از هم جدا می‌شوند.'
+  meaning: 'Path را از چپ به راست بخوان: Drive `C:` ← پوشه `Users` ← `Student` ← `Documents` ← فایل `todo.txt`.'
+  usage: 'هر بار به CMD می‌گویی با چه فایل یا پوشه‌ای کار کند، در واقع یک Path می‌دهی.'
+  syntax: 'Drive:\Folder\Folder\File'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'cd Documents\Work'}
+    - {p: 'C:\Users\Student\Documents\Work>', c: ''}
+  tip: 'Windows برای Path از `\` استفاده می‌کند. علامت `/` در CMD برای Switch است.'
+  daily: 'Path مثل آدرس پستی است: شهر، خیابان، کوچه، پلاک. هر بخش تو را یک قدم نزدیک‌تر می‌کند.'
+  practice:
+    - id: P8a
+      start: 'C:\Users\Student'
+      task: 'وارد پوشه Documents شو.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents'}]
+      hints:
+        - 'برای رفتن به یک پوشه از `cd` استفاده می‌کنیم.'
+        - '`cd`، Space، نام پوشه.'
+      answer: 'cd Documents'
+    - id: P8b
+      start: 'C:\Users\Student'
+      task: 'با یک دستور مستقیم وارد پوشه Work شو که داخل Documents است.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents\Work'}, {type: cmd, value: cd}]
+      hints:
+        - 'دو نام پوشه را با `\` به هم وصل کن.'
+        - 'Path موردنظر: `Documents\Work`'
+      answer: 'cd Documents\Work'
+  quiz:
+    - kind: mcq
+      q: 'جداکننده پوشه‌ها در Path ویندوز کدام است؟'
+      options: ['\', '/', '-', '|']
+      answer: 0
+      code_options: true
+      explain: 'Windows از Backslash استفاده می‌کند.'
+    - kind: predict
+      q: 'در این Path، نام فایل کدام است؟'
+      code: 'C:\Users\Student\Pictures\cat.jpg'
+      options: ['cat.jpg', 'Pictures', 'Student', 'C:']
+      answer: 0
+      code_options: true
+      explain: 'آخرین بخش Path، خود فایل است.'
+    - kind: mcq
+      q: 'فایل `cat.jpg` در Path بالا داخل کدام پوشه است؟'
+      options: ['Pictures', 'Users', 'Student', 'C:']
+      answer: 0
+      code_options: true
+      explain: 'بخش درست قبل از نام فایل، پوشه آن است.'
+
+- n: 9
+  term: 'Absolute Path'
+  fullForm: 'C:\Users\Student\Pictures'
+  summary: 'Absolute Path آدرس کامل است که از Drive یا ریشه `\` شروع می‌شود. مهم نیست الان کجا هستی؛ همیشه به همان مقصد می‌رسد.'
+  meaning: 'اگر Path با حرف Drive (مثل `C:\`) یا با `\` شروع شود، Absolute است.'
+  usage: 'وقتی نمی‌دانی الان کجا هستی یا مقصد دور است، Absolute Path مطمئن‌ترین راه است.'
+  syntax: 'cd C:\Folder\Folder'
+  terminal:
+    - {p: 'C:\Windows\System32>', c: 'cd C:\Users\Student\Pictures'}
+    - {p: 'C:\Users\Student\Pictures>', c: ''}
+  tip: '`cd` به‌تنهایی Drive را عوض نمی‌کند. اگر مقصد روی Drive دیگری است از `cd /d` استفاده کن (درس ۱۴).'
+  daily: 'آدرس کامل پستی را به هر پیک بدهی، از هر جای شهر به همان خانه می‌رسد.'
+  restaurant: '«شعبه C، طبقه Users، سالن Student، میز Pictures». هر گارسونی از هر جای رستوران این آدرس را بشنود، به همان میز می‌رسد.'
+  practice:
+    - id: P9a
+      start: 'C:\Windows\System32'
+      task: 'الان در `C:\Windows\System32` هستی. با Absolute Path به `C:\Users\Student\Pictures` برو.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures'}, {type: usedCd, value: absolute}]
+      hints:
+        - 'Path کامل را از `C:\` شروع کن.'
+        - '`cd`، Space، بعد کل Path از `C:\` تا `Pictures`.'
+      answer: 'cd C:\Users\Student\Pictures'
+    - id: P9b
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'به ریشه Drive C برو؛ یعنی `C:\`'
+      checks: [{type: cwd, value: 'C:\'}, {type: usedCd, value: absolute}]
+      hints:
+        - 'ریشه Drive با یک Backslash نشان داده می‌شود.'
+        - '`cd \` یا `cd C:\`'
+      answer: 'cd \'
+  quiz:
+    - kind: mcq
+      q: 'کدام گزینه Absolute Path است؟'
+      options: ['C:\Users\Student\Music', 'Music', '..\Music', 'Student\Music']
+      answer: 0
+      code_options: true
+      explain: 'Absolute Path با Drive یا `\` شروع می‌شود.'
+    - kind: tf
+      q: 'Absolute Path از هر Current Directory، نتیجه یکسانی دارد.'
+      answer: true
+      explain: 'چون آدرس کامل است و به جای فعلی تو وابسته نیست.'
+    - kind: type
+      q: 'با Absolute Path به پوشه `C:\Windows` برو.'
+      show: 'cd C:\Windows'
+      accept: ['cd c:\windows', 'cd \windows', 'chdir c:\windows', 'cd /d c:\windows']
+      explain: '`cd C:\Windows`'
+
+- n: 10
+  term: 'Relative Path'
+  fullForm: 'Documents\Work · ..'
+  summary: 'Relative Path نسبت به Current Directory حساب می‌شود. با Drive یا `\` شروع نمی‌شود و نتیجه‌اش به جای فعلی تو بستگی دارد.'
+  meaning: 'اگر در `C:\Users\Student` باشی، `cd Documents` یعنی `C:\Users\Student\Documents`. دو نقطه `..` یعنی پوشه بالاتر (Parent).'
+  usage: 'برای جابه‌جایی کوتاه بین پوشه‌های نزدیک، سریع‌ترین روش است.'
+  syntax: 'cd Folder\Folder'
+  terminal:
+    - {p: 'C:\Users\Student\Documents>', c: 'cd Work'}
+    - {p: 'C:\Users\Student\Documents\Work>', c: 'cd ..'}
+    - {p: 'C:\Users\Student\Documents>', c: ''}
+  tip: 'اگر خطای `The system cannot find the path specified.` دیدی، اول با `cd` ببین کجا هستی.'
+  daily: '«دو در بعد از همین اتاق». این آدرس فقط وقتی معنی دارد که بدانی الان کدام اتاق هستی.'
+  restaurant: '«میز کناری را تمیز کن». کدام میز؟ بستگی دارد گارسون الان کنار کدام میز ایستاده.'
+  practice:
+    - id: P10a
+      start: 'C:\Users\Student\Documents'
+      task: 'داخل Documents هستی. با Relative Path وارد پوشه Work شو.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents\Work'}, {type: usedCd, value: relative}]
+      hints:
+        - 'Work همین‌جاست؛ لازم نیست آدرس کامل بدهی.'
+        - '`cd`، Space، نام پوشه.'
+      answer: 'cd Work'
+    - id: P10b
+      start: 'C:\Users\Student\Documents'
+      task: 'از Documents با Relative Path به پوشه Pictures برو و محتوایش را ببین. (Pictures کنار Documents است، نه داخل آن.)'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures'}, {type: usedCd, value: relative}, {type: cmd, value: dir}, {type: ok}]
+      hints:
+        - 'اول باید یک پوشه بالاتر بروی. `..` یعنی پوشه بالاتر.'
+        - 'Path نسبی: `..\Pictures` و بعد `dir`'
+      multi: true
+      answer: ['cd ..\Pictures', 'dir']
+  quiz:
+    - kind: mcq
+      q: 'کدام گزینه Relative Path است؟'
+      options: ['Documents\Work', 'C:\Users', '\Windows', 'D:\Backup']
+      answer: 0
+      code_options: true
+      explain: 'با Drive یا `\` شروع نمی‌شود.'
+    - kind: predict
+      q: 'Current Directory: `C:\Users\Student` — این دستور تو را به کجا می‌برد؟'
+      code: 'cd Music'
+      options: ['C:\Users\Student\Music', 'C:\Music', 'D:\Music', 'خطا می‌دهد']
+      answer: 0
+      code_options: true
+      explain: 'Relative Path به Current Directory اضافه می‌شود.'
+    - kind: predict
+      q: 'Current Directory: `C:\Users` — نتیجه این دستور چیست؟'
+      code: 'cd Music'
+      options: ['خطا: پوشه پیدا نمی‌شود', 'C:\Users\Music', 'C:\Users\Student\Music', 'C:\Music']
+      answer: 0
+      explain: 'داخل `C:\Users` پوشه‌ای به نام Music نیست، پس CMD پیغام `The system cannot find the path specified.` می‌دهد.'

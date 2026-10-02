@@ -1,0 +1,87 @@
+# UI strings (Persian). Add en.yaml / de.yaml with the same keys later.
+app_name: CMD ACADEMY
+tagline: 'Windows Command Line را قدم‌به‌قدم یاد بگیر'
+nav_home: خانه
+nav_learn: درس‌ها
+nav_practice: تمرین
+nav_sim: Simulator
+nav_progress: پیشرفت
+nav_quiz: Quiz
+continue: ادامه
+lesson: Lesson
+lessons: Lessons
+chapter: Chapter
+level: Level
+coming_soon: به‌زودی
+back: بازگشت
+card_learn_title: Learn
+card_learn_desc: '۱۰۰ درس کوتاه، از صفر تا Batch'
+card_practice_title: Practice
+card_practice_desc: 'دستور را خودت بنویس و بررسی شود'
+card_sim_title: CMD Simulator
+card_sim_desc: 'یک CMD امن برای آزمایش'
+card_quiz_desc: 'Mini Quiz و Quiz فصل'
+card_progress_desc: 'درصد پیشرفت و امتیازها'
+tap_to_open: 'برای باز کردن Simulator لمس کن'
+s_meaning: معنی
+s_usage: کاربرد
+s_syntax: Syntax
+s_example: مثال
+s_tip: نکته
+s_warning: هشدار
+s_daily: مثال روزمره
+s_restaurant: مثال رستوران
+btn_practice: تمرین کن
+btn_quiz: Mini Quiz
+btn_next_lesson: درس بعدی
+req_practice: تمرین‌ها
+req_quiz: 'Mini Quiz (حداقل نصف درست)'
+lesson_done: 'این درس کامل شد'
+practice_title: تمرین
+practice_next: تمرین بعدی
+practice_all_done: 'همه تمرین‌های موجود را انجام داده‌ای. درس‌های بعدی به‌زودی اضافه می‌شوند.'
+correct: '✓ درست است'
+not_yet: '✕ هنوز درست نیست'
+keep_going: 'خوب است، ادامه بده.'
+hint: Hint
+show_answer: نمایش جواب
+answer: جواب
+restart: از اول
+next_task: تمرین بعدی
+back_to_lesson: برگشت به درس
+type_here: 'Command را اینجا بنویس'
+sim_title: CMD Academy Simulator
+sim_badge: 'Sandbox · هیچ دستوری روی دستگاه واقعی اجرا نمی‌شود'
+sim_reset: ریست
+sim_reset_done: 'Simulator به حالت اول برگشت.'
+sim_try: 'امتحان کن: dir ، cd Documents ، cd .. ، D: ، help'
+quiz_title: Quiz
+quiz_lessons: 'Mini Quiz درس‌ها'
+quiz_chapters: 'Quiz فصل'
+quiz_q_of: 'سؤال {i} از {n}'
+quiz_correct: '✓ Correct'
+quiz_wrong: '✕ Incorrect'
+quiz_check: بررسی
+quiz_next: سؤال بعدی
+quiz_finish: دیدن نتیجه
+quiz_result: نتیجه
+quiz_retry: دوباره
+quiz_best: 'بهترین'
+kind_mcq: چندگزینه‌ای
+kind_tf: درست/غلط
+kind_type: نوشتن Command
+kind_fix: پیدا کردن خطا
+kind_predict: پیش‌بینی خروجی
+tf_true: درست
+tf_false: غلط
+progress_title: پیشرفت
+overall: Overall Progress
+stat_lessons: Lessons Completed
+stat_quiz: Quiz Score
+stat_practice: Practice Completed
+reset_progress: پاک کردن پیشرفت
+reset_confirm: 'همه پیشرفت این دستگاه پاک شود؟'
+yes_reset: بله، پاک کن
+cancel: انصراف
+saved_local: 'پیشرفت فقط روی همین مرورگر ذخیره می‌شود.'
+storage_off: 'ذخیره‌سازی در این مرورگر فعال نیست؛ پیشرفت بعد از بستن صفحه پاک می‌شود.'

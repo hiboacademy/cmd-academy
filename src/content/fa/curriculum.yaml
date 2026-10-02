@@ -1,0 +1,153 @@
+# CMD Academy — full curriculum outline (100 lessons)
+# n = lesson number, t = Persian title, c = main command (optional)
+# aliases = other names of the same command, danger = needs a warning
+course: cmd
+levels:
+  - id: 1
+    code: BEGINNER
+    title: مبتدی
+    chapters:
+      - id: 1
+        title: آشنایی با CMD
+        lessons:
+          - {n: 1, t: 'CMD چیست؟'}
+          - {n: 2, t: 'Terminal، Command Line و Shell'}
+          - {n: 3, t: 'باز کردن CMD'}
+          - {n: 4, t: 'ساختار یک Command'}
+      - id: 2
+        title: فایل، درایو و مسیر
+        lessons:
+          - {n: 5, t: 'File و Folder'}
+          - {n: 6, t: 'Drive چیست؟'}
+          - {n: 7, t: 'Directory و Current Directory'}
+          - {n: 8, t: 'Path چیست؟'}
+          - {n: 9, t: 'Absolute Path'}
+          - {n: 10, t: 'Relative Path'}
+      - id: 3
+        title: جابه‌جایی
+        lessons:
+          - {n: 11, t: 'دیدن محتوای پوشه', c: dir}
+          - {n: 12, t: 'رفتن به پوشه دیگر', c: cd, aliases: [chdir]}
+          - {n: 13, t: 'برگشت به عقب و ریشه'}
+          - {n: 14, t: 'تغییر Drive'}
+          - {n: 15, t: 'پاک کردن صفحه', c: cls}
+          - {n: 16, t: 'راهنما گرفتن', c: help}
+          - {n: 17, t: 'Quotes و نام‌های دارای فاصله'}
+      - id: 4
+        title: مدیریت فایل
+        lessons:
+          - {n: 18, t: 'ساخت پوشه', c: mkdir, aliases: [md]}
+          - {n: 19, t: 'نمایش متن', c: echo}
+          - {n: 20, t: 'نمایش محتوای فایل', c: type}
+          - {n: 21, t: 'کپی فایل', c: copy}
+          - {n: 22, t: 'جابه‌جا کردن فایل', c: move}
+          - {n: 23, t: 'تغییر نام', c: ren, aliases: [rename]}
+          - {n: 24, t: 'حذف فایل', c: del, aliases: [erase], danger: true}
+          - {n: 25, t: 'حذف پوشه', c: rmdir, aliases: [rd], danger: true}
+          - {n: 26, t: 'Wildcard ستاره *'}
+          - {n: 27, t: 'Wildcard علامت سؤال ?'}
+      - id: 5
+        title: Redirect و ترکیب دستورها
+        lessons:
+          - {n: 28, t: 'نوشتن خروجی در فایل >'}
+          - {n: 29, t: 'اضافه کردن به فایل >>'}
+          - {n: 30, t: 'اجرای پشت‌سرهم &'}
+          - {n: 31, t: 'اجرای شرطی && و ||'}
+          - {n: 32, t: 'تمرین ترکیبی Level 1'}
+  - id: 2
+    code: INTERMEDIATE
+    title: متوسط
+    chapters:
+      - id: 6
+        title: متن، جستجو و کپی
+        lessons:
+          - {n: 33, t: 'Pipe |'}
+          - {n: 34, t: 'صفحه‌به‌صفحه دیدن', c: more}
+          - {n: 35, t: 'مرتب کردن', c: sort}
+          - {n: 36, t: 'ورودی از فایل <'}
+          - {n: 37, t: 'جستجوی متن', c: find}
+          - {n: 38, t: 'جستجوی پیشرفته متن', c: findstr}
+          - {n: 39, t: 'نمایش درختی پوشه‌ها', c: tree}
+          - {n: 40, t: 'پیدا کردن مکان برنامه', c: where}
+          - {n: 41, t: 'Attributes و فایل مخفی', c: attrib}
+          - {n: 42, t: 'مقایسه فایل‌ها', c: fc}
+          - {n: 43, t: 'کپی پوشه‌ها', c: xcopy}
+          - {n: 44, t: 'کپی حرفه‌ای', c: robocopy, danger: true}
+      - id: 7
+        title: متغیرها و اطلاعات سیستم
+        lessons:
+          - {n: 45, t: 'Variable چیست؟', c: set}
+          - {n: 46, t: 'Environment Variables'}
+          - {n: 47, t: '%USERNAME% و %USERPROFILE%'}
+          - {n: 48, t: 'PATH و %PATH%'}
+          - {n: 49, t: 'کاربر و نام سیستم', c: whoami}
+          - {n: 50, t: 'نسخه و اطلاعات سیستم', c: systeminfo}
+          - {n: 51, t: 'فهرست برنامه‌های در حال اجرا', c: tasklist}
+          - {n: 52, t: 'بستن Process', c: taskkill, danger: true}
+      - id: 8
+        title: شبکه
+        lessons:
+          - {n: 53, t: 'IP و شبکه چیست؟'}
+          - {n: 54, t: 'دیدن IP', c: ipconfig}
+          - {n: 55, t: 'جزئیات کامل شبکه'}
+          - {n: 56, t: 'تست اتصال', c: ping}
+          - {n: 57, t: 'مسیر رسیدن به سرور', c: tracert}
+          - {n: 58, t: 'DNS و پیدا کردن IP سایت', c: nslookup}
+          - {n: 59, t: 'اتصال‌های فعال', c: netstat}
+          - {n: 60, t: 'جدول ARP', c: arp}
+          - {n: 61, t: 'جدول Route', c: route}
+      - id: 9
+        title: دستورات حرفه‌ای‌تر
+        lessons:
+          - {n: 62, t: 'Exit Code'}
+          - {n: 63, t: 'Permissionهای پایه'}
+          - {n: 64, t: 'Administrator CMD'}
+          - {n: 65, t: 'خطاهای رایج CMD'}
+          - {n: 66, t: 'ترکیب چند دستور'}
+          - {n: 67, t: 'تمرین‌های واقعی Level 2'}
+  - id: 3
+    code: ADVANCED
+    title: پیشرفته
+    chapters:
+      - id: 10
+        title: مبانی Batch
+        lessons:
+          - {n: 68, t: 'Batch Script چیست؟'}
+          - {n: 69, t: 'تفاوت .bat و .cmd'}
+          - {n: 70, t: 'ساخت اولین Batch File'}
+          - {n: 71, t: '@echo off و توضیح‌نویسی', c: rem}
+          - {n: 72, t: 'توقف تا فشردن کلید', c: pause}
+          - {n: 73, t: 'Variables در Batch'}
+          - {n: 74, t: 'گرفتن ورودی با set /p'}
+          - {n: 75, t: 'محاسبه با set /a'}
+          - {n: 76, t: 'Arguments: %1 و %2'}
+          - {n: 77, t: 'جابه‌جایی Argumentها', c: shift}
+      - id: 11
+        title: منطق و حلقه
+        lessons:
+          - {n: 78, t: 'شرط', c: if}
+          - {n: 79, t: 'if ... else'}
+          - {n: 80, t: 'if exist'}
+          - {n: 81, t: 'errorlevel در Batch'}
+          - {n: 82, t: 'goto و Labels', c: goto}
+          - {n: 83, t: 'حلقه روی فایل‌ها', c: for}
+          - {n: 84, t: 'for /l و for /f'}
+          - {n: 85, t: 'صدا زدن Script دیگر', c: call}
+          - {n: 86, t: 'منوی انتخاب', c: choice}
+          - {n: 87, t: 'مکث زمان‌دار', c: timeout}
+      - id: 12
+        title: پروژه‌ها و تعمیر سیستم
+        lessons:
+          - {n: 88, t: 'Script مدیریت فایل‌ها'}
+          - {n: 89, t: 'Backup Script'}
+          - {n: 90, t: 'Rename Script'}
+          - {n: 91, t: 'Script جستجوی فایل‌ها'}
+          - {n: 92, t: 'Automation ساده'}
+          - {n: 93, t: 'بررسی دیسک', c: chkdsk, danger: true}
+          - {n: 94, t: 'تعمیر فایل‌های سیستم', c: sfc}
+          - {n: 95, t: 'تعمیر Image ویندوز', c: dism}
+          - {n: 96, t: 'Recovery Environment'}
+          - {n: 97, t: 'تعمیر Boot', c: bootrec, danger: true}
+          - {n: 98, t: 'مدیریت دیسک (شبیه‌سازی)', c: diskpart, danger: true}
+          - {n: 99, t: 'روند عیب‌یابی پایه Windows'}
+          - {n: 100, t: 'پروژه نهایی'}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CMD Academy</title>
+<meta name="description" content="آموزش Windows CMD از صفر تا پیشرفته">
+<meta name="theme-color" content="#0b0d0e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+/*FONTS*/
+/*STYLES*/
+:root { padding-top: env(safe-area-inset-top, 0px); }
+</style>
+</head>
+<body>
+<div id="app" class="app" dir="rtl" lang="fa"></div>
+<script type="application/json" id="cmd-content">/*CONTENT*/</script>
+<script>
+/*SCRIPTS*/
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>
