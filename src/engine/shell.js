@@ -1177,7 +1177,10 @@ const Shell = (() => {
         throw e;
       }
       if (!node) continue;
-      yield* exec(node, ctx, io);
+      // record which operators (if, for, |, &&...) each script line used
+      const outerInfo = ctx.info;
+      ctx.info = lineInfo(node);
+      try { yield* exec(node, ctx, io); } finally { ctx.info = outerInfo; }
       if (frame.exit) break;
       if (frame.jump) {
         const L = frame.jump; frame.jump = null;

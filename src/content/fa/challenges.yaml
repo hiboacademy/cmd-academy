@@ -1,1 +1,366 @@
-[]
+# Challenges: real-world scenarios, checked by the result in the sandbox.
+# level 1 = beginner, 2 = intermediate, 3 = advanced (Batch).
+# after = the lesson that teaches everything needed.
+
+# ---------------- Level 1 ----------------
+- id: C1
+  level: 1
+  after: 18
+  title: 'روز اول در رستوران'
+  story: 'مدیر رستوران از تو خواسته روی کامپیوتر دفتر، جایی برای فایل‌های رستوران بسازی.'
+  task: 'در پوشه فعلی، پوشه `Restaurant` را بساز و داخل آن دو پوشه `Menu` و `Orders` بساز.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: dirExists, path: 'C:\Users\Student\Restaurant\Menu'}
+    - {type: dirExists, path: 'C:\Users\Student\Restaurant\Orders'}
+  hints: ['`mkdir` می‌تواند چند سطح پوشه را با هم بسازد.', '`mkdir Restaurant\Menu Restaurant\Orders`']
+  answer: 'mkdir Restaurant\Menu Restaurant\Orders'
+  tags: ['mkdir', 'پوشه']
+
+- id: C2
+  level: 1
+  after: 20
+  title: 'منو کجاست؟'
+  story: 'آشپز می‌پرسد امروز چه غذاهایی در منو هست. فایل منو در Documents کاربر Student است، ولی تو الان در ریشه Drive C هستی.'
+  task: 'بدون اینکه پوشه را عوض کنی، محتوای فایل `menu.txt` را نمایش بده.'
+  start: 'C:\'
+  checks:
+    - {type: lastOutputIncludes, value: 'Restaurant Menu'}
+    - {type: cwd, value: 'C:\'}
+  hints: ['از Absolute Path استفاده کن.', '`type C:\Users\Student\Documents\menu.txt`']
+  answer: 'type C:\Users\Student\Documents\menu.txt'
+  tags: ['type', 'absolute path']
+
+- id: C3
+  level: 1
+  after: 21
+  title: 'یادداشت روی فلش'
+  story: 'می‌خواهی یادداشت‌هایت را با خودت به خانه ببری. فلش روی Drive `E:` است.'
+  task: 'فایل `notes.txt` را از Desktop به ریشه فلش (`E:\`) کپی کن. فایل اصلی باید سر جایش بماند.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileExists, path: 'E:\notes.txt'}
+    - {type: fileExists, path: 'C:\Users\Student\Desktop\notes.txt'}
+  hints: ['`copy مبدأ مقصد`', '`copy Desktop\notes.txt E:\`']
+  answer: 'copy Desktop\notes.txt E:\'
+  tags: ['copy', 'فلش']
+
+- id: C4
+  level: 1
+  after: 22
+  title: 'فاکتور گم‌شده'
+  story: 'فاکتور خرید ماه گذشته در Downloads مانده و حسابدار آن را در Documents دنبالش می‌گردد.'
+  task: 'فایل `invoice.pdf` را از Downloads به Documents منتقل کن (نه کپی).'
+  start: 'C:\Users\Student\Downloads'
+  checks:
+    - {type: fileExists, path: 'C:\Users\Student\Documents\invoice.pdf'}
+    - {type: fileNotExists, path: 'C:\Users\Student\Downloads\invoice.pdf'}
+  hints: ['برای انتقال از `move` استفاده کن.', '`move invoice.pdf ..\Documents`']
+  answer: 'move invoice.pdf ..\Documents'
+  tags: ['move', 'relative path']
+
+- id: C5
+  level: 1
+  after: 26
+  title: 'پاک‌سازی Downloads'
+  story: 'پوشه Downloads پر از فایل موقت شده. فقط فایل‌های `.tmp` باید پاک شوند؛ بقیه فایل‌ها مهم‌اند.'
+  task: 'همه فایل‌های `.tmp` داخل Downloads را با یک دستور حذف کن.'
+  start: 'C:\Users\Student\Downloads'
+  checks:
+    - {type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\photos.zip'}
+  hints: ['از Wildcard `*` استفاده کن.', 'اول با `dir *.tmp` ببین چه فایل‌هایی انتخاب می‌شوند، بعد `del *.tmp`.']
+  answer: 'del *.tmp'
+  tags: ['del', 'wildcard', 'پاک‌سازی']
+
+- id: C6
+  level: 1
+  after: 27
+  title: 'گزارش‌های تک‌رقمی'
+  story: 'در `Documents\Work` گزارش‌های ماهانه هست: report1، report2 و report10. مدیر فقط گزارش‌های ماه‌های تک‌رقمی را در Backup می‌خواهد.'
+  task: 'فقط `report1.txt` و `report2.txt` را به `D:\Backup` کپی کن؛ `report10.txt` نباید کپی شود. با یک دستور و Wildcard.'
+  start: 'C:\Users\Student\Documents\Work'
+  checks:
+    - {type: fileExists, path: 'D:\Backup\report1.txt'}
+    - {type: fileExists, path: 'D:\Backup\report2.txt'}
+    - {type: fileNotExists, path: 'D:\Backup\report10.txt'}
+  hints: ['`*` هر چند حرف را می‌گیرد، پس report10 را هم انتخاب می‌کند.', '`?` فقط یک حرف: `copy report?.txt D:\Backup`']
+  answer: 'copy report?.txt D:\Backup'
+  tags: ['wildcard', '?', 'copy']
+
+- id: C7
+  level: 1
+  after: 28
+  title: 'فهرست فایل‌ها برای همکار'
+  story: 'همکارت می‌خواهد بداند در Documents چه فایل‌هایی هست، ولی به کامپیوتر تو دسترسی ندارد.'
+  task: 'فقط نام فایل‌ها و پوشه‌های Documents را (بدون تاریخ و اندازه) در فایل `C:\Users\Student\Desktop\files.txt` ذخیره کن.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\files.txt', value: ['menu.txt', 'guests.txt', 'Work']}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\files.txt', value: '<DIR>'}}
+  hints: ['`dir /b` فقط نام‌ها را می‌دهد.', '`dir Documents /b > Desktop\files.txt`']
+  answer: 'dir Documents /b > Desktop\files.txt'
+  tags: ['dir', '>', 'redirect']
+
+- id: C8
+  level: 1
+  after: 29
+  title: 'دفتر سفارش'
+  story: 'میز ۴ سفارش داده: یک Pizza و یک Pasta. سفارش‌ها باید در یک فایل متنی ثبت شوند.'
+  task: 'روی Desktop فایل `orders.txt` را بساز که دقیقاً دو خط داشته باشد: `Pizza` و بعد `Pasta`.'
+  start: 'C:\Users\Student\Desktop'
+  multi: true
+  checks:
+    - {type: fileOrder, path: 'C:\Users\Student\Desktop\orders.txt', value: ['Pizza', 'Pasta']}
+    - {type: fileLines, path: 'C:\Users\Student\Desktop\orders.txt', value: 2}
+  hints: ['خط اول با `>` و خط دوم با `>>`.', '`echo Pizza> orders.txt` و بعد `echo Pasta>> orders.txt`']
+  answer: ['echo Pizza> orders.txt', 'echo Pasta>> orders.txt']
+  tags: ['echo', '>>', 'append']
+
+- id: C9
+  level: 1
+  after: 31
+  title: 'فقط اگر ساخته شد'
+  story: 'می‌خواهی پوشه گزارش‌ها را بسازی و فقط وقتی واقعاً ساخته شد، پیام `Ready` ببینی.'
+  task: 'با یک خط: پوشه `Reports` را بساز و فقط در صورت موفقیت `Ready` را چاپ کن.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: dirExists, path: 'C:\Users\Student\Reports'}
+    - {type: usedOp, value: '&&'}
+    - {type: lastOutputIncludes, value: 'Ready'}
+  hints: ['`&&` دستور دوم را فقط بعد از موفقیت اولی اجرا می‌کند.', '`mkdir Reports && echo Ready`']
+  answer: 'mkdir Reports && echo Ready'
+  tags: ['&&', 'chaining']
+
+# ---------------- Level 2 ----------------
+- id: C10
+  level: 2
+  after: 35
+  title: 'فهرست مهمان‌ها به ترتیب'
+  story: 'برای مهمانی امشب، فهرست مهمان‌ها باید به ترتیب الفبا چاپ شود.'
+  task: 'محتوای `Documents\guests.txt` را مرتب کن و نتیجه را در `Desktop\guests_sorted.txt` ذخیره کن.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileOrder, path: 'C:\Users\Student\Desktop\guests_sorted.txt', value: ['Ali', 'David', 'hibo', 'mina', 'Reza', 'Sara']}
+  hints: ['`sort` و بعد `>`.', '`sort Documents\guests.txt > Desktop\guests_sorted.txt`']
+  answer: 'sort Documents\guests.txt > Desktop\guests_sorted.txt'
+  tags: ['sort', 'redirect']
+
+- id: C11
+  level: 2
+  after: 38
+  title: 'گزارش‌های فروش'
+  story: 'حسابدار می‌پرسد کدام فایل‌های txt در Documents (و زیرپوشه‌هایش) کلمه `sales` را دارند.'
+  task: 'فقط نام فایل‌هایی را که کلمه sales (بدون توجه به بزرگی حروف) دارند پیدا کن و در `C:\Users\Student\Desktop\sales.txt` ذخیره کن.'
+  start: 'C:\Users\Student\Documents'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\sales.txt', value: ['report.txt', 'report1.txt', 'report10.txt']}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\sales.txt', value: 'menu.txt'}}
+  hints: ['`findstr` با `/s` در زیرپوشه‌ها، `/m` فقط نام فایل و `/i` بدون حساسیت به حروف.', '`findstr /s /m /i "sales" *.txt > C:\Users\Student\Desktop\sales.txt`']
+  answer: 'findstr /s /m /i "sales" *.txt > C:\Users\Student\Desktop\sales.txt'
+  tags: ['findstr', 'جست‌وجو']
+
+- id: C12
+  level: 2
+  after: 54
+  title: 'IP برای پشتیبانی'
+  story: 'پشتیبانی شبکه فقط آدرس IPv4 کامپیوترت را می‌خواهد، نه کل خروجی `ipconfig`.'
+  task: 'فقط خط IPv4 را از خروجی `ipconfig` جدا کن و در `Desktop\ip.txt` ذخیره کن.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\ip.txt', value: '192.168.1.24'}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\ip.txt', value: 'Gateway'}}
+  hints: ['خروجی را با `|` به `find` بده.', '`ipconfig | find "IPv4" > Desktop\ip.txt`']
+  answer: 'ipconfig | find "IPv4" > Desktop\ip.txt'
+  tags: ['ipconfig', 'pipe', 'find']
+
+- id: C13
+  level: 2
+  after: 52
+  title: 'موسیقی هنگ کرده'
+  story: 'Spotify هنگ کرده و جواب نمی‌دهد. Chrome باز است و نباید بسته شود.'
+  task: 'فقط برنامه هنگ‌کرده را ببند.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: procGone, value: 'Spotify.exe'}
+    - {type: not, check: {type: procGone, value: 'chrome.exe'}}
+  hints: ['با `tasklist` یا `tasklist /fi "status eq not responding"` نام یا PID را پیدا کن.', 'برنامه هنگ‌کرده به درخواست عادی جواب نمی‌دهد: `taskkill /im Spotify.exe /f`']
+  answer: ['tasklist /fi "status eq not responding"', 'taskkill /im Spotify.exe /f']
+  tags: ['taskkill', 'tasklist', 'هنگ']
+
+- id: C14
+  level: 2
+  after: 56
+  title: 'Router جواب می‌دهد؟'
+  story: 'اینترنت کند است. اول باید ببینی ارتباط با Router (Default Gateway) سالم است یا نه.'
+  task: 'آدرس Default Gateway را پیدا کن و آن را فقط ۲ بار ping کن.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: outputIncludes, value: 'Reply from 192.168.1.1'}
+    - {type: switch, cmd: ping, value: '-n', anyRun: true}
+  hints: ['Default Gateway را در خروجی `ipconfig` ببین.', '`ping -n 2 192.168.1.1`']
+  answer: ['ipconfig', 'ping -n 2 192.168.1.1']
+  tags: ['ping', 'gateway', 'شبکه']
+
+- id: C15
+  level: 2
+  after: 65
+  title: 'چاپگر گیر کرده'
+  story: 'صف چاپ گیر کرده و هیچ چیزی چاپ نمی‌شود. راه‌حل معمول: سرویس Print Spooler را یک بار متوقف و دوباره روشن کن.'
+  task: 'سرویس `Spooler` را Restart کن (متوقف و دوباره شروع). CMD با دسترسی Administrator باز است.'
+  admin: true
+  multi: true
+  checks:
+    - {type: serviceState, name: Spooler, value: RUNNING}
+    - {type: any, of: [{type: outputIncludes, value: 'stopped successfully'}, {type: outputIncludes, value: 'STOP_PENDING'}]}
+  hints: ['`net stop` و `net start` با نام سرویس.', '`net stop spooler && net start spooler`']
+  answer: 'net stop spooler && net start spooler'
+  tags: ['service', 'net', 'sc', 'چاپگر']
+
+- id: C16
+  level: 2
+  after: 43
+  title: 'Backup کامل Documents'
+  story: 'قبل از نصب Windows جدید، باید از کل Documents (با همه زیرپوشه‌ها) Backup بگیری.'
+  task: 'Documents را با همه زیرپوشه‌ها در `D:\Backup\Docs` کپی کن.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileExists, path: 'D:\Backup\Docs\menu.txt'}
+    - {type: fileExists, path: 'D:\Backup\Docs\Work\report.txt'}
+  hints: ['`copy` پوشه کپی نمی‌کند؛ از `xcopy` یا `robocopy` استفاده کن.', '`xcopy Documents D:\Backup\Docs /e /i`']
+  answer: 'xcopy Documents D:\Backup\Docs /e /i'
+  tags: ['xcopy', 'robocopy', 'backup']
+
+- id: C17
+  level: 2
+  after: 41
+  title: 'فایل مخفی'
+  story: 'شنیده‌ای در Documents یک فایل مخفی هست که `dir` معمولی آن را نشان نمی‌دهد.'
+  task: 'فایل مخفی Documents را پیدا کن، آن را از حالت Hidden خارج کن و محتوایش را بخوان.'
+  start: 'C:\Users\Student\Documents'
+  multi: true
+  checks:
+    - {type: fileAttr, path: 'C:\Users\Student\Documents\secret.txt', attr: h, value: false}
+    - {type: outputIncludes, value: 'You found the hidden file'}
+  hints: ['`dir /a:h` فایل‌های Hidden را نشان می‌دهد.', '`attrib -h secret.txt` و بعد `type secret.txt`']
+  answer: ['dir /a:h', 'attrib -h secret.txt', 'type secret.txt']
+  tags: ['attrib', 'hidden']
+
+# ---------------- Level 3 (Batch) ----------------
+- id: C18
+  level: 3
+  after: 74
+  title: 'خوش‌آمدگویی به مشتری'
+  story: 'رستوران یک Script می‌خواهد که نام مشتری را بپرسد و به او خوش‌آمد بگوید.'
+  task: 'در `greet.bat` نام مشتری را با `set /p` بپرس و بعد `Welcome, NAME` را چاپ کن. (برای آزمون، نام Sara وارد می‌شود.)'
+  batch: {file: 'greet.bat', starter: "@echo off\n"}
+  inputs: ['Sara']
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: 'Welcome, Sara'}
+  hints: ['`set /p name=Your name: `', 'بعد: `echo Welcome, %name%`']
+  answer: ['@echo off', 'set /p name=Your name: ', 'echo Welcome, %name%']
+  tags: ['batch', 'set /p', 'ورودی']
+
+- id: C19
+  level: 3
+  after: 83
+  title: 'شماره میزها'
+  story: 'برای چاپ برچسب میزها، فهرست `Table 1` تا `Table 8` لازم است.'
+  task: 'در `tables.bat` با یک حلقه `for /l`، خط‌های `Table 1` تا `Table 8` را چاپ کن.'
+  batch: {file: 'tables.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: outputOrder, value: ['Table 1', 'Table 2', 'Table 8']}
+    - {type: outputExcludes, value: 'Table 9'}
+    - {type: usedOp, value: 'for'}
+  hints: ['`for /l %%i in (start,step,end) do ...`', '`for /l %%i in (1,1,8) do echo Table %%i`']
+  answer: ['@echo off', 'for /l %%i in (1,1,8) do echo Table %%i']
+  tags: ['for /l', 'حلقه']
+
+- id: C20
+  level: 3
+  after: 84
+  title: 'بایگانی فصلی'
+  story: 'برای بایگانی، در `D:\Archive` برای هر فصل یک پوشه لازم است: Spring، Summer، Autumn و Winter.'
+  task: 'در `seasons.bat` با یک حلقه `for`، این چهار پوشه را داخل `D:\Archive` بساز.'
+  batch: {file: 'seasons.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: dirExists, path: 'D:\Archive\Spring'}
+    - {type: dirExists, path: 'D:\Archive\Summer'}
+    - {type: dirExists, path: 'D:\Archive\Autumn'}
+    - {type: dirExists, path: 'D:\Archive\Winter'}
+    - {type: usedOp, value: 'for'}
+  hints: ['`for %%s in (Spring Summer Autumn Winter) do ...`', '`for %%s in (Spring Summer Autumn Winter) do mkdir "D:\Archive\%%s"`']
+  answer: ['@echo off', 'for %%s in (Spring Summer Autumn Winter) do mkdir "D:\Archive\%%s"']
+  tags: ['for', 'mkdir']
+
+- id: C21
+  level: 3
+  after: 76
+  title: 'نمایش فایل با پارامتر'
+  story: 'می‌خواهی Scriptی داشته باشی که نام هر فایلی را بگیرد و اگر وجود داشت محتوایش را نشان دهد، وگرنه بگوید `Missing`.'
+  task: 'در `show.bat`: اگر فایلی که در `%1` آمده وجود دارد، `type` کن، وگرنه `Missing` چاپ کن. (آزمون با Argument `C:\Users\Student\Documents\menu.txt` اجرا می‌شود.)'
+  batch: {file: 'show.bat', starter: "@echo off\n", args: 'C:\Users\Student\Documents\menu.txt'}
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: 'Restaurant Menu'}
+    - {type: outputExcludes, value: 'Missing'}
+  hints: ['`if exist "%~1" (...) else (...)`', '`if exist "%~1" (type "%~1") else (echo Missing)`']
+  answer: ['@echo off', 'if exist "%~1" (type "%~1") else (echo Missing)']
+  tags: ['%1', 'if exist', 'parameter']
+
+- id: C22
+  level: 3
+  after: 87
+  title: 'منوی کمکی'
+  story: 'برای همکاران غیرفنی یک منو بساز: ۱ = نمایش IP، ۲ = نمایش نام کامپیوتر.'
+  task: 'در `helpdesk.bat` با `choice /c 12` بپرس و با `if errorlevel` یا `%errorlevel%` گزینه را اجرا کن. گزینه 1 باید آدرس IP (خروجی `ipconfig`) و گزینه 2 خروجی `hostname` را نشان دهد. (آزمون گزینه 1 را انتخاب می‌کند.)'
+  batch: {file: 'helpdesk.bat', starter: "@echo off\necho 1. IP address\necho 2. Computer name\n"}
+  inputs: ['1']
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: '192.168.1.24'}
+    - {type: outputExcludes, value: 'ACADEMY-PC'}
+  hints: ['`choice /c 12 /m "Choose"` و بعد `if errorlevel 2 goto name`.', 'ترتیب بررسی errorlevel از بزرگ به کوچک است؛ بعد از هر بخش `goto :eof`.']
+  answer: ['@echo off', 'echo 1. IP address', 'echo 2. Computer name', 'choice /c 12 /m "Choose"', 'if errorlevel 2 goto name', 'ipconfig', 'goto :eof', ':name', 'hostname']
+  tags: ['choice', 'menu', 'goto', 'errorlevel']
+
+- id: C23
+  level: 3
+  after: 89
+  title: 'Backup با گزارش'
+  story: 'Backup شبانه باید نتیجه‌اش را در یک Log بنویسد تا صبح معلوم باشد موفق بوده یا نه.'
+  task: 'در `nightly.bat`، فایل‌های txt داخل Documents را به `D:\Backup\Texts` کپی کن (پوشه را در صورت نیاز بساز). اگر موفق بود `OK` و اگر نه `FAILED` را به آخر `D:\Backup\log.txt` اضافه کن.'
+  batch: {file: 'nightly.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: fileExists, path: 'D:\Backup\Texts\menu.txt'}
+    - {type: fileContains, path: 'D:\Backup\log.txt', value: 'OK'}
+    - {type: not, check: {type: fileContains, path: 'D:\Backup\log.txt', value: 'FAILED'}}
+  hints: ['`if not exist D:\Backup\Texts mkdir D:\Backup\Texts`', '`copy ... >nul && echo OK>> D:\Backup\log.txt || echo FAILED>> D:\Backup\log.txt`']
+  answer: ['@echo off', 'if not exist D:\Backup\Texts mkdir D:\Backup\Texts', 'copy "%USERPROFILE%\Documents\*.txt" D:\Backup\Texts >nul && echo OK>> D:\Backup\log.txt || echo FAILED>> D:\Backup\log.txt']
+  tags: ['backup', 'log', '&&', '||']
+
+- id: C24
+  level: 3
+  after: 92
+  title: 'پاک‌سازی هوشمند'
+  story: 'Script نگهداری هفتگی باید فایل‌های `.tmp` را از Downloads و پوشه Temp کاربر پاک کند، ولی هیچ فایل دیگری را دست نزند.'
+  task: 'در `cleanup.bat`، همه فایل‌های `.tmp` را از `%USERPROFILE%\Downloads` و `%TEMP%` بی‌صدا پاک کن و در آخر `Cleanup done` چاپ کن.'
+  batch: {file: 'cleanup.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}
+    - {type: countFiles, path: 'C:\Users\Student\AppData\Local\Temp\*.tmp', value: 0}
+    - {type: fileExists, path: 'C:\Users\Student\AppData\Local\Temp\setup_log.txt'}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}
+    - {type: outputIncludes, value: 'Cleanup done'}
+  hints: ['`del /q "%TEMP%\*.tmp"`', 'برای هر دو پوشه همین کار را بکن و بعد `echo Cleanup done`.']
+  answer: ['@echo off', 'del /q "%USERPROFILE%\Downloads\*.tmp" 2>nul', 'del /q "%TEMP%\*.tmp" 2>nul', 'echo Cleanup done']
+  tags: ['del', 'temp', 'نگهداری']
