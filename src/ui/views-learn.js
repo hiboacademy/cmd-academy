@@ -68,11 +68,13 @@ function LessonView(n) {
   const analogy = (label, text) => text ? h("details", { class: "analogy" },
     h("summary", null, h("span", null, label), icon("down")), h("div", null, fmt(text))) : null;
 
+  const exSrc = f.demo || (f.practice && f.practice[0]) || {};
+  const exMode = exSrc.mode === "winre" ? "winre" : exSrc.admin ? "admin" : null;
   const examples = (f.examples || []).length ? sectionCard(T("s_examples"), h("div", { class: "examples" },
     f.examples.map((e, i) => h("div", { class: "ex-row" },
       h("div", { class: "ex-main" }, h("div", { class: "ex-cmd" }, e.c), h("div", { class: "small" }, fmt(e.d))),
       h("div", { class: "ex-tools" },
-        e.noTry ? null : h("button", { class: "icon-btn plain", "aria-label": T("try_it"), title: T("try_it"), onClick: () => tryInSim(e.c) }, icon("play")),
+        e.noTry ? null : h("button", { class: "icon-btn plain", "aria-label": T("try_it"), title: T("try_it"), onClick: () => tryInSim(e.c, e.at || exSrc.start, e.mode || exMode) }, icon("play")),
         starButton("ex", `${n}:${i}`, T("fav_example"))))))) : null;
 
   const mistakes = (f.mistakes || []).length ? sectionCard(T("s_mistakes"), h("ul", { class: "mistakes" }, f.mistakes.map((m) => h("li", null, h("span", null, fmt(m)))))) : null;

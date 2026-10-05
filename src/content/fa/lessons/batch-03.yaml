@@ -75,8 +75,10 @@
     - c: 'move invoice.pdf ..\Documents'
       d: 'بردن فایل به پوشه Documents.'
     - c: 'move todo.txt Work\tasks.txt'
+      at: 'C:\Users\Student\Documents'
       d: 'انتقال به پوشه Work با نام جدید.'
     - c: 'move Work Office'
+      at: 'C:\Users\Student\Documents'
       d: 'اگر Office وجود نداشته باشد، نام پوشه Work عوض می‌شود.'
   mistakes:
     - 'فکر کردن اینکه `move` کپی می‌گیرد؛ فایل از جای قبلی حذف می‌شود.'
@@ -131,8 +133,10 @@
     - c: 'ren notes.txt ideas.txt'
       d: 'تغییر نام یک فایل.'
     - c: 'ren Work Office'
+      at: 'C:\Users\Student\Documents'
       d: 'تغییر نام یک پوشه.'
     - c: 'ren Documents\menu.txt menu_2026.txt'
+      at: 'C:\Users\Student'
       d: 'Path فقط در نام اول می‌آید.'
   mistakes:
     - 'گذاشتن Path در نام جدید: `ren a.txt D:\b.txt` خطا می‌دهد. برای بردن به جای دیگر از `move` استفاده کن.'
@@ -242,6 +246,7 @@
     cmds: ['mkdir Empty', 'rd Empty', 'rd Pictures']
   examples:
     - c: 'rd Empty'
+      noTry: true
       d: 'حذف پوشه خالی.'
     - c: 'rd /s OldProject'
       d: 'حذف پوشه با همه محتوا؛ قبلش می‌پرسد `Are you sure (Y/N)?`'
@@ -304,6 +309,7 @@
     - c: 'dir *.jpg'
       d: 'فقط فایل‌های jpg.'
     - c: 'copy *.txt E:\'
+      at: 'C:\Users\Student\Documents'
       d: 'کپی همه فایل‌های متنی به USB.'
     - c: 'del *.tmp'
       d: 'حذف همه فایل‌های موقت.'
@@ -585,10 +591,12 @@
     - c: 'mkdir Shop && cd Shop'
       d: 'فقط اگر ساختن موفق بود، وارد پوشه شو.'
     - c: 'type a.txt || echo a.txt is missing'
+      expectError: true
       d: 'اگر فایل نبود، پیام خودت را نشان بده.'
     - c: 'cd Documents & dir /b'
       d: 'دو دستور پشت‌سرهم، بدون شرط.'
     - c: 'copy a.txt E:\ && echo OK || echo FAILED'
+      expectError: true
       d: 'نتیجه کار را با یک کلمه گزارش کن.'
   mistakes:
     - 'اشتباه گرفتن `|` (Pipe، درس ۳۳) با `||`.'

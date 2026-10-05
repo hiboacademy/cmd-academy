@@ -16,10 +16,13 @@
     cmds: ['type first.bat', 'first.bat']
   examples:
     - c: 'first.bat'
+      noTry: true
       d: 'اجرای یک Batch در پوشه فعلی.'
     - c: 'first'
+      noTry: true
       d: 'بدون پسوند هم اجرا می‌شود.'
     - c: 'type first.bat'
+      noTry: true
       d: 'دیدن محتوای Script.'
   mistakes:
     - 'ذخیره فایل در Notepad با نام `first.bat.txt`؛ در پنجره Save، نوع فایل را All Files بگذار.'
@@ -70,8 +73,10 @@
     cmds: ['tools', 'tools.cmd']
   examples:
     - c: 'tools.cmd'
+      noTry: true
       d: 'اجرای فایل .cmd.'
     - c: 'tools'
+      noTry: true
       d: 'بدون پسوند؛ CMD خودش .bat یا .cmd را پیدا می‌کند.'
   mistakes:
     - 'داشتن `tools.bat` و `tools.cmd` با هم در یک پوشه؛ با نوشتن `tools` معلوم نیست کدام اجرا شود.'
@@ -126,6 +131,7 @@
       d: 'در Windows واقعی Notepad فایل را برای ویرایش باز می‌کند.'
       noTry: true
     - c: 'hello'
+      noTry: true
       d: 'اجرای Script.'
   mistakes:
     - 'ذخیره به‌صورت `hello.bat.txt`.'

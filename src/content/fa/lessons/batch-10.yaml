@@ -221,6 +221,7 @@
     - c: 'shutdown /r /t 60'
       d: 'Restart بعد از یک دقیقه.'
     - c: 'shutdown /a'
+      expectError: true
       d: 'لغو.'
   mistakes:
     - 'نوشتن Log با `>` و پاک شدن سابقه.'

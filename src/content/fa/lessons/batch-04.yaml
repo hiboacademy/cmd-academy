@@ -501,10 +501,13 @@
     cmds: ['fc menu_old.txt menu_new.txt', 'fc menu_new.txt menu_new.txt']
   examples:
     - c: 'fc menu_old.txt menu_new.txt'
+      noTry: true
       d: 'نمایش خطوط متفاوت.'
     - c: 'fc /n a.txt b.txt'
+      noTry: true
       d: 'با شماره خط.'
     - c: 'fc /c a.txt b.txt'
+      noTry: true
       d: 'بدون توجه به حروف بزرگ و کوچک.'
   mistakes:
     - 'مقایسه فایل‌های غیرمتنی و انتظار خروجی قابل خواندن.'
@@ -562,6 +565,7 @@
     - c: 'xcopy Documents D:\DocsBackup /e /i'
       d: 'کپی کامل Documents با زیرپوشه‌ها.'
     - c: 'xcopy *.txt E:\Texts /i'
+      at: 'C:\Users\Student\Documents'
       d: 'کپی همه txtها به پوشه جدید روی USB.'
     - c: 'xcopy Documents D:\DocsBackup /s /y'
       d: 'به‌روزرسانی Backup بدون سؤال.'

@@ -74,8 +74,10 @@
     - c: 'whoami /groups'
       d: 'سطح دسترسی فعلی.'
     - c: 'attrib notes.txt'
+      at: 'C:\Users\Student\Desktop'
       d: 'آیا فایل Read-only است؟'
     - c: 'attrib -r notes.txt'
+      at: 'C:\Users\Student\Desktop'
       d: 'برداشتن Read-only (اگر مال خودت است).'
   mistakes:
     - 'تغییر دسترسی فایل‌های `C:\Windows` برای حل یک خطا؛ این کار امنیت سیستم را از بین می‌برد.'
@@ -184,6 +186,7 @@
     - c: 'net start'
       d: 'فهرست سرویس‌های در حال اجرا.'
     - c: 'net stop spooler && net start spooler'
+      mode: admin
       d: 'Restart سرویس چاپ (Administrator).'
   mistakes:
     - 'استفاده از نام نمایشی بدون Quotes: `net stop Print Spooler` → `net stop "Print Spooler"` یا `net stop spooler`.'
@@ -296,6 +299,7 @@
     - c: 'tasklist | find "chrome" >> report.txt'
       d: 'اضافه کردن Processهای Chrome.'
     - c: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+      at: 'C:\Users\Student'
       d: 'جمع کردن همه jpgها (با ساختار پوشه‌ها).'
   mistakes:
     - 'استفاده از `>` به‌جای `>>` در خطوط بعدی گزارش و پاک شدن خط‌های قبلی.'

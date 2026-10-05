@@ -47,7 +47,7 @@ function CommandView(name) {
     c.examples.map((e, i) => h("div", { class: "ex-row" },
       h("div", { class: "ex-main" }, h("div", { class: "ex-cmd" }, e.c), h("div", { class: "small" }, fmt(e.d))),
       h("div", { class: "ex-tools" },
-        e.noTry ? null : h("button", { class: "icon-btn plain", "aria-label": T("try_it"), title: T("try_it"), onClick: () => tryInSim(e.c) }, icon("play")),
+        e.noTry ? null : h("button", { class: "icon-btn plain", "aria-label": T("try_it"), title: T("try_it"), onClick: () => tryInSim(e.c, e.at, e.mode) }, icon("play")),
         starButton("ex", `${c.name}#${i}`, T("fav_example"))))))) : null;
   return h("article", { class: "stack view" },
     h("div", { class: "row between" }, backBtn("Command Library", "commands"), starButton("cmd", c.name, T("fav_command"))),
@@ -124,5 +124,5 @@ function FavoritesView() {
     exs.length ? h("section", { class: "stack-sm" }, h("h2", null, T("res_examples")), h("div", { class: "card" }, h("div", { class: "examples" }, exs.map(({ id, e }) => h("div", { class: "ex-row" },
       h("div", { class: "ex-main" }, h("div", { class: "ex-cmd" }, e.c), h("div", { class: "small" }, fmt(e.d)),
         h("button", { class: "linkish small", style: { alignSelf: "flex-start" }, onClick: () => App.go(e.lesson ? "lesson" + e.lesson : "cmd-" + e.cmd) }, e.lesson ? T("from_lesson", { n: fa(e.lesson) }) : e.cmd)),
-      h("div", { class: "ex-tools" }, e.noTry ? null : h("button", { class: "icon-btn plain", "aria-label": T("try_it"), onClick: () => tryInSim(e.c) }, icon("play")), starButton("ex", id, T("fav_example")))))))) : null);
+      h("div", { class: "ex-tools" }, e.noTry ? null : h("button", { class: "icon-btn plain", "aria-label": T("try_it"), onClick: () => tryInSim(e.c, e.at, e.mode) }, icon("play")), starButton("ex", id, T("fav_example")))))))) : null);
 }

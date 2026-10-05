@@ -124,6 +124,7 @@ sim_mode_normal: 'CMD معمولی (بدون دسترسی Administrator).'
 sim_mode_admin: 'CMD با دسترسی Administrator باز شد. دستورهای سیستمی مثل `sfc` و `chkdsk` و `diskpart` اینجا کار می‌کنند. مراقب باش!'
 sim_mode_winre: 'وارد Recovery Environment شدی: Drive فعلی `X:` است و Windows روی `C:` قرار دارد. دستورهایی مثل `bootrec` و `diskpart` اینجا در دسترس‌اند.'
 sim_try: 'امتحان کن: `dir` ، `cd Documents` ، `type menu.txt | find "Pizza"` ، `ping google.com` ، `help`'
+sim_moved: 'برای این مثال به پوشه `{path}` رفتیم.'
 
 # quiz
 quiz_title: Quiz

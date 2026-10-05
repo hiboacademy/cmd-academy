@@ -135,6 +135,7 @@
     - c: 'dir %TEMP%'
       d: 'دیدن فایل‌های موقت.'
     - c: 'copy notes.txt %USERPROFILE%\Desktop'
+      noTry: true
       d: 'کپی به Desktop هر کاربری.'
   mistakes:
     - 'نوشتن مسیر ثابت `C:\Users\Ali` در Script؛ روی کامپیوتر دیگر کار نمی‌کند.'

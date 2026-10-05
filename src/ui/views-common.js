@@ -20,7 +20,14 @@ function sectionCard(title, body, extra) {
   return h("section", { class: "card stack-sm" }, h("div", { class: "section-title" }, h("h2", null, title), extra || null), body);
 }
 /* open a command in the Simulator ("try it") */
-function tryInSim(cmd) {
-  App.state.simRun = cmd;
+function tryInSim(cmd, at, mode) {
+  App.state.simRun = { cmd, at };
+  // Examples that need Administrator or Recovery open the simulator in that mode.
+  if (mode && (App.state.simMode || "normal") !== mode) {
+    App.state.simMode = mode;
+    App.state.simSh = null;
+    App.state.simTerm = null;
+    App.state.simRun.modeNote = mode;
+  }
   App.go("sim");
 }

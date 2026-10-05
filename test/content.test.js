@@ -103,3 +103,29 @@ test("library entries are well-formed", () => {
     (c.related || []).forEach((r) => assert.ok(C.commands.some((x) => x.name === r || (x.aliases || []).includes(r)), `${c.name}: related ${r} missing`));
   });
 });
+
+/* Every "try it" example must work in the Simulator the way the app opens it:
+   a fresh simulator at the example's folder, in the lesson's mode. */
+function tryExample(e, src) {
+  const md = e.mode || (src.mode === "winre" ? "winre" : src.admin ? "admin" : null);
+  const sh = Shell.create({ admin: md === "admin", mode: md === "winre" ? "winre" : "normal" });
+  const at = e.at || src.start;
+  if (at) Shell.setLocation(sh, at);
+  if (at) assert.strictEqual(Shell.cwdPath(sh).toLowerCase(), at.toLowerCase(), `example folder ${at} missing`);
+  return Shell.runAll(sh, e.c, [], { defaultAnswer: "n" }).lines.filter((x) => x.t === "err").map((x) => x.text);
+}
+test("lesson examples run in the simulator", () => {
+  C.lessons.forEach((l) => (l.examples || []).forEach((e) => {
+    if (e.noTry) return;
+    const errs = tryExample(e, l.demo || (l.practice && l.practice[0]) || {});
+    if (!e.expectError) assert.deepStrictEqual(errs, [], `lesson ${l.n}: ${e.c}`);
+    else assert.ok(errs.length, `lesson ${l.n}: ${e.c} should show an error`);
+  }));
+});
+test("library examples run in the simulator", () => {
+  (C.commands || []).forEach((c) => (c.examples || []).forEach((e) => {
+    if (e.noTry || c.engine === false) return;
+    const errs = tryExample(e, {});
+    if (!e.expectError) assert.deepStrictEqual(errs, [], `${c.name}: ${e.c}`);
+  }));
+});

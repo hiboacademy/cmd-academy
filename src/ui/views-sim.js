@@ -28,7 +28,16 @@ function SimView() {
   } }, icon("reset"), T("sim_reset"));
   const pending = App.state.simRun;
   App.state.simRun = null;
-  setTimeout(() => { term.focus(); if (pending) term.run(pending); }, 60);
+  setTimeout(() => {
+    term.focus();
+    if (!pending) return;
+    if (pending.modeNote) term.note(T("sim_mode_" + pending.modeNote));
+    if (pending.at && !term.busy() && Shell.cwdPath(App.state.simSh).toLowerCase() !== pending.at.toLowerCase()) {
+      Shell.setLocation(App.state.simSh, pending.at);
+      if (Shell.cwdPath(App.state.simSh).toLowerCase() === pending.at.toLowerCase()) term.note(T("sim_moved", { path: pending.at }));
+    }
+    term.run(pending.cmd);
+  }, 60);
   return h("div", { class: "sim-wrap view" },
     h("div", { class: "row between wrap" },
       h("div", { class: "stack-xs" },

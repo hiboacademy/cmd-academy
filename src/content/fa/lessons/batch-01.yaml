@@ -7,6 +7,8 @@
 - n: 1
   term: CMD
   fullForm: 'Command Prompt (cmd.exe)'
+  difficulty: 1
+  objective: 'بفهمی CMD چیست و اولین Command خودت را اجرا کنی.'
   summary: 'CMD برنامه‌ای در Windows است که به‌جای کلیک کردن، با نوشتن دستور با کامپیوتر کار می‌کنی.'
   meaning: 'خط فرمان ویندوز؛ پنجره‌ای که دستور (Command) را می‌گیرد، اجرا می‌کند و نتیجه را نشان می‌دهد.'
   usage: 'کار سریع با فایل‌ها، دیدن اطلاعات سیستم و شبکه، عیب‌یابی و خودکار کردن کارهای تکراری.'
@@ -17,6 +19,14 @@
   tip: 'CMD به بزرگی و کوچکی حروف حساس نیست؛ `DIR` و `dir` یکی‌اند.'
   daily: 'کلیک کردن مثل انتخاب غذا از روی عکس منو است. CMD مثل این است که دقیق بگویی چه می‌خواهی؛ سریع‌تر و دقیق‌تر، اگر زبانش را بلد باشی.'
   restaurant: 'CMD مثل گارسون است: تو سفارش (Command) را می‌گویی، او آن را به آشپزخانه (Windows) می‌برد و نتیجه را برایت می‌آورد.'
+  examples:
+    - c: 'ver'
+      d: 'نسخه Windows را نشان می‌دهد.'
+    - c: 'VER'
+      d: 'همان نتیجه؛ بزرگی و کوچکی حروف مهم نیست.'
+  mistakes:
+    - 'تایپ کردن دستور در File Explorer یا مرورگر به‌جای پنجره CMD.'
+    - 'ترس از خراب شدن سیستم: دستورهای خواندنی مثل `ver` هیچ چیزی را تغییر نمی‌دهند.'
   practice:
     - id: P1a
       start: 'C:\Users\Student'
@@ -40,10 +50,13 @@
       q: 'دستوری بنویس که نسخه Windows را نشان دهد.'
       accept: ['ver']
       explain: '`ver` کوتاه‌شده Version است.'
+  recap: 'CMD = کار با Windows از راه نوشتن دستور. هر دستور را بنویس و Enter بزن.'
 
 - n: 2
   term: 'Terminal · Shell'
   fullForm: 'Command Line Interface (CLI)'
+  difficulty: 1
+  objective: 'فرق Terminal، Shell و Command Line را بدانی.'
   summary: 'Command Line یعنی کار با نوشتن دستور. Terminal پنجره‌ای است که در آن تایپ می‌کنی. Shell برنامه‌ای است که دستور را می‌فهمد و اجرا می‌کند.'
   meaning: 'Terminal = پنجره. Shell = مغزی که دستور را اجرا می‌کند. در Windows، `CMD` و `PowerShell` دو Shell هستند و Windows Terminal پنجره‌ای است که هر دو را نشان می‌دهد.'
   usage: 'وقتی بدانی کدام بخش چه کاری می‌کند، راحت‌تر می‌فهمی چرا یک دستور در CMD کار می‌کند ولی در PowerShell یا Linux نه.'
@@ -52,6 +65,14 @@
     - {o: 'Hello'}
   tip: 'در Windows 11 معمولاً CMD داخل Windows Terminal باز می‌شود. ظاهر فرق دارد ولی دستورها همان‌اند.'
   restaurant: 'Terminal میز و منوی رستوران است؛ جایی که سفارش می‌دهی. Shell گارسونی است که سفارش را می‌فهمد. Windows آشپزخانه‌ای است که کار اصلی را انجام می‌دهد.'
+  examples:
+    - c: 'echo Hello'
+      d: 'Shell متن Hello را چاپ می‌کند.'
+    - c: 'echo CMD Academy'
+      d: 'هر متنی بعد از `echo` نمایش داده می‌شود.'
+  mistakes:
+    - 'یکی دانستن CMD و PowerShell: هر دو Shell هستند، ولی همه دستورهایشان یکی نیست.'
+    - 'اجرای دستورهای Linux مثل `ls` در CMD.'
   practice:
     - id: P2a
       start: 'C:\Users\Student'
@@ -76,10 +97,13 @@
       q: 'PowerShell هم یک Shell است.'
       answer: true
       explain: 'PowerShell یک Shell دیگر در Windows است که بعداً در CMD Academy به آن می‌رسیم.'
+  recap: 'Terminal = پنجره. Shell = اجراکننده دستور. CMD یک Shell در Windows است.'
 
 - n: 3
   term: 'Win + R → cmd'
   fullForm: 'Run dialog'
+  difficulty: 1
+  objective: 'CMD را باز کنی، Prompt را بشناسی و صفحه را پاک کنی.'
   summary: 'سه راه ساده برای باز کردن CMD وجود دارد. وقتی باز شد، خطی مثل `C:\Users\Student>` می‌بینی که یعنی CMD آماده دستور است.'
   meaning: 'روش ۱: منوی Start ← تایپ `cmd` ← Enter. روش ۲: کلید Win + R ← تایپ `cmd` ← Enter. روش ۳: در نوار آدرس File Explorer بنویس `cmd` تا CMD در همان پوشه باز شود.'
   usage: 'خط `C:\Users\Student>` را Prompt می‌گویند. Prompt نشان می‌دهد الان کجا هستی و CMD منتظر دستور توست.'
@@ -90,6 +114,12 @@
     - {p: 'C:\Users\Student>', c: ''}
   tip: 'Prompt جزو دستور نیست. فقط بعد از علامت `>` تایپ کن.'
   daily: 'Prompt مثل چراغ «آماده» روی دستگاه کارت‌خوان است: تا روشن نباشد، کارت نکش.'
+  examples:
+    - c: 'cls'
+      d: 'صفحه را پاک می‌کند؛ فایل‌ها و تاریخچه دستورها دست نمی‌خورند.'
+  mistakes:
+    - 'تایپ کردن خود Prompt (مثل `C:\Users\Student>`) قبل از دستور.'
+    - 'فکر کردن به اینکه `cls` چیزی را حذف می‌کند؛ فقط صفحه را تمیز می‌کند.'
   practice:
     - id: P3a
       start: 'C:\Users\Student'
@@ -123,10 +153,13 @@
       answer: 0
       code_options: true
       explain: 'نام برنامه `cmd` است.'
+  recap: 'Win + R ← `cmd` ← Enter. Prompt یعنی CMD آماده است. `cls` = پاک کردن صفحه.'
 
 - n: 4
   term: 'command  argument  /switch'
   fullForm: 'Command · Argument · Switch'
+  difficulty: 1
+  objective: 'اجزای یک دستور (Command، Argument، Switch) را تشخیص بدهی.'
   summary: 'هر Command سه بخش دارد: نام دستور، Argument (روی چه چیزی) و Switch (چطور). بین بخش‌ها Space می‌گذاریم.'
   meaning: 'Command: کاری که می‌خواهی انجام شود. Argument: روی چه فایل یا پوشه‌ای. Switch: تنظیم نحوه انجام کار؛ در CMD با `/` شروع می‌شود.'
   usage: 'وقتی ساختار را بشناسی، هر دستور جدید را راحت می‌خوانی و راهنمای Windows را می‌فهمی.'
@@ -135,6 +168,18 @@
     - {p: 'C:\Users\Student>', c: 'dir Documents /w'}
   tip: 'بین بخش‌ها Space لازم است. `dirDocuments` یک کلمه ناشناخته است. با `/?` بعد از هر دستور، راهنمای آن را می‌بینی.'
   restaurant: '«قهوه بیار، بدون شکر». «بیار» Command است، «قهوه» Argument (چه چیزی) و «بدون شکر» Switch (چطور).'
+  examples:
+    - c: 'dir'
+      d: 'فقط Command.'
+    - c: 'dir Documents'
+      d: 'Command + Argument (نام پوشه).'
+    - c: 'dir /w'
+      d: 'Command + Switch (نمایش فشرده).'
+    - c: 'dir Documents /b'
+      d: 'Command + Argument + Switch.'
+  mistakes:
+    - 'چسباندن Argument به Command بدون Space، مثل `dirDocuments`.'
+    - 'استفاده از `\` به‌جای `/` برای Switch، مثل `dir \w`.'
   practice:
     - id: P4a
       start: 'C:\Users\Student'
@@ -170,10 +215,13 @@
       q: 'در CMD، Switchها معمولاً با `/` شروع می‌شوند.'
       answer: true
       explain: 'مثل `/w` یا `/?`'
+  recap: '`command argument /switch`. Argument می‌گوید روی چه چیزی، Switch می‌گوید چگونه.'
 
 - n: 5
   term: 'File · Folder'
   fullForm: 'File · Folder (Directory)'
+  difficulty: 1
+  objective: 'فرق File و Folder و نقش Extension را بدانی.'
   summary: 'File یک سند، عکس یا برنامه است. Folder جعبه‌ای است که File و Folderهای دیگر را نگه می‌دارد.'
   meaning: 'نام File معمولاً دو بخش دارد: نام و Extension، مثل `report.txt`. در خروجی `dir`، پوشه‌ها با `<DIR>` مشخص می‌شوند.'
   usage: 'تقریباً همه کارهای CMD با File و Folder است: دیدن، ساختن، کپی، جابه‌جا کردن و حذف.'
@@ -185,6 +233,14 @@
   tip: 'Extension نوع File را نشان می‌دهد: `.txt` متن، `.jpg` عکس، `.mp3` صدا، `.exe` برنامه.'
   daily: 'کمد لباس: هر کشو یک Folder است و هر لباس یک File. کشو می‌تواند کشوی کوچک‌تری هم داخلش داشته باشد.'
   restaurant: 'در آشپزخانه، قفسه‌ها Folder هستند و ظرف‌های مواد File. برچسب روی ظرف (شکر، نمک) مثل Extension است: می‌گوید داخلش چه نوع چیزی است.'
+  examples:
+    - c: 'dir'
+      d: 'پوشه‌ها با `<DIR>` و فایل‌ها با اندازه نمایش داده می‌شوند.'
+    - c: 'dir *.txt'
+      d: 'فقط فایل‌های با Extension متنی.'
+  mistakes:
+    - 'جا انداختن Extension در نام فایل، مثل `type notes` به‌جای `type notes.txt`.'
+    - 'تصور اینکه تغییر Extension نوع واقعی فایل را عوض می‌کند.'
   practice:
     - id: P5a
       start: 'C:\Users\Student\Documents'
@@ -220,10 +276,13 @@
       options: ['2', '1', '3', '0']
       answer: 0
       explain: 'دو خط `<DIR>` دارند: Work و Photos.'
+  recap: 'File = محتوا با Extension. Folder = ظرف فایل‌ها که در `dir` با `<DIR>` دیده می‌شود.'
 
 - n: 6
   term: 'C:  D:  E:'
   fullForm: 'Drive letter'
+  difficulty: 1
+  objective: 'Drive‌ها را بشناسی و بین آن‌ها جابه‌جا شوی.'
   summary: 'Drive محل ذخیره‌سازی است، مثل هارد یا USB. هر Drive یک حرف دارد و برای رفتن به آن، حرف و دو نقطه را می‌نویسی.'
   meaning: '`C:` معمولاً Driveی است که Windows روی آن نصب است. `D:` می‌تواند هارد یا پارتیشن دوم باشد و `E:` اغلب USB.'
   usage: 'برای کار با فایل‌های USB یا هارد دیگر، اول باید به آن Drive بروی.'
@@ -233,6 +292,16 @@
     - {p: 'D:\>', c: ''}
   tip: 'دو نقطه لازم است. اگر فقط `D` بنویسی، CMD آن را یک دستور ناشناخته می‌بیند.'
   restaurant: 'یک رستوران زنجیره‌ای چند شعبه دارد. هر Drive یک شعبه است با حرف مخصوص خودش. با نوشتن `D:` به شعبه D می‌روی.'
+  examples:
+    - c: 'D:'
+      d: 'رفتن به Drive D.'
+    - c: 'C:'
+      d: 'برگشتن به Drive C.'
+    - c: 'vol'
+      d: 'نام و شماره سریال Drive فعلی.'
+  mistakes:
+    - 'نوشتن `cd D:` برای رفتن به Drive دیگر؛ فقط `D:` کافی است.'
+    - 'جا انداختن دونقطه: `D` به‌تنهایی یک دستور ناشناخته است.'
   practice:
     - id: P6a
       start: 'C:\Users\Student'
@@ -269,10 +338,13 @@
       options: ['دو نقطه بعد از حرف Drive جا افتاده', 'باید کوچک نوشته شود', 'Drive D وجود ندارد', 'باید اول cd بنویسیم']
       answer: 0
       explain: 'برای تغییر Drive باید `D:` بنویسی.'
+  recap: 'هر Drive یک حرف دارد. با نوشتن حرف و `:` به آن Drive می‌روی.'
 
 - n: 7
   term: 'Current Directory'
   fullForm: 'Directory = Folder'
+  difficulty: 1
+  objective: 'بدانی الان در کدام پوشه هستی و Prompt چه می‌گوید.'
   summary: 'Directory همان Folder است. Current Directory پوشه‌ای است که الان در آن هستی و در Prompt نوشته شده.'
   meaning: 'در `C:\Users\Student\Music>` پوشه فعلی `Music` است. دستورها به‌طور پیش‌فرض روی همین پوشه کار می‌کنند.'
   usage: 'دستور `cd` بدون هیچ Argument، Current Directory را چاپ می‌کند.'
@@ -283,6 +355,14 @@
   tip: 'هر Drive، Current Directory مخصوص خودش را به خاطر می‌سپارد. اگر به D بروی و برگردی، روی C همان‌جای قبلی هستی.'
   daily: 'اگر در آشپزخانه باشی و کسی بگوید «چراغ را روشن کن»، چراغ همان اتاقی را روشن می‌کنی که در آن هستی.'
   restaurant: 'گارسون فقط از میزی سفارش می‌گیرد که کنارش ایستاده. Current Directory همان میزی است که الان کنارش هستی.'
+  examples:
+    - c: 'cd'
+      d: 'مسیر Current Directory را چاپ می‌کند.'
+    - c: 'dir'
+      d: 'محتوای همان پوشه فعلی.'
+  mistakes:
+    - 'اجرای دستور روی فایلی که در پوشه فعلی نیست و تعجب از پیام File Not Found.'
+    - 'نادیده گرفتن Prompt؛ همیشه قبل از اجرا ببین کجا هستی.'
   practice:
     - id: P7a
       start: 'C:\Users\Student\Music'
@@ -308,10 +388,13 @@
       q: 'دستوری بنویس که Current Directory را نمایش دهد.'
       accept: ['cd', 'chdir']
       explain: '`cd` بدون Argument.'
+  recap: 'Current Directory = جایی که الان هستی. Prompt و `cd` تنها آن را نشان می‌دهند.'
 
 - n: 8
   term: 'Path'
   fullForm: 'C:\Users\Student\Documents\todo.txt'
+  difficulty: 1
+  objective: 'ساختار Path و نقش `\` را بفهمی.'
   summary: 'Path آدرس یک فایل یا پوشه است. نام پوشه‌ها با `\` (Backslash) از هم جدا می‌شوند.'
   meaning: 'Path را از چپ به راست بخوان: Drive `C:` ← پوشه `Users` ← `Student` ← `Documents` ← فایل `todo.txt`.'
   usage: 'هر بار به CMD می‌گویی با چه فایل یا پوشه‌ای کار کند، در واقع یک Path می‌دهی.'
@@ -321,6 +404,14 @@
     - {p: 'C:\Users\Student\Documents\Work>', c: ''}
   tip: 'Windows برای Path از `\` استفاده می‌کند. علامت `/` در CMD برای Switch است.'
   daily: 'Path مثل آدرس پستی است: شهر، خیابان، کوچه، پلاک. هر بخش تو را یک قدم نزدیک‌تر می‌کند.'
+  examples:
+    - c: 'dir C:\Users\Student\Documents'
+      d: 'محتوای پوشه با Path کامل.'
+    - c: 'type C:\Users\Student\Desktop\notes.txt'
+      d: 'خواندن فایل با Path کامل.'
+  mistakes:
+    - 'استفاده از `/` به‌جای `\` در Path.'
+    - 'فراموش کردن کوتیشن برای Path دارای Space، مثل `"shopping list.txt"`.'
   practice:
     - id: P8a
       start: 'C:\Users\Student'
@@ -358,10 +449,13 @@
       answer: 0
       code_options: true
       explain: 'بخش درست قبل از نام فایل، پوشه آن است.'
+  recap: 'Path = آدرس فایل یا پوشه. بخش‌ها با `\` جدا می‌شوند. Path دارای Space داخل `" "`.'
 
 - n: 9
   term: 'Absolute Path'
   fullForm: 'C:\Users\Student\Pictures'
+  difficulty: 1
+  objective: 'Absolute Path را بشناسی و از هر جایی به هر جایی اشاره کنی.'
   summary: 'Absolute Path آدرس کامل است که از Drive یا ریشه `\` شروع می‌شود. مهم نیست الان کجا هستی؛ همیشه به همان مقصد می‌رسد.'
   meaning: 'اگر Path با حرف Drive (مثل `C:\`) یا با `\` شروع شود، Absolute است.'
   usage: 'وقتی نمی‌دانی الان کجا هستی یا مقصد دور است، Absolute Path مطمئن‌ترین راه است.'
@@ -372,6 +466,14 @@
   tip: '`cd` به‌تنهایی Drive را عوض نمی‌کند. اگر مقصد روی Drive دیگری است از `cd /d` استفاده کن (درس ۱۴).'
   daily: 'آدرس کامل پستی را به هر پیک بدهی، از هر جای شهر به همان خانه می‌رسد.'
   restaurant: '«شعبه C، طبقه Users، سالن Student، میز Pictures». هر گارسونی از هر جای رستوران این آدرس را بشنود، به همان میز می‌رسد.'
+  examples:
+    - c: 'cd C:\Users\Student\Pictures'
+      d: 'از هر جایی مستقیم به Pictures.'
+    - c: 'dir C:\Windows'
+      d: 'دیدن C:\Windows بدون رفتن به آن.'
+  mistakes:
+    - 'جا انداختن حرف Drive یا `\` اول، که Path را Relative می‌کند.'
+    - 'رفتن با `cd` به Drive دیگر بدون عوض کردن Drive.'
   practice:
     - id: P9a
       start: 'C:\Windows\System32'
@@ -405,10 +507,13 @@
       show: 'cd C:\Windows'
       accept: ['cd c:\windows', 'cd \windows', 'chdir c:\windows', 'cd /d c:\windows']
       explain: '`cd C:\Windows`'
+  recap: 'Absolute Path با حرف Drive شروع می‌شود و از هر جایی کار می‌کند.'
 
 - n: 10
   term: 'Relative Path'
   fullForm: 'Documents\Work · ..'
+  difficulty: 1
+  objective: 'Relative Path و `.` و `..` را درست به کار ببری.'
   summary: 'Relative Path نسبت به Current Directory حساب می‌شود. با Drive یا `\` شروع نمی‌شود و نتیجه‌اش به جای فعلی تو بستگی دارد.'
   meaning: 'اگر در `C:\Users\Student` باشی، `cd Documents` یعنی `C:\Users\Student\Documents`. دو نقطه `..` یعنی پوشه بالاتر (Parent).'
   usage: 'برای جابه‌جایی کوتاه بین پوشه‌های نزدیک، سریع‌ترین روش است.'
@@ -420,6 +525,17 @@
   tip: 'اگر خطای `The system cannot find the path specified.` دیدی، اول با `cd` ببین کجا هستی.'
   daily: '«دو در بعد از همین اتاق». این آدرس فقط وقتی معنی دارد که بدانی الان کدام اتاق هستی.'
   restaurant: '«میز کناری را تمیز کن». کدام میز؟ بستگی دارد گارسون الان کنار کدام میز ایستاده.'
+  examples:
+    - c: 'cd Documents'
+      at: 'C:\Users\Student'
+      d: 'رفتن به پوشه داخل پوشه فعلی.'
+    - c: 'cd ..'
+      d: 'رفتن به پوشه بالاتر.'
+    - c: 'dir ..\Pictures'
+      d: 'دیدن پوشه کناری.'
+  mistakes:
+    - 'استفاده از Relative Path وقتی در پوشه اشتباه هستی.'
+    - 'نوشتن `cd..` بدون فاصله: در CMD کار می‌کند، ولی عادت درست `cd ..` است.'
   practice:
     - id: P10a
       start: 'C:\Users\Student\Documents'
@@ -458,3 +574,5 @@
       options: ['خطا: پوشه پیدا نمی‌شود', 'C:\Users\Music', 'C:\Users\Student\Music', 'C:\Music']
       answer: 0
       explain: 'داخل `C:\Users` پوشه‌ای به نام Music نیست، پس CMD پیغام `The system cannot find the path specified.` می‌دهد.'
+  recap: 'Relative Path از Current Directory حساب می‌شود. `.` همین‌جا، `..` یک پوشه بالاتر.'
+
