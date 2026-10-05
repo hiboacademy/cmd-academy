@@ -7,8 +7,13 @@ def y(p): return yaml.safe_load(open(R / p, encoding="utf8"))
 lessons = []
 for f in sorted(glob.glob(str(R / "src/content/fa/lessons/*.yaml"))):
     lessons += yaml.safe_load(open(f, encoding="utf8"))
+lib = y("src/content/fa/commands.yaml")
+VERSION = "1.0.0"
 content = {"curriculum": y("src/content/fa/curriculum.yaml"), "lessons": lessons,
-           "shell": y("src/content/fa/shell.yaml"), "ui": y("src/content/fa/ui.yaml")}
+           "shell": y("src/content/fa/shell.yaml"), "ui": y("src/content/fa/ui.yaml"),
+           "categories": lib["categories"], "commands": lib["commands"],
+           "challenges": y("src/content/fa/challenges.yaml") or [],
+           "meta": {"version": VERSION}}
 # sanity checks
 nums = [l["n"] for lv in content["curriculum"]["levels"] for ch in lv["chapters"] for l in ch["lessons"]]
 assert nums == list(range(1, len(nums) + 1)), "lesson numbers must be continuous"
@@ -16,9 +21,15 @@ ids = [p["id"] for l in lessons for p in l["practice"]]
 assert len(ids) == len(set(ids)), "duplicate practice id"
 pathlib.Path(R / "dist").mkdir(exist_ok=True)
 json.dump(content, open(R / "dist/content.fa.json", "w", encoding="utf8"), ensure_ascii=False, indent=1)
-order = ["src/engine/vfs.js", "src/engine/shell.js", "src/engine/checker.js", "src/data/content.js",
-         "src/store/progress.js", "src/ui/dom.js", "src/ui/terminal.js", "src/ui/views.js", "src/app.js"]
+order = ["src/engine/vfs.js", "src/engine/sysdata.js", "src/engine/seta.js", "src/engine/shell.js",
+         "src/engine/cmd-core.js", "src/engine/cmd-files.js", "src/engine/cmd-text.js", "src/engine/cmd-system.js",
+         "src/engine/cmd-network.js", "src/engine/cmd-disk.js", "src/engine/cmd-batch.js", "src/engine/checker.js", "src/data/content.js",
+         "src/store/progress.js", "src/ui/dom.js", "src/ui/terminal.js", "src/ui/views-common.js", "src/ui/views-home.js",
+         "src/ui/views-learn.js", "src/ui/views-practice.js", "src/ui/views-sim.js", "src/ui/views-quiz.js",
+         "src/ui/views-library.js", "src/ui/views-challenges.js", "src/ui/views-progress.js", "src/app.js"]
 js = "\n".join(open(R / f, encoding="utf8").read() for f in order)
+import hashlib as _h
+content["meta"]["build"] = _h.sha1((js + json.dumps(content, ensure_ascii=False)).encode()).hexdigest()[:8]
 css = open(R / "src/ui/styles.css", encoding="utf8").read()
 data = json.dumps(content, ensure_ascii=False).replace("</", "<\\/")
 html = open(R / "src/index.template.html", encoding="utf8").read()

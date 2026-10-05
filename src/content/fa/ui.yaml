@@ -1,45 +1,92 @@
 # UI strings (Persian). Add en.yaml / de.yaml with the same keys later.
 app_name: CMD ACADEMY
 tagline: 'Windows Command Line را قدم‌به‌قدم یاد بگیر'
+nav_main: منوی اصلی
 nav_home: خانه
 nav_learn: درس‌ها
 nav_practice: تمرین
 nav_sim: Simulator
 nav_progress: پیشرفت
 nav_quiz: Quiz
+nav_search: جستجو
+nav_favorites: نشان‌شده‌ها
+nav_settings: تنظیمات
 continue: ادامه
+go: برو
 lesson: Lesson
 lessons: Lessons
 chapter: Chapter
 level: Level
 coming_soon: به‌زودی
 back: بازگشت
+all: همه
+not_found: 'این صفحه پیدا نشد.'
+error_title: 'مشکلی پیش آمد'
+course_done: 'همه درس‌ها تمام شدند. آفرین!'
+
 card_learn_title: Learn
 card_learn_desc: '۱۰۰ درس کوتاه، از صفر تا Batch'
 card_practice_title: Practice
 card_practice_desc: 'دستور را خودت بنویس و بررسی شود'
 card_sim_title: CMD Simulator
 card_sim_desc: 'یک CMD امن برای آزمایش'
-card_quiz_desc: 'Mini Quiz و Quiz فصل'
+card_quiz_desc: 'Quiz درس، فصل و Level'
+card_lib_desc: 'مرجع دستورها با مثال'
+card_ch_desc: 'سناریوهای واقعی'
+card_batch_desc: 'Script بنویس و اجرا کن'
 card_progress_desc: 'درصد پیشرفت و امتیازها'
 tap_to_open: 'برای باز کردن Simulator لمس کن'
+stat_accuracy: 'دقت Quiz'
+stat_streak: 'روز پشت‌سرهم'
+stat_challenges: Challenge
+stat_answers: 'پاسخ ثبت‌شده'
+recent_learned: 'اخیراً یاد گرفتی'
+suggested: 'پیشنهاد تمرین'
+suggest_weak: 'در `{cmd}` بیشتر اشتباه کرده‌ای؛ درسش را مرور کن.'
+suggest_chapter: 'تمرین‌های فصل «{ch}»'
+
+# lesson page
+lvl_1: مبتدی
+lvl_2: متوسط
+lvl_3: پیشرفته
+st_done: 'تمام‌شده'
+st_current: 'درس فعلی'
+st_started: 'شروع‌شده'
+st_open: 'شروع‌نشده'
+s_objective: 'هدف درس'
 s_meaning: معنی
 s_usage: کاربرد
 s_syntax: Syntax
 s_example: مثال
+s_examples: 'مثال‌ها'
 s_tip: نکته
 s_warning: هشدار
+s_mistakes: 'اشتباه‌های رایج'
 s_daily: مثال روزمره
 s_restaurant: مثال رستوران
+s_recap: 'خلاصه'
+s_switches: 'Switchهای مهم'
+s_related: 'دستورهای مرتبط'
+s_lessons: 'درس‌های مرتبط'
+try_it: 'اجرا در Simulator'
+fav_lesson: 'نشان کردن درس'
+fav_example: 'نشان کردن مثال'
+fav_command: 'نشان کردن دستور'
+fav_added: 'به نشان‌شده‌ها اضافه شد'
+fav_removed: 'از نشان‌شده‌ها حذف شد'
+lesson_nav: 'درس قبلی و بعدی'
 btn_practice: تمرین کن
 btn_quiz: Mini Quiz
 btn_next_lesson: درس بعدی
 req_practice: تمرین‌ها
 req_quiz: 'Mini Quiz (حداقل نصف درست)'
-lesson_done: 'این درس کامل شد'
+chapter_quiz: 'Quiz فصل'
+level_quiz: 'Quiz پایان Level {n}'
+
+# practice
 practice_title: تمرین
 practice_next: تمرین بعدی
-practice_all_done: 'همه تمرین‌های موجود را انجام داده‌ای. درس‌های بعدی به‌زودی اضافه می‌شوند.'
+practice_all_done: 'همه تمرین‌ها را انجام داده‌ای. Challengeها منتظرت هستند.'
 correct: '✓ درست است'
 not_yet: '✕ هنوز درست نیست'
 keep_going: 'خوب است، ادامه بده.'
@@ -50,14 +97,39 @@ restart: از اول
 next_task: تمرین بعدی
 back_to_lesson: برگشت به درس
 type_here: 'Command را اینجا بنویس'
+solved_before: 'این را قبلاً حل کرده‌ای.'
+admin_task: 'این تمرین در CMD با دسترسی Administrator انجام می‌شود.'
+winre_task: 'این تمرین در Recovery Environment (محیط تعمیر ویندوز) انجام می‌شود.'
+
+# batch editor
+batch_name: 'نام فایل'
+batch_code: 'کد Batch'
+batch_run: 'اجرا'
+batch_save: 'ذخیره'
+batch_saved: 'Script ذخیره شد'
+batch_args: 'Arguments (اختیاری)'
+batch_templates: 'نمونه‌ها'
+batch_intro: 'Script را بنویس، اجرا کن و نتیجه را در Terminal ببین.'
+batch_help: 'فایل روی Desktop مجازی ذخیره می‌شود (`C:\Users\Student\Desktop`). در Terminal هم می‌توانی آن را با نامش اجرا کنی. برای توقف یک Script از دکمه `Ctrl+C` استفاده کن.'
+
+# simulator
 sim_title: CMD Academy Simulator
 sim_badge: 'Sandbox · هیچ دستوری روی دستگاه واقعی اجرا نمی‌شود'
 sim_reset: ریست
 sim_reset_done: 'Simulator به حالت اول برگشت.'
-sim_try: 'امتحان کن: dir ، cd Documents ، cd .. ، D: ، help'
+sim_reset_confirm: 'همه فایل‌ها و تغییرات Simulator پاک شوند و به حالت اول برگردد؟'
+sim_mode: 'نوع CMD'
+sim_normal: 'کاربر عادی'
+sim_mode_normal: 'CMD معمولی (بدون دسترسی Administrator).'
+sim_mode_admin: 'CMD با دسترسی Administrator باز شد. دستورهای سیستمی مثل `sfc` و `chkdsk` و `diskpart` اینجا کار می‌کنند. مراقب باش!'
+sim_mode_winre: 'وارد Recovery Environment شدی: Drive فعلی `X:` است و Windows روی `C:` قرار دارد. دستورهایی مثل `bootrec` و `diskpart` اینجا در دسترس‌اند.'
+sim_try: 'امتحان کن: `dir` ، `cd Documents` ، `type menu.txt | find "Pizza"` ، `ping google.com` ، `help`'
+
+# quiz
 quiz_title: Quiz
 quiz_lessons: 'Mini Quiz درس‌ها'
-quiz_chapters: 'Quiz فصل'
+quiz_chapters: 'Quiz فصل‌ها'
+quiz_levels: 'Quiz پایان Level'
 quiz_q_of: 'سؤال {i} از {n}'
 quiz_correct: '✓ Correct'
 quiz_wrong: '✕ Incorrect'
@@ -66,22 +138,83 @@ quiz_next: سؤال بعدی
 quiz_finish: دیدن نتیجه
 quiz_result: نتیجه
 quiz_retry: دوباره
+quiz_pass: 'عالی! این Quiz را با موفقیت گذراندی.'
+quiz_fail: 'کمتر از نصف درست بود. درس را یک بار دیگر مرور کن و دوباره امتحان کن.'
+quiz_empty: 'هنوز سؤالی برای این بخش نیست.'
 quiz_best: 'بهترین'
 kind_mcq: چندگزینه‌ای
 kind_tf: درست/غلط
 kind_type: نوشتن Command
 kind_fix: پیدا کردن خطا
 kind_predict: پیش‌بینی خروجی
+kind_order: مرتب کردن
 tf_true: درست
 tf_false: غلط
+order_hint: 'گزینه‌ها را به ترتیب درست لمس کن. برای برداشتن، روی مورد انتخاب‌شده بزن.'
+order_empty: 'ترتیب تو اینجا ساخته می‌شود'
+review_title: 'مرور اشتباه‌ها'
+review_desc: '{n} سؤال که اشتباه جواب دادی؛ دوباره امتحانشان کن'
+review_empty: 'سؤال اشتباهی برای مرور نمانده. عالی!'
+review_lesson: 'مرور درس {n}'
+
+# library & search
+lib_search: 'جستجوی دستور، مثلاً copy یا «کپی»'
+lib_categories: 'دسته‌ها'
+aliases: 'نام‌های دیگر'
+danger_high: خطرناک
+danger_caution: 'با احتیاط'
+open_help_in_sim: 'دیدن `{cmd} /?` در Simulator'
+search_ph: 'دستور، درس، مثال یا موضوع'
+search_hint: 'جستجو بدون اینترنت انجام می‌شود. چند پیشنهاد:'
+no_results: 'چیزی پیدا نشد.'
+res_commands: 'دستورها'
+res_lessons: 'درس‌ها'
+res_examples: 'مثال‌ها'
+res_challenges: Challengeها
+res_quiz: 'سؤال‌های Quiz'
+fav_empty: 'هنوز چیزی نشان نکرده‌ای.'
+fav_how: 'در صفحه درس‌ها، دستورها و مثال‌ها روی ستاره بزن تا اینجا بیاید.'
+from_lesson: 'از درس {n}'
+
+# challenges
+ch_intro: 'هر Challenge یک کار واقعی است. خودت راه‌حل را پیدا کن؛ Simulator نتیجه را بررسی می‌کند.'
+after_lesson: 'بعد از درس {n}'
+next_challenge: 'Challenge بعدی'
+all_challenges: 'همه Challengeها'
+
+# progress
 progress_title: پیشرفت
 overall: Overall Progress
-stat_lessons: Lessons Completed
-stat_quiz: Quiz Score
-stat_practice: Practice Completed
+current_level: 'الان در Level {lv} هستی؛ درس بعدی: {n}. {t}'
+stat_lessons: 'درس‌های تمام‌شده'
+stat_quiz: 'دقت Quiz'
+stat_practice: 'تمرین‌های حل‌شده'
+weak_title: 'دستورهایی که بیشتر اشتباه کرده‌ای'
+weak_count: '{n} بار خطا در تمرین‌ها'
+weak_none: 'هنوز خطای قابل‌توجهی ثبت نشده.'
+saved_local: 'پیشرفت فقط روی همین دستگاه ذخیره می‌شود.'
+storage_off: 'ذخیره‌سازی در این مرورگر فعال نیست؛ پیشرفت بعد از بستن صفحه پاک می‌شود.'
+
+# settings
+set_theme: 'ظاهر'
+theme_dark: تیره
+theme_light: روشن
+theme_system: 'مثل سیستم'
+set_font: 'اندازه متن'
+set_lang: زبان
+set_sim: Simulator
+set_sim_desc: 'فایل‌ها و تغییراتی که در Simulator و Batch Editor ساخته‌ای پاک می‌شوند. پیشرفت درس‌ها حفظ می‌شود.'
 reset_progress: پاک کردن پیشرفت
-reset_confirm: 'همه پیشرفت این دستگاه پاک شود؟'
+reset_desc: 'همه درس‌های تمام‌شده، نمره‌ها، Challengeها، نشان‌شده‌ها و Scriptهای ذخیره‌شده پاک می‌شوند.'
+reset_confirm: 'همه پیشرفت روی این دستگاه پاک شود؟ این کار برگشت ندارد.'
+reset_done: 'پیشرفت پاک شد.'
 yes_reset: بله، پاک کن
 cancel: انصراف
-saved_local: 'پیشرفت فقط روی همین مرورگر ذخیره می‌شود.'
-storage_off: 'ذخیره‌سازی در این مرورگر فعال نیست؛ پیشرفت بعد از بستن صفحه پاک می‌شود.'
+set_offline: 'استفاده آفلاین'
+offline_ready: 'آماده است: درس‌ها و Simulator بدون اینترنت کار می‌کنند.'
+offline_app: 'نسخه نصب‌شده؛ همه چیز روی دستگاه است.'
+offline_no: 'در این نسخه پیش‌نمایش فعال نیست. نسخه نصبی (PWA) را باز کن.'
+set_storage: 'محل ذخیره'
+set_version: 'نسخه'
+set_about: 'درباره'
+about_text: 'CMD Academy یک اپ آموزشی است. Simulator یک محیط مجازی است و هیچ دستوری را روی دستگاه واقعی اجرا نمی‌کند.'
