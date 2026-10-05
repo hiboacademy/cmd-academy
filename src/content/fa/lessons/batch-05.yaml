@@ -41,12 +41,6 @@
       hints: ['`set` با یک پیشوند، متغیرهای هم‌شروع را نشان می‌دهد.', '`set user`']
       answer: 'set user'
   quiz:
-    - kind: sim
-      q: 'متغیر `table` را با مقدار `12` بساز.'
-      start: 'C:\Users\Student'
-      checks: [{type: envEquals, name: table, value: '12'}]
-      answer: 'set table=12'
-      explain: 'دور `=` فاصله نگذار.'
     - kind: fix
       q: 'چرا `echo %food%` چیزی جز `%food%` چاپ نمی‌کند؟'
       code: "set food =Pizza\necho %food%"
@@ -64,6 +58,12 @@
       accept: ['set color=', 'set "color="']
       show: 'set color='
       explain: '`set name=` بدون مقدار.'
+    - kind: sim
+      q: 'متغیر `table` را با مقدار `12` بساز.'
+      start: 'C:\Users\Student'
+      checks: [{type: envEquals, name: table, value: '12'}]
+      answer: 'set table=12'
+      explain: 'دور `=` فاصله نگذار.'
   recap: '`set name=value` بدون فاصله دور `=`. `%name%` = مقدار. `set name=` = حذف. `set` = فهرست.'
 
 - n: 46
@@ -433,12 +433,6 @@
       hints: ['`tasklist | find "Spotify"` شماره PID را نشان می‌دهد.', '`taskkill /pid 7810 /f`']
       answer: ['tasklist | find "Spotify"', 'taskkill /pid 7810 /f']
   quiz:
-    - kind: sim
-      q: 'Notepad را ببند؛ بقیه برنامه‌ها باید باز بمانند.'
-      start: 'C:\Users\Student'
-      checks: [{type: procGone, value: 'notepad.exe'}, {type: not, check: {type: procGone, value: 'chrome.exe'}}]
-      answer: 'taskkill /im notepad.exe'
-      explain: '`/im` با نام برنامه.'
     - kind: predict
       q: 'برنامه X جواب نمی‌دهد. نتیجه این دستور؟'
       code: 'taskkill /im X.exe'
@@ -455,4 +449,10 @@
       q: 'می‌شود `csrss.exe` را با `taskkill /f` بست تا کامپیوتر سریع‌تر شود.'
       answer: false
       explain: 'Processهای حیاتی بسته نمی‌شوند و تلاش برایش خطرناک است.'
+    - kind: sim
+      q: 'Notepad را ببند؛ بقیه برنامه‌ها باید باز بمانند.'
+      start: 'C:\Users\Student'
+      checks: [{type: procGone, value: 'notepad.exe'}, {type: not, check: {type: procGone, value: 'chrome.exe'}}]
+      answer: 'taskkill /im notepad.exe'
+      explain: '`/im` با نام برنامه.'
   recap: '`taskkill /im نام.exe` یا `/pid شماره`. `/f` اجباری. Processهای سیستمی را نبند.'

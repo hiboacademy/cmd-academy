@@ -99,4 +99,7 @@ function applySettings() {
   const dark = s.theme === "dark" || (s.theme === "system" && !(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches));
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", dark ? "#0b0d0e" : "#f3f5f6");
+  // Android app: status/navigation bar icons follow the theme (DARK = light icons).
+  const bars = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SystemBars;
+  if (bars && bars.setStyle) bars.setStyle({ style: dark ? "DARK" : "LIGHT" }).catch(() => {});
 }

@@ -20,9 +20,27 @@
 <script type="application/json" id="cmd-content">/*CONTENT*/</script>
 <script>
 /*SCRIPTS*/
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
-}
+/* Offline support. Inside the Android app (Capacitor) files are already local,
+   so no service worker is used there. When a new version is installed while the
+   app is open, offer a reload instead of switching under the learner's feet. */
+(function () {
+  const isApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if (isApp || !("serviceWorker" in navigator)) return;
+  const hadController = !!navigator.serviceWorker.controller;
+  let shown = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || shown) return;
+    shown = true;
+    if (window.showUpdateBar) window.showUpdateBar();
+  });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").then((reg) => {
+      const check = () => { reg.update().catch(() => {}); };
+      document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") check(); });
+      setInterval(check, 60 * 60 * 1000);
+    }).catch(() => {});
+  });
+})();
 </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
    ============================================================ */
 (() => {
   const { def, lib, COMMANDS } = Shell;
-  const { out, err, note, warn, msg, tokenize, parseArgs, P, R, full, expand, parentOf, inUse, showUsage, ask, num, cwdPath } = lib;
+  const { out, err, note, warn, msg, tokenize, parseArgs, P, R, full, expand, parentOf, inUse, isSystem, showUsage, ask, num, cwdPath } = lib;
 
   const fmt = VFS.fmt;
   const pad8 = (n) => String(n).padStart(9);
@@ -364,6 +364,7 @@
     let files = 0, dirs = 0;
     for (const it of e.items) {
       const srcParent = parentOf(sh, e.drive, it.parts);
+      if (isSystem(sh, e.drive, it.parts)) { err(lines, "Access is denied."); note(lines, msg("system_protected")); ok = false; return; }
       if (it.node.type === "dir" && inUse(sh, e.drive, it.parts)) { err(lines, "The process cannot access the file because it is being used by another process."); note(lines, msg("rd_in_use")); return false; }
       let destDir, destName, destParts;
       if (destIsDir) { destDir = dr.node; destName = it.node.name; destParts = dr.canonical.concat(destName); }
@@ -385,6 +386,7 @@
           if (/^a/i.test(a)) confirm = false;
         }
       }
+      if (isSystem(sh, e.drive, it.parts) || isSystem(sh, dp.drive, destParts)) { err(lines, "Access is denied."); note(lines, msg("system_protected")); return false; }
       if (!e.single) out(lines, fmt(e.drive, it.parts));
       VFS.remove(srcParent, it.node.name);
       it.node.name = destName;
@@ -448,7 +450,7 @@
       if (!spec) return true;
       return spec.split("").every((c, i, arr) => { if (c === "-") return true; const neg = arr[i - 1] === "-"; const v = c === "h" ? !!a.h : c === "s" ? !!a.s : c === "r" ? !!a.r : c === "a" ? !!a.a : true; return neg ? !v : v; });
     };
-    let deleted = 0;
+    let deleted = 0, sysNoted = false;
     for (const a of args) {
       const p = P(sh, a);
       const r = R(sh, p);
@@ -470,6 +472,7 @@
           if (!attrOk(f)) continue;
           found++;
           const fp = fmt(p.drive, d.parts.concat(f.name));
+          if (isSystem(sh, p.drive, d.parts)) { err(lines, `${fp}`); err(lines, "Access is denied."); if (!sysNoted) { note(lines, msg("system_protected")); sysNoted = true; } continue; }
           if (f.attrs && f.attrs.r && !F) { err(lines, `${fp}`); err(lines, "Access is denied."); note(lines, msg("del_readonly")); continue; }
           if (Pp) { const ans = (yield* ask(`${fp}, Delete (Y/N)? `)).trim(); if (!/^y/i.test(ans)) continue; }
           VFS.remove(d.node, f.name);

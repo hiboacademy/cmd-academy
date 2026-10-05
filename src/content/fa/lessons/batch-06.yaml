@@ -196,12 +196,6 @@
       hints: ['ping با IP Router.', '`ping 192.168.1.1`']
       answer: 'ping 192.168.1.1'
   quiz:
-    - kind: sim
-      q: 'به `google.com` فقط یک بسته ping بفرست.'
-      start: 'C:\Users\Student'
-      checks: [{type: cmd, value: ping}, {type: switch, value: '-n'}, {type: lastOutputIncludes, value: 'Sent = 1'}]
-      answer: 'ping -n 1 google.com'
-      explain: '`-n` تعداد بسته‌ها را تعیین می‌کند.'
     - kind: mcq
       q: '`Request timed out.` یعنی چه؟'
       options: ['جوابی در زمان معین نیامد', 'نام سایت پیدا نشد', 'اتصال عالی است', 'کامپیوتر IP ندارد']
@@ -218,6 +212,12 @@
       accept: ['ping -n 5 8.8.8.8', 'ping 8.8.8.8 -n 5', 'ping /n 5 8.8.8.8']
       show: 'ping -n 5 8.8.8.8'
       explain: '`-n 5`'
+    - kind: sim
+      q: 'به `google.com` فقط یک بسته ping بفرست.'
+      start: 'C:\Users\Student'
+      checks: [{type: cmd, value: ping}, {type: switch, value: '-n'}, {type: lastOutputIncludes, value: 'Sent = 1'}]
+      answer: 'ping -n 1 google.com'
+      explain: '`-n` تعداد بسته‌ها را تعیین می‌کند.'
   recap: '`ping مقصد`. Reply = سالم، timed out = بی‌جواب، could not find host = مشکل نام/DNS. `-n` تعداد، `-t` بی‌پایان.'
 
 - n: 57

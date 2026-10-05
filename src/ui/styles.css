@@ -531,6 +531,8 @@ mark { background: color-mix(in srgb, var(--warn) 30%, transparent); color: inhe
 .toast { position: fixed; z-index: 60; inset-inline: 16px; bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px)); display: flex; justify-content: center; pointer-events: none; }
 .toast > div { background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 99px; font-size: 0.875rem; animation: pop 0.2s ease-out; }
 @media (min-width: 960px) { .toast { bottom: 24px; } }
+.update-bar { position: fixed; z-index: 61; inset-inline: 12px; bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 8px; background: var(--surface-2, var(--surface)); border: 1px solid var(--green); border-radius: 12px; padding: 8px 8px 8px 12px; font-size: 0.875rem; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+@media (min-width: 960px) { .update-bar { bottom: 24px; inset-inline-start: auto; max-width: 420px; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

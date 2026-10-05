@@ -1,0 +1,15 @@
+{
+  "appId": "app.cmdacademy.fa",
+  "appName": "CMD Academy",
+  "webDir": "docs",
+  "android": {
+    "backgroundColor": "#0b0d0e"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "initialViewportFitValueHint": "cover",
+      "style": "DARK"
+    }
+  }
+}

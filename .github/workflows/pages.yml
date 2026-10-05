@@ -1,0 +1,49 @@
+# Tests the app and publishes it to GitHub Pages.
+# One-time setup: Settings → Pages → Source: "GitHub Actions".
+name: Test and publish website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - run: pip install pyyaml
+      - name: Build
+        run: python3 build.py
+      - name: Unit and content tests
+        run: node --test test/*.test.js
+      - name: UI check (all screens, phone and desktop widths)
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+          python3 test/ui_check.py
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: docs }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

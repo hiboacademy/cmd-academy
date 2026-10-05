@@ -5,7 +5,7 @@
    ============================================================ */
 (() => {
   const { def, lib, COMMANDS } = Shell;
-  const { out, err, note, warn, msg, tokenize, parseArgs, hasSw, fmtTime, num, P, R, full, expand, parentOf, inUse, showUsage, ask, getVar, setVar, cwdPath } = lib;
+  const { out, err, note, warn, msg, tokenize, parseArgs, hasSw, fmtTime, num, P, R, full, expand, parentOf, inUse, isSystem, showUsage, ask, getVar, setVar, cwdPath } = lib;
 
   /* ---------------- DIR ---------------- */
   def("dir", [], {
@@ -283,6 +283,7 @@
         const a2 = yield* ask(`${a}, Are you sure (Y/N)? `);
         if (!/^y/i.test(a2.trim())) continue;
       }
+      if (isSystem(sh, p.drive, r.canonical) || (!r.canonical.length)) { err(lines, "Access is denied."); note(lines, msg("system_protected")); ok = false; continue; }
       if (S && hasLocked(r.node)) { err(lines, `${full(p)}\\... - Access is denied.`); note(lines, msg("readonly_inside")); ok = false; continue; }
       const parent = parentOf(sh, p.drive, r.canonical);
       VFS.remove(parent, r.node.name);

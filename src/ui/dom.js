@@ -118,3 +118,14 @@ function starButton(kind, id, label) {
   });
   return b;
 }
+
+/* Shown by the PWA page when a new version took over (see pwa/index.template.html). */
+function showUpdateBar() {
+  if (document.querySelector(".update-bar")) return;
+  const bar = h("div", { class: "update-bar", role: "status" },
+    h("span", { class: "grow" }, Content.t("update_ready")),
+    h("button", { class: "btn small primary", onClick: () => location.reload() }, Content.t("update_reload")),
+    h("button", { class: "icon-btn plain", "aria-label": Content.t("close"), onClick: () => bar.remove() }, icon("x")));
+  document.body.appendChild(bar);
+}
+window.showUpdateBar = showUpdateBar;

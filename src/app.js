@@ -126,6 +126,20 @@ const App = (() => {
       }
     });
     render();
+    nativeBack();
+  }
+
+  /* Android back button in the app: go back through screens; on Home, leave the app. */
+  function nativeBack() {
+    const cap = window.Capacitor;
+    const AppPlugin = cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.App;
+    if (!AppPlugin) return;
+    AppPlugin.addListener("backButton", () => {
+      // an open confirm dialog closes first (same as pressing Escape)
+      if (document.querySelector(".dialog-back")) { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })); return; }
+      if (state.route === "") { AppPlugin.exitApp(); return; }
+      if (history.length > 1) history.back(); else go("");
+    });
   }
 
   return { boot, go, render, state };

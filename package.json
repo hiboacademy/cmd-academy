@@ -1,0 +1,20 @@
+{
+  "name": "cmd-academy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CMD Academy: learn Windows CMD from zero to Batch scripting (Persian).",
+  "scripts": {
+    "build": "python3 build.py",
+    "test": "python3 build.py && node --test test/*.test.js",
+    "test:ui": "python3 test/ui_check.py",
+    "android:sync": "python3 build.py && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  }
+}

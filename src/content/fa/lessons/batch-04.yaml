@@ -40,12 +40,6 @@
       hints: ['`ipconfig | find ...`', '`ipconfig | find "IPv4"`']
       answer: 'ipconfig | find "IPv4"'
   quiz:
-    - kind: sim
-      q: 'از فهرست Process‌ها فقط خط‌های `notepad` را نشان بده.'
-      start: 'C:\Users\Student'
-      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'notepad.exe'}, {type: lastOutputExcludes, value: 'chrome.exe'}]
-      answer: 'tasklist | find /i "notepad"'
-      explain: 'خروجی `tasklist` با `|` به `find` داده می‌شود.'
     - kind: mcq
       q: 'در `A | B`، ورودی دستور B از کجا می‌آید؟'
       options: ['از خروجی A', 'از صفحه‌کلید', 'از یک فایل', 'از دستور قبلی در History']
@@ -62,6 +56,12 @@
       accept: ['tasklist | find "notepad"', 'tasklist | find /i "notepad"', 'tasklist | findstr notepad', 'tasklist | findstr /i notepad', 'tasklist | find "notepad.exe"']
       show: 'tasklist | find "notepad"'
       explain: 'خروجی tasklist را به find بده.'
+    - kind: sim
+      q: 'از فهرست Process‌ها فقط خط‌های `notepad` را نشان بده.'
+      start: 'C:\Users\Student'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'notepad.exe'}, {type: lastOutputExcludes, value: 'chrome.exe'}]
+      answer: 'tasklist | find /i "notepad"'
+      explain: 'خروجی `tasklist` با `|` به `find` داده می‌شود.'
   recap: '`A | B` = خروجی A ورودی B می‌شود. برای فیلتر کردن خروجی‌های طولانی.'
 
 - n: 34
@@ -259,12 +259,6 @@
       hints: ['Switch «برعکس» در find کدام است؟', '`find /v "a" menu.txt`']
       answer: 'find /v "a" menu.txt'
   quiz:
-    - kind: sim
-      q: 'تعداد خط‌های `guests.txt` (در Documents) را بشمار.'
-      start: 'C:\Users\Student\Documents'
-      checks: [{type: cmd, value: find}, {type: switch, value: '/c'}, {type: lastOutputIncludes, value: ': 6'}]
-      answer: 'find /c /v "" guests.txt'
-      explain: '`/v ""` همه خط‌ها را انتخاب می‌کند و `/c` آن‌ها را می‌شمارد.'
     - kind: fix
       q: 'چرا این دستور خطا می‌دهد؟'
       code: "find Pizza menu.txt\nFIND: Parameter format not correct"
@@ -282,6 +276,12 @@
       accept: ['find /i "error" log.txt', 'find "error" /i log.txt', 'findstr /i error log.txt', 'findstr /i "error" log.txt']
       show: 'find /i "error" log.txt'
       explain: '`/i` برای نادیده گرفتن بزرگی حروف.'
+    - kind: sim
+      q: 'تعداد خط‌های `guests.txt` (در Documents) را بشمار.'
+      start: 'C:\Users\Student\Documents'
+      checks: [{type: cmd, value: find}, {type: switch, value: '/c'}, {type: lastOutputIncludes, value: ': 6'}]
+      answer: 'find /c /v "" guests.txt'
+      explain: '`/v ""` همه خط‌ها را انتخاب می‌کند و `/c` آن‌ها را می‌شمارد.'
   recap: '`find "متن" فایل`. `/i` حروف، `/c` تعداد، `/n` شماره خط، `/v` برعکس. Quotes الزامی است.'
 
 - n: 38

@@ -43,12 +43,6 @@
       hints: ['نام پوشه را به‌عنوان Argument به `dir` بده.', 'Switch مربوط به Bare format را اضافه کن: `/b`']
       answer: 'dir Documents /b'
   quiz:
-    - kind: sim
-      q: 'فقط نام فایل‌ها و پوشه‌های Downloads را ببین، بدون تاریخ و اندازه.'
-      start: 'C:\Users\Student'
-      checks: [{type: cmd, value: dir}, {type: switch, value: '/b'}, {type: lastOutputIncludes, value: 'invoice.pdf'}]
-      answer: 'dir Downloads /b'
-      explain: '`/b` فقط نام‌ها را نشان می‌دهد.'
     - kind: mcq
       q: 'در خروجی `dir`، عدد کنار نام فایل چیست؟'
       options: ['اندازه فایل به بایت', 'تعداد خط‌های فایل', 'شماره فایل', 'سن فایل به روز']
@@ -65,6 +59,12 @@
       accept: ['dir music', 'dir music\', 'dir .\music', 'dir c:\users\student\music']
       show: 'dir Music'
       explain: 'نام پوشه را به‌عنوان Argument به `dir` بده.'
+    - kind: sim
+      q: 'فقط نام فایل‌ها و پوشه‌های Downloads را ببین، بدون تاریخ و اندازه.'
+      start: 'C:\Users\Student'
+      checks: [{type: cmd, value: dir}, {type: switch, value: '/b'}, {type: lastOutputIncludes, value: 'invoice.pdf'}]
+      answer: 'dir Downloads /b'
+      explain: '`/b` فقط نام‌ها را نشان می‌دهد.'
   recap: '`dir` = دیدن محتوا. `/w` فشرده، `/b` فقط نام‌ها. پوشه‌ها با `<DIR>` مشخص می‌شوند.'
 
 - n: 12
@@ -168,12 +168,6 @@
       hints: ['ریشه با یک علامت نشان داده می‌شود.', '`cd \`']
       answer: 'cd \'
   quiz:
-    - kind: sim
-      q: 'از `Documents\Work` با یک دستور به پوشه Music برو.'
-      start: 'C:\Users\Student\Documents\Work'
-      checks: [{type: cwd, value: 'C:\Users\Student\Music'}]
-      answer: 'cd ..\..\Music'
-      explain: 'دو بار `..` تا Student و بعد Music؛ یا Absolute Path.'
     - kind: predict
       q: 'Current Directory: `C:\Users\Student\Music` — بعد از این دستور کجا هستی؟'
       code: 'cd ..\Pictures'
@@ -189,6 +183,12 @@
       q: 'یک پوشه بالاتر برو.'
       accept: ['cd ..', 'cd..', 'chdir ..', 'cd ..\']
       explain: '`cd ..`'
+    - kind: sim
+      q: 'از `Documents\Work` با یک دستور به پوشه Music برو.'
+      start: 'C:\Users\Student\Documents\Work'
+      checks: [{type: cwd, value: 'C:\Users\Student\Music'}]
+      answer: 'cd ..\..\Music'
+      explain: 'دو بار `..` تا Student و بعد Music؛ یا Absolute Path.'
   recap: '`cd ..` = یک پوشه بالا. `cd ..\..` = دو پوشه. `cd \` = ریشه Drive.'
 
 - n: 14
@@ -439,12 +439,6 @@
       hints: ['لازم نیست پوشه‌ها را یکی‌یکی بسازی.', '`mkdir` و کل مسیر با `\`.']
       answer: 'mkdir Projects\Web\Images'
   quiz:
-    - kind: sim
-      q: 'پوشه‌های `Shop\2026` و `Shop\2027` را بساز.'
-      start: 'C:\Users\Student'
-      checks: [{type: dirExists, path: 'C:\Users\Student\Shop\2026'}, {type: dirExists, path: 'C:\Users\Student\Shop\2027'}]
-      answer: 'mkdir Shop\2026 Shop\2027'
-      explain: '`mkdir` چند مسیر را با هم و چند سطح را یک‌جا می‌سازد.'
     - kind: mcq
       q: 'شکل کوتاه `mkdir` کدام است؟'
       options: ['md', 'mk', 'mdir', 'nd']
@@ -461,6 +455,12 @@
       options: ['A subdirectory or file Work already exists.', 'یک پوشه Work2 ساخته می‌شود', 'پوشه قبلی پاک و دوباره ساخته می‌شود', 'هیچ خروجی ندارد']
       answer: 0
       explain: 'CMD پوشه موجود را بازنویسی نمی‌کند.'
+    - kind: sim
+      q: 'پوشه‌های `Shop\2026` و `Shop\2027` را بساز.'
+      start: 'C:\Users\Student'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Shop\2026'}, {type: dirExists, path: 'C:\Users\Student\Shop\2027'}]
+      answer: 'mkdir Shop\2026 Shop\2027'
+      explain: '`mkdir` چند مسیر را با هم و چند سطح را یک‌جا می‌سازد.'
   recap: '`mkdir نام` یا `md نام`. با Path کامل، پوشه‌های میانی هم ساخته می‌شوند.'
 
 - n: 19

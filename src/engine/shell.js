@@ -621,6 +621,11 @@ const Shell = (() => {
   }
   function parentOf(sh, drive, parts) { return VFS.resolve(sh.fs, drive, parts.slice(0, -1)).node; }
   /* true if [drive,parts] is the cwd of any drive or one of its parents */
+  /* Windows protects its own folders (TrustedInstaller), even from Administrators. */
+  const SYSTEM_DIRS = ["windows", "program files", "program files (x86)", "programdata"];
+  function isSystem(sh, drive, parts) {
+    return drive === "C" && parts.length > 0 && SYSTEM_DIRS.includes(String(parts[0]).toLowerCase());
+  }
   function inUse(sh, drive, parts) {
     const cw = sh.cwd[drive] || [];
     if (parts.length > cw.length) return false;
@@ -1293,7 +1298,7 @@ const Shell = (() => {
 
   /* helpers shared with the command files */
   const lib = {
-    out, err, note, warn, msg, tokenize, parseArgs, hasSw, fmtTime, num, P, R, full, expand, parentOf, inUse, showUsage, ask,
+    out, err, note, warn, msg, tokenize, parseArgs, hasSw, fmtTime, num, P, R, full, expand, parentOf, inUse, isSystem, showUsage, ask,
     getVar, setVar, findKey, cwdPath, prompt, applyVarMod, stripQ, parseStmt, exec, runBatch, fileCommand, parseBatchArgs,
     endLocal, dateStr, timeStr, notRecognized, lessonOf, driveList, codeOf, runFrame, sub, notRecognizedMsg: notRecognized,
   };
