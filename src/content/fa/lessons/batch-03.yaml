@@ -41,6 +41,12 @@
       hints: ['مقصد ریشه Drive E است: `E:\`', '`copy menu.txt E:\`']
       answer: 'copy menu.txt E:\'
   quiz:
+    - kind: sim
+      q: 'فایل `menu.txt` را از Documents به `D:\Backup` کپی کن.'
+      start: 'C:\Users\Student'
+      checks: [{type: fileExists, path: 'D:\Backup\menu.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\menu.txt'}]
+      answer: 'copy Documents\menu.txt D:\Backup'
+      explain: '`copy مبدأ مقصد`؛ فایل اصلی سر جایش می‌ماند.'
     - kind: mcq
       q: 'بعد از `copy a.txt D:\Backup`، فایل `a.txt` اصلی چه می‌شود؟'
       options: ['سر جایش می‌ماند', 'پاک می‌شود', 'نامش عوض می‌شود', 'خالی می‌شود']
@@ -213,6 +219,12 @@
       hints: ['از Path نسبی استفاده کن.', '`del Downloads\photos.zip`']
       answer: 'del Downloads\photos.zip'
   quiz:
+    - kind: sim
+      q: 'فایل `draft.tmp` را از `Documents\Work` حذف کن؛ گزارش‌ها باید بمانند.'
+      start: 'C:\Users\Student\Documents'
+      checks: [{type: fileNotExists, path: 'C:\Users\Student\Documents\Work\draft.tmp'}, {type: fileExists, path: 'C:\Users\Student\Documents\Work\report.txt'}]
+      answer: 'del Work\draft.tmp'
+      explain: 'Path نسبی از Documents: `Work\draft.tmp`.'
     - kind: tf
       q: 'فایلی که با `del` حذف شود به Recycle Bin می‌رود.'
       answer: false
@@ -336,6 +348,12 @@
       hints: ['اول با `dir *.tmp` ببین کدام فایل‌ها انتخاب می‌شوند.', '`del *.tmp`']
       answer: 'del *.tmp'
   quiz:
+    - kind: sim
+      q: 'همه فایل‌های `.jpg` داخل Pictures (فقط خود پوشه) را به `E:\Photos` کپی کن.'
+      start: 'C:\Users\Student\Pictures'
+      checks: [{type: fileExists, path: 'E:\Photos\beach.jpg'}, {type: fileExists, path: 'E:\Photos\cat.jpg'}, {type: fileNotExists, path: 'E:\Photos\logo.png'}]
+      answer: 'copy *.jpg E:\Photos'
+      explain: '`*.jpg` همه فایل‌های jpg این پوشه را انتخاب می‌کند.'
     - kind: mcq
       q: 'کدام فایل با الگوی `r*.txt` جور است؟'
       options: ['report.txt', 'menu.txt', 'report.doc', 'art.txt']
@@ -442,6 +460,12 @@
       hints: ['دستوری که فهرست را نشان می‌دهد `dir` است.', '`dir Documents > list.txt`']
       answer: 'dir Documents > list.txt'
   quiz:
+    - kind: sim
+      q: 'خروجی `ver` را در فایل `version.txt` همین پوشه ذخیره کن.'
+      start: 'C:\Users\Student\Desktop'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\version.txt', value: 'Microsoft Windows'}]
+      answer: 'ver > version.txt'
+      explain: '`>` خروجی را به‌جای صفحه در فایل می‌نویسد.'
     - kind: predict
       q: 'بعد از این دو دستور، `a.txt` چه دارد؟'
       code: "echo One > a.txt\necho Two > a.txt"

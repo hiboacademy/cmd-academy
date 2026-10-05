@@ -196,6 +196,12 @@
       hints: ['ping با IP Router.', '`ping 192.168.1.1`']
       answer: 'ping 192.168.1.1'
   quiz:
+    - kind: sim
+      q: 'به `google.com` فقط یک بسته ping بفرست.'
+      start: 'C:\Users\Student'
+      checks: [{type: cmd, value: ping}, {type: switch, value: '-n'}, {type: lastOutputIncludes, value: 'Sent = 1'}]
+      answer: 'ping -n 1 google.com'
+      explain: '`-n` تعداد بسته‌ها را تعیین می‌کند.'
     - kind: mcq
       q: '`Request timed out.` یعنی چه؟'
       options: ['جوابی در زمان معین نیامد', 'نام سایت پیدا نشد', 'اتصال عالی است', 'کامپیوتر IP ندارد']

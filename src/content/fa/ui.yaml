@@ -149,6 +149,9 @@ kind_type: نوشتن Command
 kind_fix: پیدا کردن خطا
 kind_predict: پیش‌بینی خروجی
 kind_order: مرتب کردن
+kind_sim: انجام در Simulator
+quiz_give_up: نمی‌دانم
+quiz_sim_hint: 'دستور را در Terminal اجرا کن؛ وقتی نتیجه درست باشد، پاسخ ثبت می‌شود.'
 tf_true: درست
 tf_false: غلط
 order_hint: 'گزینه‌ها را به ترتیب درست لمس کن. برای برداشتن، روی مورد انتخاب‌شده بزن.'

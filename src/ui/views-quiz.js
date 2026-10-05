@@ -1,6 +1,7 @@
 /* ============================================================
    ui/views-quiz.js — lesson, chapter, level and review quizzes
-   Question kinds: mcq, tf, type, fix, predict, order
+   Question kinds: mcq, tf, type, fix, predict, order, sim (a task in a
+   live sandbox, checked by its result)
    ============================================================ */
 function QuizHomeView() {
   const row = (q, label) => {
@@ -37,7 +38,7 @@ function QuizHomeView() {
 
 function prepareQuestion(q) {
   if (q.kind === "tf") return { ...q, opts: [{ txt: T("tf_true"), ok: q.answer === true }, { txt: T("tf_false"), ok: q.answer === false }] };
-  if (q.kind === "type") return { ...q };
+  if (q.kind === "type" || q.kind === "sim") return { ...q };
   if (q.kind === "order") return { ...q, pool: shuffle(q.items.map((txt, i) => ({ txt, i }))) };
   return { ...q, opts: shuffle(q.options.map((txt, i) => ({ txt, ok: i === q.answer }))) };
 }
@@ -97,7 +98,29 @@ function QuizRunView(id) {
   };
 
   let answerUI;
-  if (q.kind === "type") {
+  if (q.kind === "sim") {
+    // Simulator task: solved when the sandbox reaches the required state.
+    const sh = Checker.shellFor(q);
+    const st = { recs: [], output: "" };
+    const show = [].concat(q.answer || []).join("\n");
+    const giveUp = h("button", { class: "btn small ghost", onClick: () => {
+      if (run.answered) return;
+      run.answered = true; giveUp.disabled = true;
+      if (show) fb.before(h("div", { class: "answer-code" }, show));
+      verdict(false);
+    } }, T("quiz_give_up"));
+    const term = InteractiveTerminal({ sh, cls: "short", onCommand: (res) => {
+      if (run.answered) return;
+      st.recs.push(...res.recs);
+      st.output += "\n" + (res.output || "");
+      if (Checker.evaluate(q.checks, sh, st.recs, { output: st.output, lastOutput: res.output || "" })) {
+        run.answered = true; giveUp.disabled = true;
+        verdict(true);
+      }
+    } });
+    answerUI = h("div", { class: "stack-sm" }, term.el, h("div", { class: "row between" }, h("span", { class: "muted small" }, T("quiz_sim_hint")), giveUp));
+    setTimeout(() => term.focus(), 60);
+  } else if (q.kind === "type") {
     const inp = h("input", { class: "text-in", type: "text", dir: "ltr", autocomplete: "off", autocapitalize: "off", autocorrect: "off", spellcheck: "false", enterkeyhint: "done", placeholder: "C:\\> ...", "aria-label": T("type_here") });
     const check = h("button", { class: "btn primary", type: "submit" }, T("quiz_check"));
     answerUI = h("form", { class: "stack-sm", onSubmit: (e) => {

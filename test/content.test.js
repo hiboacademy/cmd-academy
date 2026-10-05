@@ -61,8 +61,13 @@ C.lessons.forEach((l) => {
     assert.ok(l.quiz.length >= 3, `lesson ${l.n} needs 3+ quiz questions`);
     l.quiz.forEach((q, i) => {
       const where = `lesson ${l.n} q${i + 1}`;
-      assert.ok(["mcq", "tf", "type", "fix", "predict", "order"].includes(q.kind), where + " kind");
-      if (q.kind === "tf") assert.strictEqual(typeof q.answer, "boolean", where);
+      assert.ok(["mcq", "tf", "type", "fix", "predict", "order", "sim"].includes(q.kind), where + " kind");
+      if (q.kind === "sim") {
+        assert.ok(q.checks && q.answer, where + " sim needs checks and answer");
+        const r = solve(q);
+        assert.ok(r.ok, `${where}: sim answer fails\n${r.out.slice(-800)}`);
+        assert.ok(!wrong(q), `${where}: wrong attempt passes`);
+      } else if (q.kind === "tf") assert.strictEqual(typeof q.answer, "boolean", where);
       else if (q.kind === "type") assert.ok(Array.isArray(q.accept) && q.accept.length, where + " accept");
       else if (q.kind === "order") assert.ok(Array.isArray(q.items) && q.items.length >= 2, where + " items");
       else { assert.ok(Array.isArray(q.options) && q.options.length >= 2, where + " options"); assert.ok(q.answer >= 0 && q.answer < q.options.length, where + " answer index"); assert.strictEqual(new Set(q.options).size, q.options.length, where + " duplicate options"); }
