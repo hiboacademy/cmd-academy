@@ -1,0 +1,475 @@
+# Lessons 53–61 · Chapter 8: networking (a simulated home network)
+
+- n: 53
+  term: 'IP · DNS · Gateway'
+  fullForm: 'Network basics'
+  difficulty: 2
+  objective: 'مفاهیم پایه شبکه را بفهمی تا خروجی دستورهای شبکه برایت معنی داشته باشد.'
+  summary: 'هر دستگاه در شبکه یک IP Address دارد (مثل `192.168.1.24`). Router دروازه (Gateway) خروج به اینترنت است و DNS نام سایت‌ها را به IP تبدیل می‌کند.'
+  meaning: 'IPهایی مثل `192.168.x.x` و `10.x.x.x` خصوصی (داخل خانه یا شرکت) هستند. `127.0.0.1` یعنی «خود همین کامپیوتر» (localhost). Subnet Mask مشخص می‌کند کدام IPها در شبکه خودت هستند. MAC Address شماره سخت‌افزاری کارت شبکه است.'
+  usage: 'هر عیب‌یابی شبکه از همین مفاهیم شروع می‌شود: آیا IP دارم؟ به Router می‌رسم؟ به اینترنت؟ DNS کار می‌کند؟'
+  syntax: "ipconfig\nping 127.0.0.1"
+  demo:
+    cmds: ['ipconfig', 'ping -n 2 127.0.0.1']
+  examples:
+    - c: 'ipconfig'
+      d: 'IP، Mask و Gateway این کامپیوتر.'
+    - c: 'ping 127.0.0.1'
+      d: 'تست شبکه داخلی خود کامپیوتر.'
+    - c: 'nslookup google.com'
+      d: 'DNS: نام → IP (درس ۵۸).'
+  mistakes:
+    - 'اشتباه گرفتن IP خصوصی (`192.168...`) با IP عمومی که اینترنت تو را با آن می‌بیند.'
+  tip: 'در Simulator: این کامپیوتر `192.168.1.24`، Router `192.168.1.1` و یک پرینتر `192.168.1.50` است.'
+  restaurant: 'IP شماره میز است، Router در ورودی رستوران است و DNS مثل منشی که نام مهمان را می‌گیرد و شماره میزش را می‌گوید.'
+  practice:
+    - id: P53a
+      start: 'C:\Users\Student'
+      task: 'ببین شبکه داخلی خود کامپیوتر کار می‌کند: آدرس localhost (`127.0.0.1`) را ping کن.'
+      checks: [{type: anyCmd, value: ping}, {type: lastOutputIncludes, value: 'Reply from 127.0.0.1'}]
+      hints: ['دستور تست اتصال `ping` است.', '`ping 127.0.0.1`']
+      answer: 'ping 127.0.0.1'
+    - id: P53b
+      start: 'C:\Users\Student'
+      task: 'IP Address این کامپیوتر را پیدا کن.'
+      checks: [{type: anyCmd, value: ipconfig}, {type: lastOutputIncludes, value: '192.168.1.24'}]
+      hints: ['دستوری که تنظیمات IP را نشان می‌دهد.', '`ipconfig`']
+      answer: 'ipconfig'
+  quiz:
+    - kind: mcq
+      q: '`127.0.0.1` به چه چیزی اشاره دارد؟'
+      options: ['خود همین کامپیوتر', 'Router', 'سرور Google', 'DNS']
+      answer: 0
+      explain: 'localhost.'
+    - kind: mcq
+      q: 'وظیفه DNS چیست؟'
+      options: ['تبدیل نام سایت به IP', 'دادن IP به کامپیوتر', 'رمزگذاری اتصال', 'افزایش سرعت اینترنت']
+      answer: 0
+      explain: 'DNS مثل دفترچه تلفن اینترنت است.'
+    - kind: tf
+      q: '`192.168.1.24` یک IP خصوصی است.'
+      answer: true
+      explain: 'IPهای `192.168.x.x` خصوصی‌اند.'
+  recap: 'IP = آدرس دستگاه. Gateway = Router. DNS = نام → IP. `127.0.0.1` = خود کامپیوتر.'
+
+- n: 54
+  term: ipconfig
+  fullForm: 'IP Configuration'
+  difficulty: 2
+  objective: 'تنظیمات IP را بخوانی و DNS Cache را پاک کنی.'
+  summary: '`ipconfig` برای هر کارت شبکه IP، Subnet Mask و Default Gateway را نشان می‌دهد.'
+  meaning: 'اگر کارتی وصل نباشد، `Media disconnected` می‌بینی. `/flushdns` حافظه DNS را پاک می‌کند (وقتی یک سایت با IP قدیمی باز می‌شود). `/release` و `/renew` IP را آزاد و دوباره دریافت می‌کنند.'
+  usage: 'اولین قدم هر عیب‌یابی شبکه.'
+  syntax: "ipconfig\nipconfig /flushdns\nipconfig /release\nipconfig /renew"
+  demo:
+    cmds: ['ipconfig | find "Gateway"', 'ipconfig /flushdns']
+  examples:
+    - c: 'ipconfig'
+      d: 'خلاصه تنظیمات.'
+    - c: 'ipconfig | find "IPv4"'
+      d: 'فقط IP.'
+    - c: 'ipconfig /flushdns'
+      d: 'پاک کردن DNS Cache.'
+    - c: 'ipconfig /release'
+      d: 'آزاد کردن IP (اتصال قطع می‌شود!).'
+      noTry: true
+  mistakes:
+    - 'اجرای `/release` روی کامپیوتر راه دور: اتصال قطع می‌شود و دیگر دسترسی نداری.'
+  tip: 'اگر IPv4 با `169.254` شروع شود، یعنی کامپیوتر از Router IP نگرفته است.'
+  practice:
+    - id: P54a
+      start: 'C:\Users\Student'
+      task: 'فقط خط Default Gateway (آدرس Router) را از خروجی ipconfig نمایش بده.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: '192.168.1.1'}, {type: lastOutputExcludes, value: 'IPv4'}]
+      hints: ['خروجی را به `find` بده.', '`ipconfig | find "Gateway"`']
+      answer: 'ipconfig | find "Gateway"'
+    - id: P54b
+      start: 'C:\Users\Student'
+      task: 'حافظه DNS (DNS Cache) را پاک کن.'
+      checks: [{type: switch, value: '/flushdns', cmd: ipconfig, anyRun: true}, {type: lastOutputIncludes, value: 'Successfully flushed'}]
+      hints: ['ipconfig یک Switch برای «flush» دارد.', '`ipconfig /flushdns`']
+      answer: 'ipconfig /flushdns'
+  quiz:
+    - kind: mcq
+      q: 'Default Gateway معمولاً آدرس کدام دستگاه است؟'
+      options: ['Router', 'پرینتر', 'خود کامپیوتر', 'سرور DNS گوگل']
+      answer: 0
+      explain: 'Gateway راه خروج به شبکه‌های دیگر است.'
+    - kind: predict
+      q: 'IPv4 کامپیوتر `169.254.12.7` است. یعنی چه؟'
+      code: 'IPv4 Address. . . : 169.254.12.7'
+      options: ['از Router (DHCP) آدرس نگرفته', 'به اینترنت وصل است', 'آدرس عمومی دارد', 'DNS خراب است']
+      answer: 0
+      explain: 'آدرس 169.254 را Windows خودش وقتی DHCP جواب ندهد می‌سازد.'
+    - kind: type
+      q: 'دوباره از Router آدرس IP بگیر.'
+      accept: ['ipconfig /renew']
+      explain: '`/renew`'
+  recap: '`ipconfig` = IP، Mask، Gateway. `/flushdns` پاک کردن DNS Cache. `/release` و `/renew` آزاد و دریافت IP.'
+
+- n: 55
+  term: 'ipconfig /all'
+  fullForm: 'Full network details · getmac'
+  difficulty: 2
+  objective: 'جزئیات کامل کارت شبکه، DNS، DHCP و MAC Address را پیدا کنی.'
+  summary: '`ipconfig /all` همه جزئیات را نشان می‌دهد: Physical Address (MAC)، DHCP، زمان Lease و DNS Serverها. `getmac` فقط MAC Addressها را.'
+  meaning: 'MAC Address شماره سخت‌افزاری کارت شبکه است، مثل `3C-52-82-4A-1F-9B`. Router با آن دستگاه‌ها را می‌شناسد. DNS Servers آدرس سرورهایی است که نام سایت‌ها را ترجمه می‌کنند.'
+  usage: 'ثبت دستگاه در Router یا شبکه شرکت، بررسی DNS، فهمیدن اینکه IP از DHCP آمده یا دستی است.'
+  syntax: "ipconfig /all\ngetmac [/v]"
+  demo:
+    cmds: ['ipconfig /all | findstr /c:"Physical" /c:"DNS Servers" /c:"DHCP Server"', 'getmac']
+  examples:
+    - c: 'ipconfig /all'
+      d: 'همه جزئیات.'
+    - c: 'ipconfig /all | find "DNS Servers"'
+      d: 'فقط DNS.'
+    - c: 'getmac /v'
+      d: 'MAC همه کارت‌ها با نام.'
+  mistakes:
+    - 'اشتباه گرفتن MAC (سخت‌افزاری، ثابت) با IP (قابل تغییر).'
+  tip: 'دستگاه می‌تواند چند MAC داشته باشد: یکی برای Wi-Fi و یکی برای Ethernet.'
+  practice:
+    - id: P55a
+      start: 'C:\Users\Student'
+      task: 'آدرس DNS Server را از خروجی کامل ipconfig پیدا کن.'
+      checks: [{type: switch, value: '/all', cmd: ipconfig, anyRun: true}, {type: lastOutputIncludes, value: 'DNS Servers'}]
+      hints: ['`ipconfig /all` و فیلتر با find.', '`ipconfig /all | find "DNS Servers"`']
+      answer: 'ipconfig /all | find "DNS Servers"'
+    - id: P55b
+      start: 'C:\Users\Student'
+      task: 'MAC Address کارت‌های شبکه را با دستور مخصوص آن نمایش بده.'
+      checks: [{type: anyCmd, value: getmac}, {type: lastOutputIncludes, value: '3C-52-82-4A-1F-9B'}]
+      hints: ['دستورش یعنی «get MAC».', '`getmac`']
+      answer: 'getmac'
+  quiz:
+    - kind: mcq
+      q: 'MAC Address در خروجی `ipconfig /all` با چه نامی آمده است؟'
+      options: ['Physical Address', 'IPv4 Address', 'Subnet Mask', 'Host Name']
+      answer: 0
+      explain: 'Physical Address = MAC.'
+    - kind: tf
+      q: 'MAC Address با هر بار وصل شدن به شبکه عوض می‌شود.'
+      answer: false
+      explain: 'MAC شماره سخت‌افزاری است؛ IP ممکن است عوض شود.'
+    - kind: type
+      q: 'MAC Addressها را همراه با نام کارت شبکه نشان بده.'
+      accept: ['getmac /v', 'getmac /v /fo list', 'ipconfig /all']
+      show: 'getmac /v'
+      explain: '`/v` = Verbose.'
+  recap: '`ipconfig /all` = همه جزئیات (MAC، DHCP، DNS). `getmac` = فقط MAC.'
+
+- n: 56
+  term: ping
+  fullForm: 'Ping (Packet InterNet Groper)'
+  difficulty: 2
+  objective: 'با ping اتصال به یک دستگاه یا سایت را بسنجی و جواب‌ها را تفسیر کنی.'
+  summary: '`ping` چند بسته کوچک به مقصد می‌فرستد و منتظر جواب می‌ماند. جواب یعنی مسیر سالم است؛ `time` نشان می‌دهد چقدر طول کشید.'
+  meaning: '`Reply from` = جواب آمد. `Request timed out.` = جوابی نیامد (خاموش یا Firewall). `could not find host` = DNS نام را نشناخت. `Destination host unreachable` = دستگاه در شبکه پیدا نشد. `-n` تعداد و `-t` ارسال بی‌پایان (Ctrl+C برای توقف).'
+  usage: 'آیا اینترنت وصل است؟ پرینتر روشن است؟ سرور جواب می‌دهد؟'
+  syntax: 'ping [-n count] [-t] target'
+  demo:
+    cmds: ['ping -n 2 google.com', 'ping -n 2 10.0.0.99', 'ping nosuchsite.test']
+  examples:
+    - c: 'ping google.com'
+      d: 'تست اینترنت و DNS با هم.'
+    - c: 'ping 192.168.1.1'
+      d: 'تست Router.'
+    - c: 'ping -n 10 8.8.8.8'
+      d: '۱۰ بسته به یک IP عمومی.'
+    - c: 'ping -t 192.168.1.50'
+      d: 'ping بی‌پایان؛ با Ctrl+C متوقف کن.'
+  mistakes:
+    - 'نتیجه‌گیری سریع: بعضی سرورها به ping جواب نمی‌دهند، حتی وقتی کار می‌کنند.'
+    - 'نوشتن `http://google.com`؛ ping فقط نام یا IP می‌گیرد.'
+  tip: 'آمار پایان: `Lost = 0 (0% loss)` عالی است. Loss بالا یعنی اتصال ناپایدار.'
+  practice:
+    - id: P56a
+      start: 'C:\Users\Student'
+      task: 'به `google.com` فقط دو بار ping بفرست.'
+      checks: [{type: anyCmd, value: ping}, {type: lastOutputIncludes, value: 'Sent = 2'}, {type: lastOutputIncludes, value: 'Received = 2'}]
+      hints: ['تعداد بسته‌ها با `-n` تعیین می‌شود.', '`ping -n 2 google.com`']
+      answer: 'ping -n 2 google.com'
+    - id: P56b
+      start: 'C:\Users\Student'
+      task: 'بررسی کن Router خانه (`192.168.1.1`) جواب می‌دهد یا نه.'
+      checks: [{type: lastOutputIncludes, value: 'Reply from 192.168.1.1'}]
+      hints: ['ping با IP Router.', '`ping 192.168.1.1`']
+      answer: 'ping 192.168.1.1'
+  quiz:
+    - kind: mcq
+      q: '`Request timed out.` یعنی چه؟'
+      options: ['جوابی در زمان معین نیامد', 'نام سایت پیدا نشد', 'اتصال عالی است', 'کامپیوتر IP ندارد']
+      answer: 0
+      explain: 'مقصد جواب نداد یا Firewall جلوگیری کرد.'
+    - kind: predict
+      q: 'خروجی کدام است؟'
+      code: 'ping nosuchsite.test'
+      options: ['Ping request could not find host nosuchsite.test...', 'Request timed out.', 'Reply from nosuchsite.test', 'Destination host unreachable.']
+      answer: 0
+      explain: 'DNS این نام را نمی‌شناسد.'
+    - kind: type
+      q: 'به `8.8.8.8` پنج بار ping بفرست.'
+      accept: ['ping -n 5 8.8.8.8', 'ping 8.8.8.8 -n 5', 'ping /n 5 8.8.8.8']
+      show: 'ping -n 5 8.8.8.8'
+      explain: '`-n 5`'
+  recap: '`ping مقصد`. Reply = سالم، timed out = بی‌جواب، could not find host = مشکل نام/DNS. `-n` تعداد، `-t` بی‌پایان.'
+
+- n: 57
+  term: tracert
+  fullForm: 'Trace Route · pathping'
+  difficulty: 2
+  objective: 'مسیر بسته‌ها تا یک سرور را ببینی و بفهمی مشکل در کدام قدم است.'
+  summary: '`tracert` تک‌تک Routerهایی (Hop) را که بسته از آن‌ها رد می‌شود با زمان پاسخ نشان می‌دهد. `pathping` همین کار را می‌کند و درصد گم شدن بسته‌ها در هر Hop را هم می‌گوید.'
+  meaning: 'Hop اول معمولاً Router خانه است، بعد سرورهای اینترنت‌دهنده (ISP) و در آخر مقصد. `* * * Request timed out.` در یک Hop وسط مسیر لزوماً مشکل نیست؛ بعضی Routerها جواب نمی‌دهند. `-d` نام‌ها را پیدا نمی‌کند و سریع‌تر است.'
+  usage: 'فهمیدن اینکه کندی یا قطعی از شبکه خانه است، از ISP، یا از سرور مقصد.'
+  syntax: "tracert [-d] target\npathping target"
+  demo:
+    cmds: ['tracert google.com']
+  examples:
+    - c: 'tracert google.com'
+      d: 'مسیر تا Google.'
+    - c: 'tracert -d example.com'
+      d: 'بدون نام‌ها، فقط IP.'
+    - c: 'pathping github.com'
+      d: 'مسیر + آمار گم شدن بسته در هر Hop.'
+  mistakes:
+    - 'نگرانی از یک خط `*` در وسط مسیر وقتی مقصد در آخر جواب می‌دهد.'
+  tip: 'اگر از Hop دوم به بعد همه `*` است، مشکل احتمالاً از اینترنت‌دهنده است، نه کامپیوتر تو.'
+  practice:
+    - id: P57a
+      start: 'C:\Users\Student'
+      task: 'مسیر رسیدن به `google.com` را دنبال کن.'
+      checks: [{type: anyCmd, value: tracert}, {type: lastOutputIncludes, value: 'Trace complete'}]
+      hints: ['دستورش ترکیب trace و route است.', '`tracert google.com`']
+      answer: 'tracert google.com'
+    - id: P57b
+      start: 'C:\Users\Student'
+      task: 'مسیر رسیدن به `example.com` را بدون پیدا کردن نام Routerها (فقط IP) نمایش بده.'
+      checks: [{type: switch, value: '-d', cmd: tracert, anyRun: true}, {type: lastOutputIncludes, value: '93.184.215.14'}, {type: lastOutputExcludes, value: 'router.home'}]
+      hints: ['یک Switch جلوی پیدا کردن نام‌ها را می‌گیرد.', '`tracert -d example.com`']
+      answer: 'tracert -d example.com'
+  quiz:
+    - kind: mcq
+      q: 'در خروجی tracert، Hop شماره 1 معمولاً چیست؟'
+      options: ['Router خانه', 'سرور مقصد', 'DNS گوگل', 'خود کامپیوتر']
+      answer: 0
+      explain: 'اولین ایستگاه، Gateway است.'
+    - kind: mcq
+      q: 'کدام دستور درصد گم شدن بسته‌ها در هر Hop را نشان می‌دهد؟'
+      options: ['pathping', 'tracert', 'ping', 'nslookup']
+      answer: 0
+      code_options: true
+      explain: 'pathping = ping + tracert با آمار.'
+    - kind: tf
+      q: 'یک `* * *` وسط مسیر همیشه یعنی اینترنت قطع است.'
+      answer: false
+      explain: 'بعضی Routerها به این درخواست‌ها جواب نمی‌دهند.'
+  recap: '`tracert` = مسیر Hop به Hop. `-d` بدون نام. `pathping` = مسیر + درصد گم شدن.'
+
+- n: 58
+  term: nslookup
+  fullForm: 'Name Server Lookup'
+  difficulty: 2
+  objective: 'مستقیم از DNS بپرسی یک نام چه IPی دارد (و برعکس).'
+  summary: '`nslookup نام` از DNS Server می‌پرسد آن نام به چه IPی می‌رسد. با دادن IP، نام آن را پیدا می‌کند (Reverse Lookup).'
+  meaning: 'خط اول خروجی (`Server`) نشان می‌دهد از کدام DNS Server پرسیده شد. `Non-authoritative answer` یعنی جواب از حافظه یک DNS واسطه آمده است. `Non-existent domain` یعنی چنین نامی وجود ندارد.'
+  usage: 'وقتی `ping google.com` نمی‌گوید host را پیدا نکرد: با nslookup می‌فهمی مشکل از DNS است یا نه. با `nslookup نام 8.8.8.8` از یک DNS دیگر می‌پرسی.'
+  syntax: "nslookup name [server]\nnslookup ip"
+  demo:
+    cmds: ['nslookup github.com', 'nslookup 8.8.8.8', 'nslookup nosuchsite.test']
+  examples:
+    - c: 'nslookup google.com'
+      d: 'IP گوگل.'
+    - c: 'nslookup google.com 8.8.8.8'
+      d: 'پرسیدن از DNS گوگل به‌جای Router.'
+    - c: 'nslookup 1.1.1.1'
+      d: 'نام صاحب یک IP.'
+    - c: 'nslookup'
+      d: 'حالت تعاملی؛ با `exit` خارج شو.'
+  mistakes:
+    - 'نوشتن `www` اضافه یا `http://`؛ فقط نام دامنه را بنویس.'
+  tip: 'اگر `nslookup` جواب بدهد ولی سایت باز نشود، مشکل DNS نیست؛ دنبال مشکل دیگری بگرد.'
+  practice:
+    - id: P58a
+      start: 'C:\Users\Student'
+      task: 'از DNS بپرس `github.com` چه IP Addressی دارد.'
+      checks: [{type: anyCmd, value: nslookup}, {type: lastOutputIncludes, value: '140.82.121.4'}]
+      hints: ['دستور پرسیدن از Name Server.', '`nslookup github.com`']
+      answer: 'nslookup github.com'
+    - id: P58b
+      start: 'C:\Users\Student'
+      task: 'بفهم IP `8.8.8.8` متعلق به چه نامی است (Reverse Lookup).'
+      checks: [{type: anyCmd, value: nslookup}, {type: lastOutputIncludes, value: 'dns.google'}]
+      hints: ['به nslookup به‌جای نام، IP بده.', '`nslookup 8.8.8.8`']
+      answer: 'nslookup 8.8.8.8'
+  quiz:
+    - kind: mcq
+      q: '`Non-existent domain` در خروجی nslookup یعنی چه؟'
+      options: ['چنین نامی در DNS وجود ندارد', 'اینترنت قطع است', 'سایت کند است', 'Firewall جلوگیری کرد']
+      answer: 0
+      explain: 'نام ثبت نشده یا اشتباه تایپ شده است.'
+    - kind: type
+      q: 'IP سایت `example.com` را با DNS Server `1.1.1.1` پیدا کن.'
+      accept: ['nslookup example.com 1.1.1.1']
+      explain: 'Argument دوم، DNS Server است.'
+    - kind: tf
+      q: 'nslookup می‌تواند از IP به نام برسد.'
+      answer: true
+      explain: 'Reverse Lookup.'
+  recap: '`nslookup نام` = IP آن. `nslookup IP` = نام آن. `nslookup نام سرور` = پرسیدن از DNS دیگر.'
+
+- n: 59
+  term: netstat
+  fullForm: 'Network Statistics'
+  difficulty: 3
+  objective: 'اتصال‌های فعال و Portهای باز را ببینی و بفهمی هر اتصال مال کدام برنامه است.'
+  summary: '`netstat` اتصال‌های شبکه کامپیوتر را نشان می‌دهد: آدرس محلی، آدرس مقصد و وضعیت (`ESTABLISHED`، `LISTENING`، ...).'
+  meaning: '`-a` همه اتصال‌ها و Portهای در حال گوش دادن، `-n` آدرس‌ها به شکل عدد (سریع‌تر)، `-o` شماره PID برنامه صاحب اتصال. ترکیب رایج: `netstat -ano`. با PID می‌توانی در `tasklist` نام برنامه را پیدا کنی.'
+  usage: 'پیدا کردن برنامه‌ای که پنهانی به اینترنت وصل است، بررسی اینکه یک سرور روی Port درست گوش می‌دهد.'
+  syntax: 'netstat [-a] [-n] [-o] [-b]'
+  demo:
+    cmds: ['netstat -no']
+  examples:
+    - c: 'netstat'
+      d: 'اتصال‌های فعال.'
+    - c: 'netstat -ano'
+      d: 'همه چیز با PID؛ رایج‌ترین ترکیب.'
+    - c: 'netstat -ano | find "ESTABLISHED"'
+      d: 'فقط اتصال‌های برقرار.'
+    - c: 'netstat -b'
+      d: 'نام برنامه‌ها (نیاز به Administrator).'
+  mistakes:
+    - 'نگرانی از Portهای `LISTENING` سیستم مثل 135 و 445؛ این‌ها مال Windows هستند.'
+  tip: 'آدرس `:443` یعنی HTTPS (وب امن). `:80` یعنی HTTP.'
+  practice:
+    - id: P59a
+      start: 'C:\Users\Student'
+      task: 'همه اتصال‌ها و Portها را با آدرس عددی و PID نمایش بده.'
+      checks: [{type: anyCmd, value: netstat}, {type: lastOutputIncludes, value: 'LISTENING'}, {type: lastOutputIncludes, value: '7810'}]
+      hints: ['سه Switch: a، n و o.', '`netstat -ano`']
+      answer: 'netstat -ano'
+    - id: P59b
+      start: 'C:\Users\Student'
+      task: 'یک اتصال با PID `7810` به اینترنت وصل است. بفهم این PID مال کدام برنامه است.'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: 'Spotify.exe'}]
+      hints: ['`tasklist` با فیلتر PID.', '`tasklist /fi "pid eq 7810"`']
+      answer: 'tasklist /fi "pid eq 7810"'
+  quiz:
+    - kind: mcq
+      q: 'Switch `-o` در netstat چه چیزی اضافه می‌کند؟'
+      options: ['PID برنامه صاحب اتصال', 'نام سایت مقصد', 'سرعت اتصال', 'MAC Address']
+      answer: 0
+      code_options: false
+      explain: '`-o` = Owner PID.'
+    - kind: mcq
+      q: 'وضعیت `LISTENING` یعنی چه؟'
+      options: ['برنامه منتظر اتصال روی آن Port است', 'اتصال قطع شده', 'در حال دانلود است', 'خطا رخ داده']
+      answer: 0
+      explain: 'Port باز و منتظر.'
+    - kind: order
+      q: 'برای پیدا کردن برنامه‌ای که به یک IP مشکوک وصل است، قدم‌ها را مرتب کن.'
+      items: ['netstat -ano', 'شماره PID را از ستون آخر بخوان', 'tasklist /fi "pid eq <PID>"']
+      explain: 'netstat → PID → tasklist.'
+  recap: '`netstat -ano` = همه اتصال‌ها با PID. PID را در `tasklist` پیدا کن.'
+
+- n: 60
+  term: arp
+  fullForm: 'Address Resolution Protocol'
+  difficulty: 3
+  objective: 'جدول ARP را بخوانی و بفهمی IPها چطور به MAC تبدیل می‌شوند.'
+  summary: '`arp -a` جدولی را نشان می‌دهد که IP دستگاه‌های شبکه محلی را به MAC Address آن‌ها وصل می‌کند.'
+  meaning: 'کامپیوتر برای فرستادن داده در شبکه محلی باید MAC مقصد را بداند. ARP آن را پیدا و در این جدول نگه می‌دارد. `dynamic` یعنی خودکار یاد گرفته شده، `static` یعنی ثابت.'
+  usage: 'پیدا کردن MAC یک پرینتر یا Router، و عیب‌یابی وقتی دو دستگاه IP یکسان دارند.'
+  syntax: "arp -a\narp -d (Administrator)"
+  demo:
+    cmds: ['arp -a']
+  examples:
+    - c: 'arp -a'
+      d: 'جدول ARP.'
+    - c: 'arp -a | find "192.168.1.1"'
+      d: 'MAC Router.'
+    - c: 'arp -d *'
+      d: 'پاک کردن جدول (نیاز به Administrator).'
+  mistakes:
+    - 'انتظار دیدن دستگاه‌های اینترنت در ARP؛ فقط شبکه محلی است.'
+  tip: 'اگر به دستگاهی ping بزنی، معمولاً بعدش در جدول ARP ظاهر می‌شود.'
+  practice:
+    - id: P60a
+      start: 'C:\Users\Student'
+      task: 'MAC Address Router (`192.168.1.1`) را از جدول ARP پیدا کن.'
+      checks: [{type: anyCmd, value: arp}, {type: lastOutputIncludes, value: 'f4-6b-ef-12-a0-01'}]
+      hints: ['جدول ARP با `arp -a` نمایش داده می‌شود.', '`arp -a`']
+      answer: 'arp -a'
+  quiz:
+    - kind: mcq
+      q: 'ARP چه چیزی را به چه چیزی وصل می‌کند؟'
+      options: ['IP را به MAC', 'نام را به IP', 'MAC را به نام', 'Port را به برنامه']
+      answer: 0
+      explain: 'نام → IP کار DNS است.'
+    - kind: tf
+      q: 'جدول ARP دستگاه‌های شبکه محلی را نشان می‌دهد.'
+      answer: true
+      explain: 'فقط شبکه خودت.'
+    - kind: predict
+      q: 'کاربر عادی (بدون Administrator) این را اجرا می‌کند. نتیجه؟'
+      code: 'arp -d *'
+      options: ['The ARP entry deletion failed: The requested operation requires elevation.', 'جدول پاک می‌شود', 'اینترنت قطع می‌شود', 'هیچ']
+      answer: 0
+      explain: 'تغییر جدول به Administrator نیاز دارد.'
+  recap: '`arp -a` = جدول IP به MAC در شبکه محلی.'
+
+- n: 61
+  term: 'route print'
+  fullForm: 'Routing table · Network troubleshooting'
+  difficulty: 3
+  objective: 'جدول Route را بشناسی و یک روند منظم برای عیب‌یابی اینترنت داشته باشی.'
+  summary: '`route print` نشان می‌دهد بسته‌ها برای هر مقصد از کدام Gateway بروند. خط `0.0.0.0` همان Default Gateway است: «هر جای دیگر، از اینجا».'
+  meaning: 'روند عیب‌یابی: ۱) `ipconfig`: IP دارم؟ ۲) `ping 127.0.0.1`: خود کامپیوتر سالم است؟ ۳) `ping` Gateway: به Router می‌رسم؟ ۴) `ping 8.8.8.8`: به اینترنت می‌رسم؟ ۵) `ping google.com` یا `nslookup`: DNS کار می‌کند؟ اولین قدمی که شکست بخورد، محل مشکل است.'
+  usage: 'هر وقت «اینترنت کار نمی‌کند»؛ به‌جای حدس، قدم‌به‌قدم بررسی کن.'
+  syntax: "route print\nipconfig\nping 192.168.1.1\nping 8.8.8.8\nnslookup google.com"
+  demo:
+    cmds: ['route print']
+  examples:
+    - c: 'route print'
+      d: 'جدول Route.'
+    - c: 'ping 8.8.8.8'
+      d: 'تست اینترنت بدون DNS.'
+    - c: 'ipconfig /renew'
+      d: 'گرفتن دوباره IP اگر IP نداری.'
+  mistakes:
+    - 'شروع از آخر (باز کردن سایت) به‌جای شروع از اول (IP).'
+    - 'تغییر جدول Route بدون دانش کافی.'
+  tip: 'اگر `ping 8.8.8.8` جواب بدهد ولی `ping google.com` نه، مشکل از DNS است.'
+  daily: 'مثل وقتی چراغ روشن نمی‌شود: اول کلید برق، بعد لامپ، بعد فیوز. از ساده به پیچیده.'
+  practice:
+    - id: P61a
+      start: 'C:\Users\Student'
+      task: 'جدول Route کامپیوتر را نمایش بده.'
+      checks: [{type: anyCmd, value: route}, {type: lastOutputIncludes, value: 'Active Routes'}]
+      hints: ['`route` و دستور «print».', '`route print`']
+      answer: 'route print'
+    - id: P61b
+      start: 'C:\Users\Student'
+      setup: {net: false}
+      task: 'اینترنت این کامپیوتر کار نمی‌کند. با `ipconfig` وضعیت را ببین، مشکل را درست کن و در آخر با `ping google.com` نشان بده اینترنت برگشته است.'
+      multi: true
+      checks: [{type: netConnected, value: true}, {type: anyCmd, value: ipconfig}, {type: lastOutputIncludes, value: 'Reply from'}]
+      hints: ['در خروجی `ipconfig` خط IPv4 نیست؛ یعنی IP ندارد.', '`ipconfig /renew` و بعد `ping google.com`']
+      answer: ['ipconfig', 'ipconfig /renew', 'ping google.com']
+  quiz:
+    - kind: order
+      q: 'قدم‌های عیب‌یابی اینترنت را از ساده به پیچیده مرتب کن.'
+      items: ['ipconfig', 'ping 127.0.0.1', 'ping 192.168.1.1', 'ping 8.8.8.8', 'ping google.com']
+      explain: 'IP → خود کامپیوتر → Router → اینترنت → DNS.'
+    - kind: predict
+      q: '`ping 8.8.8.8` جواب می‌دهد ولی `ping google.com` می‌گوید could not find host. مشکل کجاست؟'
+      code: "ping 8.8.8.8     -> Reply\nping google.com  -> could not find host"
+      options: ['DNS', 'Router', 'کارت شبکه', 'کابل']
+      answer: 0
+      explain: 'اتصال سالم است ولی نام به IP ترجمه نمی‌شود.'
+    - kind: mcq
+      q: 'در جدول Route، مقصد `0.0.0.0` یعنی چه؟'
+      options: ['همه مقصدهای دیگر (Default Route)', 'هیچ مقصدی', 'خود کامپیوتر', 'شبکه محلی']
+      answer: 0
+      explain: 'مسیر پیش‌فرض به Gateway.'
+  recap: '`route print` = جدول مسیرها. عیب‌یابی: ipconfig → 127.0.0.1 → Gateway → 8.8.8.8 → نام سایت.'

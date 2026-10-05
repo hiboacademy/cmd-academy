@@ -921,7 +921,7 @@ const Shell = (() => {
     const cio = rio.io;
     if (cio.stderr === "dup") cio.stderr = cio.stdout;
     const lines = [];
-    const rec = { raw: text.trim(), name: null, args: [], switches: [], ok: false, line: ctx.info, redirs: node.redirs.map(redirKey) };
+    const rec = { raw: text.trim(), input: ctx.raw, name: null, args: [], switches: [], ok: false, line: ctx.info, redirs: node.redirs.map(redirKey) };
     let code = 0, keep = false;
     try {
       const res = yield* dispatch(ctx, text, cio, lines, rec);
@@ -1023,8 +1023,8 @@ const Shell = (() => {
       return yield* runCommand(ctx, c, rest, io, lines, rec);
     }
 
-    // a batch file without extension in the current folder: "hello" -> hello.bat
-    const fr = fileCommand(sh, firstClean + ".bat") || fileCommand(sh, firstClean + ".cmd");
+    // a batch file without extension: current folder first, then every folder in PATH
+    const fr = findOnPath(sh, firstClean);
     if (fr && fr.kind === "batch") {
       rec.name = "batch"; rec.args = [fr.path];
       const code = yield* runBatch(ctx, fr, parseBatchArgs(tokRest), io);
@@ -1086,6 +1086,8 @@ const Shell = (() => {
       note(lines, msg("winre_only", { cmd: c.name }));
       return { code: 9009 };
     }
+    // default record of arguments and switches; commands may refine them
+    { const pa = parseArgs(rest); rec.args = pa.args; rec.switches = pa.sw.concat(pa.args.filter((a) => /^-[a-z?]+$/i.test(a)).map((a) => a.toLowerCase())); }
     let res = c.run(sh, rest, lines, rec, io, ctx);
     if (res && typeof res.next === "function") res = yield* drive(res, ctx, io, lines);
     return { code: codeOf(res), keep: !!c.keep && res !== false };
@@ -1098,6 +1100,18 @@ const Shell = (() => {
     const kind = /\.(bat|cmd)$/i.test(r.node.name) ? "batch" : /\.(exe|com)$/i.test(r.node.name) ? "exe" : null;
     if (!kind) return null;
     return { kind, node: r.node, path: VFS.fmt(p.drive, r.canonical) };
+  }
+  function findOnPath(sh, name) {
+    if (/[\\:]/.test(name)) return null;
+    const dirs = [""].concat((getVar(sh, "PATH") || "").split(";").filter(Boolean));
+    const names = /\.(bat|cmd)$/i.test(name) ? [name] : [name + ".bat", name + ".cmd"];
+    for (const d of dirs) {
+      for (const n of names) {
+        const f = fileCommand(sh, d ? d.replace(/\\$/, "") + "\\" + n : n);
+        if (f && f.kind === "batch") return f;
+      }
+    }
+    return null;
   }
   function parseBatchArgs(rest) {
     const args = [];

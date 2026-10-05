@@ -1,0 +1,445 @@
+# Lessons 45–52 · Chapter 7: variables and system information
+
+- n: 45
+  term: set
+  fullForm: 'Variables'
+  difficulty: 2
+  objective: 'متغیر بسازی، مقدارش را بخوانی و تغییر دهی یا حذفش کنی.'
+  summary: 'Variable یک نام است که یک مقدار را نگه می‌دارد. با `set name=value` می‌سازی و با `%name%` استفاده می‌کنی.'
+  meaning: 'CMD قبل از اجرای هر خط، `%name%` را با مقدار متغیر جایگزین می‌کند. `set` بدون Argument همه متغیرها را نشان می‌دهد. `set name=` (بدون مقدار) متغیر را حذف می‌کند.'
+  usage: 'نگه داشتن مسیرها و مقدارهایی که چند بار لازم داری، و پایه کار با Batch Script.'
+  syntax: "set name=value\necho %name%\nset name=\nset [prefix]"
+  demo:
+    cmds: ['set city=Vienna', 'echo I live in %city%', 'set ci', 'set city=', 'echo %city%']
+  examples:
+    - c: 'set city=Vienna'
+      d: 'ساختن متغیر.'
+    - c: 'echo %city%'
+      d: 'استفاده از مقدار.'
+    - c: 'set c'
+      d: 'همه متغیرهایی که با c شروع می‌شوند.'
+    - c: 'set "msg=Hello World"'
+      d: 'Quote دور کل عبارت؛ امن‌ترین روش برای مقدار با فاصله.'
+  mistakes:
+    - 'فاصله قبل از `=`: `set city =Vienna` متغیری به نام «city » (با فاصله) می‌سازد و `%city%` کار نمی‌کند.'
+    - 'فاصله بعد از `=`: `set city= Vienna` مقدار را « Vienna» با فاصله می‌کند.'
+    - 'فراموش کردن `%`ها: `echo city` خود کلمه city را چاپ می‌کند.'
+  tip: 'متغیرهایی که در یک پنجره CMD می‌سازی فقط تا بسته شدن همان پنجره باقی می‌مانند.'
+  restaurant: 'متغیر مثل برچسب روی ظرف است: «سس امروز = قارچ». هر کسی بگوید «سس امروز»، می‌دانیم منظور قارچ است.'
+  practice:
+    - id: P45a
+      start: 'C:\Users\Student'
+      task: 'متغیری به نام `city` با مقدار `Vienna` بساز و بعد با `echo` مقدارش را چاپ کن.'
+      multi: true
+      checks: [{type: envEquals, name: city, value: Vienna}, {type: inputIncludes, value: '%city%'}, {type: lastOutputIncludes, value: 'Vienna'}]
+      hints: ['`set city=Vienna` (بدون فاصله دور `=`).', 'بعد `echo %city%`']
+      answer: ['set city=Vienna', 'echo %city%']
+    - id: P45b
+      start: 'C:\Users\Student'
+      task: 'همه متغیرهایی را که نامشان با `user` شروع می‌شود نمایش بده.'
+      checks: [{type: anyCmd, value: set}, {type: lastOutputIncludes, value: 'USERNAME='}, {type: lastOutputIncludes, value: 'USERPROFILE='}]
+      hints: ['`set` با یک پیشوند، متغیرهای هم‌شروع را نشان می‌دهد.', '`set user`']
+      answer: 'set user'
+  quiz:
+    - kind: fix
+      q: 'چرا `echo %food%` چیزی جز `%food%` چاپ نمی‌کند؟'
+      code: "set food =Pizza\necho %food%"
+      options: ['فاصله قبل از `=` جزو نام متغیر شده', 'باید `set /a` نوشت', 'متغیر باید با حروف بزرگ باشد', 'Pizza کلمه رزرو شده است']
+      answer: 0
+      explain: 'نام متغیر «food » شد. درست: `set food=Pizza`'
+    - kind: predict
+      q: 'خروجی چیست؟'
+      code: "set x=5\nset x=7\necho %x%"
+      options: ['7', '5', '57', '%x%']
+      answer: 0
+      explain: 'مقدار دوم جای اولی را می‌گیرد.'
+    - kind: type
+      q: 'متغیر `color` را حذف کن.'
+      accept: ['set color=', 'set "color="']
+      show: 'set color='
+      explain: '`set name=` بدون مقدار.'
+  recap: '`set name=value` بدون فاصله دور `=`. `%name%` = مقدار. `set name=` = حذف. `set` = فهرست.'
+
+- n: 46
+  term: '%VAR%'
+  fullForm: 'Environment Variables'
+  difficulty: 2
+  objective: 'متغیرهای آماده Windows را بشناسی و از آن‌ها در دستورها استفاده کنی.'
+  summary: 'Windows خودش ده‌ها متغیر آماده دارد که اطلاعات سیستم را نگه می‌دارند، مثل `%COMPUTERNAME%`، `%OS%`، `%windir%` و `%DATE%`.'
+  meaning: 'این‌ها Environment Variable هستند. بعضی‌ها مثل `%DATE%`، `%TIME%`، `%RANDOM%`، `%CD%` و `%ERRORLEVEL%` پویا هستند و هر بار مقدار جدیدی دارند. نام متغیرها به بزرگی حروف حساس نیست.'
+  usage: 'نوشتن دستورهایی که روی هر کامپیوتری کار کنند، بدون اینکه مسیر یا نام را دستی بنویسی.'
+  syntax: "echo %COMPUTERNAME%\ncd %windir%\necho %DATE% %TIME%"
+  demo:
+    cmds: ['echo %COMPUTERNAME%', 'echo %OS%', 'echo %windir%', 'echo %CD%', 'echo %RANDOM%']
+  examples:
+    - c: 'echo %COMPUTERNAME%'
+      d: 'نام کامپیوتر.'
+    - c: 'cd %windir%'
+      d: 'رفتن به پوشه Windows، هر جا که نصب باشد.'
+    - c: 'echo %DATE% %TIME%'
+      d: 'تاریخ و ساعت فعلی.'
+    - c: 'echo %RANDOM%'
+      d: 'یک عدد تصادفی بین 0 و 32767.'
+  mistakes:
+    - 'نوشتن `$COMPUTERNAME` (سبک PowerShell یا Linux). در CMD: `%COMPUTERNAME%`'
+    - 'جا انداختن `%` آخر.'
+  tip: 'اگر متغیری وجود نداشته باشد، CMD خود متن `%NAME%` را دست‌نخورده چاپ می‌کند.'
+  practice:
+    - id: P46a
+      start: 'C:\Users\Student'
+      task: 'نام کامپیوتر را با یک Environment Variable چاپ کن.'
+      checks: [{type: inputIncludes, value: '%computername%'}, {type: lastOutputIncludes, value: 'ACADEMY-PC'}]
+      hints: ['نام متغیر COMPUTERNAME است.', '`echo %COMPUTERNAME%`']
+      answer: 'echo %COMPUTERNAME%'
+    - id: P46b
+      start: 'C:\Users\Student'
+      task: 'با متغیر `%windir%` به پوشه Windows برو.'
+      checks: [{type: cwd, value: 'C:\Windows'}, {type: inputIncludes, value: '%windir%'}]
+      hints: ['`cd` و بعد متغیر.', '`cd %windir%`']
+      answer: 'cd %windir%'
+  quiz:
+    - kind: mcq
+      q: 'کدام متغیر هر بار عدد متفاوتی می‌دهد؟'
+      options: ['%RANDOM%', '%OS%', '%COMPUTERNAME%', '%windir%']
+      answer: 0
+      code_options: true
+      explain: '`%RANDOM%` یک عدد تصادفی است.'
+    - kind: tf
+      q: '`%windir%` و `%WINDIR%` یک متغیرند.'
+      answer: true
+      explain: 'نام متغیرها به بزرگی حروف حساس نیست.'
+    - kind: predict
+      q: 'متغیر `ABC` وجود ندارد. خروجی چیست؟'
+      code: 'echo %ABC%'
+      options: ['%ABC%', 'خط خالی', 'ABC', 'خطا']
+      answer: 0
+      code_options: true
+      explain: 'در خط فرمان، متغیر ناموجود دست‌نخورده چاپ می‌شود.'
+  recap: 'Windows متغیرهای آماده دارد: `%COMPUTERNAME%` `%OS%` `%windir%` `%DATE%` `%TIME%` `%RANDOM%` `%CD%`.'
+
+- n: 47
+  term: '%USERPROFILE%'
+  fullForm: '%USERNAME% · %USERPROFILE% · %TEMP%'
+  difficulty: 2
+  objective: 'با متغیرهای کاربر به پوشه‌های شخصی و Temp برسی.'
+  summary: '`%USERNAME%` نام کاربر فعلی است، `%USERPROFILE%` پوشه شخصی او (مثل `C:\Users\Student`) و `%TEMP%` پوشه فایل‌های موقت.'
+  meaning: 'چون این مسیرها روی هر کامپیوتر فرق دارند، Scriptهای حرفه‌ای همیشه از متغیر استفاده می‌کنند، نه از مسیر ثابت.'
+  usage: 'رفتن سریع به پوشه کاربر، پاک کردن فایل‌های موقت، نوشتن Backup Script برای هر کاربری.'
+  syntax: "cd %USERPROFILE%\ndir %TEMP%\necho Hello %USERNAME%"
+  demo:
+    start: 'C:\'
+    cmds: ['echo Hello %USERNAME%', 'cd %USERPROFILE%', 'dir %TEMP% /b']
+  examples:
+    - c: 'cd %USERPROFILE%\Documents'
+      d: 'رفتن به Documents کاربر فعلی.'
+    - c: 'dir %TEMP%'
+      d: 'دیدن فایل‌های موقت.'
+    - c: 'copy notes.txt %USERPROFILE%\Desktop'
+      d: 'کپی به Desktop هر کاربری.'
+  mistakes:
+    - 'نوشتن مسیر ثابت `C:\Users\Ali` در Script؛ روی کامپیوتر دیگر کار نمی‌کند.'
+  tip: 'اگر مسیر فاصله داشته باشد، کل آن را با متغیر داخل Quotes بگذار: `cd "%USERPROFILE%\My Files"`'
+  practice:
+    - id: P47a
+      start: 'C:\'
+      task: 'از `C:\` با متغیر `%USERPROFILE%` به پوشه شخصی کاربر برو.'
+      checks: [{type: cwd, value: 'C:\Users\Student'}, {type: inputIncludes, value: '%userprofile%'}]
+      hints: ['`cd` و متغیر پوشه کاربر.', '`cd %USERPROFILE%`']
+      answer: 'cd %USERPROFILE%'
+    - id: P47b
+      start: 'C:\Users\Student'
+      task: 'محتوای پوشه فایل‌های موقت را با متغیر `%TEMP%` نمایش بده.'
+      checks: [{type: inputIncludes, value: '%temp%'}, {type: lastOutputIncludes, value: 'log1.tmp'}]
+      hints: ['`dir` و متغیر پوشه موقت.', '`dir %TEMP%`']
+      answer: 'dir %TEMP%'
+  quiz:
+    - kind: mcq
+      q: 'روی کامپیوتری که کاربرش Sara است، `%USERPROFILE%` معمولاً چیست؟'
+      options: ['C:\Users\Sara', 'C:\Sara', 'C:\Windows\Sara', 'Sara']
+      answer: 0
+      code_options: true
+      explain: 'پوشه شخصی هر کاربر داخل `C:\Users` است.'
+    - kind: type
+      q: 'به Desktop کاربر فعلی برو (با متغیر).'
+      accept: ['cd %userprofile%\desktop', 'cd "%userprofile%\desktop"', 'cd /d %userprofile%\desktop', 'cd /d "%userprofile%\desktop"']
+      show: 'cd %USERPROFILE%\Desktop'
+      explain: 'متغیر + `\Desktop`'
+    - kind: tf
+      q: 'استفاده از `%USERPROFILE%` در Script بهتر از نوشتن `C:\Users\Student` است.'
+      answer: true
+      explain: 'Script روی هر کامپیوتر و هر کاربری کار می‌کند.'
+  recap: '`%USERNAME%` نام کاربر، `%USERPROFILE%` پوشه کاربر، `%TEMP%` پوشه موقت.'
+
+- n: 48
+  term: '%PATH%'
+  fullForm: 'PATH'
+  difficulty: 2
+  objective: 'بفهمی CMD برنامه‌ها را از کجا پیدا می‌کند و چطور یک پوشه را به PATH اضافه کنی.'
+  summary: 'PATH فهرستی از پوشه‌هاست که با `;` از هم جدا شده‌اند. وقتی یک دستور می‌نویسی، CMD اول در پوشه فعلی و بعد در همین پوشه‌ها دنبال برنامه‌اش می‌گردد.'
+  meaning: 'به همین دلیل `ping` را از هر پوشه‌ای می‌توانی اجرا کنی: `ping.exe` در `C:\Windows\System32` است و این پوشه در PATH هست. `set PATH=%PATH%;C:\Tools` یک پوشه را (فقط برای همین پنجره) اضافه می‌کند.'
+  usage: 'اجرای ابزارها و Scriptهای خودت از هر جا، و فهمیدن خطای `is not recognized`.'
+  syntax: "echo %PATH%\npath\nset PATH=%PATH%;C:\\Tools"
+  demo:
+    cmds: ['path', 'where ping']
+  examples:
+    - c: 'echo %PATH%'
+      d: 'نمایش PATH.'
+    - c: 'path'
+      d: 'همین کار به شکل کوتاه.'
+    - c: 'set PATH=%PATH%;C:\Tools'
+      d: 'اضافه کردن C:\Tools برای همین پنجره.'
+  mistakes:
+    - '`set PATH=C:\Tools` بدون `%PATH%;`: همه مسیرهای قبلی پاک می‌شوند و بیشتر دستورها دیگر پیدا نمی‌شوند.'
+  tip: 'برای تغییر دائمی PATH از تنظیمات Windows یا دستور `setx` استفاده می‌شود؛ با احتیاط.'
+  daily: 'PATH مثل فهرست قفسه‌هایی است که فروشنده برای پیدا کردن جنس نگاه می‌کند. اگر جنس در هیچ‌کدام نباشد، می‌گوید «نداریم».'
+  practice:
+    - id: P48a
+      start: 'C:\Users\Student'
+      task: 'مقدار PATH را نمایش بده.'
+      checks: [{type: lastOutputIncludes, value: 'C:\Windows\system32'}]
+      hints: ['متغیر PATH را با `echo` چاپ کن، یا دستور `path` را بزن.', '`echo %PATH%`']
+      answer: 'echo %PATH%'
+    - id: P48b
+      start: 'C:\Users\Student'
+      files: [{path: 'C:\Tools\hello.bat', content: "@echo off\necho Hello from Tools\n"}]
+      task: 'در `C:\Tools` یک Script به نام `hello.bat` هست. پوشه `C:\Tools` را به PATH اضافه کن (بدون پاک کردن مسیرهای قبلی) و بعد از همین‌جا فقط با نوشتن `hello` آن را اجرا کن.'
+      multi: true
+      checks: [{type: envIncludes, name: PATH, value: 'C:\Tools'}, {type: envIncludes, name: PATH, value: 'System32'}, {type: lastOutputIncludes, value: 'Hello from Tools'}]
+      hints: ['مقدار جدید = PATH فعلی + `;C:\Tools`', '`set PATH=%PATH%;C:\Tools` و بعد `hello`']
+      answer: ['set PATH=%PATH%;C:\Tools', 'hello']
+  quiz:
+    - kind: mcq
+      q: 'پوشه‌ها در PATH با چه علامتی از هم جدا می‌شوند؟'
+      options: [';', ',', '|', '\']
+      answer: 0
+      code_options: true
+      explain: 'نقطه‌ویرگول.'
+    - kind: fix
+      q: 'بعد از این دستور، `ping` کار نمی‌کند. چرا؟'
+      code: 'set PATH=C:\Tools'
+      options: ['همه مسیرهای قبلی PATH پاک شدند', 'C:\Tools وجود ندارد', 'ping حذف شد', 'باید Restart کرد']
+      answer: 0
+      explain: 'درست: `set PATH=%PATH%;C:\Tools`'
+    - kind: tf
+      q: 'CMD قبل از PATH، در پوشه فعلی دنبال برنامه می‌گردد.'
+      answer: true
+      explain: 'اول پوشه فعلی، بعد پوشه‌های PATH.'
+  recap: 'PATH = پوشه‌هایی که CMD در آن‌ها برنامه پیدا می‌کند. اضافه کردن: `set PATH=%PATH%;پوشه`'
+
+- n: 49
+  term: whoami
+  fullForm: 'whoami · hostname'
+  difficulty: 2
+  objective: 'بفهمی با چه کاربری و روی کدام کامپیوتر کار می‌کنی.'
+  summary: '`whoami` نام کاربر را به شکل `computer\user` نشان می‌دهد. `hostname` فقط نام کامپیوتر را.'
+  meaning: '`whoami /groups` نشان می‌دهد کاربر عضو کدام گروه‌هاست، مثلاً Administrators. این در عیب‌یابی خطای `Access is denied` مهم است (درس ۶۳).'
+  usage: 'عیب‌یابی دسترسی، گزارش برای پشتیبانی فنی، اطمینان از اینکه روی کامپیوتر درست کار می‌کنی.'
+  syntax: "whoami [/user] [/groups]\nhostname"
+  demo:
+    cmds: ['whoami', 'hostname', 'whoami /user']
+  examples:
+    - c: 'whoami'
+      d: 'کاربر فعلی.'
+    - c: 'hostname'
+      d: 'نام کامپیوتر.'
+    - c: 'whoami /groups'
+      d: 'گروه‌های کاربر.'
+  mistakes:
+    - 'فکر کردن اینکه `hostname NEWNAME` نام کامپیوتر را عوض می‌کند. نه، فقط نشان می‌دهد.'
+  tip: '`whoami` و `%USERNAME%` معمولاً یک نام را نشان می‌دهند، ولی `whoami` نام کامپیوتر یا Domain را هم دارد.'
+  practice:
+    - id: P49a
+      start: 'C:\Users\Student'
+      task: 'نام کاربر فعلی را با دستور مخصوصش نمایش بده.'
+      checks: [{type: anyCmd, value: whoami}, {type: lastOutputIncludes, value: 'student'}]
+      hints: ['دستورش یعنی «من کی هستم؟» به انگلیسی.', '`whoami`']
+      answer: 'whoami'
+    - id: P49b
+      start: 'C:\Users\Student'
+      task: 'نام کامپیوتر را در فایل `pcname.txt` ذخیره کن.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\pcname.txt', value: 'ACADEMY-PC'}]
+      hints: ['دستور نام کامپیوتر `hostname` است.', '`hostname > pcname.txt`']
+      answer: 'hostname > pcname.txt'
+  quiz:
+    - kind: predict
+      q: 'خروجی `whoami` روی این کامپیوتر چیست؟'
+      code: 'whoami'
+      options: ['academy-pc\student', 'Student', 'ACADEMY-PC', 'C:\Users\Student']
+      answer: 0
+      code_options: true
+      explain: 'شکل `computer\user`.'
+    - kind: mcq
+      q: 'کدام دستور نشان می‌دهد کاربر عضو گروه Administrators است یا نه؟'
+      options: ['whoami /groups', 'hostname', 'whoami /user', 'echo %USERNAME%']
+      answer: 0
+      code_options: true
+      explain: '`/groups` گروه‌ها را نشان می‌دهد.'
+    - kind: type
+      q: 'نام کامپیوتر را نمایش بده.'
+      accept: ['hostname', 'echo %computername%']
+      explain: '`hostname`'
+  recap: '`whoami` = کاربر، `whoami /groups` = گروه‌ها، `hostname` = نام کامپیوتر.'
+
+- n: 50
+  term: systeminfo
+  fullForm: 'ver · systeminfo'
+  difficulty: 2
+  objective: 'نسخه Windows و مشخصات کامل سیستم را ببینی و فقط بخش لازم را جدا کنی.'
+  summary: '`ver` شماره نسخه Windows را نشان می‌دهد. `systeminfo` گزارش کاملی از سیستم می‌دهد: نسخه، زمان نصب، حافظه، شبکه و Hotfixها.'
+  meaning: 'خروجی `systeminfo` طولانی است؛ معمولاً آن را با `find` یا `findstr` فیلتر می‌کنند.'
+  usage: 'گزارش برای پشتیبانی، بررسی حافظه و نسخه قبل از نصب برنامه، فهمیدن زمان آخرین Restart.'
+  syntax: "ver\nsysteminfo\nsysteminfo | find \"Memory\""
+  demo:
+    cmds: ['ver', 'systeminfo | find "OS Name"', 'systeminfo | findstr /c:"Total Physical Memory"']
+  examples:
+    - c: 'ver'
+      d: 'شماره نسخه.'
+    - c: 'systeminfo'
+      d: 'گزارش کامل.'
+    - c: 'systeminfo | find "Boot Time"'
+      d: 'کامپیوتر کی روشن شده است؟'
+    - c: 'systeminfo > info.txt'
+      d: 'ذخیره گزارش.'
+  mistakes:
+    - 'خواندن کل خروجی به‌جای فیلتر کردن.'
+  tip: '`systeminfo | more` هم برای خواندن صفحه‌به‌صفحه خوب است.'
+  practice:
+    - id: P50a
+      start: 'C:\Users\Student'
+      task: 'از خروجی `systeminfo` فقط خط نام سیستم‌عامل (`OS Name`) را نمایش بده.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'Windows 11'}, {type: lastOutputExcludes, value: 'Host Name'}]
+      hints: ['خروجی را با Pipe به `find` بده.', '`systeminfo | find "OS Name"`']
+      answer: 'systeminfo | find "OS Name"'
+    - id: P50b
+      start: 'C:\Users\Student'
+      task: 'نسخه Windows را با کوتاه‌ترین دستور نمایش بده.'
+      checks: [{type: anyCmd, value: ver}]
+      hints: ['سه حرف اول Version.', '`ver`']
+      answer: 'ver'
+  quiz:
+    - kind: mcq
+      q: 'کدام دستور زمان آخرین روشن شدن کامپیوتر را نشان می‌دهد؟'
+      options: ['systeminfo | find "Boot Time"', 'ver', 'hostname', 'time /t']
+      answer: 0
+      code_options: true
+      explain: '`System Boot Time` در systeminfo.'
+    - kind: type
+      q: 'گزارش کامل systeminfo را در فایل `info.txt` ذخیره کن.'
+      accept: ['systeminfo > info.txt', 'systeminfo >info.txt']
+      show: 'systeminfo > info.txt'
+      explain: 'Redirect با `>`.'
+    - kind: tf
+      q: '`ver` اطلاعات حافظه RAM را نشان می‌دهد.'
+      answer: false
+      explain: 'فقط نسخه؛ حافظه در systeminfo است.'
+  recap: '`ver` = نسخه. `systeminfo` = همه چیز؛ با `find` فیلترش کن.'
+
+- n: 51
+  term: tasklist
+  fullForm: 'Task List'
+  difficulty: 2
+  objective: 'برنامه‌های در حال اجرا را ببینی و PID یک برنامه را پیدا کنی.'
+  summary: '`tasklist` همه Processها (برنامه‌های در حال اجرا) را با نام، PID و مصرف حافظه نشان می‌دهد.'
+  meaning: 'PID (Process ID) شماره یکتای هر Process است. یک برنامه مثل Chrome ممکن است چند Process داشته باشد. `/fi` فیلتر می‌کند، مثلاً `"imagename eq notepad.exe"` یا `"memusage gt 100000"`.'
+  usage: 'پیدا کردن برنامه‌ای که کامپیوتر را کند کرده، پیدا کردن PID برای `taskkill`.'
+  syntax: "tasklist\ntasklist /fi \"imagename eq name.exe\"\ntasklist | find \"name\""
+  demo:
+    cmds: ['tasklist /fi "imagename eq notepad.exe"', 'tasklist | find "chrome"']
+  examples:
+    - c: 'tasklist'
+      d: 'همه Processها.'
+    - c: 'tasklist /fi "imagename eq chrome.exe"'
+      d: 'فقط Chrome.'
+    - c: 'tasklist /fi "memusage gt 100000"'
+      d: 'Processهایی که بیش از ۱۰۰ مگابایت حافظه مصرف می‌کنند.'
+    - c: 'tasklist /fi "status eq not responding"'
+      d: 'برنامه‌هایی که جواب نمی‌دهند.'
+  mistakes:
+    - 'فراموش کردن Quotes دور فیلتر.'
+    - 'نوشتن نام بدون `.exe` در فیلتر `imagename eq`.'
+  tip: '`eq` یعنی مساوی، `ne` نامساوی، `gt` بزرگ‌تر و `lt` کوچک‌تر.'
+  practice:
+    - id: P51a
+      start: 'C:\Users\Student'
+      task: 'PID برنامه Notepad (`notepad.exe`) را پیدا کن.'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: '7344'}, {type: lastOutputExcludes, value: 'chrome'}]
+      hints: ['از فیلتر imagename یا Pipe به find استفاده کن.', '`tasklist /fi "imagename eq notepad.exe"`']
+      answer: 'tasklist /fi "imagename eq notepad.exe"'
+    - id: P51b
+      start: 'C:\Users\Student'
+      task: 'فقط Processهایی را نشان بده که بیش از `100000` کیلوبایت حافظه مصرف می‌کنند.'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: 'MsMpEng.exe'}, {type: lastOutputExcludes, value: 'notepad.exe'}]
+      hints: ['فیلتر حافظه `memusage` است.', '`tasklist /fi "memusage gt 100000"`']
+      answer: 'tasklist /fi "memusage gt 100000"'
+  quiz:
+    - kind: mcq
+      q: 'PID چیست؟'
+      options: ['شماره یکتای هر Process', 'رمز عبور برنامه', 'اندازه برنامه', 'مسیر نصب برنامه']
+      answer: 0
+      explain: 'Process ID.'
+    - kind: tf
+      q: 'یک برنامه می‌تواند چند Process با PIDهای مختلف داشته باشد.'
+      answer: true
+      explain: 'مثل Chrome که برای هر Tab یک Process دارد.'
+    - kind: type
+      q: 'فقط Processهای `explorer.exe` را با فیلتر نمایش بده.'
+      accept: ['tasklist /fi "imagename eq explorer.exe"', 'tasklist /fi "imagename eq explorer.exe" /v']
+      show: 'tasklist /fi "imagename eq explorer.exe"'
+      explain: 'فیلتر `imagename eq`.'
+  recap: '`tasklist` = برنامه‌های در حال اجرا. PID شماره هر Process است. `/fi "..."` فیلتر.'
+
+- n: 52
+  term: taskkill
+  fullForm: 'Task Kill'
+  difficulty: 2
+  objective: 'یک برنامه را با نام یا PID ببندی و بدانی کدام Processها را نباید ببندی.'
+  summary: '`taskkill` یک Process را می‌بندد: با `/im` بر اساس نام یا با `/pid` بر اساس شماره. `/f` برنامه را به‌اجبار می‌بندد.'
+  meaning: 'بدون `/f`، به برنامه پیام «بسته شو» فرستاده می‌شود (فرصت ذخیره). برنامه‌ای که جواب نمی‌دهد (Not Responding) فقط با `/f` بسته می‌شود. Processهای حیاتی Windows اصلاً بسته نمی‌شوند.'
+  usage: 'بستن برنامه هنگ‌کرده، بستن همه پنجره‌های یک برنامه با یک دستور.'
+  syntax: "taskkill /im name.exe [/f]\ntaskkill /pid number [/f]"
+  warning: 'با `/f` کارهای ذخیره‌نشده آن برنامه از بین می‌روند. روی کامپیوتر واقعی هرگز Processهای سیستمی مثل `csrss.exe`، `winlogon.exe` یا `svchost.exe` را نبند.'
+  demo:
+    cmds: ['taskkill /im notepad.exe', 'taskkill /pid 7810', 'taskkill /pid 7810 /f', 'taskkill /im csrss.exe']
+  examples:
+    - c: 'taskkill /im notepad.exe'
+      d: 'بستن Notepad.'
+    - c: 'taskkill /pid 7810 /f'
+      d: 'بستن اجباری یک Process با PID.'
+    - c: 'taskkill /im chrome.exe /f'
+      d: 'بستن همه Processهای Chrome.'
+  mistakes:
+    - 'نوشتن نام بدون `.exe`: `taskkill /im notepad` پیدا نمی‌کند.'
+    - 'استفاده از `/f` قبل از امتحان بستن عادی.'
+  tip: 'اول با `tasklist` PID را پیدا کن، بعد با `taskkill /pid` ببند. این از بستن اشتباهی جلوگیری می‌کند.'
+  practice:
+    - id: P52a
+      start: 'C:\Users\Student'
+      task: 'برنامه Notepad (`notepad.exe`) را با نام آن ببند.'
+      checks: [{type: procGone, value: 'notepad.exe'}]
+      hints: ['Switch نام برنامه `/im` است.', '`taskkill /im notepad.exe`']
+      answer: 'taskkill /im notepad.exe'
+    - id: P52b
+      start: 'C:\Users\Student'
+      task: 'Spotify هنگ کرده (Not Responding). اول PID آن را پیدا کن و بعد با PID به‌اجبار ببندش.'
+      multi: true
+      checks: [{type: procGone, value: 'Spotify.exe'}, {type: anyCmd, value: tasklist}, {type: switch, value: '/f', cmd: taskkill, anyRun: true}, {type: argIncludes, cmd: taskkill, value: '7810'}]
+      hints: ['`tasklist | find "Spotify"` شماره PID را نشان می‌دهد.', '`taskkill /pid 7810 /f`']
+      answer: ['tasklist | find "Spotify"', 'taskkill /pid 7810 /f']
+  quiz:
+    - kind: predict
+      q: 'برنامه X جواب نمی‌دهد. نتیجه این دستور؟'
+      code: 'taskkill /im X.exe'
+      options: ['خطا: فقط با /F بسته می‌شود', 'بسته می‌شود', 'Restart می‌شود', 'کامپیوتر خاموش می‌شود']
+      answer: 0
+      explain: 'برنامه Not Responding به پیام عادی جواب نمی‌دهد.'
+    - kind: mcq
+      q: 'کدام دستور Process با PID برابر 4321 را به‌اجبار می‌بندد؟'
+      options: ['taskkill /pid 4321 /f', 'taskkill /im 4321', 'tasklist /pid 4321', 'taskkill 4321']
+      answer: 0
+      code_options: true
+      explain: '`/pid` برای شماره، `/f` برای اجبار.'
+    - kind: tf
+      q: 'می‌شود `csrss.exe` را با `taskkill /f` بست تا کامپیوتر سریع‌تر شود.'
+      answer: false
+      explain: 'Processهای حیاتی بسته نمی‌شوند و تلاش برایش خطرناک است.'
+  recap: '`taskkill /im نام.exe` یا `/pid شماره`. `/f` اجباری. Processهای سیستمی را نبند.'

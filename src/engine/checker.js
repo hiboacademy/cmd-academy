@@ -75,6 +75,8 @@ const Checker = (() => {
     outputOrder: (c, sh, a, x) => inOrder(x.lastOutput || "", c.value),
     fileOrder: (c, sh) => { const t = textOf(node(sh, c.path)); return t != null && inOrder(t, c.value); },
     errorlevel: (c, sh) => sh.errorlevel === c.value,
+    inputIncludes: (c, sh, a) => a.some((r) => String(r.input || "").toLowerCase().includes(String(c.value).toLowerCase())),
+    envIncludes: (c, sh) => { const v = Shell.getVar(sh, c.name); return v != null && String(v).toLowerCase().includes(String(c.value).toLowerCase()); },
     envEquals: (c, sh) => { const v = Shell.getVar(sh, c.name); return v != null && (c.value == null || String(v).toLowerCase() === String(c.value).toLowerCase()); },
     procGone: (c, sh) => !sh.procs.some((p) => p.name.toLowerCase() === c.value.toLowerCase()),
     serviceState: (c, sh) => { const s = sh.services.find((x) => x.name.toLowerCase() === c.name.toLowerCase()); return !!s && s.state === c.value; },

@@ -1,0 +1,334 @@
+# Lessons 62–67 · Chapter 9: exit codes, permissions, admin, services, errors
+
+- n: 62
+  term: '%ERRORLEVEL%'
+  fullForm: 'Exit Code'
+  difficulty: 2
+  objective: 'بفهمی هر دستور بعد از اجرا یک عدد نتیجه برمی‌گرداند و آن را بخوانی.'
+  summary: 'هر دستور بعد از تمام شدن یک Exit Code می‌دهد. `0` یعنی موفق و عدد دیگر یعنی مشکل. آخرین Exit Code در متغیر `%ERRORLEVEL%` است.'
+  meaning: 'معنی اعداد به هر دستور بستگی دارد: `find` اگر چیزی پیدا نکند 1 می‌دهد، `ping` اگر جوابی نیاید 1، و `robocopy` با 1 یعنی «فایل کپی شد». `&&` و `||` (درس ۳۱) هم بر اساس همین عدد کار می‌کنند.'
+  usage: 'فهمیدن نتیجه دستورها در Batch Script و تصمیم‌گیری بر اساس آن (درس ۸۱).'
+  syntax: "command\necho %ERRORLEVEL%"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    expectError: true
+    cmds: ['find "Pizza" menu.txt >nul', 'echo %ERRORLEVEL%', 'find "Burger" menu.txt >nul', 'echo %ERRORLEVEL%', 'xyz', 'echo %ERRORLEVEL%']
+  examples:
+    - c: 'echo %ERRORLEVEL%'
+      d: 'نتیجه آخرین دستور.'
+    - c: 'find "Burger" menu.txt & echo %ERRORLEVEL%'
+      d: 'اگر Burger نباشد: 1.'
+      noTry: true
+    - c: 'ping -n 1 10.0.0.99 >nul || echo Host is down'
+      d: 'استفاده مستقیم از نتیجه با `||`.'
+  mistakes:
+    - 'فرض اینکه همه دستورها با خطا عدد 1 می‌دهند؛ مثلاً دستور ناشناخته 9009 می‌دهد.'
+    - 'فراموش کردن اینکه `echo` بعدی خودش ERRORLEVEL را تغییر نمی‌دهد ولی دستورهای دیگر تغییر می‌دهند؛ ERRORLEVEL را بلافاصله بخوان.'
+  tip: 'در robocopy عددهای کمتر از 8 یعنی موفقیت؛ این استثنای معروف است.'
+  practice:
+    - id: P62a
+      start: 'C:\Users\Student\Documents'
+      task: 'در `menu.txt` دنبال کلمه `Burger` بگرد (وجود ندارد) و بلافاصله Exit Code آن را چاپ کن.'
+      multi: true
+      checks: [{type: anyCmd, value: find, evenIfFailed: true}, {type: inputIncludes, value: '%errorlevel%'}, {type: lastOutputIncludes, value: '1'}]
+      hints: ['اول `find "Burger" menu.txt`.', 'بعد `echo %ERRORLEVEL%`']
+      answer: ['find "Burger" menu.txt', 'echo %ERRORLEVEL%']
+    - id: P62b
+      start: 'C:\Users\Student'
+      task: 'یک بار Router (`192.168.1.1`) را ping کن و بعد Exit Code را چاپ کن. (باید 0 باشد.)'
+      multi: true
+      checks: [{type: anyCmd, value: ping}, {type: inputIncludes, value: '%errorlevel%'}, {type: errorlevel, value: 0}, {type: lastOutputIncludes, value: '0'}]
+      hints: ['`ping -n 1 192.168.1.1`', 'بعد `echo %ERRORLEVEL%`']
+      answer: ['ping -n 1 192.168.1.1', 'echo %ERRORLEVEL%']
+  quiz:
+    - kind: mcq
+      q: 'Exit Code برابر `0` معمولاً یعنی چه؟'
+      options: ['دستور موفق بود', 'دستور شکست خورد', 'دستور اجرا نشد', 'فایل خالی است']
+      answer: 0
+      explain: '0 = بدون خطا.'
+    - kind: predict
+      q: 'خروجی آخر چیست؟'
+      code: "notacommand\necho %ERRORLEVEL%"
+      options: ['9009', '0', '1', '%ERRORLEVEL%']
+      answer: 0
+      code_options: true
+      explain: 'دستور ناشناخته کد 9009 دارد.'
+    - kind: tf
+      q: 'بعد از robocopy، ERRORLEVEL برابر 1 یعنی کپی شکست خورد.'
+      answer: false
+      explain: 'در robocopy یعنی فایل‌ها کپی شدند.'
+  recap: '`%ERRORLEVEL%` = نتیجه آخرین دستور. 0 = موفق. معنی بقیه عددها به هر دستور بستگی دارد.'
+
+- n: 63
+  term: 'Access is denied.'
+  fullForm: 'Permissions · UAC'
+  difficulty: 2
+  objective: 'دلیل خطای `Access is denied` را بفهمی و راه‌های درست رفع آن را بشناسی.'
+  summary: 'Windows برای هر فایل و هر کار تعیین می‌کند چه کسی اجازه دارد. کاربر عادی نمی‌تواند فایل‌های سیستمی را تغییر دهد یا ابزارهای تعمیر را اجرا کند.'
+  meaning: 'حتی اگر عضو Administrators باشی، CMD معمولی با سطح Medium اجرا می‌شود (UAC). `whoami /groups` جلوی Administrators می‌نویسد `Group used for deny only`. دلیل‌های دیگر خطا: فایل Read-only، فایلی که برنامه دیگری باز کرده، یا پوشه‌ای که مال کاربر دیگری است.'
+  usage: 'تشخیص اینکه مشکل از دسترسی است یا از اشتباه در دستور.'
+  syntax: "whoami /groups\nattrib file"
+  demo:
+    cmds: ['sfc /scannow', 'whoami /groups']
+  examples:
+    - c: 'whoami /groups'
+      d: 'سطح دسترسی فعلی.'
+    - c: 'attrib notes.txt'
+      d: 'آیا فایل Read-only است؟'
+    - c: 'attrib -r notes.txt'
+      d: 'برداشتن Read-only (اگر مال خودت است).'
+  mistakes:
+    - 'تغییر دسترسی فایل‌های `C:\Windows` برای حل یک خطا؛ این کار امنیت سیستم را از بین می‌برد.'
+    - 'همیشه اجرای CMD با Administrator؛ فقط وقتی لازم است.'
+  tip: 'قاعده: اول ببین فایل Read-only است یا در حال استفاده؛ اگر کار سیستمی است، CMD را Administrator باز کن (درس بعد).'
+  practice:
+    - id: P63a
+      start: 'C:\Users\Student'
+      task: 'بررسی کن این CMD با دسترسی کامل Administrator اجرا شده یا نه (گروه‌های کاربر را ببین).'
+      checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'deny only'}]
+      hints: ['دستور whoami یک Switch برای گروه‌ها دارد.', '`whoami /groups`']
+      answer: 'whoami /groups'
+    - id: P63b
+      start: 'C:\Users\Student\Desktop'
+      setup: {readonly: ['C:\Users\Student\Desktop\notes.txt']}
+      task: 'خط `Buy bread` را به آخر `notes.txt` اضافه کن. (اگر `Access is denied` دیدی، دلیلش را پیدا و رفع کن.)'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\notes.txt', value: ['Remember', 'Buy bread']}]
+      hints: ['فایل Read-only است؛ با `attrib` ببین.', '`attrib -r notes.txt` و بعد `echo Buy bread >> notes.txt`']
+      answer: ['attrib -r notes.txt', 'echo Buy bread >> notes.txt']
+  quiz:
+    - kind: mcq
+      q: 'کدام دلیل باعث `Access is denied` نمی‌شود؟'
+      options: ['اشتباه تایپی در نام دستور', 'فایل Read-only', 'کار سیستمی بدون Administrator', 'فایل باز در برنامه دیگر']
+      answer: 0
+      explain: 'دستور اشتباه خطای `is not recognized` می‌دهد.'
+    - kind: tf
+      q: 'کاربر عضو Administrators در CMD معمولی هم همه دسترسی‌ها را دارد.'
+      answer: false
+      explain: 'UAC تا وقتی CMD را Run as administrator باز نکنی دسترسی کامل نمی‌دهد.'
+    - kind: type
+      q: 'Read-only بودن `report.txt` را بردار.'
+      accept: ['attrib -r report.txt']
+      explain: '`attrib -r`'
+  recap: '`Access is denied` = اجازه نداری: Read-only، فایل در حال استفاده، یا کار سیستمی بدون Administrator.'
+
+- n: 64
+  term: 'Administrator CMD'
+  fullForm: 'Run as administrator'
+  difficulty: 2
+  objective: 'CMD را با دسترسی Administrator باز کنی و آن را از CMD معمولی تشخیص دهی.'
+  summary: 'برای ابزارهای سیستمی مثل `sfc`، `chkdsk` و `diskpart` باید CMD را با Run as administrator باز کنی. عنوان پنجره با `Administrator:` شروع می‌شود.'
+  meaning: 'راه‌ها: Start → تایپ `cmd` → Run as administrator؛ یا Start → تایپ `cmd` → `Ctrl + Shift + Enter`؛ یا Win + X → Terminal (Admin). Windows پنجره UAC را نشان می‌دهد و باید Yes بزنی. CMD ادمین معمولاً در `C:\Windows\System32` باز می‌شود.'
+  usage: 'تعمیر سیستم، مدیریت سرویس‌ها و دیسک‌ها، تغییر تنظیمات شبکه.'
+  syntax: "(Start → cmd → Ctrl+Shift+Enter)\nwhoami /groups"
+  warning: 'در CMD ادمین هر اشتباهی می‌تواند به سیستم آسیب بزند. فقط وقتی لازم است از آن استفاده کن و کارت که تمام شد، پنجره را ببند.'
+  demo:
+    admin: true
+    cmds: ['whoami /groups', 'sfc /scannow']
+  examples:
+    - c: 'sfc /scannow'
+      d: 'فقط در CMD ادمین کار می‌کند.'
+    - c: 'whoami /groups | find "Mandatory Label"'
+      d: 'High یعنی ادمین، Medium یعنی معمولی.'
+  mistakes:
+    - 'فراموش کردن اینکه CMD ادمین در System32 باز می‌شود؛ قبل از کار با فایل‌ها `cd` کن.'
+  tip: 'در Simulator، بالای صفحه Simulator حالت «Administrator» را انتخاب کن.'
+  practice:
+    - id: P64a
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'این CMD با Administrator باز شده. با `whoami` ثابت کن سطح دسترسی High است.'
+      checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'High Mandatory'}]
+      hints: ['گروه‌ها را نشان بده.', '`whoami /groups`']
+      answer: 'whoami /groups'
+    - id: P64b
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'فایل‌های سیستمی Windows را با ابزار System File Checker بررسی کن.'
+      checks: [{type: anyCmd, value: sfc}, {type: lastOutputIncludes, value: 'integrity violations'}]
+      hints: ['`sfc` با Switch اسکن فوری.', '`sfc /scannow`']
+      answer: 'sfc /scannow'
+  quiz:
+    - kind: mcq
+      q: 'میانبر باز کردن CMD با Administrator از منوی Start کدام است؟'
+      options: ['Ctrl + Shift + Enter', 'Ctrl + Enter', 'Alt + Enter', 'Shift + Enter']
+      answer: 0
+      explain: 'بعد از تایپ cmd در Start.'
+    - kind: tf
+      q: 'عنوان پنجره CMD ادمین با `Administrator:` شروع می‌شود.'
+      answer: true
+      explain: 'راه سریع تشخیص.'
+    - kind: mcq
+      q: 'CMD ادمین معمولاً در کدام پوشه باز می‌شود؟'
+      options: ['C:\Windows\System32', 'C:\Users\Student', 'C:\', 'D:\']
+      answer: 0
+      code_options: true
+      explain: 'به همین دلیل قبل از کار با فایل‌ها cd کن.'
+  recap: 'Run as administrator (Ctrl+Shift+Enter) برای ابزارهای سیستمی. عنوان `Administrator:`. فقط وقتی لازم است.'
+
+- n: 65
+  term: 'sc · net start'
+  fullForm: 'Windows Services'
+  difficulty: 3
+  objective: 'سرویس‌های Windows را ببینی، وضعیتشان را بررسی کنی و (با Administrator) متوقف یا اجرا کنی.'
+  summary: 'سرویس (Service) برنامه‌ای است که بدون پنجره در پس‌زمینه کار می‌کند، مثل Print Spooler (چاپ) یا Windows Update. `sc query` و `net start` وضعیت را نشان می‌دهند.'
+  meaning: 'هر سرویس یک نام کوتاه (مثل `Spooler`) و یک نام نمایشی (Print Spooler) دارد. `net stop` و `net start` یا `sc stop` و `sc start` آن را متوقف یا اجرا می‌کنند و به Administrator نیاز دارند.'
+  usage: 'رفع مشکل پرینتری که چاپ نمی‌کند (Restart سرویس Spooler)، بررسی اینکه یک سرویس اجرا می‌شود.'
+  syntax: "sc query [name]\nnet start\nnet stop name\nnet start name"
+  warning: 'متوقف کردن سرویس‌های امنیتی (مثل WinDefend) یا سیستمی کامپیوتر را آسیب‌پذیر یا ناپایدار می‌کند.'
+  demo:
+    cmds: ['sc query spooler', 'net start', 'net stop spooler']
+  examples:
+    - c: 'sc query spooler'
+      d: 'وضعیت سرویس چاپ.'
+    - c: 'net start'
+      d: 'فهرست سرویس‌های در حال اجرا.'
+    - c: 'net stop spooler && net start spooler'
+      d: 'Restart سرویس چاپ (Administrator).'
+  mistakes:
+    - 'استفاده از نام نمایشی بدون Quotes: `net stop Print Spooler` → `net stop "Print Spooler"` یا `net stop spooler`.'
+  tip: '`sc query` فقط سرویس‌های در حال اجرا را نشان می‌دهد؛ برای همه: `sc query state= all` (با فاصله بعد از `=`).'
+  practice:
+    - id: P65a
+      start: 'C:\Users\Student'
+      task: 'وضعیت سرویس Print Spooler (نام کوتاه: `Spooler`) را ببین.'
+      checks: [{type: anyCmd, value: sc}, {type: lastOutputIncludes, value: 'RUNNING'}, {type: lastOutputIncludes, value: 'Spooler'}]
+      hints: ['`sc` و دستور query.', '`sc query spooler`']
+      answer: 'sc query spooler'
+    - id: P65b
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'پرینتر گیر کرده است. سرویس `Spooler` را متوقف و دوباره اجرا کن (Restart).'
+      multi: true
+      checks: [{type: serviceState, name: Spooler, value: RUNNING}, {type: argIncludes, cmd: net, value: 'stop'}]
+      hints: ['اول `net stop spooler`.', 'بعد `net start spooler`']
+      answer: ['net stop spooler', 'net start spooler']
+  quiz:
+    - kind: mcq
+      q: 'سرویس چیست؟'
+      options: ['برنامه‌ای که بدون پنجره در پس‌زمینه کار می‌کند', 'یک فایل Batch', 'یک کاربر Windows', 'یک Drive']
+      answer: 0
+      explain: 'مثل Print Spooler یا DNS Client.'
+    - kind: predict
+      q: 'کاربر عادی این را اجرا می‌کند. نتیجه؟'
+      code: 'net stop spooler'
+      options: ['System error 5 has occurred. Access is denied.', 'سرویس متوقف می‌شود', 'The service name is invalid.', 'هیچ']
+      answer: 0
+      explain: 'به Administrator نیاز دارد.'
+    - kind: type
+      q: 'فهرست سرویس‌های در حال اجرا را نشان بده.'
+      accept: ['net start', 'sc query']
+      explain: '`net start` یا `sc query`'
+  recap: 'سرویس = برنامه پس‌زمینه. `sc query` و `net start` = وضعیت. `net stop/start نام` = کنترل (Administrator).'
+
+- n: 66
+  term: 'Common errors'
+  fullForm: 'Reading CMD error messages'
+  difficulty: 2
+  objective: 'پیام‌های خطای رایج CMD را بخوانی و سریع رفعشان کنی.'
+  summary: 'بیشتر خطاهای CMD چند پیام تکراری‌اند. اگر بدانی هر کدام چه می‌گوید، نصف عیب‌یابی را انجام داده‌ای.'
+  meaning: '`is not recognized` → اشتباه تایپی یا برنامه در PATH نیست. `cannot find the path` → مسیر اشتباه است. `cannot find the file` → نام فایل اشتباه است. `syntax ... incorrect` → شکل دستور اشتباه است (اغلب Quotes جاافتاده). `Access is denied` → اجازه نداری. `already exists` → از قبل هست. `being used by another process` → فایل یا پوشه در حال استفاده است.'
+  usage: 'خواندن دقیق پیام قبل از تغییر دستور.'
+  syntax: "command /?\ndir\ncd"
+  demo:
+    start: 'C:\Users\Student'
+    expectError: true
+    cmds: ['dri', 'cd Nowhere', 'type Desktop\shopping list.txt', 'mkdir Documents', 'rd C:\Users\Student']
+  examples:
+    - c: 'dir /?'
+      d: 'وقتی شکل درست دستور یادت نیست.'
+    - c: 'cd'
+      d: 'وقتی نمی‌دانی کجا هستی.'
+    - c: 'dir'
+      d: 'وقتی نام دقیق فایل را نمی‌دانی.'
+  mistakes:
+    - 'تکرار همان دستور بدون خواندن پیام خطا.'
+    - 'حدس زدن به‌جای `/?` و `dir`.'
+  tip: 'سه سؤال طلایی: کجا هستم؟ (`cd`) چه چیزی اینجاست؟ (`dir`) شکل درست دستور چیست؟ (`/?`)'
+  practice:
+    - id: P66a
+      start: 'C:\Users\Student'
+      task: 'دستور `type Desktop\shopping list.txt` خطا می‌دهد. آن را اصلاح و اجرا کن.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'shopping list'}]
+      hints: ['نام فایل فاصله دارد.', '`type "Desktop\shopping list.txt"`']
+      answer: 'type "Desktop\shopping list.txt"'
+    - id: P66b
+      start: 'C:\Users\Student\Documents'
+      task: 'می‌خواهی همه txtها را به `D:\Archive` کپی کنی ولی این پوشه وجود ندارد. کار را درست انجام بده.'
+      multi: true
+      checks: [{type: fileExists, path: 'D:\Archive\menu.txt'}, {type: fileExists, path: 'D:\Archive\todo.txt'}]
+      hints: ['اول مقصد را بساز.', '`mkdir D:\Archive` و بعد `copy *.txt D:\Archive`']
+      answer: ['mkdir D:\Archive', 'copy *.txt D:\Archive']
+  quiz:
+    - kind: mcq
+      q: '`The system cannot find the path specified.` بیشتر یعنی چه؟'
+      options: ['یکی از پوشه‌های مسیر وجود ندارد', 'دستور اشتباه است', 'دسترسی نداری', 'Drive پر است']
+      answer: 0
+      explain: 'Path را با `dir` بررسی کن.'
+    - kind: mcq
+      q: 'کاربر `ipconfg` نوشته. چه خطایی می‌بیند؟'
+      options: ["'ipconfg' is not recognized as an internal or external command", 'Access is denied.', 'The syntax of the command is incorrect.', 'File Not Found']
+      answer: 0
+      explain: 'اشتباه تایپی در نام دستور.'
+    - kind: fix
+      q: 'چرا این خطا آمد؟'
+      code: "C:\\Users\\Student\\Work>rd C:\\Users\\Student\\Work\nThe process cannot access the file because it is being used by another process."
+      options: ['کاربر داخل همان پوشه است', 'پوشه Read-only است', 'پوشه خالی نیست', 'باید `del` نوشت']
+      answer: 0
+      explain: 'اول با `cd ..` بیرون بیا.'
+  recap: 'پیام خطا را بخوان: not recognized = نام دستور، path = مسیر، file = نام فایل، syntax = شکل دستور، denied = دسترسی.'
+
+- n: 67
+  term: 'Level 2 Practice'
+  fullForm: 'Real tasks with combined commands'
+  difficulty: 3
+  objective: 'دستورهای Level 2 را برای کارهای واقعی پشتیبانی فنی ترکیب کنی.'
+  summary: 'در کار واقعی معمولاً باید اطلاعاتی را از چند دستور جمع کنی، فیلتر کنی و در یک گزارش ذخیره کنی.'
+  meaning: 'ابزارها: `>` و `>>` برای گزارش، `|` و `find` برای فیلتر، متغیرها برای مسیرها، `&&` برای ایمنی.'
+  usage: 'گزارش وضعیت کامپیوتر برای پشتیبانی، Backup سریع، پیدا کردن و جمع کردن فایل‌ها.'
+  syntax: "hostname > report.txt\nipconfig | find \"IPv4\" >> report.txt"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['hostname > report.txt', 'whoami >> report.txt', 'ipconfig | find "IPv4" >> report.txt', 'type report.txt']
+  examples:
+    - c: 'echo Report %DATE% > report.txt'
+      d: 'شروع گزارش با تاریخ.'
+    - c: 'tasklist | find "chrome" >> report.txt'
+      d: 'اضافه کردن Processهای Chrome.'
+    - c: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+      d: 'جمع کردن همه jpgها (با ساختار پوشه‌ها).'
+  mistakes:
+    - 'استفاده از `>` به‌جای `>>` در خطوط بعدی گزارش و پاک شدن خط‌های قبلی.'
+  tip: 'هر خط گزارش را جدا امتحان کن، بعد با `>>` به فایل اضافه کن.'
+  practice:
+    - id: P67a
+      start: 'C:\Users\Student\Desktop'
+      task: 'فایل `report.txt` بساز که این‌ها را داشته باشد: نام کامپیوتر، نام کاربر، خط IPv4 و Processهای `chrome`.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\report.txt', value: ['ACADEMY-PC', 'student', '192.168.1.24', 'chrome.exe']}]
+      hints: ['خط اول با `>`: `hostname > report.txt`.', 'بقیه با `>>`: `whoami >> report.txt`، `ipconfig | find "IPv4" >> report.txt`، `tasklist | find "chrome" >> report.txt`']
+      answer: ['hostname > report.txt', 'whoami >> report.txt', 'ipconfig | find "IPv4" >> report.txt', 'tasklist | find "chrome" >> report.txt']
+    - id: P67b
+      start: 'C:\Users\Student'
+      task: 'همه عکس‌های `.jpg` پوشه Pictures و زیرپوشه‌هایش را به `E:\AllPhotos` کپی کن.'
+      checks: [{type: fileExists, path: 'E:\AllPhotos\beach.jpg'}, {type: any, of: [{type: fileExists, path: 'E:\AllPhotos\Holidays\family.jpg'}, {type: fileExists, path: 'E:\AllPhotos\family.jpg'}]}, {type: fileNotExists, path: 'E:\AllPhotos\logo.png'}]
+      hints: ['robocopy یا xcopy می‌توانند فقط jpgها را با زیرپوشه‌ها کپی کنند.', '`robocopy Pictures E:\AllPhotos *.jpg /s`']
+      answer: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+  quiz:
+    - kind: order
+      q: 'برای ساختن گزارش «نام کامپیوتر + IP + سرویس Spooler» دستورها را مرتب کن.'
+      items: ['hostname > info.txt', 'ipconfig | find "IPv4" >> info.txt', 'sc query spooler >> info.txt', 'type info.txt']
+      explain: 'اولی با `>`، بقیه با `>>`، در آخر بررسی.'
+    - kind: predict
+      q: 'بعد از این دو خط، `r.txt` چه دارد؟'
+      code: "hostname > r.txt\nwhoami > r.txt"
+      options: ['فقط نام کاربر', 'نام کامپیوتر و نام کاربر', 'فقط نام کامپیوتر', 'خالی']
+      answer: 0
+      explain: 'خط دوم با `>` فایل را بازنویسی کرد.'
+    - kind: mcq
+      q: 'کدام دستور فقط خط‌های Chrome را به آخر `log.txt` اضافه می‌کند؟'
+      options: ['tasklist | find "chrome" >> log.txt', 'tasklist >> find "chrome" log.txt', 'find "chrome" tasklist >> log.txt', 'tasklist > log.txt | find "chrome"']
+      answer: 0
+      code_options: true
+      explain: 'اول Pipe، بعد Redirect.'
+  recap: 'گزارش = `>` برای خط اول، `>>` برای بقیه، `|` و `find` برای فیلتر.'

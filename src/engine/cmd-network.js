@@ -221,7 +221,7 @@
       else if (v === "-w") i++;
       else target = toks[i];
     }
-    rec.args = target ? [target] : [];
+    rec.args = target ? [target] : []; rec.switches = toks.filter((t) => t.startsWith("-")).map((t) => t.toLowerCase());
     if (!target) { showUsage(lines, COMMANDS.tracert); return 1; }
     const r = resolveHost(sh, target);
     if (!r) { out(lines, `Unable to resolve target system name ${target}.`); note(lines, msg("ping_nohost")); return 1; }
@@ -230,7 +230,7 @@
     out(lines, `Tracing route to ${r.name && !isIP(target) ? `${r.name} [${r.ip}]` : (reverseName(sh, r.ip) && !D ? `${reverseName(sh, r.ip)} [${r.ip}]` : r.ip)}`);
     out(lines, `over a maximum of ${maxH} hops:`);
     out(lines, "");
-    const ms = (v) => (v < 1 ? "<1 ms" : `${v} ms`).padStart(5);
+    const ms = (v) => (v < 1 ? "<1 ms" : `${v} ms`).padStart(8);
     if (st === "nonet") { out(lines, "Transmit error: code 1231."); note(lines, msg("ping_nonet")); return 1; }
     if (st === "loop" || st === "self") { out(lines, `  1    <1 ms    <1 ms    <1 ms  ${r.ip}`); out(lines, ""); out(lines, "Trace complete."); return true; }
     const hops = st === "lan" ? [] : sh.net.hops.slice();
@@ -238,12 +238,12 @@
     for (const hp of hops) {
       k++;
       if (k > maxH) break;
-      if (hp.ip === "*") out(lines, `${String(k).padStart(3)}     *        *        *     Request timed out.`);
-      else out(lines, `${String(k).padStart(3)}  ${hp.ms.map(ms).join("  ")}  ${hp.name && !D ? `${hp.name} [${hp.ip}]` : hp.ip}`);
+      if (hp.ip === "*") out(lines, `${String(k).padStart(3)}        *        *        *     Request timed out.`);
+      else out(lines, `${String(k).padStart(3)} ${hp.ms.map(ms).join(" ")}  ${hp.name && !D ? `${hp.name} [${hp.ip}]` : hp.ip}`);
       yield { kind: "sleep", ms: 350 };
     }
     if (st === "timeout") {
-      for (let x = 0; x < 3 && k < maxH; x++) { k++; out(lines, `${String(k).padStart(3)}     *        *        *     Request timed out.`); yield { kind: "sleep", ms: 500 }; }
+      for (let x = 0; x < 3 && k < maxH; x++) { k++; out(lines, `${String(k).padStart(3)}        *        *        *     Request timed out.`); yield { kind: "sleep", ms: 500 }; }
       note(lines, msg("tracert_timeout"));
       out(lines, ""); out(lines, "Trace complete."); return true;
     }
@@ -251,7 +251,7 @@
       k++;
       const base = st === "lan" ? 1 : 15 + (hash(r.ip) % 10);
       const nm = !D && (reverseName(sh, r.ip) || r.name);
-      out(lines, `${String(k).padStart(3)}  ${[base, base - 1, base + 1].map((v) => ms(Math.max(1, v))).join("  ")}  ${nm ? `${nm} [${r.ip}]` : r.ip}`);
+      out(lines, `${String(k).padStart(3)} ${[base, base - 1, base + 1].map((v) => ms(Math.max(1, v))).join(" ")}  ${nm ? `${nm} [${r.ip}]` : r.ip}`);
     }
     out(lines, "");
     out(lines, "Trace complete.");
