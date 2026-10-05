@@ -1,0 +1,659 @@
+# Lessons 33–44 · Chapter 6: pipes, text, search and copying folders
+
+- n: 33
+  term: '|'
+  fullForm: 'Pipe'
+  difficulty: 2
+  objective: 'خروجی یک دستور را مستقیم به ورودی دستور دیگر بدهی.'
+  summary: '`|` خروجی دستور سمت چپ را به‌جای صفحه، به ورودی دستور سمت راست می‌فرستد. مثل لوله‌ای که دو دستور را به هم وصل می‌کند.'
+  meaning: 'در `type menu.txt | find "Pizza"`، اول `type` همه خطوط را بیرون می‌دهد؛ این خطوط روی صفحه نمی‌آیند، بلکه وارد `find` می‌شوند و `find` فقط خطی را که Pizza دارد نشان می‌دهد. چرا کار می‌کند؟ چون `find` وقتی نام فایل نگیرد، ورودی‌اش را از Pipe می‌خواند.'
+  usage: 'فیلتر کردن خروجی‌های طولانی: پیدا کردن IP در `ipconfig`، پیدا کردن یک برنامه در `tasklist`، مرتب کردن فهرست‌ها.'
+  syntax: 'command1 | command2'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['type menu.txt | find "Pizza"', 'ipconfig | find "IPv4"', 'dir /b | sort /r']
+  examples:
+    - c: 'type menu.txt | find "Pizza"'
+      d: 'فقط خط Pizza از منو.'
+    - c: 'dir | find ".txt"'
+      d: 'فقط خط‌هایی از خروجی dir که `.txt` دارند.'
+    - c: 'ipconfig | find "IPv4"'
+      d: 'فقط آدرس IPv4.'
+    - c: 'tasklist | find "chrome"'
+      d: 'فقط Processهای Chrome.'
+  mistakes:
+    - 'اشتباه گرفتن `|` با `||` (درس ۳۱).'
+    - 'گذاشتن دستوری که ورودی نمی‌خواند (مثل `dir`) در سمت راست Pipe.'
+  tip: 'می‌توانی چند Pipe پشت‌سرهم بگذاری: `type guests.txt | sort | more`'
+  restaurant: 'گارسون سفارش را مستقیم به آشپز می‌دهد، آشپز غذا را مستقیم به تزئین‌کننده. هیچ‌کس سفارش را روی میز نمی‌گذارد.'
+  practice:
+    - id: P33a
+      start: 'C:\Users\Student\Documents'
+      task: 'با `type` و یک Pipe، فقط خطی از `menu.txt` را نشان بده که `Pasta` دارد.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'Pasta'}, {type: lastOutputExcludes, value: 'Pizza'}]
+      hints: ['خروجی `type menu.txt` را به `find` بده.', '`type menu.txt | find "Pasta"`']
+      answer: 'type menu.txt | find "Pasta"'
+    - id: P33b
+      start: 'C:\Users\Student'
+      task: 'از خروجی `ipconfig` فقط خط `IPv4` را نمایش بده.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: '192.168.1.24'}, {type: lastOutputExcludes, value: 'Subnet'}]
+      hints: ['`ipconfig | find ...`', '`ipconfig | find "IPv4"`']
+      answer: 'ipconfig | find "IPv4"'
+  quiz:
+    - kind: mcq
+      q: 'در `A | B`، ورودی دستور B از کجا می‌آید؟'
+      options: ['از خروجی A', 'از صفحه‌کلید', 'از یک فایل', 'از دستور قبلی در History']
+      answer: 0
+      explain: 'Pipe خروجی A را به ورودی B وصل می‌کند.'
+    - kind: predict
+      q: 'menu.txt شامل Pizza، Pasta و Salad است. خروجی چیست؟'
+      code: 'type menu.txt | find "Sa"'
+      options: ['فقط خط Salad', 'Pasta و Salad', 'همه خطوط', 'هیچ']
+      answer: 0
+      explain: '`find` به حروف بزرگ و کوچک حساس است؛ «Pasta» شامل «Sa» با S بزرگ نیست.'
+    - kind: type
+      q: 'از خروجی `tasklist` فقط خط‌های `notepad` را نشان بده.'
+      accept: ['tasklist | find "notepad"', 'tasklist | find /i "notepad"', 'tasklist | findstr notepad', 'tasklist | findstr /i notepad', 'tasklist | find "notepad.exe"']
+      show: 'tasklist | find "notepad"'
+      explain: 'خروجی tasklist را به find بده.'
+  recap: '`A | B` = خروجی A ورودی B می‌شود. برای فیلتر کردن خروجی‌های طولانی.'
+
+- n: 34
+  term: more
+  fullForm: 'More (page by page)'
+  difficulty: 2
+  objective: 'خروجی‌های طولانی را صفحه‌به‌صفحه بخوانی.'
+  summary: '`more` خروجی را یک صفحه نشان می‌دهد و منتظر می‌ماند. Space صفحه بعد، Enter یک خط بعد، Q خروج.'
+  meaning: '`more` ورودی را یا از فایل می‌گیرد (`more file.txt`) یا از Pipe (`help | more`). در پایین صفحه `-- More --` و درصد خوانده‌شده را می‌بینی.'
+  usage: 'خواندن راهنماهای بلند، Logها و خروجی دستورهایی مثل `systeminfo`.'
+  syntax: "more file\ncommand | more"
+  examples:
+    - c: 'help | more'
+      d: 'فهرست دستورها صفحه‌به‌صفحه.'
+    - c: 'more C:\Windows\win.ini'
+      d: 'نمایش یک فایل با more.'
+    - c: 'systeminfo | more'
+      d: 'خواندن اطلاعات سیستم با آرامش.'
+  mistakes:
+    - 'فکر کردن اینکه CMD قفل شده؛ `-- More --` منتظر کلید توست.'
+  tip: 'در Simulator هم وقتی `-- More --` آمد، Space یا Enter بزن؛ برای خروج Q.'
+  practice:
+    - id: P34a
+      start: 'C:\Users\Student'
+      task: 'فهرست دستورهای `help` را صفحه‌به‌صفحه نمایش بده. (با Space ادامه بده یا با Q خارج شو.)'
+      checks: [{type: anyCmd, value: more}, {type: usedOp, value: '|'}, {type: argIncludes, cmd: help, value: ''}]
+      inputs: [' ', 'q']
+      hints: ['خروجی `help` را با Pipe به `more` بده.', '`help | more`']
+      answer: 'help | more'
+  quiz:
+    - kind: mcq
+      q: 'در `-- More --` کدام کلید یک صفحه کامل جلو می‌رود؟'
+      options: ['Space', 'Enter', 'Q', 'Esc']
+      answer: 0
+      explain: 'Space صفحه بعد، Enter فقط یک خط، Q خروج.'
+    - kind: type
+      q: 'فایل `log.txt` را صفحه‌به‌صفحه نمایش بده.'
+      accept: ['more log.txt', 'type log.txt | more', 'more < log.txt']
+      show: 'more log.txt'
+      explain: '`more log.txt` یا `type log.txt | more`'
+    - kind: tf
+      q: '`more` محتوای فایل را تغییر می‌دهد.'
+      answer: false
+      explain: 'فقط نمایش می‌دهد.'
+  recap: '`more` = صفحه‌به‌صفحه. Space صفحه، Enter خط، Q خروج.'
+
+- n: 35
+  term: sort
+  fullForm: 'Sort'
+  difficulty: 2
+  objective: 'خطوط یک فایل یا خروجی یک دستور را به ترتیب الفبا مرتب کنی.'
+  summary: '`sort` خطوط را از A تا Z مرتب می‌کند. با `/r` برعکس (Z تا A).'
+  meaning: '`sort` به بزرگی و کوچکی حروف حساس نیست و فایل اصلی را تغییر نمی‌دهد؛ فقط خروجی مرتب‌شده را نشان می‌دهد. برای ذخیره از `>` یا `/o` استفاده کن.'
+  usage: 'مرتب کردن فهرست نام‌ها، خروجی `dir /b`، یا داده‌هایی که از دستور دیگری می‌آید.'
+  syntax: "sort [/r] [file] [/o outfile]\ncommand | sort"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['type guests.txt', 'sort guests.txt', 'sort /r guests.txt']
+  examples:
+    - c: 'sort guests.txt'
+      d: 'نمایش مرتب‌شده.'
+    - c: 'type guests.txt | sort'
+      d: 'همان کار با Pipe.'
+    - c: 'sort guests.txt > sorted.txt'
+      d: 'ذخیره نتیجه در فایل جدید.'
+    - c: 'dir /b | sort /r'
+      d: 'فهرست فایل‌ها به ترتیب برعکس.'
+  mistakes:
+    - 'نوشتن `sort guests.txt > guests.txt`: فایل قبل از خوانده شدن خالی می‌شود! همیشه در فایل جدید بنویس.'
+  tip: 'اعداد به‌صورت متن مرتب می‌شوند: `10` قبل از `9` می‌آید.'
+  practice:
+    - id: P35a
+      start: 'C:\Users\Student\Documents'
+      task: 'نام‌های داخل `guests.txt` را مرتب‌شده (A تا Z) نمایش بده.'
+      checks: [{type: anyCmd, value: sort}, {type: outputOrder, value: ['Ali', 'David', 'hibo', 'mina', 'Reza', 'Sara']}]
+      hints: ['دستور مرتب‌سازی `sort` است.', '`sort guests.txt`']
+      answer: 'sort guests.txt'
+    - id: P35b
+      start: 'C:\Users\Student\Documents'
+      task: 'نسخه مرتب‌شده `guests.txt` را در فایل جدید `sorted.txt` ذخیره کن.'
+      checks: [{type: fileOrder, path: 'C:\Users\Student\Documents\sorted.txt', value: ['Ali', 'David', 'hibo', 'mina', 'Reza', 'Sara']}]
+      hints: ['خروجی `sort` را با `>` به فایل ببر.', '`sort guests.txt > sorted.txt`']
+      answer: 'sort guests.txt > sorted.txt'
+  quiz:
+    - kind: mcq
+      q: 'کدام Switch ترتیب را برعکس می‌کند؟'
+      options: ['/r', '/o', '/b', '/s']
+      answer: 0
+      code_options: true
+      explain: '`/r` = Reverse.'
+    - kind: predict
+      q: 'خروجی این دستور با ورودی‌های `b`، `C`، `a` چیست؟'
+      code: 'sort names.txt'
+      options: ["a\nb\nC", "C\na\nb", "b\nC\na", "a\nC\nb"]
+      answer: 0
+      code_options: true
+      explain: 'sort به بزرگی حروف حساس نیست.'
+    - kind: tf
+      q: '`sort guests.txt` فایل guests.txt را مرتب‌شده ذخیره می‌کند.'
+      answer: false
+      explain: 'فقط نمایش می‌دهد؛ برای ذخیره از `>` استفاده کن.'
+  recap: '`sort فایل` یا `... | sort`. `/r` برعکس. فایل اصلی تغییر نمی‌کند.'
+
+- n: 36
+  term: '<'
+  fullForm: 'Input redirection'
+  difficulty: 2
+  objective: 'ورودی یک دستور را از یک فایل بدهی.'
+  summary: '`<` محتوای یک فایل را به‌جای صفحه‌کلید، به ورودی دستور می‌فرستد. برعکس `>` که خروجی را به فایل می‌برد.'
+  meaning: '`sort < guests.txt` یعنی «guests.txt را به ورودی sort بده». نتیجه شبیه `type guests.txt | sort` است، ولی بدون اجرای دستور دوم.'
+  usage: 'دادن فایل به دستورهایی که از ورودی می‌خوانند (sort، find، more)، و در Batch برای خواندن خط اول فایل با `set /p` (درس ۷۴).'
+  syntax: "command < file\ncommand < input.txt > output.txt"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['sort < guests.txt', 'find "Soup" < menu.txt']
+  examples:
+    - c: 'sort < guests.txt'
+      d: 'مرتب کردن محتوای فایل.'
+    - c: 'find "Pizza" < menu.txt'
+      d: 'جستجو در ورودی آمده از فایل.'
+    - c: 'sort < guests.txt > sorted.txt'
+      d: 'ورودی از یک فایل، خروجی به فایل دیگر.'
+  mistakes:
+    - 'برعکس نوشتن جهت: `sort > guests.txt` فایل را پاک می‌کند!'
+  tip: 'جهت فلش را ببین: `<` به سمت دستور (ورودی)، `>` به سمت فایل (خروجی).'
+  daily: '`>` مثل ریختن آب از لیوان در بطری است؛ `<` مثل ریختن آب از بطری در لیوان.'
+  practice:
+    - id: P36a
+      start: 'C:\Users\Student\Documents'
+      task: 'با `<` محتوای `guests.txt` را به `sort` بده تا نام‌ها مرتب‌شده نمایش داده شوند.'
+      checks: [{type: usedOp, value: '<'}, {type: outputOrder, value: ['Ali', 'David', 'Sara']}]
+      hints: ['دستور اول، بعد `<`، بعد نام فایل.', '`sort < guests.txt`']
+      answer: 'sort < guests.txt'
+    - id: P36b
+      start: 'C:\Users\Student\Documents'
+      task: 'با `find` و `<` خط `Soup` را در `menu.txt` پیدا کن.'
+      checks: [{type: usedOp, value: '<'}, {type: anyCmd, value: find}, {type: lastOutputIncludes, value: 'Soup'}]
+      hints: ['متن جستجو در `find` داخل Quotes است.', '`find "Soup" < menu.txt`']
+      answer: 'find "Soup" < menu.txt'
+  quiz:
+    - kind: mcq
+      q: 'در `sort < a.txt > b.txt` کدام فایل خوانده می‌شود؟'
+      options: ['a.txt', 'b.txt', 'هر دو', 'هیچ‌کدام']
+      answer: 0
+      explain: '`<` ورودی و `>` خروجی است.'
+    - kind: fix
+      q: 'کاربر می‌خواست فایل را مرتب ببیند ولی فایلش خالی شد. چرا؟'
+      code: 'sort > guests.txt'
+      options: ['جهت فلش اشتباه است؛ باید `<` می‌نوشت', '`sort` فایل را پاک می‌کند', 'باید `/r` می‌گذاشت', 'باید `type` را اول می‌نوشت']
+      answer: 0
+      explain: '`>` فایل را برای نوشتن باز و خالی می‌کند.'
+    - kind: type
+      q: 'محتوای `names.txt` را با `<` به `sort` بده.'
+      accept: ['sort < names.txt', 'sort <names.txt']
+      show: 'sort < names.txt'
+      explain: '`sort < names.txt`'
+  recap: '`دستور < فایل` = ورودی از فایل. `<` ورودی، `>` خروجی، `|` اتصال دو دستور.'
+
+- n: 37
+  term: find
+  fullForm: 'Find text'
+  difficulty: 2
+  objective: 'خطوط شامل یک متن را در فایل‌ها یا خروجی دستورها پیدا کنی.'
+  summary: '`find "متن" فایل` همه خطوطی را که آن متن را دارند نشان می‌دهد. متن جستجو حتماً داخل Quotes است.'
+  meaning: 'Switchهای مهم: `/i` بدون توجه به بزرگی حروف، `/c` فقط تعداد خطوط، `/n` شماره خط، `/v` خطوطی که آن متن را ندارند.'
+  usage: 'جستجو در Log و فایل‌های متنی، و فیلتر کردن خروجی دستورها با Pipe.'
+  syntax: 'find [/i] [/c] [/n] [/v] "text" [file...]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['find "Pizza" menu.txt', 'find /c /i "a" guests.txt', 'find /n "S" guests.txt']
+  examples:
+    - c: 'find "Pizza" menu.txt'
+      d: 'خط‌هایی که Pizza دارند.'
+    - c: 'find /i "pizza" menu.txt'
+      d: 'بدون توجه به حروف بزرگ و کوچک.'
+    - c: 'find /c "a" guests.txt'
+      d: 'فقط تعداد خطوطی که «a» دارند.'
+    - c: 'find /v "a" menu.txt'
+      d: 'خطوطی که «a» ندارند.'
+  mistakes:
+    - 'ننوشتن Quotes: `find Pizza menu.txt` خطای `Parameter format not correct` می‌دهد.'
+    - 'فراموش کردن `/i` و پیدا نکردن «pizza» با p کوچک.'
+  tip: 'Exit Code: اگر چیزی پیدا شود `0`، وگرنه `1`. پس `find ... && echo found` کار می‌کند (درس ۶۲).'
+  practice:
+    - id: P37a
+      start: 'C:\Users\Student\Documents'
+      task: 'بشمار در `guests.txt` چند خط حرف `a` دارند، بدون توجه به بزرگی و کوچکی حرف.'
+      checks: [{type: anyCmd, value: find}, {type: switch, value: '/c', cmd: find, anyRun: true}, {type: switch, value: '/i', cmd: find, anyRun: true}, {type: lastOutputIncludes, value: ': 5'}]
+      hints: ['دو Switch لازم است: یکی برای شمارش، یکی برای نادیده گرفتن بزرگی حروف.', '`find /c /i "a" guests.txt`']
+      answer: 'find /c /i "a" guests.txt'
+    - id: P37b
+      start: 'C:\Users\Student\Documents'
+      task: 'خطوطی از `menu.txt` را نشان بده که حرف `a` ندارند.'
+      checks: [{type: switch, value: '/v', cmd: find, anyRun: true}, {type: lastOutputIncludes, value: 'Soup'}, {type: lastOutputExcludes, value: 'Pizza'}]
+      hints: ['Switch «برعکس» در find کدام است؟', '`find /v "a" menu.txt`']
+      answer: 'find /v "a" menu.txt'
+  quiz:
+    - kind: fix
+      q: 'چرا این دستور خطا می‌دهد؟'
+      code: "find Pizza menu.txt\nFIND: Parameter format not correct"
+      options: ['متن جستجو Quotes ندارد', 'menu.txt وجود ندارد', 'باید `/i` بگذاری', '`find` روی فایل کار نمی‌کند']
+      answer: 0
+      explain: 'درست: `find "Pizza" menu.txt`'
+    - kind: mcq
+      q: 'کدام Switch فقط تعداد خطوط پیدا شده را نشان می‌دهد؟'
+      options: ['/c', '/n', '/v', '/i']
+      answer: 0
+      code_options: true
+      explain: '`/c` = Count.'
+    - kind: type
+      q: 'در `log.txt` خطوطی را پیدا کن که `error` دارند، بدون توجه به بزرگی حروف.'
+      accept: ['find /i "error" log.txt', 'find "error" /i log.txt', 'findstr /i error log.txt', 'findstr /i "error" log.txt']
+      show: 'find /i "error" log.txt'
+      explain: '`/i` برای نادیده گرفتن بزرگی حروف.'
+  recap: '`find "متن" فایل`. `/i` حروف، `/c` تعداد، `/n` شماره خط، `/v` برعکس. Quotes الزامی است.'
+
+- n: 38
+  term: findstr
+  fullForm: 'Find String'
+  difficulty: 2
+  objective: 'با `findstr` چند کلمه را با هم، در چند فایل و حتی در زیرپوشه‌ها جستجو کنی.'
+  summary: '`findstr` نسخه قوی‌تر `find` است: چند کلمه را با هم جستجو می‌کند، در زیرپوشه‌ها می‌گردد و الگوهای ساده (Regular Expression) را می‌فهمد.'
+  meaning: '`findstr "Pizza Coffee" menu.txt` یعنی Pizza **یا** Coffee. برای یک عبارت کامل با فاصله از `/c:"..."` استفاده کن. `/s` یعنی زیرپوشه‌ها هم. `^` یعنی اول خط و `$` یعنی آخر خط.'
+  usage: 'جستجو در کل یک پروژه، پیدا کردن فایل‌هایی که یک کلمه دارند، فیلترهای دقیق‌تر.'
+  syntax: 'findstr [/i] [/s] [/n] [/m] [/c:"phrase"] "words" files'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['findstr "Pizza Coffee" menu.txt', 'findstr /s /i "sales" *.txt', 'findstr /m /s "Report" *.txt']
+  examples:
+    - c: 'findstr "Pizza Coffee" menu.txt'
+      d: 'خطوطی که Pizza یا Coffee دارند.'
+    - c: 'findstr /c:"Restaurant Menu" menu.txt'
+      d: 'دقیقاً همین عبارت.'
+    - c: 'findstr /s /i "sales" *.txt'
+      d: 'جستجو در همه txtها، در این پوشه و زیرپوشه‌ها.'
+    - c: 'findstr /m /s "Report" *.txt'
+      d: 'فقط نام فایل‌هایی که Report دارند.'
+    - c: 'findstr "^S" guests.txt'
+      d: 'خطوطی که با S شروع می‌شوند.'
+  mistakes:
+    - 'فکر کردن اینکه `"a b"` یعنی عبارت «a b»؛ در findstr یعنی a یا b. برای عبارت از `/c:` استفاده کن.'
+  tip: 'در findstr، `.` یعنی «هر کاراکتر». برای جستجوی خود نقطه بنویس `\.`'
+  practice:
+    - id: P38a
+      start: 'C:\Users\Student\Documents'
+      task: 'با یک دستور خطوطی از `menu.txt` را نشان بده که `Pizza` یا `Coffee` دارند.'
+      checks: [{type: anyCmd, value: findstr}, {type: lastOutputIncludes, value: 'Pizza'}, {type: lastOutputIncludes, value: 'Coffee'}, {type: lastOutputExcludes, value: 'Pasta'}]
+      hints: ['در findstr کلمه‌ها را با فاصله جدا کن.', '`findstr "Pizza Coffee" menu.txt`']
+      answer: 'findstr "Pizza Coffee" menu.txt'
+    - id: P38b
+      start: 'C:\Users\Student\Documents'
+      task: 'در همه فایل‌های `.txt` این پوشه و زیرپوشه‌ها، کلمه `sales` را بدون توجه به بزرگی حروف جستجو کن.'
+      checks: [{type: switch, value: '/s', cmd: findstr, anyRun: true}, {type: switch, value: '/i', cmd: findstr, anyRun: true}, {type: lastOutputIncludes, value: 'report1.txt'}]
+      hints: ['دو Switch لازم است: زیرپوشه‌ها و نادیده گرفتن حروف.', '`findstr /s /i "sales" *.txt`']
+      answer: 'findstr /s /i "sales" *.txt'
+  quiz:
+    - kind: mcq
+      q: '`findstr "red blue" colors.txt` چه چیزی را پیدا می‌کند؟'
+      options: ['خطوطی که red یا blue دارند', 'فقط عبارت «red blue»', 'خطوطی که هر دو را دارند', 'خطا می‌دهد']
+      answer: 0
+      explain: 'فاصله در findstr یعنی «یا».'
+    - kind: mcq
+      q: 'کدام Switch فقط نام فایل‌ها را نشان می‌دهد؟'
+      options: ['/m', '/n', '/s', '/c']
+      answer: 0
+      code_options: true
+      explain: '`/m` = فقط نام فایل.'
+    - kind: type
+      q: 'دقیقاً عبارت `Status: OK` را در `report.txt` پیدا کن.'
+      accept: ['findstr /c:"status: ok" report.txt', 'find "status: ok" report.txt', 'findstr /i /c:"status: ok" report.txt']
+      show: 'findstr /c:"Status: OK" report.txt'
+      explain: 'برای عبارت فاصله‌دار از `/c:` استفاده کن.'
+  recap: '`findstr` = چند کلمه (یا)، `/c:` عبارت کامل، `/s` زیرپوشه‌ها، `/m` نام فایل، `^` و `$` اول و آخر خط.'
+
+- n: 39
+  term: tree
+  fullForm: 'Tree'
+  difficulty: 2
+  objective: 'ساختار پوشه‌ها را به شکل درخت ببینی.'
+  summary: '`tree` همه پوشه‌ها و زیرپوشه‌ها را به شکل یک درخت نشان می‌دهد. با `/f` فایل‌ها هم نمایش داده می‌شوند.'
+  meaning: 'خط‌های `├───` و `└───` نشان می‌دهند هر پوشه داخل کدام پوشه است. `/a` به‌جای این خط‌ها از کاراکترهای ساده ASCII استفاده می‌کند (برای ذخیره در فایل).'
+  usage: 'فهمیدن ساختار یک پروژه، قبل از `rd /s` یا Backup، و مستندسازی پوشه‌ها.'
+  syntax: 'tree [path] [/f] [/a]'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['tree Pictures /f']
+  examples:
+    - c: 'tree'
+      d: 'درخت پوشه‌های فعلی.'
+    - c: 'tree Documents /f'
+      d: 'با فایل‌ها.'
+    - c: 'tree /a > structure.txt'
+      d: 'ذخیره درخت در فایل با کاراکترهای ساده.'
+  mistakes:
+    - 'اجرای `tree` در `C:\` روی کامپیوتر واقعی: خروجی هزاران خط می‌شود. اول یک پوشه کوچک را امتحان کن.'
+  tip: 'فایل‌ها و پوشه‌های مخفی (مثل AppData) در `tree` نمایش داده نمی‌شوند.'
+  practice:
+    - id: P39a
+      start: 'C:\Users\Student'
+      task: 'ساختار پوشه Documents را همراه با نام فایل‌ها به شکل درخت نمایش بده.'
+      checks: [{type: anyCmd, value: tree}, {type: switch, value: '/f', cmd: tree, anyRun: true}, {type: lastOutputIncludes, value: 'menu.txt'}, {type: lastOutputIncludes, value: 'Work'}]
+      hints: ['دستور `tree` و Switch نمایش فایل‌ها.', '`tree Documents /f`']
+      answer: 'tree Documents /f'
+  quiz:
+    - kind: mcq
+      q: 'کدام Switch فایل‌ها را هم در درخت نشان می‌دهد؟'
+      options: ['/f', '/a', '/s', '/b']
+      answer: 0
+      code_options: true
+      explain: '`/f` = Files.'
+    - kind: tf
+      q: '`tree` فایل‌ها را جابه‌جا می‌کند.'
+      answer: false
+      explain: 'فقط نمایش می‌دهد.'
+    - kind: type
+      q: 'درخت پوشه فعلی را با کاراکترهای ساده در فایل `tree.txt` ذخیره کن.'
+      accept: ['tree /a > tree.txt', 'tree /a >tree.txt', 'tree /f /a > tree.txt', 'tree /a /f > tree.txt']
+      show: 'tree /a > tree.txt'
+      explain: '`/a` برای فایل مناسب‌تر است.'
+  recap: '`tree` = درخت پوشه‌ها. `/f` فایل‌ها، `/a` کاراکتر ساده.'
+
+- n: 40
+  term: where
+  fullForm: 'Where (locate files)'
+  difficulty: 2
+  objective: 'محل یک برنامه را پیدا کنی و فایل‌ها را در زیرپوشه‌ها جستجو کنی.'
+  summary: '`where` می‌گوید یک برنامه کجا نصب است. با `/r` در یک پوشه و همه زیرپوشه‌هایش فایل پیدا می‌کند.'
+  meaning: 'بدون `/r`، `where` در پوشه فعلی و پوشه‌های PATH (درس ۴۸) می‌گردد؛ همان جاهایی که CMD برای اجرای برنامه نگاه می‌کند. Wildcard هم قبول می‌کند.'
+  usage: 'فهمیدن اینکه `ping` یا `notepad` از کجا اجرا می‌شود، پیدا کردن همه عکس‌ها یا فایل‌های یک نوع.'
+  syntax: "where name\nwhere /r folder pattern"
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['where notepad', 'where /r C:\Users\Student *.jpg', 'where nothing']
+  examples:
+    - c: 'where ping'
+      d: 'محل فایل ping.exe.'
+    - c: 'where /r C:\Users\Student *.jpg'
+      d: 'همه jpgهای پوشه کاربر و زیرپوشه‌ها.'
+    - c: 'dir /s /b *.jpg'
+      d: 'راه دیگر: dir با `/s` (زیرپوشه‌ها) و `/b`.'
+  mistakes:
+    - 'فراموش کردن `/r` برای جستجو در زیرپوشه‌ها.'
+  tip: 'اگر چیزی پیدا نشود، پیام `INFO: Could not find files...` می‌آید و Exit Code برابر 1 است.'
+  practice:
+    - id: P40a
+      start: 'C:\Users\Student'
+      task: 'پیدا کن برنامه `ping` کجا نصب شده است.'
+      checks: [{type: anyCmd, value: where}, {type: lastOutputIncludes, value: 'C:\Windows\System32\ping.exe'}]
+      hints: ['دستوری که «کجا» را جواب می‌دهد.', '`where ping`']
+      answer: 'where ping'
+    - id: P40b
+      start: 'C:\Users\Student'
+      task: 'همه فایل‌های `.jpg` را در `C:\Users\Student` و همه زیرپوشه‌هایش پیدا کن.'
+      checks: [{type: lastOutputIncludes, value: 'family.jpg'}, {type: lastOutputIncludes, value: 'sea.jpg'}, {type: lastOutputIncludes, value: 'cat.jpg'}]
+      hints: ['`where` با `/r` در زیرپوشه‌ها می‌گردد (یا `dir /s /b`).', '`where /r C:\Users\Student *.jpg`']
+      answer: 'where /r C:\Users\Student *.jpg'
+  quiz:
+    - kind: mcq
+      q: 'Switch `/r` در `where` چه کار می‌کند؟'
+      options: ['جستجو در پوشه و همه زیرپوشه‌ها', 'حذف فایل‌های پیدا شده', 'نمایش اندازه فایل', 'جستجو فقط در PATH']
+      answer: 0
+      explain: '`/r` = Recursive.'
+    - kind: type
+      q: 'محل برنامه `notepad` را پیدا کن.'
+      accept: ['where notepad', 'where notepad.exe']
+      explain: '`where notepad`'
+    - kind: tf
+      q: '`dir /s /b *.jpg` هم می‌تواند jpgهای زیرپوشه‌ها را پیدا کند.'
+      answer: true
+      explain: '`/s` در dir یعنی زیرپوشه‌ها.'
+  recap: '`where برنامه` = محل برنامه. `where /r پوشه الگو` = جستجو در زیرپوشه‌ها.'
+
+- n: 41
+  term: attrib
+  fullForm: 'Attributes'
+  difficulty: 2
+  objective: 'ویژگی‌های فایل مثل مخفی و فقط‌خواندنی را ببینی و تغییر دهی.'
+  summary: 'هر فایل چند ویژگی (Attribute) دارد: `H` مخفی، `R` فقط‌خواندنی، `S` فایل سیستمی و `A` آماده Backup. `attrib` آن‌ها را نشان می‌دهد و با `+` و `-` تغییر می‌دهد.'
+  meaning: 'فایل مخفی در `dir` معمولی دیده نمی‌شود؛ `dir /a` همه فایل‌ها را نشان می‌دهد. فایل Read-only را نمی‌شود تغییر داد یا با `del` معمولی حذف کرد.'
+  usage: 'پیدا کردن فایل‌های مخفی، محافظت از فایل مهم با `+r`، و مشکلاتی مثل ویروس‌هایی که فایل‌های USB را مخفی می‌کنند.'
+  syntax: 'attrib [+r|-r] [+h|-h] [+s|-s] [file]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['dir /b', 'dir /a /b', 'attrib secret.txt']
+  examples:
+    - c: 'dir /a'
+      d: 'نمایش همه فایل‌ها، از جمله مخفی‌ها.'
+    - c: 'attrib'
+      d: 'نمایش Attribute فایل‌های پوشه فعلی.'
+    - c: 'attrib +r guests.txt'
+      d: 'فقط‌خواندنی کردن فایل.'
+    - c: 'attrib -h secret.txt'
+      d: 'خارج کردن فایل از حالت مخفی.'
+  mistakes:
+    - 'فکر کردن اینکه فایل مخفی امن است؛ هر کسی با `dir /a` آن را می‌بیند.'
+    - 'تغییر Attribute فایل‌های سیستمی (`S`) در `C:\Windows`.'
+  tip: 'اگر USB بعد از ویروس خالی به نظر می‌رسد، اول `dir /a` بزن؛ شاید فایل‌ها فقط مخفی شده‌اند.'
+  practice:
+    - id: P41a
+      start: 'C:\Users\Student\Documents'
+      task: 'در این پوشه یک فایل مخفی هست. همه فایل‌ها، از جمله مخفی‌ها را نمایش بده.'
+      checks: [{type: anyCmd, value: dir}, {type: lastOutputIncludes, value: 'secret.txt'}]
+      hints: ['`dir` یک Switch برای نمایش همه Attributeها دارد.', '`dir /a`']
+      answer: 'dir /a'
+    - id: P41b
+      start: 'C:\Users\Student\Documents'
+      task: 'فایل `guests.txt` را فقط‌خواندنی (Read-only) کن.'
+      checks: [{type: fileAttr, path: 'C:\Users\Student\Documents\guests.txt', attr: r}]
+      hints: ['`+` یک Attribute را اضافه می‌کند. حرف Read-only چیست؟', '`attrib +r guests.txt`']
+      answer: 'attrib +r guests.txt'
+  quiz:
+    - kind: mcq
+      q: 'Attribute `H` یعنی چه؟'
+      options: ['Hidden (مخفی)', 'Home', 'Hard disk', 'Help']
+      answer: 0
+      explain: 'H = Hidden.'
+    - kind: predict
+      q: 'فایل `a.txt` Read-only است. نتیجه این دستور؟'
+      code: 'del a.txt'
+      options: ['Access is denied.', 'فایل حذف می‌شود', 'Could Not Find', 'Are you sure (Y/N)?']
+      answer: 0
+      explain: 'فایل Read-only با `del` معمولی حذف نمی‌شود (مگر با `/f`).'
+    - kind: type
+      q: 'فایل `notes.txt` را از حالت مخفی خارج کن.'
+      accept: ['attrib -h notes.txt']
+      explain: '`-` یک Attribute را برمی‌دارد.'
+  recap: '`attrib` = دیدن و تغییر ویژگی‌ها. `+` اضافه، `-` حذف. `dir /a` فایل‌های مخفی را نشان می‌دهد.'
+
+- n: 42
+  term: fc
+  fullForm: 'File Compare'
+  difficulty: 2
+  objective: 'دو فایل را مقایسه کنی و تفاوت‌ها را پیدا کنی.'
+  summary: '`fc` دو فایل را خط‌به‌خط مقایسه می‌کند و جاهایی را که فرق دارند نشان می‌دهد.'
+  meaning: 'اگر فایل‌ها یکی باشند پیام `FC: no differences encountered` می‌آید. وگرنه، بخش متفاوت هر فایل بین خطوط `*****` نمایش داده می‌شود. `/c` بزرگی حروف را نادیده می‌گیرد و `/n` شماره خط را نشان می‌دهد.'
+  usage: 'فهمیدن اینکه چه چیزی در یک فایل تنظیمات عوض شده، یا اینکه Backup با اصل یکی است.'
+  syntax: 'fc [/c] [/n] file1 file2'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files:
+      - {path: 'C:\Users\Student\Desktop\menu_old.txt', content: "Pizza 8.00\nPasta 7.00\nSalad 5.50\n"}
+      - {path: 'C:\Users\Student\Desktop\menu_new.txt', content: "Pizza 8.50\nPasta 7.00\nSalad 5.50\n"}
+    cmds: ['fc menu_old.txt menu_new.txt', 'fc menu_new.txt menu_new.txt']
+  examples:
+    - c: 'fc menu_old.txt menu_new.txt'
+      d: 'نمایش خطوط متفاوت.'
+    - c: 'fc /n a.txt b.txt'
+      d: 'با شماره خط.'
+    - c: 'fc /c a.txt b.txt'
+      d: 'بدون توجه به حروف بزرگ و کوچک.'
+  mistakes:
+    - 'مقایسه فایل‌های غیرمتنی و انتظار خروجی قابل خواندن.'
+  tip: 'Exit Code `fc`: صفر یعنی یکسان، 1 یعنی متفاوت. در Batch برای بررسی Backup مفید است.'
+  practice:
+    - id: P42a
+      start: 'C:\Users\Student\Desktop'
+      files:
+        - {path: 'C:\Users\Student\Desktop\menu_old.txt', content: "Pizza 8.00\nPasta 7.00\nSalad 5.50\n"}
+        - {path: 'C:\Users\Student\Desktop\menu_new.txt', content: "Pizza 8.50\nPasta 7.00\nSalad 5.50\n"}
+      task: 'دو فایل `menu_old.txt` و `menu_new.txt` را مقایسه کن و ببین قیمت کدام غذا عوض شده است.'
+      checks: [{type: anyCmd, value: fc, evenIfFailed: true}, {type: lastOutputIncludes, value: '8.50'}, {type: lastOutputIncludes, value: '*****'}]
+      hints: ['دستور مقایسه دو حرف است.', '`fc menu_old.txt menu_new.txt`']
+      answer: 'fc menu_old.txt menu_new.txt'
+    - id: P42b
+      start: 'C:\Users\Student\Desktop'
+      files:
+        - {path: 'C:\Users\Student\Desktop\a.txt', content: "Hello CMD\n"}
+        - {path: 'C:\Users\Student\Desktop\b.txt', content: "HELLO cmd\n"}
+      task: '`a.txt` و `b.txt` را بدون توجه به حروف بزرگ و کوچک مقایسه کن. (باید یکسان شناخته شوند.)'
+      checks: [{type: switch, value: '/c', cmd: fc, anyRun: true}, {type: lastOutputIncludes, value: 'no differences'}]
+      hints: ['یک Switch بزرگی حروف را نادیده می‌گیرد.', '`fc /c a.txt b.txt`']
+      answer: 'fc /c a.txt b.txt'
+  quiz:
+    - kind: mcq
+      q: 'اگر دو فایل یکسان باشند، `fc` چه می‌گوید؟'
+      options: ['FC: no differences encountered', 'Files are equal', '*****', 'هیچ']
+      answer: 0
+      explain: 'پیام استاندارد fc.'
+    - kind: mcq
+      q: 'کدام Switch شماره خطوط را نشان می‌دهد؟'
+      options: ['/n', '/c', '/l', '/b']
+      answer: 0
+      code_options: true
+      explain: '`/n` = Number.'
+    - kind: tf
+      q: 'Exit Code برابر 0 بعد از `fc` یعنی فایل‌ها یکسان‌اند.'
+      answer: true
+      explain: '0 یکسان، 1 متفاوت.'
+  recap: '`fc فایل۱ فایل۲` = مقایسه. `/c` حروف، `/n` شماره خط. Exit Code 0 یعنی یکسان.'
+
+- n: 43
+  term: xcopy
+  fullForm: 'Extended Copy'
+  difficulty: 2
+  objective: 'یک پوشه را همراه با زیرپوشه‌ها کپی کنی.'
+  summary: '`xcopy` مثل `copy` است ولی پوشه‌ها و زیرپوشه‌ها را هم کپی می‌کند. مهم‌ترین Switchها: `/s`، `/e`، `/i` و `/y`.'
+  meaning: '`/s` زیرپوشه‌های غیرخالی را کپی می‌کند و `/e` حتی خالی‌ها را. `/i` می‌گوید اگر مقصد وجود ندارد، آن را پوشه فرض کن (وگرنه xcopy می‌پرسد «File یا Directory؟»). `/y` بدون سؤال جایگزین می‌کند.'
+  usage: 'Backup گرفتن از یک پوشه کامل، کپی پروژه به USB.'
+  syntax: 'xcopy source destination [/s] [/e] [/i] [/y] [/h]'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['xcopy Documents D:\DocsBackup /e /i', 'tree D:\DocsBackup /f']
+  examples:
+    - c: 'xcopy Documents D:\DocsBackup /e /i'
+      d: 'کپی کامل Documents با زیرپوشه‌ها.'
+    - c: 'xcopy *.txt E:\Texts /i'
+      d: 'کپی همه txtها به پوشه جدید روی USB.'
+    - c: 'xcopy Documents D:\DocsBackup /s /y'
+      d: 'به‌روزرسانی Backup بدون سؤال.'
+    - c: 'xcopy Documents E:\Docs /e /i /l'
+      d: '`/l` فقط فهرست را نشان می‌دهد، چیزی کپی نمی‌کند.'
+  mistakes:
+    - 'فراموش کردن `/s` یا `/e`: زیرپوشه‌ها کپی نمی‌شوند.'
+    - 'تعجب از سؤال `F = file, D = directory`: با `/i` یا جواب `D` حل می‌شود.'
+  tip: 'فایل‌های مخفی کپی نمی‌شوند مگر با `/h`.'
+  practice:
+    - id: P43a
+      start: 'C:\Users\Student'
+      task: 'کل پوشه Documents را همراه با زیرپوشه‌ها به `D:\DocsBackup` کپی کن.'
+      inputs: ['d']
+      checks: [{type: fileExists, path: 'D:\DocsBackup\menu.txt'}, {type: fileExists, path: 'D:\DocsBackup\Work\report.txt'}]
+      hints: ['`copy` زیرپوشه‌ها را کپی نمی‌کند؛ از `xcopy` استفاده کن.', '`xcopy Documents D:\DocsBackup /e /i`']
+      answer: 'xcopy Documents D:\DocsBackup /e /i'
+  quiz:
+    - kind: mcq
+      q: 'تفاوت `/s` و `/e` در xcopy چیست؟'
+      options: ['`/e` پوشه‌های خالی را هم کپی می‌کند', '`/s` سریع‌تر است', '`/e` فقط فایل‌ها را کپی می‌کند', 'فرقی ندارند']
+      answer: 0
+      explain: '`/s` پوشه‌های خالی را جا می‌اندازد.'
+    - kind: predict
+      q: 'مقصد `D:\New` وجود ندارد. xcopy بدون `/i` چه می‌کند؟'
+      code: 'xcopy Documents D:\New /s'
+      options: ['می‌پرسد مقصد فایل است یا پوشه', 'خطا می‌دهد و متوقف می‌شود', 'بی‌صدا پوشه می‌سازد', 'همه را در یک فایل می‌ریزد']
+      answer: 0
+      explain: 'سؤال `(F = file, D = directory)?` را می‌پرسد.'
+    - kind: type
+      q: 'پوشه `Pictures` را با همه زیرپوشه‌ها به `E:\Pics` کپی کن، بدون سؤال درباره فایل یا پوشه.'
+      accept: ['xcopy pictures e:\pics /e /i', 'xcopy pictures e:\pics /s /i', 'xcopy pictures e:\pics /e /i /y', 'xcopy pictures e:\pics /i /e', 'xcopy pictures e:\pics /i /s']
+      show: 'xcopy Pictures E:\Pics /e /i'
+      explain: '`/e` زیرپوشه‌ها، `/i` مقصد پوشه است.'
+  recap: '`xcopy` = کپی پوشه‌ها. `/s` یا `/e` زیرپوشه‌ها، `/i` مقصد پوشه، `/y` بدون سؤال، `/h` فایل مخفی.'
+
+- n: 44
+  term: robocopy
+  fullForm: 'Robust File Copy'
+  difficulty: 3
+  objective: 'با robocopy پوشه‌ها را مطمئن و هوشمند کپی کنی و خطر `/mir` را بشناسی.'
+  summary: '`robocopy` ابزار حرفه‌ای کپی پوشه است: فقط فایل‌های جدید یا تغییرکرده را کپی می‌کند، گزارش کامل می‌دهد و در صورت قطع شدن ادامه می‌دهد.'
+  meaning: 'Syntax آن فرق دارد: اول پوشه مبدأ، بعد پوشه مقصد، بعد (اختیاری) الگوی فایل‌ها. `/e` زیرپوشه‌ها، `/mir` مقصد را آینه مبدأ می‌کند، `/l` فقط فهرست را نشان می‌دهد.'
+  usage: 'Backup منظم، همگام‌سازی پوشه‌ها، انتقال حجم زیاد فایل.'
+  syntax: 'robocopy source destination [files] [/e] [/mir] [/l]'
+  warning: '`/mir` هر فایلی را که در مبدأ نیست از مقصد حذف می‌کند. اگر مبدأ و مقصد را جابه‌جا بنویسی، Backup ممکن است پاک شود.'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['robocopy Documents D:\Sync /e']
+  examples:
+    - c: 'robocopy Documents D:\Sync /e'
+      d: 'کپی پوشه با زیرپوشه‌ها.'
+    - c: 'robocopy Documents D:\Sync *.txt'
+      d: 'فقط فایل‌های txt.'
+    - c: 'robocopy Documents D:\Sync /e /l'
+      d: 'فقط نشان بده چه چیزی کپی می‌شد.'
+    - c: 'robocopy Documents D:\Mirror /mir'
+      d: 'آینه کامل (خطرناک).'
+      noTry: true
+  mistakes:
+    - 'دادن نام فایل به‌عنوان مبدأ؛ robocopy همیشه پوشه می‌گیرد.'
+    - 'فکر کردن اینکه Exit Code 1 یعنی خطا؛ در robocopy یعنی «فایل کپی شد».'
+  tip: 'اجرای دوباره همان دستور، فایل‌هایی را که تغییر نکرده‌اند Skip می‌کند؛ برای Backup روزانه عالی است.'
+  practice:
+    - id: P44a
+      start: 'C:\Users\Student'
+      task: 'با robocopy کل پوشه Pictures را همراه با زیرپوشه‌ها به `E:\PicBackup` کپی کن.'
+      checks: [{type: fileExists, path: 'E:\PicBackup\beach.jpg'}, {type: fileExists, path: 'E:\PicBackup\Holidays\family.jpg'}]
+      hints: ['ترتیب: robocopy مبدأ مقصد Switch.', '`robocopy Pictures E:\PicBackup /e`']
+      answer: 'robocopy Pictures E:\PicBackup /e'
+    - id: P44b
+      start: 'C:\Users\Student'
+      task: 'فقط ببین robocopy برای کپی Documents به `D:\Test` چه فایل‌هایی را کپی می‌کرد، بدون اینکه واقعاً کپی کند.'
+      checks: [{type: anyCmd, value: robocopy, evenIfFailed: true}, {type: switch, value: '/l', cmd: robocopy, anyRun: true}, {type: fileNotExists, path: 'D:\Test\menu.txt'}, {type: lastOutputIncludes, value: 'menu.txt'}]
+      hints: ['Switch «فقط فهرست» در robocopy `/l` است.', '`robocopy Documents D:\Test /l`']
+      answer: 'robocopy Documents D:\Test /l'
+  quiz:
+    - kind: mcq
+      q: 'Exit Code برابر 1 بعد از robocopy یعنی چه؟'
+      options: ['فایل‌ها با موفقیت کپی شدند', 'خطا رخ داد', 'هیچ فایلی نبود', 'دسترسی رد شد']
+      answer: 0
+      explain: 'در robocopy کدهای 0 تا 7 موفقیت‌اند؛ 8 و بیشتر یعنی خطا.'
+    - kind: mcq
+      q: 'کدام Switch مقصد را دقیقاً شبیه مبدأ می‌کند و فایل‌های اضافه را حذف می‌کند؟'
+      options: ['/mir', '/e', '/l', '/s']
+      answer: 0
+      code_options: true
+      explain: '`/mir` = Mirror؛ با احتیاط.'
+    - kind: fix
+      q: 'این دستور کار نمی‌کند. چرا؟'
+      code: 'robocopy menu.txt D:\Backup'
+      options: ['مبدأ باید پوشه باشد و نام فایل بعد از مقصد بیاید', 'باید `/mir` بگذاری', 'D:\Backup باید وجود نداشته باشد', 'robocopy فایل txt را کپی نمی‌کند']
+      answer: 0
+      explain: 'درست: `robocopy . D:\Backup menu.txt`'
+  recap: '`robocopy مبدأ مقصد [فایل‌ها]`. `/e` زیرپوشه‌ها، `/l` آزمایشی، `/mir` آینه (خطرناک). Exit Code کمتر از 8 = موفق.'

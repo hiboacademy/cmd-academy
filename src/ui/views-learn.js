@@ -87,7 +87,7 @@ function LessonView(n) {
       f.fullForm ? h("div", { class: "full-form" }, f.fullForm) : null),
     f.objective ? h("div", { class: "objective" }, icon("target"), h("div", null, h("b", null, T("s_objective") + ": "), fmt(f.objective))) : null,
     h("p", { class: "lead" }, fmt(f.summary)),
-    f.terminal ? StaticTerminal(f.terminal) : null,
+    f.terminal ? StaticTerminal(f.terminal, { cls: "static" }) : f.demo ? StaticTerminal(Checker.demo(f.demo), { cls: "static", title: f.demo.admin ? "Administrator: Command Prompt" : f.demo.mode === "winre" ? "X:\\windows\\system32\\cmd.exe" : undefined }) : null,
     h("div", { class: "card facts" },
       fact(T("s_meaning"), fmt(f.meaning)),
       fact(T("s_usage"), fmt(f.usage)),

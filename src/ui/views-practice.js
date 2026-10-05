@@ -3,28 +3,6 @@
    (also used by Challenges) and the Batch editor
    ============================================================ */
 
-/* Build a fresh sandbox for a task spec */
-function shellFor(spec) {
-  const sh = Shell.create({ admin: spec.admin, mode: spec.mode, files: spec.files });
-  if (spec.start) Shell.setLocation(sh, spec.start);
-  else if (spec.batch) Shell.setLocation(sh, "C:\\Users\\Student\\Desktop");
-  const su = spec.setup || {};
-  if (su.net === false) sh.net.connected = false;
-  if (su.sysCorrupt) sh.sysCorrupt = true;
-  if (su.storeCorrupt) sh.storeCorrupt = true;
-  if (su.diskErrors) sh.diskErrors = Object.assign({}, su.diskErrors);
-  (su.remove || []).forEach((p) => {
-    const pp = VFS.parse(p, sh.drive, sh.cwd);
-    const dir = VFS.resolve(sh.fs, pp.drive, pp.parts.slice(0, -1)).node;
-    if (dir) VFS.remove(dir, pp.parts[pp.parts.length - 1]);
-  });
-  (su.mkdir || []).forEach((p) => { const pp = VFS.parse(p, sh.drive, sh.cwd); VFS.mkdirp(sh.fs, pp.drive, pp.parts); });
-  (su.hide || []).forEach((p) => { const pp = VFS.parse(p, sh.drive, sh.cwd); const n = VFS.resolve(sh.fs, pp.drive, pp.parts).node; if (n) n.attrs = Object.assign({}, n.attrs, { h: true }); });
-  (su.readonly || []).forEach((p) => { const pp = VFS.parse(p, sh.drive, sh.cwd); const n = VFS.resolve(sh.fs, pp.drive, pp.parts).node; if (n) n.attrs = Object.assign({}, n.attrs, { r: true }); });
-  if (su.env) Object.keys(su.env).forEach((k) => Shell.lib.setVar(sh, k, su.env[k]));
-  return sh;
-}
-
 /* A script editor bound to a shell and a terminal */
 function BatchEditor({ sh, term, file = "script.bat", starter = "", persist = null, showArgs = true, args = "", onRun, fixedName = false }) {
   const nameIn = h("input", { type: "text", value: file, "aria-label": T("batch_name"), spellcheck: "false", autocapitalize: "off", readonly: fixedName ? "" : null });
@@ -79,7 +57,7 @@ function BatchEditor({ sh, term, file = "script.bat", starter = "", persist = nu
 
 /* Runs a task (practice or challenge): terminal or batch editor + checks + hints */
 function TaskRunner(spec, { onSolved, solvedBefore }) {
-  const sh = shellFor(spec);
+  const sh = Checker.shellFor(spec);
   const st = { attempt: [], output: "", fails: 0, solved: false, revealed: false };
   const fb = h("div", { "aria-live": "polite" });
   const answerLines = [].concat(spec.answer || []);
@@ -207,7 +185,7 @@ const BATCH_TEMPLATES = [
   { name: "count.bat", code: "@echo off\r\nsetlocal enabledelayedexpansion\r\nset count=0\r\nfor %%f in (\"%USERPROFILE%\\Pictures\\*.jpg\") do (\r\n  set /a count+=1\r\n  echo !count!. %%~nxf\r\n)\r\necho Pictures found: %count%\r\nendlocal\r\n" },
 ];
 function BatchView() {
-  if (!App.state.batchSh) App.state.batchSh = shellFor({ batch: true });
+  if (!App.state.batchSh) App.state.batchSh = Checker.shellFor({ batch: true });
   const sh = App.state.batchSh;
   const scripts = Store.scripts();
   const lastName = App.state.batchFile || Object.keys(scripts)[0] || "hello.bat";
@@ -228,7 +206,7 @@ function BatchView() {
     Object.keys(scripts).filter((n) => !BATCH_TEMPLATES.some((t) => t.name === n)).map((n) => h("option", { value: n }, n)));
   const resetBtn = h("button", { class: "btn small ghost", onClick: async () => {
     if (!(await confirmDialog({ text: T("sim_reset_confirm"), yes: T("sim_reset"), no: T("cancel") }))) return;
-    App.state.batchSh = shellFor({ batch: true });
+    App.state.batchSh = Checker.shellFor({ batch: true });
     App.render();
   } }, icon("reset"), T("sim_reset"));
   return h("div", { class: "stack view" },

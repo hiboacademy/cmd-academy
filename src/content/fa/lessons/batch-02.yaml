@@ -1,0 +1,554 @@
+# Lessons 11–20 · Chapter 3 (navigation) and the start of Chapter 4 (files)
+# demo: commands run in a fresh Simulator when the lesson opens, so the
+#       example output is always exactly what the Simulator prints.
+
+- n: 11
+  term: dir
+  fullForm: 'Directory (list)'
+  difficulty: 1
+  objective: 'محتوای هر پوشه را ببینی و خروجی `dir` را بخوانی.'
+  summary: '`dir` فهرست فایل‌ها و پوشه‌های داخل یک پوشه را نشان می‌دهد. بدون Argument، محتوای Current Directory را نشان می‌دهد.'
+  meaning: 'هر خط خروجی یعنی یک فایل یا پوشه: تاریخ، ساعت، `<DIR>` برای پوشه یا اندازه فایل به بایت، و نام. پایین خروجی تعداد فایل‌ها و فضای خالی Drive آمده است.'
+  usage: 'قبل از هر کاری با فایل‌ها، با `dir` ببین چه چیزی و با چه نام دقیقی آنجاست.'
+  syntax: 'dir [path] [/w] [/b]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['dir']
+  examples:
+    - c: 'dir'
+      d: 'محتوای پوشه فعلی.'
+    - c: 'dir Pictures'
+      d: 'محتوای پوشه Pictures، بدون اینکه وارد آن شوی.'
+    - c: 'dir /w'
+      d: 'نمایش فشرده در چند ستون؛ پوشه‌ها داخل `[ ]` هستند.'
+    - c: 'dir /b'
+      d: 'فقط نام‌ها (Bare)، بدون تاریخ و اندازه.'
+  mistakes:
+    - 'نوشتن `ls`: این دستور مال Linux است. در CMD از `dir` استفاده کن.'
+    - 'فراموش کردن فاصله: `dir/w` کار می‌کند، ولی `dirPictures` نه.'
+  tip: '`.` یعنی همین پوشه و `..` یعنی پوشه بالاتر؛ این دو در هر پوشه‌ای غیر از ریشه دیده می‌شوند.'
+  restaurant: '`dir` مثل نگاه کردن به منوی میز است: قبل از سفارش، می‌بینی چه چیزهایی موجود است.'
+  practice:
+    - id: P11a
+      start: 'C:\Users\Student\Pictures'
+      task: 'داخل Pictures هستی. ببین چه فایل‌ها و پوشه‌هایی اینجاست.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: cwd, value: 'C:\Users\Student\Pictures'}]
+      hints: ['دستوری سه‌حرفی که فهرست محتوا را نشان می‌دهد.', 'فقط بنویس `dir` و Enter بزن.']
+      answer: 'dir'
+    - id: P11b
+      start: 'C:\Users\Student'
+      task: 'بدون رفتن به پوشه Documents، فقط نام فایل‌ها و پوشه‌های داخلش را ببین (فرمت Bare).'
+      checks: [{type: cmd, value: dir}, {type: argIncludes, value: documents}, {type: switch, value: '/b'}, {type: ok}]
+      hints: ['نام پوشه را به‌عنوان Argument به `dir` بده.', 'Switch مربوط به Bare format را اضافه کن: `/b`']
+      answer: 'dir Documents /b'
+  quiz:
+    - kind: mcq
+      q: 'در خروجی `dir`، عدد کنار نام فایل چیست؟'
+      options: ['اندازه فایل به بایت', 'تعداد خط‌های فایل', 'شماره فایل', 'سن فایل به روز']
+      answer: 0
+      explain: 'برای فایل‌ها اندازه به بایت نوشته می‌شود و برای پوشه‌ها `<DIR>`.'
+    - kind: mcq
+      q: 'کدام دستور فقط نام‌ها را بدون تاریخ و اندازه نشان می‌دهد؟'
+      options: ['dir /b', 'dir /w', 'dir', 'dir /s']
+      answer: 0
+      code_options: true
+      explain: '`/b` یعنی Bare: فقط نام.'
+    - kind: type
+      q: 'محتوای پوشه Music را ببین، بدون اینکه وارد آن شوی. (الان در `C:\Users\Student` هستی.)'
+      accept: ['dir music', 'dir music\', 'dir .\music', 'dir c:\users\student\music']
+      show: 'dir Music'
+      explain: 'نام پوشه را به‌عنوان Argument به `dir` بده.'
+  recap: '`dir` = دیدن محتوا. `/w` فشرده، `/b` فقط نام‌ها. پوشه‌ها با `<DIR>` مشخص می‌شوند.'
+
+- n: 12
+  term: cd
+  fullForm: 'Change Directory'
+  difficulty: 1
+  objective: 'با `cd` وارد هر پوشه‌ای شوی و بدانی الان کجا هستی.'
+  summary: '`cd` Current Directory را عوض می‌کند. بعد از اجرای آن، Prompt مسیر جدید را نشان می‌دهد.'
+  meaning: '`cd` همراه یک Path (نسبی یا مطلق) تو را به آن پوشه می‌برد. `cd` بدون Argument فقط مسیر فعلی را چاپ می‌کند.'
+  usage: 'تقریباً هر کاری در CMD با رفتن به پوشه درست شروع می‌شود.'
+  syntax: 'cd [path]'
+  demo:
+    cmds: ['cd Documents', 'cd Work', 'cd']
+  examples:
+    - c: 'cd Documents'
+      d: 'رفتن به پوشه Documents که داخل پوشه فعلی است.'
+    - c: 'cd Documents\Work'
+      d: 'رفتن مستقیم دو پوشه به داخل.'
+    - c: 'cd C:\Windows'
+      d: 'رفتن با Absolute Path.'
+    - c: 'chdir'
+      d: '`chdir` همان `cd` است؛ مسیر فعلی را نشان می‌دهد.'
+  mistakes:
+    - 'نوشتن نام پوشه به‌تنهایی (`Documents`): CMD آن را دستور فرض می‌کند و خطا می‌دهد.'
+    - '`cd` به فایل: `cd todo.txt` خطای `The directory name is invalid.` می‌دهد.'
+    - 'اشتباه تایپی در نام پوشه؛ با `dir` نام دقیق را چک کن.'
+  tip: 'بعد از چند حرف اول نام پوشه کلید Tab را بزن تا CMD بقیه نام را کامل کند (در Simulator هم کار می‌کند).'
+  restaurant: '`cd` یعنی گارسون از میز ۱ به میز ۲ برود. هر سفارشی که بعد از آن بگیری، مال میز جدید است.'
+  practice:
+    - id: P12a
+      start: 'C:\Users\Student'
+      task: 'وارد پوشه Downloads شو.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Downloads'}]
+      hints: ['دستور رفتن به پوشه دو حرف است.', '`cd` و بعد نام پوشه.']
+      answer: 'cd Downloads'
+    - id: P12b
+      start: 'C:\Users\Student'
+      task: 'با یک دستور وارد پوشه Holidays شو که داخل Pictures است، بعد مسیر فعلی را چاپ کن.'
+      multi: true
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures\Holidays'}, {type: cmd, value: cd}, {type: noArgs}]
+      hints: ['اول با یک Path دوقسمتی (`Pictures\Holidays`) برو.', 'بعد `cd` را بدون Argument بنویس.']
+      answer: ['cd Pictures\Holidays', 'cd']
+  quiz:
+    - kind: mcq
+      q: '`cd` مخفف چیست؟'
+      options: ['Change Directory', 'Copy Data', 'Create Directory', 'Clear Display']
+      answer: 0
+      code_options: true
+      explain: 'Change Directory: عوض کردن پوشه فعلی.'
+    - kind: fix
+      q: 'کاربر می‌خواهد وارد Music شود. چه اشتباهی کرده است؟'
+      code: "C:\\Users\\Student>Music\n'Music' is not recognized as an internal or external command,"
+      options: ['`cd` را قبل از نام پوشه ننوشته', 'Music باید با حروف کوچک باشد', 'Music وجود ندارد', 'باید اول `dir` بزند']
+      answer: 0
+      explain: 'نام پوشه دستور نیست؛ درست: `cd Music`'
+    - kind: type
+      q: 'از `C:\Users\Student` با یک دستور وارد `Documents\Work` شو.'
+      accept: ['cd documents\work', 'chdir documents\work', 'cd .\documents\work', 'cd c:\users\student\documents\work']
+      show: 'cd Documents\Work'
+      explain: 'نام پوشه‌ها را با `\` به هم وصل کن.'
+  recap: '`cd پوشه` = رفتن. `cd` تنها = نشان دادن مسیر فعلی.'
+
+- n: 13
+  term: 'cd ..   cd \'
+  fullForm: 'Parent · Root'
+  difficulty: 1
+  objective: 'به پوشه بالاتر برگردی و مستقیم به ریشه Drive بروی.'
+  summary: '`cd ..` یک پوشه بالا می‌رود (به Parent). `cd \` مستقیم به ریشه Drive می‌رود، مثل `C:\`.'
+  meaning: '`..` در هر Path یعنی «پوشه بالاتر». می‌توانی آن را تکرار کنی: `..\..` یعنی دو پوشه بالاتر. `\` در ابتدای Path یعنی ریشه همین Drive.'
+  usage: 'برای برگشتن از پوشه‌های عمیق، یا شروع یک مسیر از اول Drive.'
+  syntax: "cd ..\ncd ..\\..\ncd \\"
+  demo:
+    start: 'C:\Users\Student\Documents\Work'
+    cmds: ['cd ..', 'cd ..\..', 'cd \']
+  examples:
+    - c: 'cd ..'
+      d: 'یک پوشه بالاتر.'
+    - c: 'cd ..\..'
+      d: 'دو پوشه بالاتر.'
+    - c: 'cd ..\Music'
+      d: 'بالا برو و بعد وارد پوشه کناری Music شو.'
+    - c: 'cd \'
+      d: 'مستقیم به ریشه Drive فعلی.'
+  mistakes:
+    - '`cd..` (بدون فاصله) هم کار می‌کند، ولی `cd...` با سه نقطه را نیاموز؛ در Windows استاندارد نیست.'
+    - 'اشتباه گرفتن `\` با `/`: ریشه با Backslash است: `cd \`'
+  tip: 'در ریشه (`C:\`) دیگر بالاتری وجود ندارد؛ `cd ..` آنجا کاری نمی‌کند.'
+  daily: 'در ساختمان: `..` یعنی یک طبقه پایین‌تر به سمت لابی، `\` یعنی مستقیم برو لابی.'
+  practice:
+    - id: P13a
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'داخل `Documents\Work` هستی. با یک دستور دو پوشه بالاتر برو (به `C:\Users\Student`).'
+      checks: [{type: cwd, value: 'C:\Users\Student'}, {type: cmd, value: cd}]
+      hints: ['`..` یعنی یک پوشه بالاتر. دو تا لازم داری.', 'آن‌ها را با `\` به هم وصل کن: `..\..`']
+      answer: 'cd ..\..'
+    - id: P13b
+      start: 'C:\Users\Student\Pictures\Holidays'
+      task: 'با کوتاه‌ترین دستور به ریشه Drive C برو.'
+      checks: [{type: cwd, value: 'C:\'}]
+      hints: ['ریشه با یک علامت نشان داده می‌شود.', '`cd \`']
+      answer: 'cd \'
+  quiz:
+    - kind: predict
+      q: 'Current Directory: `C:\Users\Student\Music` — بعد از این دستور کجا هستی؟'
+      code: 'cd ..\Pictures'
+      options: ['C:\Users\Student\Pictures', 'C:\Pictures', 'C:\Users\Pictures', 'C:\Users\Student\Music\Pictures']
+      answer: 0
+      code_options: true
+      explain: 'اول یک پوشه بالا (Student) و بعد وارد Pictures.'
+    - kind: tf
+      q: '`cd \` همیشه به ریشه Drive فعلی می‌رود.'
+      answer: true
+      explain: '`\` در ابتدای Path یعنی ریشه.'
+    - kind: type
+      q: 'یک پوشه بالاتر برو.'
+      accept: ['cd ..', 'cd..', 'chdir ..', 'cd ..\']
+      explain: '`cd ..`'
+  recap: '`cd ..` = یک پوشه بالا. `cd ..\..` = دو پوشه. `cd \` = ریشه Drive.'
+
+- n: 14
+  term: 'D:   cd /d'
+  fullForm: 'Change drive'
+  difficulty: 1
+  objective: 'بین Driveها جابه‌جا شوی و با یک دستور به پوشه‌ای در Drive دیگر بروی.'
+  summary: 'برای رفتن به Drive دیگر حرف آن را با دو نقطه بنویس، مثل `D:`. برای رفتن به یک پوشه در Drive دیگر از `cd /d` استفاده کن.'
+  meaning: 'هر Drive مسیر فعلی خودش را به خاطر دارد. `cd D:\Backup` فقط مسیر D را عوض می‌کند و تو روی C می‌مانی؛ `cd /d D:\Backup` هم Drive و هم پوشه را عوض می‌کند.'
+  usage: 'کار با USB، هارد دوم یا Backup روی Drive دیگر.'
+  syntax: "D:\ncd /d D:\\folder"
+  demo:
+    cmds: ['D:', 'dir /b', 'C:', 'cd /d D:\Projects']
+  examples:
+    - c: 'E:'
+      d: 'رفتن به USB مجازی.'
+    - c: 'cd /d D:\Backup'
+      d: 'رفتن به پوشه Backup روی Drive D، با یک دستور.'
+    - c: 'pushd D:\Projects'
+      d: 'مسیر فعلی را ذخیره می‌کند و می‌رود؛ `popd` تو را برمی‌گرداند.'
+  mistakes:
+    - '`cd D:\Backup` بدون `/d`: Prompt هنوز C را نشان می‌دهد و فکر می‌کنی دستور کار نکرده.'
+    - 'نوشتن `D` بدون دو نقطه.'
+  tip: '`pushd` و `popd` مثل نشانک (Bookmark) هستند: با `pushd` جایی برو و با `popd` به جای قبلی برگرد.'
+  restaurant: 'رستوران چند شعبه دارد. `D:` یعنی رفتن به شعبه D. `cd /d D:\Backup` یعنی «برو شعبه D، سالن Backup» با یک حرکت.'
+  practice:
+    - id: P14a
+      start: 'C:\Users\Student'
+      task: 'با یک دستور به پوشه `D:\Projects` برو.'
+      checks: [{type: drive, value: D}, {type: cwd, value: 'D:\Projects'}]
+      hints: ['`cd` به‌تنهایی Drive را عوض نمی‌کند. یک Switch لازم است.', '`cd /d` و بعد مسیر کامل.']
+      answer: 'cd /d D:\Projects'
+    - id: P14b
+      start: 'C:\Users\Student'
+      task: 'به USB (Drive E) برو، محتوایش را ببین و دوباره به Drive C برگرد.'
+      multi: true
+      checks: [{type: drive, value: C}, {type: argIncludes, cmd: drive, value: 'E:'}, {type: anyCmd, value: dir}]
+      hints: ['سه دستور لازم است: رفتن به E، دیدن محتوا، برگشتن.', '`E:` ، بعد `dir` ، بعد `C:`']
+      answer: ['E:', 'dir', 'C:']
+  quiz:
+    - kind: predict
+      q: 'الان در `C:\Users\Student` هستی. بعد از این دستور، Prompt چه نشان می‌دهد؟'
+      code: 'cd D:\Backup'
+      options: ['C:\Users\Student>', 'D:\Backup>', 'D:\>', 'خطا می‌دهد']
+      answer: 0
+      code_options: true
+      explain: 'بدون `/d` فقط مسیر Drive D عوض می‌شود و تو روی C می‌مانی.'
+    - kind: type
+      q: 'با یک دستور به `D:\Backup` برو.'
+      accept: ['cd /d d:\backup', 'chdir /d d:\backup', 'pushd d:\backup']
+      show: 'cd /d D:\Backup'
+      explain: '`/d` یعنی Drive را هم عوض کن.'
+    - kind: order
+      q: 'برای رفتن به USB، دیدن محتوا و برگشتن به C، این دستورها را مرتب کن.'
+      items: ['E:', 'dir', 'C:']
+      explain: 'اول Drive را عوض کن، بعد کار کن، بعد برگرد.'
+  recap: '`D:` = رفتن به Drive. `cd /d مسیر` = Drive + پوشه با هم. هر Drive مسیر خودش را یادش می‌ماند.'
+
+- n: 15
+  term: cls
+  fullForm: 'Clear Screen'
+  difficulty: 1
+  objective: 'صفحه را پاک کنی و با کلیدهای میانبر CMD سریع‌تر کار کنی.'
+  summary: '`cls` همه متن روی صفحه را پاک می‌کند. فایل‌ها و پوشه‌ها دست نمی‌خورند؛ فقط نمایش تمیز می‌شود.'
+  meaning: 'بعد از `cls` فقط Prompt در بالای صفحه باقی می‌ماند. Current Directory هم عوض نمی‌شود.'
+  usage: 'وقتی خروجی دستورهای قبلی شلوغ کرده و می‌خواهی تمرکز کنی.'
+  syntax: 'cls'
+  examples:
+    - c: 'cls'
+      d: 'پاک کردن صفحه.'
+    - c: 'dir & cls'
+      d: 'اجرای دو دستور پشت‌سرهم (`&` در درس ۳۱).'
+      noTry: true
+  mistakes:
+    - 'فکر کردن اینکه `cls` فایل‌ها را پاک می‌کند. نه، فقط صفحه را.'
+    - 'نوشتن `clear`: این دستور مال Linux است.'
+  tip: 'کلیدهای مفید: ↑ و ↓ برای دستورهای قبلی، Tab برای کامل کردن نام، Esc برای پاک کردن خطی که می‌نویسی. در Simulator دکمه ↑ و Tab هم هست.'
+  practice:
+    - id: P15a
+      start: 'C:\Users\Student'
+      task: 'اول محتوای پوشه را با `dir` ببین، بعد صفحه را پاک کن.'
+      multi: true
+      checks: [{type: cmd, value: cls}, {type: anyCmd, value: dir}]
+      hints: ['دو دستور پشت‌سرهم: اول `dir`.', 'بعد دستور سه‌حرفی Clear Screen.']
+      answer: ['dir', 'cls']
+  quiz:
+    - kind: tf
+      q: '`cls` فایل‌های پوشه فعلی را پاک می‌کند.'
+      answer: false
+      explain: 'فقط صفحه نمایش پاک می‌شود.'
+    - kind: mcq
+      q: 'برای آوردن دوباره دستور قبلی کدام کلید را می‌زنی؟'
+      options: ['↑ (فلش بالا)', 'Esc', 'Delete', 'F1']
+      answer: 0
+      explain: 'فلش بالا دستورهای قبلی را یکی‌یکی برمی‌گرداند.'
+    - kind: mcq
+      q: 'بعد از `cls`، Current Directory چه می‌شود؟'
+      options: ['همان قبلی می‌ماند', 'به `C:\` می‌رود', 'به Desktop می‌رود', 'پاک می‌شود']
+      answer: 0
+      explain: '`cls` فقط نمایش را پاک می‌کند.'
+  recap: '`cls` صفحه را تمیز می‌کند، نه فایل‌ها را. ↑ دستور قبلی، Tab کامل کردن نام.'
+
+- n: 16
+  term: 'help   /?'
+  fullForm: 'Help'
+  difficulty: 1
+  objective: 'برای هر دستوری خودت راهنما بگیری و خروجی راهنما را بخوانی.'
+  summary: '`help` فهرست دستورهای CMD را نشان می‌دهد. `دستور /?` راهنمای کامل همان دستور را نشان می‌دهد.'
+  meaning: 'در راهنما، بخش‌های داخل `[ ]` اختیاری‌اند و `|` یعنی «یکی از این‌ها». مثلاً `DIR [/W] [/B]` یعنی `/w` و `/b` اختیاری‌اند.'
+  usage: 'مهم‌ترین مهارت یک کاربر CMD: هر وقت Switch یادت رفت، `/?` بزن.'
+  syntax: "help\nhelp command\ncommand /?"
+  demo:
+    cmds: ['mkdir /?']
+  examples:
+    - c: 'help'
+      d: 'فهرست همه دستورها با یک خط توضیح.'
+    - c: 'copy /?'
+      d: 'راهنمای کامل `copy`.'
+    - c: 'help dir'
+      d: 'همان `dir /?`.'
+  mistakes:
+    - 'نوشتن `-?` یا `--help`: در CMD درستش `/?` است.'
+  tip: 'راهنمای Windows انگلیسی است؛ کافی است دنبال Switchها و کلمه‌های کلیدی بگردی.'
+  practice:
+    - id: P16a
+      start: 'C:\Users\Student'
+      task: 'فهرست دستورهای CMD را ببین.'
+      checks: [{type: cmd, value: help}, {type: noArgs}]
+      hints: ['دستورش همان کلمه انگلیسی «کمک» است.', '`help`']
+      answer: 'help'
+    - id: P16b
+      start: 'C:\Users\Student'
+      task: 'راهنمای دستور `copy` را ببین.'
+      checks: [{type: any, of: [{type: switch, value: '/?', cmd: copy, anyRun: true}, {type: argIncludes, cmd: help, value: copy}]}]
+      hints: ['بعد از نام دستور Switch راهنما را بگذار.', '`copy /?`']
+      answer: 'copy /?'
+  quiz:
+    - kind: mcq
+      q: 'در راهنمای CMD، `[ ]` دور یک بخش یعنی چه؟'
+      options: ['آن بخش اختیاری است', 'آن بخش الزامی است', 'باید `[ ]` را هم تایپ کنی', 'آن بخش قدیمی است']
+      answer: 0
+      explain: 'بخش‌های داخل کروشه اختیاری‌اند.'
+    - kind: type
+      q: 'راهنمای دستور `dir` را ببین.'
+      accept: ['dir /?', 'help dir']
+      explain: '`dir /?` یا `help dir`'
+    - kind: tf
+      q: 'در CMD، `dir --help` راهنما را نشان می‌دهد.'
+      answer: false
+      explain: 'در CMD از `/?` استفاده می‌شود.'
+  recap: '`help` = فهرست دستورها. `دستور /?` = راهنمای همان دستور. `[ ]` = اختیاری.'
+
+- n: 17
+  term: '"quotes"'
+  fullForm: 'Spaces in names'
+  difficulty: 1
+  objective: 'با نام‌هایی که فاصله دارند درست کار کنی.'
+  summary: 'CMD فاصله را مرز بین بخش‌های دستور می‌داند. اگر نام فایل یا پوشه فاصله دارد، آن را داخل Quotes `" "` بگذار.'
+  meaning: '`type shopping list.txt` یعنی دو فایل جدا: `shopping` و `list.txt`. ولی `type "shopping list.txt"` یعنی یک فایل.'
+  usage: 'پوشه‌هایی مثل `Program Files` یا `Summer 2026` و فایل‌هایی مثل `shopping list.txt`.'
+  syntax: 'command "name with spaces"'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['type shopping list.txt', 'type "shopping list.txt"']
+  examples:
+    - c: 'cd "C:\Program Files"'
+      d: 'رفتن به پوشه‌ای که فاصله دارد.'
+    - c: 'cd "Pictures\Summer 2026"'
+      d: 'Path نسبی با فاصله.'
+    - c: 'mkdir "My Notes"'
+      d: 'ساختن یک پوشه با نام فاصله‌دار.'
+  mistakes:
+    - '`mkdir My Notes` دو پوشه جدا می‌سازد: `My` و `Notes`.'
+    - 'باز کردن Quote و بستن نکردن آن.'
+  tip: '`cd` استثناست و `cd Program Files` را هم می‌فهمد، ولی بهتر است همیشه Quotes بگذاری.'
+  daily: 'اگر به پیک بگویی «کوچه گل محمدی»، شاید فکر کند دو آدرس است. با Quotes می‌گویی این یک نام است.'
+  practice:
+    - id: P17a
+      start: 'C:\Users\Student\Pictures'
+      task: 'وارد پوشه `Summer 2026` شو.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures\Summer 2026'}]
+      hints: ['نام پوشه فاصله دارد؛ آن را داخل `" "` بگذار.', '`cd "Summer 2026"`']
+      answer: 'cd "Summer 2026"'
+    - id: P17b
+      start: 'C:\Users\Student\Desktop'
+      task: 'محتوای فایل `shopping list.txt` را نمایش بده.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'shopping list.txt'}]
+      hints: ['دستور نمایش محتوای فایل `type` است.', 'نام فایل را داخل Quotes بگذار.']
+      answer: 'type "shopping list.txt"'
+  quiz:
+    - kind: predict
+      q: 'این دستور چند پوشه می‌سازد؟'
+      code: 'mkdir Old Photos'
+      options: ['2', '1', '0', 'خطا می‌دهد']
+      answer: 0
+      explain: 'فاصله دو نام جدا می‌سازد: `Old` و `Photos`.'
+    - kind: type
+      q: 'یک پوشه به نام `Old Photos` بساز (یک پوشه).'
+      accept: ['mkdir "old photos"', 'md "old photos"']
+      show: 'mkdir "Old Photos"'
+      explain: 'نام را داخل Quotes بگذار.'
+    - kind: fix
+      q: 'چرا این دستور فایل را پیدا نمی‌کند؟'
+      code: 'type my notes.txt'
+      options: ['نام فاصله دارد و Quotes ندارد', '`type` فقط پوشه را نشان می‌دهد', 'Extension اشتباه است', 'باید از `dir` استفاده کرد']
+      answer: 0
+      explain: 'درست: `type "my notes.txt"`'
+  recap: 'نام فاصله‌دار = داخل `" "`. بدون Quotes، CMD هر کلمه را جدا می‌بیند.'
+
+- n: 18
+  term: mkdir
+  fullForm: 'Make Directory'
+  difficulty: 1
+  objective: 'پوشه جدید، چند پوشه و پوشه‌های تودرتو بسازی.'
+  summary: '`mkdir` (یا کوتاه‌تر `md`) یک پوشه جدید در جایی که مشخص کنی می‌سازد.'
+  meaning: 'با یک نام، پوشه در Current Directory ساخته می‌شود. با Path کامل، هر جا که بخواهی. پوشه‌های میانی هم خودکار ساخته می‌شوند.'
+  usage: 'آماده کردن پوشه برای پروژه، Backup یا مرتب کردن فایل‌ها.'
+  syntax: 'mkdir [drive:]path'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['mkdir Restaurant', 'mkdir Restaurant', 'dir /b']
+  examples:
+    - c: 'mkdir Restaurant'
+      d: 'یک پوشه در پوشه فعلی.'
+    - c: 'md Menu Orders'
+      d: 'دو پوشه: Menu و Orders.'
+    - c: 'mkdir Projects\Web\Images'
+      d: 'سه سطح پوشه با یک دستور.'
+    - c: 'mkdir D:\Backup\2026'
+      d: 'ساختن پوشه روی Drive دیگر.'
+  mistakes:
+    - 'ساختن پوشه‌ای که از قبل هست: خطای `A subdirectory or file ... already exists.`'
+    - 'استفاده از کاراکترهای غیرمجاز مثل `?` یا `:` در نام.'
+  tip: 'بعد از ساختن، با `dir` مطمئن شو پوشه ساخته شده است.'
+  restaurant: 'باز کردن یک قفسه خالی جدید در آشپزخانه برای سفارش‌های امروز.'
+  practice:
+    - id: P18a
+      start: 'C:\Users\Student\Documents'
+      task: 'داخل Documents هستی. یک پوشه به نام `Restaurant` بساز.'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Restaurant'}]
+      hints: ['برای ساخت Folder از Make Directory استفاده می‌کنیم.', '`mkdir Restaurant`']
+      answer: 'mkdir Restaurant'
+    - id: P18b
+      start: 'C:\Users\Student\Documents'
+      task: 'با یک دستور مسیر `Projects\Web\Images` را بساز (سه پوشه تودرتو).'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Projects\Web\Images'}]
+      hints: ['لازم نیست پوشه‌ها را یکی‌یکی بسازی.', '`mkdir` و کل مسیر با `\`.']
+      answer: 'mkdir Projects\Web\Images'
+  quiz:
+    - kind: mcq
+      q: 'شکل کوتاه `mkdir` کدام است؟'
+      options: ['md', 'mk', 'mdir', 'nd']
+      answer: 0
+      code_options: true
+      explain: '`md` دقیقاً همان کار را می‌کند.'
+    - kind: type
+      q: 'یک پوشه به نام `Backup` بساز.'
+      accept: ['mkdir backup', 'md backup']
+      explain: '`mkdir Backup`'
+    - kind: predict
+      q: 'پوشه Work از قبل وجود دارد. خروجی چیست؟'
+      code: 'mkdir Work'
+      options: ['A subdirectory or file Work already exists.', 'یک پوشه Work2 ساخته می‌شود', 'پوشه قبلی پاک و دوباره ساخته می‌شود', 'هیچ خروجی ندارد']
+      answer: 0
+      explain: 'CMD پوشه موجود را بازنویسی نمی‌کند.'
+  recap: '`mkdir نام` یا `md نام`. با Path کامل، پوشه‌های میانی هم ساخته می‌شوند.'
+
+- n: 19
+  term: echo
+  fullForm: 'Echo'
+  difficulty: 1
+  objective: 'متن دلخواه چاپ کنی و برای ساختن فایل آماده شوی.'
+  summary: '`echo` هر متنی که بعدش بنویسی را نمایش می‌دهد. `echo.` یک خط خالی چاپ می‌کند.'
+  meaning: '`echo` در Scriptها برای پیام دادن به کاربر استفاده می‌شود. در درس ۲۸ می‌بینی که با `>` می‌شود خروجی آن را در فایل نوشت.'
+  usage: 'نمایش پیام، ساختن فایل متنی ساده (با `>`)، و نمایش مقدار متغیرها.'
+  syntax: "echo message\necho."
+  demo:
+    cmds: ['echo Hello CMD Academy', 'echo.', 'echo Bye!']
+  examples:
+    - c: 'echo Welcome to my restaurant'
+      d: 'نمایش یک جمله.'
+    - c: 'echo.'
+      d: 'یک خط خالی.'
+    - c: 'echo'
+      d: 'بدون متن، وضعیت echo را نشان می‌دهد: `ECHO is on.`'
+  mistakes:
+    - 'فاصله بین `echo` و نقطه: `echo .` یک نقطه چاپ می‌کند، نه خط خالی.'
+    - 'گذاشتن Quotes بی‌دلیل: `echo "Hi"` خود Quoteها را هم چاپ می‌کند.'
+  tip: 'متن فارسی هم با `echo` چاپ می‌شود، ولی خود دستورها همیشه انگلیسی‌اند.'
+  practice:
+    - id: P19a
+      start: 'C:\Users\Student'
+      task: 'جمله `Welcome to CMD Academy` را چاپ کن.'
+      checks: [{type: cmd, value: echo}, {type: argIncludes, value: 'welcome to cmd academy'}]
+      hints: ['دستور چاپ متن `echo` است.', '`echo` و بعد کل جمله.']
+      answer: 'echo Welcome to CMD Academy'
+    - id: P19b
+      start: 'C:\Users\Student'
+      task: 'یک خط خالی چاپ کن.'
+      checks: [{type: cmd, value: echo}, {type: noArgs}, {type: not, check: {type: lastOutputIncludes, value: 'ECHO is'}}]
+      hints: ['بعد از `echo` بدون فاصله یک علامت بگذار.', '`echo.`']
+      answer: 'echo.'
+  quiz:
+    - kind: predict
+      q: 'خروجی این دستور چیست؟'
+      code: 'echo "Hi"'
+      options: ['"Hi"', 'Hi', 'خطا', 'خط خالی']
+      answer: 0
+      code_options: true
+      explain: '`echo` Quoteها را هم چاپ می‌کند.'
+    - kind: mcq
+      q: 'کدام دستور یک خط خالی چاپ می‌کند؟'
+      options: ['echo.', 'echo', 'echo off', 'echo " "']
+      answer: 0
+      code_options: true
+      explain: '`echo` تنها، پیام `ECHO is on.` را نشان می‌دهد.'
+    - kind: type
+      q: 'کلمه `Ready` را چاپ کن.'
+      accept: ['echo ready']
+      show: 'echo Ready'
+      explain: '`echo Ready`'
+  recap: '`echo متن` = چاپ متن. `echo.` = خط خالی.'
+
+- n: 20
+  term: type
+  fullForm: 'Type (show file)'
+  difficulty: 1
+  objective: 'محتوای فایل‌های متنی را در CMD بخوانی.'
+  summary: '`type` محتوای یک فایل متنی را روی صفحه چاپ می‌کند، بدون اینکه آن را باز یا تغییر دهد.'
+  meaning: 'برای فایل‌های متنی مثل `.txt`، `.bat`، `.ini` و `.log` مناسب است. برای عکس یا برنامه کاراکترهای نامفهوم نشان می‌دهد.'
+  usage: 'خواندن سریع یادداشت، تنظیمات، Log و بعداً Batch Scriptها.'
+  syntax: 'type [drive:][path]filename'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['type todo.txt']
+  examples:
+    - c: 'type todo.txt'
+      d: 'نمایش محتوای todo.txt.'
+    - c: 'type Documents\menu.txt'
+      d: 'خواندن فایل در پوشه دیگر با Path نسبی.'
+    - c: 'type C:\Windows\win.ini'
+      d: 'خواندن با Path مطلق.'
+  mistakes:
+    - 'ننوشتن Extension: `type todo` فایل را پیدا نمی‌کند؛ درست `type todo.txt` است.'
+    - '`type` روی پوشه: خطای `Access is denied.`'
+  tip: 'اگر فایل خیلی طولانی است، در درس ۳۴ با `more` صفحه‌به‌صفحه می‌خوانیمش.'
+  practice:
+    - id: P20a
+      start: 'C:\Users\Student\Documents'
+      task: 'محتوای فایل `menu.txt` را نمایش بده.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'menu.txt'}]
+      hints: ['نام دستور + نام کامل فایل با Extension.', '`type menu.txt`']
+      answer: 'type menu.txt'
+    - id: P20b
+      start: 'C:\Users\Student'
+      task: 'بدون رفتن به Desktop، محتوای `notes.txt` داخل Desktop را نمایش بده.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'notes.txt'}, {type: cwd, value: 'C:\Users\Student'}]
+      hints: ['از Path نسبی استفاده کن.', '`type Desktop\notes.txt`']
+      answer: 'type Desktop\notes.txt'
+  quiz:
+    - kind: mcq
+      q: '`type` روی کدام فایل نتیجه قابل خواندن می‌دهد؟'
+      options: ['notes.txt', 'beach.jpg', 'setup.exe', 'song.mp3']
+      answer: 0
+      code_options: true
+      explain: '`type` برای فایل‌های متنی است.'
+    - kind: fix
+      q: 'فایل `report.txt` وجود دارد، ولی این دستور خطا می‌دهد. چرا؟'
+      code: "type report\nThe system cannot find the file specified."
+      options: ['Extension (`.txt`) نوشته نشده', '`type` اشتباه است', 'باید `cd report` زد', 'فایل خراب است']
+      answer: 0
+      explain: 'نام کامل فایل لازم است: `type report.txt`'
+    - kind: type
+      q: 'محتوای `todo.txt` را نمایش بده.'
+      accept: ['type todo.txt', 'type .\todo.txt']
+      explain: '`type todo.txt`'
+  recap: '`type فایل` = خواندن فایل متنی. نام کامل با Extension را بنویس.'

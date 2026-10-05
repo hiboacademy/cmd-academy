@@ -14,6 +14,17 @@ const Checker = (() => {
     return VFS.resolve(sh.fs, p.drive, p.parts).node;
   };
   const named = (a, v) => a.filter((r) => r.name === v || (v === "cd" && r.name === "chdir"));
+  /* the words appear in this order (each on its own line) */
+  function inOrder(text, words) {
+    const lines = String(text).split("\n");
+    let pos = -1;
+    for (const w of words) {
+      const i = lines.findIndex((l, k) => k > pos && l.toLowerCase().includes(String(w).toLowerCase()));
+      if (i < 0) return false;
+      pos = i;
+    }
+    return true;
+  }
   const textOf = (n) => (n && n.type === "file" && !n.binary ? n.content || "" : null);
 
   const RULES = {
@@ -60,6 +71,9 @@ const Checker = (() => {
     outputIncludes: (c, sh, a, x) => [].concat(c.value).every((v) => (x.output || "").toLowerCase().includes(String(v).toLowerCase())),
     outputExcludes: (c, sh, a, x) => !(x.output || "").toLowerCase().includes(String(c.value).toLowerCase()),
     lastOutputIncludes: (c, sh, a, x) => (x.lastOutput || "").toLowerCase().includes(String(c.value).toLowerCase()),
+    lastOutputExcludes: (c, sh, a, x) => !(x.lastOutput || "").toLowerCase().includes(String(c.value).toLowerCase()),
+    outputOrder: (c, sh, a, x) => inOrder(x.lastOutput || "", c.value),
+    fileOrder: (c, sh) => { const t = textOf(node(sh, c.path)); return t != null && inOrder(t, c.value); },
     errorlevel: (c, sh) => sh.errorlevel === c.value,
     envEquals: (c, sh) => { const v = Shell.getVar(sh, c.name); return v != null && (c.value == null || String(v).toLowerCase() === String(c.value).toLowerCase()); },
     procGone: (c, sh) => !sh.procs.some((p) => p.name.toLowerCase() === c.value.toLowerCase()),
@@ -88,5 +102,44 @@ const Checker = (() => {
     return accepted.some((a) => n(a) === n(input));
   }
 
-  return { evaluate, sameCommand, RULES };
+  /* Build a fresh sandbox for a task spec */
+  function shellFor(spec) {
+    const sh = Shell.create({ admin: spec.admin, mode: spec.mode, files: spec.files });
+    if (spec.start) Shell.setLocation(sh, spec.start);
+    else if (spec.batch) Shell.setLocation(sh, "C:\\Users\\Student\\Desktop");
+    const su = spec.setup || {};
+    if (su.net === false) sh.net.connected = false;
+    if (su.sysCorrupt) sh.sysCorrupt = true;
+    if (su.storeCorrupt) sh.storeCorrupt = true;
+    if (su.diskErrors) sh.diskErrors = Object.assign({}, su.diskErrors);
+    (su.remove || []).forEach((p) => {
+      const pp = VFS.parse(p, sh.drive, sh.cwd);
+      const dir = VFS.resolve(sh.fs, pp.drive, pp.parts.slice(0, -1)).node;
+      if (dir) VFS.remove(dir, pp.parts[pp.parts.length - 1]);
+    });
+    (su.mkdir || []).forEach((p) => { const pp = VFS.parse(p, sh.drive, sh.cwd); VFS.mkdirp(sh.fs, pp.drive, pp.parts); });
+    (su.hide || []).forEach((p) => { const pp = VFS.parse(p, sh.drive, sh.cwd); const n = VFS.resolve(sh.fs, pp.drive, pp.parts).node; if (n) n.attrs = Object.assign({}, n.attrs, { h: true }); });
+    (su.readonly || []).forEach((p) => { const pp = VFS.parse(p, sh.drive, sh.cwd); const n = VFS.resolve(sh.fs, pp.drive, pp.parts).node; if (n) n.attrs = Object.assign({}, n.attrs, { r: true }); });
+    if (su.env) Object.keys(su.env).forEach((k) => Shell.lib.setVar(sh, k, su.env[k]));
+    return sh;
+  }
+
+
+  /* Run a lesson demo in a fresh sandbox -> lines for StaticTerminal */
+  function demo(spec) {
+    const sh = shellFor(spec);
+    const lines = [];
+    spec.cmds.forEach((cmd) => {
+      lines.push({ p: Shell.prompt(sh), c: cmd });
+      const r = Shell.runAll(sh, cmd, (spec.inputs || []).slice(), { defaultAnswer: "" });
+      r.lines.forEach((l) => {
+        if (l.t === "out" || l.t === "err") lines.push({ o: l.text, e: l.t === "err" });
+        else if (l.t === "cmd") lines.push({ p: l.p, c: l.c });
+      });
+    });
+    lines.push({ p: Shell.prompt(sh), c: "" });
+    return lines;
+  }
+
+  return { evaluate, sameCommand, RULES, shellFor, demo };
 })();

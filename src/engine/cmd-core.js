@@ -24,18 +24,43 @@
     }
     const bare = sw.includes("/b"), wide = sw.includes("/w"), recurse = sw.includes("/s");
     const filt = attrFilter(attrSpec);
-    const target = args.join(" ") || ".";
+    // several paths: "dir Documents Music" lists each one (unless it is one name with spaces)
+    let targets = [args.join(" ") || "."];
+    if (args.length > 1) {
+      const joined = P(sh, args.join(" "));
+      if (!VFS.resolve(sh.fs, joined.drive, joined.parts).node) targets = args;
+    }
+    let okAll = true, headerShown = false;
+    targets.forEach((target) => {
+      const r = listOne(sh, target, { bare, wide, recurse, filt, attrSpec, sortSpec, lines, rec, headerShown });
+      headerShown = headerShown || r.header;
+      if (!r.ok) okAll = false;
+    });
+    return okAll;
+  });
+
+  function volHeader(lines, drv, letter) {
+    out(lines, drv.label ? ` Volume in drive ${letter} is ${drv.label}` : ` Volume in drive ${letter} has no label.`);
+    out(lines, ` Volume Serial Number is ${drv.serial}`);
+  }
+
+  function listOne(sh, target, o) {
+    const { bare, wide, recurse, filt, attrSpec, sortSpec, lines, rec } = o;
     let p = P(sh, target);
     let pattern = null;
     const last = p.parts[p.parts.length - 1];
     if (last && /[*?]/.test(last)) { pattern = last; p = { ...p, parts: p.parts.slice(0, -1) }; }
     const drv = VFS.getDrive(sh.fs, p.drive);
-    if (!drv) { err(lines, "The system cannot find the path specified."); note(lines, msg("drive_not_found", { drive: p.drive, list: lib.driveList(sh) })); return false; }
+    if (!drv) { err(lines, "The system cannot find the path specified."); note(lines, msg("drive_not_found", { drive: p.drive, list: lib.driveList(sh) })); return { ok: false }; }
+    const header = !bare && !o.headerShown;
     let r = VFS.resolve(sh.fs, p.drive, p.parts);
     if (!r.node) {
-      if (r.parent) { err(lines, "File Not Found"); note(lines, msg("file_not_found")); }
-      else { err(lines, "The system cannot find the path specified."); note(lines, msg("path_not_found")); }
-      return false;
+      if (header) volHeader(lines, drv, p.drive);
+      if (r.parent) {
+        if (!bare) { out(lines, ""); out(lines, ` Directory of ${VFS.fmt(p.drive, r.canonical)}`); out(lines, ""); }
+        err(lines, "File Not Found"); note(lines, msg("file_not_found"));
+      } else { if (!bare) out(lines, ""); err(lines, "The system cannot find the path specified."); note(lines, msg("path_not_found")); }
+      return { ok: false, header };
     }
     let dirNode = r.node, dirParts = r.canonical;
     if (r.node.type === "file") { pattern = r.node.name; dirParts = r.canonical.slice(0, -1); dirNode = VFS.resolve(sh.fs, p.drive, dirParts).node; }
@@ -47,10 +72,7 @@
     if (recurse) VFS.walk(dirNode, dirParts, (n, parts) => { if (n.type === "dir" && !(n.attrs && n.attrs.h)) dirs.push({ node: n, parts }); });
 
     let totalFiles = 0, totalBytes = 0, totalDirs = 0, shownAny = false;
-    if (!bare) {
-      out(lines, drv.label ? ` Volume in drive ${p.drive} is ${drv.label}` : ` Volume in drive ${p.drive} has no label.`);
-      out(lines, ` Volume Serial Number is ${drv.serial}`);
-    }
+    if (header) volHeader(lines, drv, p.drive);
     dirs.forEach((d) => {
       let entries = VFS.sortedChildren(d.node).filter((e) => (!re || re.test(e.name)) && filt(e));
       if (sortSpec) entries = sortEntries(entries, sortSpec);
@@ -87,11 +109,11 @@
       if (!recurse) out(lines, `${String(subdirs.length + (showDots ? 2 : 0)).padStart(16)} Dir(s) ${num(drv.free).padStart(15)} bytes free`);
     });
     if (!shownAny) {
-      if (bare) return false;
-      out(lines, "");
+      if (bare) return { ok: false, header };
+      if (!recurse) { out(lines, ""); out(lines, ` Directory of ${VFS.fmt(p.drive, dirParts)}`); out(lines, ""); }
       err(lines, "File Not Found");
       note(lines, pattern ? msg("dir_no_match", { pattern }) : msg("file_not_found"));
-      return false;
+      return { ok: false, header };
     }
     if (recurse && !bare) {
       out(lines, "");
@@ -99,8 +121,8 @@
       out(lines, `${String(totalFiles).padStart(16)} File(s) ${num(totalBytes).padStart(14)} bytes`);
       out(lines, `${String(totalDirs).padStart(16)} Dir(s) ${num(drv.free).padStart(15)} bytes free`);
     }
-    return true;
-  });
+    return { ok: true, header };
+  }
 
   function attrFilter(spec) {
     // default: hide hidden and system entries

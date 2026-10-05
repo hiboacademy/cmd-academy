@@ -29,7 +29,7 @@ levels:
           - {n: 11, t: 'دیدن محتوای پوشه', c: dir}
           - {n: 12, t: 'رفتن به پوشه دیگر', c: cd, aliases: [chdir]}
           - {n: 13, t: 'برگشت به عقب و ریشه'}
-          - {n: 14, t: 'تغییر Drive'}
+          - {n: 14, t: 'تغییر Drive و cd /d', aliases: [pushd, popd]}
           - {n: 15, t: 'پاک کردن صفحه', c: cls}
           - {n: 16, t: 'راهنما گرفتن', c: help}
           - {n: 17, t: 'Quotes و نام‌های دارای فاصله'}
@@ -51,8 +51,8 @@ levels:
         lessons:
           - {n: 28, t: 'نوشتن خروجی در فایل >'}
           - {n: 29, t: 'اضافه کردن به فایل >>'}
-          - {n: 30, t: 'اجرای پشت‌سرهم &'}
-          - {n: 31, t: 'اجرای شرطی && و ||'}
+          - {n: 30, t: 'پیام خطا و 2>'}
+          - {n: 31, t: 'زنجیره دستورها: & و && و ||'}
           - {n: 32, t: 'تمرین ترکیبی Level 1'}
   - id: 2
     code: INTERMEDIATE
@@ -80,8 +80,8 @@ levels:
           - {n: 46, t: 'Environment Variables'}
           - {n: 47, t: '%USERNAME% و %USERPROFILE%'}
           - {n: 48, t: 'PATH و %PATH%'}
-          - {n: 49, t: 'کاربر و نام سیستم', c: whoami}
-          - {n: 50, t: 'نسخه و اطلاعات سیستم', c: systeminfo}
+          - {n: 49, t: 'کاربر و نام سیستم', c: whoami, aliases: [hostname]}
+          - {n: 50, t: 'نسخه و اطلاعات سیستم', c: systeminfo, aliases: [ver]}
           - {n: 51, t: 'فهرست برنامه‌های در حال اجرا', c: tasklist}
           - {n: 52, t: 'بستن Process', c: taskkill, danger: true}
       - id: 8
@@ -89,22 +89,22 @@ levels:
         lessons:
           - {n: 53, t: 'IP و شبکه چیست؟'}
           - {n: 54, t: 'دیدن IP', c: ipconfig}
-          - {n: 55, t: 'جزئیات کامل شبکه'}
+          - {n: 55, t: 'جزئیات کامل شبکه و MAC', c: getmac}
           - {n: 56, t: 'تست اتصال', c: ping}
-          - {n: 57, t: 'مسیر رسیدن به سرور', c: tracert}
+          - {n: 57, t: 'مسیر رسیدن به سرور', c: tracert, aliases: [pathping]}
           - {n: 58, t: 'DNS و پیدا کردن IP سایت', c: nslookup}
           - {n: 59, t: 'اتصال‌های فعال', c: netstat}
           - {n: 60, t: 'جدول ARP', c: arp}
-          - {n: 61, t: 'جدول Route', c: route}
+          - {n: 61, t: 'جدول Route و روند عیب‌یابی شبکه', c: route}
       - id: 9
         title: دستورات حرفه‌ای‌تر
         lessons:
           - {n: 62, t: 'Exit Code'}
-          - {n: 63, t: 'Permissionهای پایه'}
+          - {n: 63, t: 'Permissionهای پایه و Access is denied'}
           - {n: 64, t: 'Administrator CMD'}
-          - {n: 65, t: 'خطاهای رایج CMD'}
-          - {n: 66, t: 'ترکیب چند دستور'}
-          - {n: 67, t: 'تمرین‌های واقعی Level 2'}
+          - {n: 65, t: 'سرویس‌های Windows', c: sc, aliases: [net]}
+          - {n: 66, t: 'خطاهای رایج CMD و راه حلشان'}
+          - {n: 67, t: 'ترکیب دستورها: تمرین‌های واقعی Level 2'}
   - id: 3
     code: ADVANCED
     title: پیشرفته
@@ -132,9 +132,9 @@ levels:
           - {n: 82, t: 'goto و Labels', c: goto}
           - {n: 83, t: 'حلقه روی فایل‌ها', c: for}
           - {n: 84, t: 'for /l و for /f'}
-          - {n: 85, t: 'صدا زدن Script دیگر', c: call}
-          - {n: 86, t: 'منوی انتخاب', c: choice}
-          - {n: 87, t: 'مکث زمان‌دار', c: timeout}
+          - {n: 85, t: 'Delayed Expansion و !var!', c: setlocal, aliases: [endlocal]}
+          - {n: 86, t: 'call: تابع و Script دیگر', c: call}
+          - {n: 87, t: 'منوی ساده با choice و timeout', c: choice, aliases: [timeout]}
       - id: 12
         title: پروژه‌ها و تعمیر سیستم
         lessons:
@@ -142,12 +142,12 @@ levels:
           - {n: 89, t: 'Backup Script'}
           - {n: 90, t: 'Rename Script'}
           - {n: 91, t: 'Script جستجوی فایل‌ها'}
-          - {n: 92, t: 'Automation ساده'}
-          - {n: 93, t: 'بررسی دیسک', c: chkdsk, danger: true}
+          - {n: 92, t: 'Automation ساده: Log و زمان‌بندی', c: shutdown}
+          - {n: 93, t: 'File System و بررسی دیسک', c: chkdsk, aliases: [vol], danger: true}
           - {n: 94, t: 'تعمیر فایل‌های سیستم', c: sfc}
           - {n: 95, t: 'تعمیر Image ویندوز', c: dism}
           - {n: 96, t: 'Recovery Environment'}
-          - {n: 97, t: 'تعمیر Boot', c: bootrec, danger: true}
-          - {n: 98, t: 'مدیریت دیسک (شبیه‌سازی)', c: diskpart, danger: true}
+          - {n: 97, t: 'تعمیر Boot', c: bootrec, aliases: [bcdboot, bcdedit], danger: true}
+          - {n: 98, t: 'diskpart و format (شبیه‌سازی)', c: diskpart, aliases: [format], danger: true}
           - {n: 99, t: 'روند عیب‌یابی پایه Windows'}
           - {n: 100, t: 'پروژه نهایی'}
