@@ -321,7 +321,8 @@
     usage: "Usage: shutdown [/i | /l | /s | /r | /g | /a | /p | /h | /e | /o] [/f] [/t xxx]\n\n    No args    Display help. This is the same as typing /?.\n    /l         Log off. This cannot be used with /m or /d options.\n    /s         Shutdown the computer.\n    /r         Full shutdown and restart the computer.\n    /a         Abort a system shutdown.\n               This can only be used during the time-out period.\n    /p         Turn off the local computer with no time-out or warning.\n    /h         Hibernate the local computer.\n    /o         Go to the advanced boot options menu and restart the computer.\n               Must be used with /r.\n    /t xxx     Set the time-out period before shutdown to xxx seconds.\n               The valid range is 0-315360000 (10 years), with a default of 30.\n    /f         Force running applications to close without forewarning users.",
     danger: true,
   }, (sh, rest, lines, rec) => {
-    const toks = tokenize(rest).map((t) => t.v.toLowerCase());
+    // shutdown accepts both /s and -s
+    const toks = tokenize(rest).map((t) => t.v.toLowerCase().replace(/^-(?=[a-z?])/, "/"));
     rec.switches = toks.filter((t) => t.startsWith("/"));
     if (!toks.length || toks.includes("/?")) { showUsage(lines, COMMANDS.shutdown); return true; }
     if (toks.includes("/a")) {

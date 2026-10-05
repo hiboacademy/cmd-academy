@@ -127,7 +127,7 @@ function QuizRunView(id) {
       e.preventDefault();
       if (run.answered || !inp.value.trim()) return;
       run.answered = true;
-      const ok = Checker.sameCommand(inp.value, q.accept);
+      const ok = Checker.sameCommand(inp.value, q.accept, q.quotedCase);
       inp.disabled = true; check.disabled = true;
       inp.style.borderColor = ok ? "var(--green)" : "var(--danger)";
       if (!ok) fb.before(h("div", { class: "answer-code" }, q.show || q.accept[0]));

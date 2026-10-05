@@ -297,7 +297,7 @@
       admin: true
       setup: {diskErrors: {E: true}}
       task: 'USB خطای File System دارد. آن را بررسی و تعمیر کن.'
-      checks: [{type: switch, value: '/f', cmd: chkdsk, anyRun: true}, {type: lastOutputIncludes, value: 'made corrections'}]
+      checks: [{type: any, of: [{type: switch, value: '/f', cmd: chkdsk, anyRun: true}, {type: switch, value: '/r', cmd: chkdsk, anyRun: true}]}, {type: lastOutputIncludes, value: 'made corrections'}]
       hints: ['Switch تعمیر `/f` است.', '`chkdsk E: /f`']
       answer: 'chkdsk E: /f'
   quiz:

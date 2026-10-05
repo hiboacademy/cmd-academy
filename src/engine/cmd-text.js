@@ -49,7 +49,10 @@
       files.forEach((f) => {
         const fl = fileLines(sh, f, lines);
         if (!fl || !fl.length) { err(lines, `File not found - ${f.toUpperCase()}`); ok = false; return; }
-        fl.forEach((x) => { if (!Cc) out(lines, ""); doLines(x.lines, `---------- ${x.name.toUpperCase()}`); });
+        // the header repeats the path as typed: ---------- DOCUMENTS\MENU.TXT
+        const cut = f.replace(/"/g, "").lastIndexOf("\\");
+        const prefix = cut >= 0 ? f.replace(/"/g, "").slice(0, cut + 1) : /^[a-z]:/i.test(f) ? f.slice(0, 2) : "";
+        fl.forEach((x) => { if (!Cc) out(lines, ""); doLines(x.lines, `---------- ${(prefix + x.name).toUpperCase()}`); });
       });
       if (!ok && !matched) return 1;
     } else {

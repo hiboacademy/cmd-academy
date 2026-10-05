@@ -47,6 +47,7 @@ rd_file: '`{name}` یک فایل است. برای حذف فایل از `del` ا�
 rd_not_empty: 'پوشه `{name}` خالی نیست. با `rd /s` پوشه و همه محتوایش حذف می‌شود؛ قبلش با `dir` داخلش را ببین.'
 rd_in_use: 'نمی‌توانی پوشه‌ای را که الان داخلش هستی (یا پوشه بالاتر از آن) حذف یا جابه‌جا کنی. اول با `cd ..` بیرون بیا.'
 system_protected: 'این پوشه مال خود Windows است و Windows از آن محافظت می‌کند؛ حتی Administrator هم معمولاً نمی‌تواند آن را حذف، جابه‌جا یا تغییر نام دهد. در Simulator هم همین‌طور است.'
+system_write: 'ساختن یا تغییر فایل داخل پوشه‌های Windows (مثل `C:\Windows` و `C:\Program Files`) دسترسی Administrator می‌خواهد. در کار عادی فایل‌هایت را در پوشه کاربر خودت نگه دار.'
 readonly_inside: 'داخل این پوشه فایل Read-only هست. اول با `attrib -r` آن را باز کن.'
 
 # --- files ---
@@ -77,7 +78,9 @@ sort_no_input: 'نام فایل بده یا خروجی دستور دیگر را 
 more_no_input: 'نام فایل بده یا خروجی دستور دیگری را با `|` به `more` بفرست.'
 clip_no_input: '`clip` خروجی دستور دیگر را می‌گیرد: `dir | clip`'
 clip_done: 'خروجی در Clipboard کپی شد.'
-echo_onoff: '`echo on` و `echo off` در Batch Script معنا پیدا می‌کنند (درس ۷۱).'
+echo_onoff: '`echo on` و `echo off` بیشتر در Batch Script به کار می‌روند (درس ۷۱).'
+echo_off_prompt: 'با `echo off`، Prompt پنهان شد؛ CMD هنوز منتظر دستور توست. با `echo on` آن را برگردان. (این دستور بیشتر در Batch Script به کار می‌رود.)'
+echo_on_prompt: 'Prompt دوباره نمایش داده می‌شود.'
 
 # --- variables ---
 set_space_name: 'قبل از `=` فاصله گذاشتی، پس نام متغیر «{name} » (با فاصله) شد. درست: `set name=value` بدون فاصله.'

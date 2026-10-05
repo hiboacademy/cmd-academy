@@ -251,6 +251,7 @@
       if (!VFS.getDrive(sh.fs, p.drive)) { err(lines, "The system cannot find the path specified."); note(lines, msg("drive_not_found", { drive: p.drive, list: lib.driveList(sh) })); ok = false; return; }
       const r = VFS.resolve(sh.fs, p.drive, p.parts);
       if (r.node) { err(lines, `A subdirectory or file ${tk.v} already exists.`); note(lines, msg("already_exists")); ok = false; return; }
+      if (lib.denyWrite(sh, p.drive, p.parts)) { err(lines, "Access is denied."); note(lines, msg("system_write")); ok = false; return; }
       if (!VFS.mkdirp(sh.fs, p.drive, p.parts)) { err(lines, "The system cannot find the path specified."); ok = false; return; }
       rec.created = (rec.created || []).concat(VFS.fmt(p.drive, p.parts));
     });
@@ -339,8 +340,8 @@
     if (!text.trim()) { out(lines, sh.echo ? "ECHO is on." : "ECHO is off."); return true; }
     const t = text.trim().toLowerCase();
     if (t === "on" || t === "off") {
-      if (ctx.frame) sh.echo = t === "on";
-      else note(lines, msg("echo_onoff"));
+      sh.echo = t === "on";
+      if (!ctx.frame) { sh.promptEcho = sh.echo; note(lines, msg(sh.echo ? "echo_on_prompt" : "echo_off_prompt")); }
       return true;
     }
     out(lines, text);
@@ -414,7 +415,8 @@
     const am = s.match(/^\/a\s*/i);
     if (am) {
       rec.switches = ["/a"];
-      const expr = s.slice(am[0].length).replace(/^"(.*)"$/, "$1");
+      // SET /A ignores quotes anywhere: set /a "x=1+2" and set /a x="1+2" both work
+      const expr = s.slice(am[0].length).replace(/"/g, "");
       rec.args = [expr];
       try {
         const v = SetA.evaluate(expr, sh);
@@ -526,7 +528,11 @@
     if (m) {
       const inner = m[2].replace(/^"(.*)"$/, "$1");
       const node = lib.parseStmt(inner);
-      return yield* lib.exec(node, ctx, io);
+      // a child cmd.exe: EXIT inside it ends only the child, not a running script
+      // (prototype link: output and records still go to the parent's current lists)
+      const child = Object.create(ctx);
+      child.frame = null; child.aborted = false; child.child = true;
+      return yield* lib.exec(node, child, io);
     }
     Shell.banner().forEach((l) => out(lines, l.text));
     note(lines, msg("cmd_nested"));

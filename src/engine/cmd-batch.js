@@ -170,6 +170,7 @@
     const m = rest.trim().match(/^(\/b)?\s*(-?\d+)?/i);
     const code = m && m[2] != null ? parseInt(m[2], 10) : null;
     if (rest.trim() === "/?") { showUsage(lines, COMMANDS.exit); return true; }
+    if (ctx.child) { sh.errorlevel = code != null ? code : 0; ctx.aborted = true; return true; }
     if (ctx.frame) {
       if (code != null) sh.errorlevel = code;
       if (m && m[1]) { ctx.frame.exit = true; return true; }

@@ -249,7 +249,7 @@
     - id: P37a
       start: 'C:\Users\Student\Documents'
       task: 'بشمار در `guests.txt` چند خط حرف `a` دارند، بدون توجه به بزرگی و کوچکی حرف.'
-      checks: [{type: anyCmd, value: find}, {type: switch, value: '/c', cmd: find, anyRun: true}, {type: switch, value: '/i', cmd: find, anyRun: true}, {type: lastOutputIncludes, value: ': 5'}]
+      checks: [{type: anyCmd, value: find}, {type: switch, value: '/c', cmd: find, anyRun: true}, {type: switch, value: '/i', cmd: find, anyRun: true}, {type: lastOutputMatches, value: '(^|: )5\s*$'}]
       hints: ['دو Switch لازم است: یکی برای شمارش، یکی برای نادیده گرفتن بزرگی حروف.', '`find /c /i "a" guests.txt`']
       answer: 'find /c /i "a" guests.txt'
     - id: P37b
@@ -337,7 +337,8 @@
       explain: '`/m` = فقط نام فایل.'
     - kind: type
       q: 'دقیقاً عبارت `Status: OK` را در `report.txt` پیدا کن.'
-      accept: ['findstr /c:"status: ok" report.txt', 'find "status: ok" report.txt', 'findstr /i /c:"status: ok" report.txt']
+      accept: ['findstr /c:"Status: OK" report.txt', 'find "Status: OK" report.txt', 'findstr /i /c:"status: ok" report.txt', 'findstr /i /c:"Status: OK" report.txt', 'find /i "status: ok" report.txt', 'find /i "Status: OK" report.txt']
+      quotedCase: true
       show: 'findstr /c:"Status: OK" report.txt'
       explain: 'برای عبارت فاصله‌دار از `/c:` استفاده کن.'
   recap: '`findstr` = چند کلمه (یا)، `/c:` عبارت کامل، `/s` زیرپوشه‌ها، `/m` نام فایل، `^` و `$` اول و آخر خط.'

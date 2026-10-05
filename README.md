@@ -1,19 +1,44 @@
 # CMD Academy
 
 Persian (RTL) mobile-first app for learning Windows CMD from zero to Batch scripting.
-Everything runs offline; the CMD Simulator is a sandbox and never runs real commands.
+100 lessons, a CMD Simulator, practice tasks, quizzes, 24 challenges and a command library.
+Everything runs offline on the device; progress is saved only on the device.
 
-## Structure
-- `src/content/fa/` — course content in YAML (curriculum, lessons, UI text, simulator notes)
-- `src/engine/` — virtual file system, CMD interpreter, practice checker
+**Safety:** the CMD Simulator is a sandbox over a virtual file system written in JavaScript.
+It never runs a real command, on the phone, in the browser or on a server.
+
+## What is inside
+- `src/content/fa/` — course content in YAML: curriculum, lessons (`lessons/batch-01..10.yaml`),
+  command library (`commands.yaml`), challenges, UI text and simulator notes
+- `src/engine/` — virtual file system, CMD/Batch interpreter, practice checker
 - `src/data/`, `src/store/` — content access and on-device progress
 - `src/ui/`, `src/app.js` — screens and navigation
-- `src/pwa/` — manifest, service worker and page template for the installable app
-- `docs/` — built app, published with GitHub Pages
+- `src/pwa/` — manifest, service worker and page template for the installable web app
+- `docs/` — the built web app (also the Android app's web content)
+- `android/` — Capacitor Android project
+- `test/` — engine, app and content tests, and a UI check at phone and desktop widths
 
-## Build
+## Build and test
 ```
 pip install pyyaml
-python3 build.py
+python3 build.py              # builds docs/ and dist/cmd-academy.html
+node --test test/*.test.js    # engine, app and content tests
+python3 test/ui_check.py      # every screen at 320/375/390/430/1280 px (needs playwright)
 ```
-Then commit `docs/`. Add lessons by adding a YAML file in `src/content/fa/lessons/`.
+The content tests run every practice answer, challenge, quiz simulator task and
+"try it" example in the simulator, and check that wrong attempts are rejected.
+
+## Publish
+- **Website / installable app (PWA):** GitHub → Settings → Pages → Source: **GitHub Actions**.
+  Every push to `main` runs the tests and publishes `docs/`.
+  On the phone, open the site in Chrome → menu → **Add to Home screen**.
+- **Android APK:** every push to `main` builds `CMD-Academy.apk` and attaches it to the
+  **latest** release. Open the release on the phone, download the APK and install it.
+  APKs are signed with `android/app/cmd-academy.keystore` so each new one installs as an update.
+  For Play Store publishing, create your own key and add it as the secrets
+  `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+
+## Adding content
+Add or edit lessons in `src/content/fa/lessons/*.yaml`; practice checks are described in
+`src/engine/checker.js`. Run the build and tests; a lesson whose answer does not pass its
+own checks fails the tests.

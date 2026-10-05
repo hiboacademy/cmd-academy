@@ -225,7 +225,7 @@
       start: 'C:\Users\Student'
       task: 'به USB (Drive E) برو، محتوایش را ببین و دوباره به Drive C برگرد.'
       multi: true
-      checks: [{type: drive, value: C}, {type: argIncludes, cmd: drive, value: 'E:'}, {type: anyCmd, value: dir}]
+      checks: [{type: drive, value: C}, {type: any, of: [{type: argIncludes, cmd: drive, value: 'E:'}, {type: argIncludes, cmd: cd, value: 'E:'}, {type: argIncludes, cmd: pushd, value: 'E:'}]}, {type: anyCmd, value: dir}]
       hints: ['سه دستور لازم است: رفتن به E، دیدن محتوا، برگشتن.', '`E:` ، بعد `dir` ، بعد `C:`']
       answer: ['E:', 'dir', 'C:']
   quiz:

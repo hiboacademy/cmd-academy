@@ -509,9 +509,10 @@ const Shell = (() => {
     const { inner, rest } = matchParen(s.slice(i));
     const r2 = rest.trimStart();
     if (!/^do(\s|\(|$)/i.test(r2)) throw new SyntaxErr(`${word(r2, 0) || "do"} was unexpected at this time.`);
-    const body = parseStmt(r2.slice(2).trimStart());
+    const bodyText = r2.slice(2).trimStart();
+    const body = parseStmt(bodyText);
     if (!body) throw new SyntaxErr("The syntax of the command is incorrect.");
-    return { type: "for", mode, opts, root, v, set: inner.replace(/\n/g, " "), body };
+    return { type: "for", mode, opts, root, v, set: inner.replace(/\n/g, " "), body, bodyText };
   }
 
   /* what operators a line uses (for practice checks) */
@@ -626,6 +627,8 @@ const Shell = (() => {
   function isSystem(sh, drive, parts) {
     return drive === "C" && parts.length > 0 && SYSTEM_DIRS.includes(String(parts[0]).toLowerCase());
   }
+  /* Normal users cannot create or change anything inside the Windows folders. */
+  const denyWrite = (sh, drive, parts) => !sh.admin && isSystem(sh, drive, parts);
   function inUse(sh, drive, parts) {
     const cw = sh.cwd[drive] || [];
     if (parts.length > cw.length) return false;
@@ -801,6 +804,11 @@ const Shell = (() => {
     for (const it of items) {
       if (Array.isArray(it)) { it.forEach((val, k) => { ctx.forVars[String.fromCharCode(node.v.charCodeAt(0) + k)] = val; }); }
       else ctx.forVars[node.v] = it;
+      // with echo on, cmd.exe shows each command the loop runs (unless it starts with @)
+      if (sh.echo && node.bodyText && !node.bodyText.startsWith("@")) {
+        ctx.screen.push({ t: "out", text: "" });
+        ctx.screen.push({ t: "cmd", p: prompt(sh), c: sub(node.bodyText, ctx).replace(/\n\s*/g, " ").trim() });
+      }
       code = yield* exec(node.body, ctx, io);
       if (fr && (fr.jump || fr.exit)) break;
       if (ctx.aborted) break;
@@ -900,6 +908,7 @@ const Shell = (() => {
         const dir = parentOf(sh, p.drive, p.parts);
         const name = p.parts[p.parts.length - 1];
         if (!dir || dir.type !== "dir" || !name) { err(lines, "The system cannot find the path specified."); flushTo(ctx, lines, { stdout: SCREEN, stderr: SCREEN }); return null; }
+        if (denyWrite(sh, p.drive, p.parts)) { err(lines, "Access is denied."); note(lines, msg("system_write")); flushTo(ctx, lines, { stdout: SCREEN, stderr: SCREEN }); return null; }
         const ex = dir.children[name.toLowerCase()];
         if (ex && ex.type === "dir") { err(lines, "Access is denied."); flushTo(ctx, lines, { stdout: SCREEN, stderr: SCREEN }); return null; }
         if (ex && ex.attrs && ex.attrs.r) { err(lines, "Access is denied."); flushTo(ctx, lines, { stdout: SCREEN, stderr: SCREEN }); return null; }
@@ -1136,16 +1145,17 @@ const Shell = (() => {
     const sh = ctx.sh;
     const content = VFS.textOf(file.node) || "";
     const lines = content.split("\n").map((l) => l.replace(/\r$/, ""));
-    const labels = {};
+    const labels = {}, labelAt = {};
     lines.forEach((l, i) => {
       const t = l.trim();
       if (t.startsWith(":") && !t.startsWith("::")) {
         const nm = t.slice(1).split(/[\s+=,;:]/)[0].toLowerCase();
         if (nm && !(nm in labels)) labels[nm] = i;
+        if (nm) (labelAt[nm] = labelAt[nm] || []).push(i);
       }
     });
     const outer = !ctx.frame;
-    const frame = { path: file.path, args: [file.path].concat(args), lines, labels, pc: 0, jump: null, exit: false, locals: 0, parent: ctx.frame };
+    const frame = { path: file.path, args: [file.path].concat(args), lines, labels, labelAt, pc: 0, jump: null, exit: false, locals: 0, parent: ctx.frame };
     const prev = ctx.frame;
     ctx.frame = frame;
     ctx.depth = (ctx.depth || 0) + 1;
@@ -1159,7 +1169,7 @@ const Shell = (() => {
       ctx.forVars = prevForVars;
       ctx.frame = prev;
       ctx.depth--;
-      if (outer) sh.echo = true;
+      if (outer) sh.echo = sh.promptEcho !== false;
     }
     return sh.errorlevel;
   }
@@ -1173,7 +1183,8 @@ const Shell = (() => {
       const tr = text.trim();
       if (!tr || tr.startsWith(":")) continue;
       const quiet = tr.startsWith("@");
-      if (sh.echo && !quiet) ctx.screen.push({ t: "cmd", p: prompt(sh), c: tr.replace(/\n\s*/g, " ") });
+      // like cmd.exe, an echoed command line is preceded by an empty line
+      if (sh.echo && !quiet) { ctx.screen.push({ t: "out", text: "" }); ctx.screen.push({ t: "cmd", p: prompt(sh), c: tr.replace(/\n\s*/g, " ") }); }
       const expanded = expandPercent(text, sh, frame);
       let node;
       try { node = parseStmt(expanded); }
@@ -1190,7 +1201,9 @@ const Shell = (() => {
       if (frame.jump) {
         const L = frame.jump; frame.jump = null;
         if (L === "eof") break;
-        const idx = frame.labels[L];
+        // like cmd.exe: search down from the next line, then wrap to the top
+        const all = (frame.labelAt && frame.labelAt[L]) || [];
+        const idx = all.length ? (all.find((k) => k >= frame.pc) ?? all[0]) : frame.labels[L];
         if (idx == null) { err(ctx.screen, `The system cannot find the batch label specified - ${L}`); ctx.aborted = true; break; }
         frame.pc = idx + 1;
       }
@@ -1258,7 +1271,7 @@ const Shell = (() => {
   function cancel(sh) {
     if (!sh.pending) return null;
     sh.pending = null;
-    sh.echo = true;
+    sh.echo = sh.promptEcho !== false;
     while (sh.localStack.length) endLocal(sh);
     return { lines: [{ t: "err", text: "^C" }], done: true, recs: [] };
   }
@@ -1298,10 +1311,12 @@ const Shell = (() => {
 
   /* helpers shared with the command files */
   const lib = {
-    out, err, note, warn, msg, tokenize, parseArgs, hasSw, fmtTime, num, P, R, full, expand, parentOf, inUse, isSystem, showUsage, ask,
+    out, err, note, warn, msg, tokenize, parseArgs, hasSw, fmtTime, num, P, R, full, expand, parentOf, inUse, isSystem, denyWrite, showUsage, ask,
     getVar, setVar, findKey, cwdPath, prompt, applyVarMod, stripQ, parseStmt, exec, runBatch, fileCommand, parseBatchArgs,
     endLocal, dateStr, timeStr, notRecognized, lessonOf, driveList, codeOf, runFrame, sub, notRecognizedMsg: notRecognized,
   };
 
-  return { create, run, runAll, cancel, prompt, cwdPath, setLocation, setMessages, setLessonIndex, banner, COMMANDS, def, lib, getVar };
+  // after ECHO OFF at the prompt, cmd.exe shows no prompt
+  const visiblePrompt = (sh) => (sh.promptEcho === false ? "" : prompt(sh));
+  return { create, run, runAll, cancel, prompt: visiblePrompt, cwdPath, setLocation, setMessages, setLessonIndex, banner, COMMANDS, def, lib, getVar };
 })();

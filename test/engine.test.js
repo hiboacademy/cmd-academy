@@ -256,3 +256,45 @@ test("Ctrl+C cancels a waiting command", () => {
   assert.ok(!sh.pending);
   assert.ok(r);
 });
+
+test("review fixes: real cmd.exe behaviors", () => {
+  const sh = fresh();
+  // xcopy: a trailing backslash means "folder", no F/D question
+  const x = run(sh, "xcopy Documents\\*.txt D:\\Archive\\");
+  assert.ok(!/F = file/.test(x.text));
+  assert.ok(node(sh, "D:\\Archive\\menu.txt"));
+  // set /a ignores quotes
+  run(sh, 'set /a q="10/3"');
+  assert.strictEqual(Shell.getVar(sh, "q"), "3");
+  // shutdown accepts -s
+  assert.match(run(sh, "shutdown -s -t 3600").lines.map((l) => l.text).join(" "), /shutdown_sim|خاموش/);
+  // normal users cannot write into Windows folders; admins can
+  assert.match(out(sh, "mkdir C:\\Windows\\Test"), /Access is denied/);
+  assert.match(out(sh, "echo x > C:\\Windows\\a.txt"), /Access is denied/);
+  const adm = fresh({ admin: true });
+  run(adm, "mkdir C:\\Windows\\Test");
+  assert.ok(node(adm, "C:\\Windows\\Test"));
+  // ECHO OFF at the prompt hides the prompt; bare ECHO reports it
+  run(sh, "echo off");
+  assert.strictEqual(Shell.prompt(sh), "");
+  assert.match(out(sh, "echo"), /ECHO is off/);
+  run(sh, "echo on");
+  assert.match(Shell.prompt(sh), />$/);
+  // FOR at the prompt echoes each command unless it starts with @
+  assert.strictEqual(run(sh, "for %i in (1 2) do echo %i").lines.filter((l) => l.t === "cmd").length, 2);
+  assert.strictEqual(run(sh, "for %i in (1 2) do @echo %i").lines.filter((l) => l.t === "cmd").length, 0);
+  // FIND header repeats the path as typed
+  assert.match(out(sh, 'find "Pizza" Documents\\menu.txt'), /---------- DOCUMENTS\\MENU\.TXT/);
+});
+
+test("review fixes: batch details", () => {
+  const sh = fresh();
+  writeBatch(sh, "c.bat", ["@echo off", "cmd /c exit 5", "echo el=%errorlevel%", "goto a", ":a", "echo first", "goto a", ":a", "echo second"]);
+  const t = out(sh, "c.bat");
+  assert.match(t, /el=5/, "EXIT inside cmd /c ends only the child");
+  assert.match(t, /first\s*\nsecond/, "GOTO searches down from the current line");
+  writeBatch(sh, "e.bat", ["echo hi"]);
+  const lines = run(sh, "e.bat").lines;
+  const i = lines.findIndex((l) => l.t === "cmd");
+  assert.ok(i >= 0 && lines[i - 1] && lines[i - 1].text === "", "echoed commands follow an empty line");
+});

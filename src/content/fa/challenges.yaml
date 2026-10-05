@@ -256,7 +256,7 @@
   after: 74
   title: 'خوش‌آمدگویی به مشتری'
   story: 'رستوران یک Script می‌خواهد که نام مشتری را بپرسد و به او خوش‌آمد بگوید.'
-  task: 'در `greet.bat` نام مشتری را با `set /p` بپرس و بعد `Welcome, NAME` را چاپ کن. (برای آزمون، نام Sara وارد می‌شود.)'
+  task: 'در `greet.bat` نام مشتری را با `set /p` بپرس و بعد `Welcome, NAME` را چاپ کن. Script را اجرا کن و وقتی نام را پرسید، `Sara` را وارد کن.'
   batch: {file: 'greet.bat', starter: "@echo off\n"}
   inputs: ['Sara']
   checks:
@@ -320,7 +320,7 @@
   after: 87
   title: 'منوی کمکی'
   story: 'برای همکاران غیرفنی یک منو بساز: ۱ = نمایش IP، ۲ = نمایش نام کامپیوتر.'
-  task: 'در `helpdesk.bat` با `choice /c 12` بپرس و با `if errorlevel` یا `%errorlevel%` گزینه را اجرا کن. گزینه 1 باید آدرس IP (خروجی `ipconfig`) و گزینه 2 خروجی `hostname` را نشان دهد. (آزمون گزینه 1 را انتخاب می‌کند.)'
+  task: 'در `helpdesk.bat` با `choice /c 12` بپرس و با `if errorlevel` یا `%errorlevel%` گزینه را اجرا کن. گزینه 1 باید آدرس IP (خروجی `ipconfig`) و گزینه 2 خروجی `hostname` را نشان دهد. Script را اجرا کن و وقتی منو آمد، کلید `1` را بزن.'
   batch: {file: 'helpdesk.bat', starter: "@echo off\necho 1. IP address\necho 2. Computer name\n"}
   inputs: ['1']
   checks:

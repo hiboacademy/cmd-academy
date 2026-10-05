@@ -4,7 +4,7 @@
    ============================================================ */
 (() => {
   const { def, lib, COMMANDS } = Shell;
-  const { out, err, note, warn, msg, tokenize, parseArgs, P, R, full, expand, parentOf, inUse, isSystem, showUsage, ask, num, cwdPath } = lib;
+  const { out, err, note, warn, msg, tokenize, parseArgs, P, R, full, expand, parentOf, inUse, isSystem, denyWrite, showUsage, ask, num, cwdPath } = lib;
 
   const fmt = VFS.fmt;
   const pad8 = (n) => String(n).padStart(9);
@@ -73,6 +73,7 @@
     }
     const dp = P(sh, destSpec);
     const dr = R(sh, dp);
+    if (denyWrite(sh, dp.drive, dr.node ? dr.canonical : dp.parts)) { err(lines, "Access is denied."); note(lines, msg("system_write")); out(lines, "        0 file(s) copied."); return false; }
     const destIsDir = dr.node && dr.node.type === "dir";
     const destName = dp.parts[dp.parts.length - 1];
     if (!destIsDir && /[*?]/.test(destName || "")) {
@@ -200,10 +201,12 @@
     const destSpec = args[1] || ".";
     const dp = P(sh, destSpec);
     let dr = R(sh, dp);
+    if (denyWrite(sh, dp.drive, dr.node ? dr.canonical : dp.parts)) { err(lines, "Access denied"); note(lines, msg("system_write")); out(lines, "0 File(s) copied"); return 4; }
     let destAsDir = dr.node && dr.node.type === "dir";
     if (!dr.node) {
       const multi = files.length > 1 || (sr.node && sr.node.type === "dir") || pattern && /[*?]/.test(pattern);
-      if (I && multi) destAsDir = true;
+      // a trailing backslash says "this is a folder", so xcopy does not ask
+      if ((I && multi) || /[\\/]$/.test(destSpec)) destAsDir = true;
       else {
         const a = (yield* ask(`Does ${fmt(dp.drive, dp.parts)} specify a file name\nor directory name on the target\n(F = file, D = directory)? `, "key")).trim();
         destAsDir = /^d/i.test(a);
@@ -256,7 +259,14 @@
     const pats = args.slice(2).length ? args.slice(2) : ["*.*"];
     const sp = P(sh, args[0]), dp = P(sh, args[1]);
     const sr = R(sh, sp);
-    const started = new Date().toString().slice(0, 24);
+    // robocopy prints dates like: Tuesday, October 6, 2026 1:27:20 AM
+    const longDate = (d) => {
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const h = d.getHours() % 12 || 12, p2 = (n) => String(n).padStart(2, "0");
+      return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()} ${h}:${p2(d.getMinutes())}:${p2(d.getSeconds())} ${d.getHours() < 12 ? "AM" : "PM"}`;
+    };
+    const started = longDate(new Date());
     out(lines, "");
     out(lines, "-------------------------------------------------------------------------------");
     out(lines, "   ROBOCOPY     ::     Robust File Copy for Windows");
@@ -282,6 +292,12 @@
     const res2 = [];
     const res_re = pats.map((p) => VFS.wildcardToRegex(p));
     const match = (n) => res_re.some((re) => re.test(n));
+    if (denyWrite(sh, dp.drive, dp.parts)) {
+      err(lines, `${new Date().toISOString().slice(0, 19).replace("T", " ")} ERROR 5 (0x00000005) Creating Destination Directory ${full(dp)}\\`);
+      err(lines, "Access is denied.");
+      note(lines, msg("system_write"));
+      return 16;
+    }
     if (!L) VFS.mkdirp(sh.fs, dp.drive, dp.parts);
     let destRoot = R(sh, dp);
     const walkDir = (snode, sparts, rel) => {
@@ -328,7 +344,7 @@
     const row = (label, arr, isBytes) => out(lines, `${label.padStart(10)} :${arr.map((v) => String(isBytes ? fmtBytes(v) : v).padStart(10)).join("")}`);
     out(lines, "               Total    Copied   Skipped  Mismatch    FAILED    Extras");
     row("Dirs", res.dirs); row("Files", res.files); row("Bytes", res.bytes, true);
-    out(lines, `   Ended : ${new Date().toString().slice(0, 24)}`);
+    out(lines, `   Ended : ${longDate(new Date())}`);
     let code = 0;
     if (res.files[1]) code |= 1;
     if (res.files[5] || res.dirs[5]) code |= 2;

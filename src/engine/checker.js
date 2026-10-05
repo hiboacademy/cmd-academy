@@ -71,6 +71,7 @@ const Checker = (() => {
     outputIncludes: (c, sh, a, x) => [].concat(c.value).every((v) => (x.output || "").toLowerCase().includes(String(v).toLowerCase())),
     outputExcludes: (c, sh, a, x) => !(x.output || "").toLowerCase().includes(String(c.value).toLowerCase()),
     lastOutputIncludes: (c, sh, a, x) => (x.lastOutput || "").toLowerCase().includes(String(c.value).toLowerCase()),
+    lastOutputMatches: (c, sh, a, x) => new RegExp(c.value, "im").test(x.lastOutput || ""),
     lastOutputExcludes: (c, sh, a, x) => !(x.lastOutput || "").toLowerCase().includes(String(c.value).toLowerCase()),
     outputOrder: (c, sh, a, x) => inOrder(x.lastOutput || "", c.value),
     fileOrder: (c, sh) => { const t = textOf(node(sh, c.path)); return t != null && inOrder(t, c.value); },
@@ -99,8 +100,9 @@ const Checker = (() => {
   }
 
   /* Normalize a typed answer for quiz "write the command" questions. */
-  function sameCommand(input, accepted) {
-    const n = (s) => String(s).trim().replace(/\s+/g, " ").toLowerCase();
+  function sameCommand(input, accepted, quotedCase) {
+    // CMD ignores case. With quotedCase (a FIND search text), text inside quotes keeps its case.
+    const n = (s) => String(s).trim().replace(/\s+/g, " ").split(/("[^"]*")/).map((p, i) => (i % 2 && quotedCase ? p : p.toLowerCase())).join("");
     return accepted.some((a) => n(a) === n(input));
   }
 

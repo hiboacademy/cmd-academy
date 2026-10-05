@@ -888,7 +888,7 @@ commands:
     level: 2
     danger: caution
     full: 'Volume label'
-    summary: 'نام یک Drive را عوض می‌کند.'
+    summary: 'نام یک Drive را عوض می‌کند. دسترسی Administrator لازم است.'
     syntax: 'label [drive:] [name]'
     examples:
       - {c: 'label E: BACKUP', d: 'تغییر نام فلش به BACKUP.', mode: admin}

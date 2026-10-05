@@ -203,7 +203,7 @@
       admin: true
       task: 'پرینتر گیر کرده است. سرویس `Spooler` را متوقف و دوباره اجرا کن (Restart).'
       multi: true
-      checks: [{type: serviceState, name: Spooler, value: RUNNING}, {type: argIncludes, cmd: net, value: 'stop'}]
+      checks: [{type: serviceState, name: Spooler, value: RUNNING}, {type: any, of: [{type: argIncludes, cmd: net, value: 'stop'}, {type: argIncludes, cmd: sc, value: 'stop'}]}]
       hints: ['اول `net stop spooler`.', 'بعد `net start spooler`']
       answer: ['net stop spooler', 'net start spooler']
   quiz:
