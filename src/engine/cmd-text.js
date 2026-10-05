@@ -33,7 +33,8 @@
     rec.args = [str].concat(files); rec.switches = sw;
     if (str === null) { err(lines, "FIND: Parameter format not correct"); note(lines, msg("find_quotes")); return 2; }
     const V = sw.includes("/v"), Cc = sw.includes("/c"), N = sw.includes("/n"), I = sw.includes("/i");
-    const has = (l) => (I ? l.toLowerCase().includes(str.toLowerCase()) : l.includes(str));
+    // Like real FIND, an empty string matches no line, so `find /v /c ""` counts every line.
+    const has = (l) => str !== "" && (I ? l.toLowerCase().includes(str.toLowerCase()) : l.includes(str));
     let matched = 0;
     const doLines = (arr, header) => {
       const res = [];

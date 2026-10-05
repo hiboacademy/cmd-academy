@@ -12,6 +12,14 @@
     return true;
   });
 
+  // IF and FOR are parsed by the shell; these entries only answer "if /?" and "for /?".
+  def("if", [], { hidden: true, keep: true, summary: "Performs conditional processing in batch programs.",
+    usage: "Performs conditional processing in batch programs.\n\nIF [NOT] ERRORLEVEL number command\nIF [/I] [NOT] string1==string2 command\nIF [NOT] EXIST filename command\nIF [NOT] DEFINED variable command\nIF [/I] string1 compare-op string2 command\n\n  NOT               Specifies that Windows should carry out\n                    the command only if the condition is false.\n  compare-op        EQU, NEQ, LSS, LEQ, GTR, GEQ\n\nThe ELSE clause must occur on the same line as the command after the IF:\n\n    IF EXIST filename. (\n        del filename.\n    ) ELSE (\n        echo filename. missing.\n    )" },
+    (sh, rest, lines) => { showUsage(lines, COMMANDS.if); return true; });
+  def("for", [], { hidden: true, keep: true, summary: "Runs a specified command for each file in a set of files.",
+    usage: "Runs a specified command for each file in a set of files.\n\nFOR %variable IN (set) DO command [command-parameters]\n\n  %variable  Specifies a single letter replaceable parameter.\n  (set)      Specifies a set of one or more files.  Wildcards may be used.\n  command    Specifies the command to carry out for each file.\n\nUse %%variable instead of %variable in a batch program.\n\nFOR /D %variable IN (set) DO command      (folders)\nFOR /R [[drive:]path] %variable IN (set) DO command      (walk the tree)\nFOR /L %variable IN (start,step,end) DO command      (numbers)\nFOR /F [\"options\"] %variable IN (file-set | \"string\" | 'command') DO command\n\n  options: eol=c skip=n delims=xxx tokens=x,y,m-n usebackq" },
+    (sh, rest, lines) => { showUsage(lines, COMMANDS.for); return true; });
+
   def("goto", [], {
     summary: "Jumps to a labeled line in a batch program.",
     usage: "Directs cmd.exe to a labeled line in a batch program.\n\nGOTO label\n\n  label   Specifies a text string used in the batch program as a label.\n\nYou type a label on a line by itself, beginning with a colon.\n\nGOTO :EOF transfers control to the end of the current batch script file.",

@@ -292,7 +292,8 @@ const Shell = (() => {
     return d;
   }
 
-  const isKeyword = (s) => /^(if|for)(\s|\/)/i.test(s.trimStart()) && !/^for\s*\/\?/i.test(s.trimStart());
+  const isHelpOf = (s) => /^(if|for)\s*\/\?/i.test(s.trimStart());
+  const isKeyword = (s) => /^(if|for)(\s|\/)/i.test(s.trimStart()) && !isHelpOf(s);
 
   /* split at top level by && || & (chain). An if/for takes the rest of the line. */
   function splitOps(s) {
@@ -397,8 +398,8 @@ const Shell = (() => {
     s = s.replace(/^[\s@]+/, "");
     if (!s.trim()) return null;
     if (/^rem(\s|$|\/)/i.test(s) || s.startsWith("::")) return { type: "cmd", text: s, redirs: [] };
-    if (/^if(\s|\/|$)/i.test(s)) return parseIf(s);
-    if (/^for(\s|$)/i.test(s) && !/^for\s+\/\?/i.test(s)) return parseFor(s);
+    if (/^if(\s|\/|$)/i.test(s) && !isHelpOf(s)) return parseIf(s);
+    if (/^for(\s|$)/i.test(s) && !isHelpOf(s)) return parseFor(s);
     const segs = splitOps(s);
     if (segs.length === 1) return parsePipeline(segs[0].text);
     return { type: "chain", items: segs.map((g) => ({ op: g.op, node: parsePipeline(g.text) })) };
@@ -420,7 +421,7 @@ const Shell = (() => {
       if (r.text.trim()) throw new SyntaxErr(`${r.text.trim().split(/\s+/)[0]} was unexpected at this time.`);
       return { type: "block", body, redirs: r.redirs };
     }
-    if (/^(if|for)(\s|\/)/i.test(s)) return parseStmt(s);
+    if (/^(if|for)(\s|\/)/i.test(s) && !isHelpOf(s)) return parseStmt(s);
     const r = extractRedirs(s);
     return { type: "cmd", text: r.text, redirs: r.redirs };
   }

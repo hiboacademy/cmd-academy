@@ -64,6 +64,9 @@ const App = (() => {
     document.title = state.route === "" ? "CMD Academy" : (h1 ? h1.textContent.replace(/`/g, "") + " · " : "") + "CMD Academy";
   }
 
+  function readHash() {
+    try { return decodeURIComponent(location.hash.slice(1)); } catch (e) { return location.hash.slice(1); }
+  }
   function go(route, opts = {}) {
     scrollMem[state.route] = window.scrollY;
     if (route !== state.route && !route.startsWith("quiz-")) state.quizRun = null;
@@ -71,7 +74,7 @@ const App = (() => {
     state.route = route;
     render();
     window.scrollTo(0, opts.keepScroll ? scrollMem[route] || 0 : 0);
-    try { if (location.hash.slice(1) !== route) location.hash = route; } catch (e) {}
+    try { if (readHash() !== route) location.hash = encodeURIComponent(route); } catch (e) {}
     focusMain();
   }
   function focusMain() {
@@ -113,9 +116,9 @@ const App = (() => {
     main = h("main", { class: "main", id: "main" });
     document.getElementById("app").append(sidebar, main, bottom);
 
-    try { state.route = decodeURIComponent(location.hash.slice(1)); } catch (e) { state.route = ""; }
+    state.route = readHash();
     window.addEventListener("hashchange", () => {
-      const r = location.hash.slice(1);
+      const r = readHash();
       if (r !== state.route) {
         scrollMem[state.route] = window.scrollY;
         state.route = r; state.quizRun = null; render();
