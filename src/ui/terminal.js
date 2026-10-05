@@ -85,7 +85,7 @@ function InteractiveTerminal({ sh, preload, banner, title, onCommand, keys = tru
     addLines(r.lines || []);
     if (acc) {
       acc.recs.push(...(r.recs || []));
-      (r.lines || []).forEach((l) => { if (l.t === "out" || l.t === "err") acc.out.push(l.text); });
+      (r.lines || []).forEach((l) => { if (l.t === "out" || l.t === "err") acc.out.push(l.text); else if (l.t === "cmd") acc.out.push(l.p + l.c); });
     }
     (r.recs || []).forEach((rec) => {
       if (rec.clipboard != null) { try { navigator.clipboard.writeText(rec.clipboard).catch(() => {}); } catch (e) {} }
@@ -113,6 +113,7 @@ function InteractiveTerminal({ sh, preload, banner, title, onCommand, keys = tru
     if (w.kind !== "sleep") {
       const parts = String(w.prompt || "").split("\n");
       addLine({ t: "cmd", p: parts[parts.length - 1], c: answer });
+      if (acc) acc.out.push(parts[parts.length - 1] + answer);
     }
     wait = null;
     handle(Shell.run(sh, answer));

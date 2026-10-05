@@ -1270,10 +1270,13 @@ const Shell = (() => {
         const a = answers.shift();
         all.push({ t: "out", text: (r.wait.prompt || "") + a, answer: true });
         r = run(sh, a);
-      } else if (opts.defaultAnswer != null) { r = run(sh, opts.defaultAnswer); }
+      } else if (opts.defaultAnswer != null) {
+        all.push({ t: "out", text: (r.wait.prompt || "") + opts.defaultAnswer, answer: true });
+        r = run(sh, opts.defaultAnswer);
+      }
       else { cancel(sh); all.push({ t: "err", text: "^C" }); break; }
     }
-    return { lines: all, recs, text: all.filter((l) => l.t === "out" || l.t === "err").map((l) => l.text).join("\n") };
+    return { lines: all, recs, text: all.filter((l) => l.t === "out" || l.t === "err" || l.t === "cmd").map((l) => (l.t === "cmd" ? l.p + l.c : l.text)).join("\n") };
   }
 
   function banner() {

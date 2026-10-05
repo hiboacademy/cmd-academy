@@ -1,0 +1,682 @@
+# Lessons 88–100 · Chapter 12: real projects and Windows repair
+
+- n: 88
+  term: 'organize.bat'
+  fullForm: 'File management script'
+  difficulty: 3
+  objective: 'یک Script واقعی بنویسی که فایل‌های یک پوشه را بر اساس نوع، در پوشه‌های جدا مرتب کند.'
+  summary: 'پوشه Downloads معمولاً شلوغ است. این Script برای هر نوع فایل یک پوشه می‌سازد و فایل‌ها را به آن منتقل می‌کند.'
+  meaning: 'الگو: رفتن به پوشه با `cd /d`، ساختن پوشه‌ها با `if not exist ... mkdir`، و انتقال با `move` و Wildcard. `>nul` پیام‌های اضافی را پنهان می‌کند و `if exist *.pdf` جلوی خطای «فایل پیدا نشد» را می‌گیرد.'
+  usage: 'مرتب کردن Downloads، Desktop یا پوشه عکس‌ها با یک کلیک.'
+  syntax: "cd /d \"%USERPROFILE%\\Downloads\"\nif not exist PDF mkdir PDF\nif exist *.pdf move *.pdf PDF >nul"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\organize.bat', content: "@echo off\nrem Sort Downloads into folders by type\ncd /d \"%USERPROFILE%\\Downloads\"\nfor %%t in (PDF Archives Programs) do if not exist %%t mkdir %%t\nif exist *.pdf move *.pdf PDF >nul\nif exist *.zip move *.zip Archives >nul\nif exist *.exe move *.exe Programs >nul\necho Downloads organized:\ntree /f\n"}]
+    cmds: ['organize.bat']
+  examples:
+    - c: 'if exist *.pdf move *.pdf PDF >nul'
+      d: 'انتقال فقط اگر فایلی هست.'
+      noTry: true
+    - c: 'for %%t in (PDF Archives) do if not exist %%t mkdir %%t'
+      d: 'ساختن چند پوشه با یک حلقه.'
+      noTry: true
+  mistakes:
+    - 'فراموش کردن `cd /d`؛ Script در پوشه اشتباه فایل جابه‌جا می‌کند.'
+    - 'امتحان نکردن Script روی یک کپی آزمایشی قبل از پوشه واقعی.'
+  tip: 'اول Script را با `echo move ...` به‌جای `move ...` اجرا کن تا ببینی چه می‌کند، بعد `echo` را بردار.'
+  practice:
+    - id: P88a
+      batch: {file: 'organize.bat', starter: "@echo off\ncd /d \"%USERPROFILE%\\Downloads\"\n"}
+      task: 'Script را کامل کن تا در Downloads فایل‌های `.pdf` به پوشه `PDF`، `.zip` به `Archives` و `.exe` به `Programs` منتقل شوند (پوشه‌ها را در صورت نیاز بسازد).'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'C:\Users\Student\Downloads\PDF\invoice.pdf'}, {type: fileExists, path: 'C:\Users\Student\Downloads\Archives\photos.zip'}, {type: fileExists, path: 'C:\Users\Student\Downloads\Programs\setup.exe'}]
+      hints: ['برای هر نوع: `if not exist PDF mkdir PDF` و `move *.pdf PDF`.', 'سه بار تکرار برای PDF، Archives و Programs.']
+      answer: ['@echo off', 'cd /d "%USERPROFILE%\Downloads"', 'if not exist PDF mkdir PDF', 'if not exist Archives mkdir Archives', 'if not exist Programs mkdir Programs', 'move *.pdf PDF >nul', 'move *.zip Archives >nul', 'move *.exe Programs >nul', 'echo Done']
+  quiz:
+    - kind: mcq
+      q: 'چرا Script با `cd /d "%USERPROFILE%\Downloads"` شروع می‌شود؟'
+      options: ['تا مطمئن شویم در پوشه درست کار می‌کند', 'برای سرعت بیشتر', 'چون move بدون آن کار نمی‌کند', 'برای پاک کردن صفحه']
+      answer: 0
+      explain: 'Script ممکن است از هر پوشه‌ای اجرا شود.'
+    - kind: tf
+      q: 'قبل از اجرای Script جابه‌جایی روی پوشه واقعی، بهتر است آن را روی یک پوشه آزمایشی امتحان کنی.'
+      answer: true
+      explain: 'یا با `echo` جلوی دستورها.'
+    - kind: order
+      q: 'ترتیب منطقی خطوط این Script را بچین.'
+      items: ['@echo off', 'cd /d "%USERPROFILE%\Downloads"', 'if not exist PDF mkdir PDF', 'move *.pdf PDF >nul', 'echo Done']
+      explain: 'تنظیم → رفتن → ساختن → انتقال → گزارش.'
+  recap: 'Script مرتب‌سازی: `cd /d` → ساختن پوشه‌ها با `if not exist` → `move` با Wildcard.'
+
+- n: 89
+  term: 'backup.bat'
+  fullForm: 'Backup script'
+  difficulty: 3
+  objective: 'یک Backup Script قابل اعتماد بنویسی: پوشه مقصد با تاریخ، کپی، بررسی خطا و ثبت در Log.'
+  summary: 'یک Backup خوب: مبدأ و مقصد در متغیر، ساختن مقصد در صورت نیاز، کپی با `xcopy` یا `robocopy`، بررسی ERRORLEVEL و نوشتن نتیجه در فایل Log.'
+  meaning: 'برای پوشه با تاریخ از قسمت‌هایی از `%DATE%` استفاده می‌شود: `%DATE:~10,4%` سال، `%DATE:~4,2%` ماه، `%DATE:~7,2%` روز (در تنظیمات تاریخ آمریکایی). `>>` نتیجه هر اجرا را به Log اضافه می‌کند.'
+  usage: 'Backup روزانه Documents روی Drive دیگر یا USB.'
+  syntax: "set \"src=%USERPROFILE%\\Documents\"\nset \"dest=D:\\Backup\\Docs\"\nxcopy \"%src%\" \"%dest%\" /s /i /y >nul\nif %errorlevel% equ 0 (echo OK >> log.txt)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\backup.bat', content: "@echo off\nset \"src=%USERPROFILE%\\Documents\"\nset \"stamp=%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%\"\nset \"dest=D:\\Backup\\%stamp%\"\necho Backing up %src% to %dest% ...\nxcopy \"%src%\" \"%dest%\" /s /i /y /q\nif %errorlevel% equ 0 (\n  echo %DATE% %TIME% Backup OK >> D:\\Backup\\backup.log\n  echo Backup OK\n) else (\n  echo %DATE% %TIME% Backup FAILED >> D:\\Backup\\backup.log\n  echo Backup FAILED\n)\n"}]
+    cmds: ['backup.bat', 'type D:\Backup\backup.log']
+  examples:
+    - c: 'set "stamp=%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%"'
+      d: 'تاریخ به شکل 2026-10-06.'
+      noTry: true
+    - c: 'robocopy "%src%" "%dest%" /e /r:1 /w:1'
+      d: 'نسخه robocopy (کد کمتر از 8 = موفق).'
+      noTry: true
+  mistakes:
+    - 'ننوشتن Quotes دور مسیرهای متغیر.'
+    - 'بررسی ERRORLEVEL robocopy مثل xcopy (برای robocopy از `geq 8` برای خطا استفاده کن).'
+  tip: 'Log را بعد از چند روز بخوان؛ اگر خط FAILED دیدی، دلیلش را پیدا کن.'
+  practice:
+    - id: P89a
+      batch: {file: 'backup.bat', starter: "@echo off\nset \"src=%USERPROFILE%\\Documents\"\nset \"dest=D:\\Backup\\Docs\"\n"}
+      task: 'Script را کامل کن: Documents را با زیرپوشه‌ها به `%dest%` کپی کند و اگر موفق بود، خط `Backup OK` را به فایل `D:\Backup\backup.log` اضافه کند.'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'D:\Backup\Docs\Work\report.txt'}, {type: fileContains, path: 'D:\Backup\backup.log', value: 'Backup OK'}]
+      hints: ['`xcopy "%src%" "%dest%" /s /i /y`', '`if %errorlevel% equ 0 echo Backup OK >> D:\Backup\backup.log`']
+      answer: ['@echo off', 'set "src=%USERPROFILE%\Documents"', 'set "dest=D:\Backup\Docs"', 'xcopy "%src%" "%dest%" /s /i /y >nul', 'if %errorlevel% equ 0 echo Backup OK >> D:\Backup\backup.log']
+  quiz:
+    - kind: predict
+      q: 'اگر `%DATE%` برابر `Tue 10/06/2026` باشد، این چیست؟'
+      code: 'echo %DATE:~10,4%'
+      options: ['2026', '10/0', 'Tue ', '06/2']
+      answer: 0
+      code_options: true
+      explain: 'از کاراکتر دهم، چهار کاراکتر.'
+    - kind: mcq
+      q: 'برای اضافه کردن نتیجه هر Backup به Log از کدام علامت استفاده می‌کنی؟'
+      options: ['>>', '>', '|', '<']
+      answer: 0
+      code_options: true
+      explain: '`>` Log قبلی را پاک می‌کند.'
+    - kind: tf
+      q: 'بعد از robocopy، ERRORLEVEL برابر 1 یعنی Backup شکست خورد.'
+      answer: false
+      explain: 'برای robocopy کمتر از 8 یعنی موفق.'
+  recap: 'Backup = متغیر مبدأ و مقصد + xcopy/robocopy + بررسی ERRORLEVEL + `>>` به Log.'
+
+- n: 90
+  term: 'rename.bat'
+  fullForm: 'Batch rename script'
+  difficulty: 3
+  objective: 'نام تعداد زیادی فایل را با یک Script و یک الگوی ثابت عوض کنی.'
+  summary: 'با `for` روی فایل‌ها و `ren` می‌شود به نام همه فایل‌ها پیشوند یا پسوند اضافه کرد، مثلاً `beach.jpg` → `holiday_beach.jpg`.'
+  meaning: 'نکته فنی: اگر هنگام `for %%f in (*.jpg)` نام فایل‌ها را عوض کنی، ممکن است حلقه فایل تغییرنام‌یافته را دوباره ببیند. امن‌تر: اول فهرست را با `for /f ... in (''dir /b *.jpg'')` بگیر و بعد تغییر نام بده.'
+  usage: 'نام‌گذاری عکس‌های یک سفر، اضافه کردن تاریخ به گزارش‌ها، یکدست کردن نام فایل‌ها.'
+  syntax: "for /f \"delims=\" %%f in ('dir /b *.jpg') do ren \"%%f\" \"prefix_%%f\""
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\rename.bat', content: "@echo off\ncd /d \"%USERPROFILE%\\Pictures\"\nfor /f \"delims=\" %%f in ('dir /b *.jpg') do ren \"%%f\" \"holiday_%%f\"\ndir /b\n"}]
+    cmds: ['rename.bat']
+  examples:
+    - c: 'ren *.txt *.bak'
+      d: 'بدون Script: عوض کردن پسوند همه.'
+      noTry: true
+    - c: 'for /f "delims=" %%f in (''dir /b *.jpg'') do ren "%%f" "2026_%%f"'
+      d: 'پیشوند سال برای همه jpgها.'
+      noTry: true
+  mistakes:
+    - 'ننوشتن Quotes دور `%%f` و خطا برای نام‌های فاصله‌دار.'
+    - 'اجرای Script دو بار و گرفتن نام‌هایی مثل `holiday_holiday_beach.jpg`.'
+  tip: 'قبل از اجرای واقعی، `ren` را با `echo ren` عوض کن تا نام‌های جدید را ببینی.'
+  practice:
+    - id: P90a
+      batch: {file: 'rename.bat', starter: "@echo off\ncd /d \"%USERPROFILE%\\Pictures\"\n"}
+      task: 'به ابتدای نام همه فایل‌های `.jpg` در Pictures پیشوند `holiday_` اضافه کن (مثل `holiday_beach.jpg`). فایل `logo.png` نباید تغییر کند.'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'C:\Users\Student\Pictures\holiday_beach.jpg'}, {type: fileExists, path: 'C:\Users\Student\Pictures\holiday_cat.jpg'}, {type: fileNotExists, path: 'C:\Users\Student\Pictures\beach.jpg'}, {type: fileExists, path: 'C:\Users\Student\Pictures\logo.png'}, {type: fileNotExists, path: 'C:\Users\Student\Pictures\holiday_holiday_beach.jpg'}]
+      hints: ['فهرست jpgها را با `for /f` و `dir /b *.jpg` بگیر.', '`for /f "delims=" %%f in (''dir /b *.jpg'') do ren "%%f" "holiday_%%f"`']
+      answer: ['@echo off', 'cd /d "%USERPROFILE%\Pictures"', "for /f \"delims=\" %%f in ('dir /b *.jpg') do ren \"%%f\" \"holiday_%%f\""]
+  quiz:
+    - kind: predict
+      q: 'نتیجه این خط روی فایل `cat.jpg` چیست؟'
+      code: 'ren "cat.jpg" "2026_cat.jpg"'
+      options: ['2026_cat.jpg', 'cat_2026.jpg', '2026.jpg', 'خطا']
+      answer: 0
+      code_options: true
+      explain: 'نام جدید دقیقاً همان است که نوشتی.'
+    - kind: mcq
+      q: 'چرا `for /f` با `dir /b` برای تغییر نام امن‌تر است؟'
+      options: ['فهرست فایل‌ها قبل از تغییر نام ثابت می‌شود', 'سریع‌تر است', 'فایل‌های مخفی را هم می‌گیرد', 'لازم نیست Quotes بگذاری']
+      answer: 0
+      explain: 'فایل تغییرنام‌یافته دوباره در حلقه نمی‌آید.'
+    - kind: tf
+      q: 'برای دیدن نتیجه بدون تغییر واقعی، می‌شود جلوی `ren` یک `echo` گذاشت.'
+      answer: true
+      explain: 'دستور فقط چاپ می‌شود.'
+  recap: 'تغییر نام گروهی: `for /f ... (''dir /b الگو'') do ren "%%f" "جدید_%%f"`. اول با `echo` امتحان کن.'
+
+- n: 91
+  term: 'search.bat'
+  fullForm: 'Search script'
+  difficulty: 3
+  objective: 'ابزاری بنویسی که از کاربر کلمه بگیرد و آن را در همه فایل‌های یک پوشه جستجو کند.'
+  summary: 'ترکیب `set /p` برای پرسیدن کلمه، `findstr /s /i /m` برای جستجو و ERRORLEVEL برای پیام «پیدا نشد».'
+  meaning: '`findstr /m` فقط نام فایل‌ها را نشان می‌دهد. Exit Code برابر 1 یعنی چیزی پیدا نشد. با بررسی خالی بودن ورودی، Script بی‌دلیل اجرا نمی‌شود.'
+  usage: 'جستجوی سریع در یادداشت‌ها، گزارش‌ها یا کدهای یک پروژه.'
+  syntax: "set /p word=Search for: \nfindstr /s /i /m \"%word%\" *.txt\nif errorlevel 1 echo Nothing found."
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['sales']
+    files: [{path: 'C:\Users\Student\Desktop\search.bat', content: "@echo off\nset /p word=Search for: \nif \"%word%\"==\"\" (echo Please type a word. & goto :eof)\ncd /d \"%USERPROFILE%\\Documents\"\necho Files that contain \"%word%\":\nfindstr /s /i /m \"%word%\" *.txt\nif errorlevel 1 echo Nothing found.\n"}]
+    cmds: ['search.bat']
+  examples:
+    - c: 'findstr /s /i /m "%word%" *.txt'
+      d: 'نام فایل‌هایی که کلمه را دارند.'
+      noTry: true
+    - c: 'findstr /s /i /n "%word%" *.txt'
+      d: 'با نمایش خط و شماره خط.'
+      noTry: true
+  mistakes:
+    - 'فراموش کردن `/i` و پیدا نکردن کلمه با حروف متفاوت.'
+    - 'جستجو در پوشه اشتباه؛ اول `cd /d`.'
+  tip: 'برای جستجو در همه نوع فایل متنی بنویس `*.txt *.log *.bat`.'
+  practice:
+    - id: P91a
+      batch: {file: 'search.bat', starter: "@echo off\ncd /d \"%USERPROFILE%\\Documents\"\n"}
+      inputs: ['sales']
+      task: 'Script بنویس که یک کلمه از کاربر بپرسد و نام همه فایل‌های `.txt` (با زیرپوشه‌ها) را که آن کلمه را دارند نشان دهد؛ اگر چیزی پیدا نشد بگوید `Nothing found`. (با کلمه `sales` امتحان کن.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\search.bat', value: ['set /p', 'findstr']}, {type: outputIncludes, value: 'report1.txt'}]
+      hints: ['`set /p word=Search for: `', '`findstr /s /i /m "%word%" *.txt` و بعد `if errorlevel 1 echo Nothing found`']
+      answer: ['@echo off', 'cd /d "%USERPROFILE%\Documents"', 'set /p word=Search for: ', 'findstr /s /i /m "%word%" *.txt', 'if errorlevel 1 echo Nothing found']
+  quiz:
+    - kind: mcq
+      q: 'کدام Switch در findstr فقط نام فایل‌ها را نشان می‌دهد؟'
+      options: ['/m', '/n', '/s', '/i']
+      answer: 0
+      code_options: true
+      explain: '`/m`'
+    - kind: predict
+      q: 'کاربر فقط Enter زد (ورودی خالی). با این خط چه می‌شود؟'
+      code: 'if "%word%"=="" (echo Please type a word. & goto :eof)'
+      options: ['پیام چاپ و Script تمام می‌شود', 'همه فایل‌ها پیدا می‌شوند', 'خطا می‌دهد', 'Script دوباره می‌پرسد']
+      answer: 0
+      explain: 'ورودی خالی بررسی شد.'
+    - kind: tf
+      q: 'Exit Code برابر 1 بعد از findstr یعنی کلمه پیدا نشد.'
+      answer: true
+      explain: '0 = پیدا شد.'
+  recap: 'Script جستجو: `set /p` → بررسی خالی بودن → `findstr /s /i /m` → `if errorlevel 1`.'
+
+- n: 92
+  term: 'Automation'
+  fullForm: 'Logs and scheduling'
+  difficulty: 3
+  objective: 'Scriptی بنویسی که کارش را با زمان در Log ثبت کند، و با زمان‌بندی و `shutdown` آشنا شوی.'
+  summary: 'Automation یعنی Script بدون حضور تو کار کند: با Task Scheduler ویندوز در ساعت مشخص اجرا شود و هر کاری کرد را با `%DATE% %TIME%` در یک Log بنویسد.'
+  meaning: 'Script خودکار نباید `pause` یا سؤال داشته باشد. `shutdown /s /t 3600` کامپیوتر را یک ساعت بعد خاموش می‌کند و `shutdown /a` آن را لغو می‌کند. زمان‌بندی در Windows با Task Scheduler یا دستور `schtasks` انجام می‌شود.'
+  usage: 'گزارش روزانه، پاک کردن خودکار فایل‌های موقت، Backup شبانه، خاموش کردن زمان‌دار.'
+  syntax: "echo %DATE% %TIME% - message >> log.txt\nshutdown /s /t 3600\nshutdown /a"
+  warning: '`shutdown` روی کامپیوتر واقعی کارهای ذخیره‌نشده را از بین می‌برد. در Simulator هیچ چیزی خاموش نمی‌شود.'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\daily.bat', content: "@echo off\nset \"log=%USERPROFILE%\\Desktop\\activity.log\"\necho %DATE% %TIME% - daily check started >> \"%log%\"\nipconfig | find \"IPv4\" >> \"%log%\"\nif exist \"%TEMP%\\*.tmp\" del /q \"%TEMP%\\*.tmp\"\necho %DATE% %TIME% - temp files cleaned >> \"%log%\"\ntype \"%log%\"\n"}]
+    cmds: ['daily.bat', 'shutdown /s /t 3600', 'shutdown /a']
+  examples:
+    - c: 'echo %DATE% %TIME% - done >> log.txt'
+      d: 'یک خط Log با زمان.'
+      noTry: true
+    - c: 'shutdown /r /t 60'
+      d: 'Restart بعد از یک دقیقه.'
+    - c: 'shutdown /a'
+      d: 'لغو.'
+  mistakes:
+    - 'نوشتن Log با `>` و پاک شدن سابقه.'
+    - 'گذاشتن `pause` در Script خودکار.'
+  tip: 'در Task Scheduler گزینه «Run whether user is logged on or not» برای Scriptهای شبانه مفید است.'
+  practice:
+    - id: P92a
+      batch: {file: 'daily.bat', starter: "@echo off\n"}
+      task: 'Script بنویس که به فایل `%USERPROFILE%\Desktop\activity.log` دو خط اضافه کند: تاریخ و ساعت با متن `check done` و خط IPv4 خروجی ipconfig.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\activity.log', value: ['check done', '192.168.1.24']}, {type: fileContains, path: 'C:\Users\Student\Desktop\daily.bat', value: ['%date%', '>>']}]
+      hints: ['`echo %DATE% %TIME% - check done >> "%USERPROFILE%\Desktop\activity.log"`', '`ipconfig | find "IPv4" >> "%USERPROFILE%\Desktop\activity.log"`']
+      answer: ['@echo off', 'echo %DATE% %TIME% - check done >> "%USERPROFILE%\Desktop\activity.log"', 'ipconfig | find "IPv4" >> "%USERPROFILE%\Desktop\activity.log"']
+    - id: P92b
+      start: 'C:\Users\Student'
+      task: 'یک خاموش شدن زمان‌دار برای یک ساعت بعد (3600 ثانیه) تنظیم کن و بلافاصله لغوش کن.'
+      multi: true
+      checks: [{type: switch, value: '/s', cmd: shutdown, anyRun: true}, {type: switch, value: '/a', cmd: shutdown, anyRun: true}, {type: argIncludes, cmd: shutdown, value: '3600'}]
+      hints: ['`shutdown /s /t 3600`', 'بعد `shutdown /a`']
+      answer: ['shutdown /s /t 3600', 'shutdown /a']
+  quiz:
+    - kind: mcq
+      q: 'چرا Script خودکار نباید `pause` داشته باشد؟'
+      options: ['کسی نیست که کلید بزند و Script منتظر می‌ماند', 'pause در Task Scheduler ممنوع است', 'Log را پاک می‌کند', 'سرعت را کم می‌کند']
+      answer: 0
+      explain: 'Script تا ابد منتظر می‌ماند.'
+    - kind: type
+      q: 'کامپیوتر را ۱۰ دقیقه بعد Restart کن.'
+      accept: ['shutdown /r /t 600', 'shutdown -r -t 600', 'shutdown /t 600 /r']
+      show: 'shutdown /r /t 600'
+      explain: '600 ثانیه = 10 دقیقه.'
+    - kind: tf
+      q: '`shutdown /a` یک خاموش شدن زمان‌دار را لغو می‌کند.'
+      answer: true
+      explain: 'Abort.'
+  recap: 'Automation = Script بدون سؤال + Log با `%DATE% %TIME%` و `>>` + زمان‌بندی. `shutdown /s /t n` و `/a`.'
+
+- n: 93
+  term: chkdsk
+  fullForm: 'File System · vol · Check Disk'
+  difficulty: 3
+  objective: 'File Systemها را بشناسی و دیسک را با chkdsk بررسی و تعمیر کنی.'
+  summary: 'File System روش ذخیره فایل روی دیسک است: NTFS برای Windows، FAT32 و exFAT برای USB. `vol` نام و شماره Drive را نشان می‌دهد. `chkdsk` خطاهای File System را پیدا و با `/f` تعمیر می‌کند.'
+  meaning: '`chkdsk` بدون `/f` فقط می‌خواند (Read-only). `/f` خطاها را تعمیر می‌کند و `/r` بخش‌های خراب دیسک را هم می‌گردد (کندتر). Driveی که Windows روی آن است (`C:`) در حال استفاده است، پس chkdsk پیشنهاد می‌کند بعد از Restart انجام شود. FAT32 فایل بزرگ‌تر از 4GB را قبول نمی‌کند.'
+  usage: 'USB یا دیسکی که خطا می‌دهد، فایل‌هایی که باز نمی‌شوند، بعد از قطع ناگهانی برق.'
+  syntax: "vol [drive:]\nchkdsk [drive:] [/f] [/r]"
+  warning: '`chkdsk /r` روی دیسک بزرگ ممکن است ساعت‌ها طول بکشد و نباید وسطش کامپیوتر را خاموش کنی. قبل از تعمیر از اطلاعات مهم Backup بگیر.'
+  demo:
+    admin: true
+    cmds: ['vol E:', 'chkdsk E:']
+  examples:
+    - c: 'vol'
+      d: 'نام و Serial Number Drive فعلی.'
+    - c: 'chkdsk E:'
+      d: 'بررسی فقط‌خواندنی USB.'
+    - c: 'chkdsk E: /f'
+      d: 'بررسی و تعمیر.'
+    - c: 'chkdsk C: /f'
+      d: 'برای C: زمان‌بندی بعد از Restart.'
+  mistakes:
+    - 'اجرای chkdsk در CMD معمولی؛ به Administrator نیاز دارد.'
+    - 'بیرون کشیدن USB وسط chkdsk.'
+  tip: 'برای USB جدید، exFAT هم با Windows و هم با Mac کار می‌کند و محدودیت 4GB ندارد.'
+  practice:
+    - id: P93a
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'USB (Drive E) را فقط بررسی کن (بدون تعمیر).'
+      checks: [{type: anyCmd, value: chkdsk}, {type: argIncludes, cmd: chkdsk, value: 'e:'}, {type: lastOutputIncludes, value: 'FAT32'}, {type: not, check: {type: switch, value: '/f', cmd: chkdsk, anyRun: true}}]
+      hints: ['chkdsk و حرف Drive.', '`chkdsk E:`']
+      answer: 'chkdsk E:'
+    - id: P93b
+      start: 'C:\Windows\System32'
+      admin: true
+      setup: {diskErrors: {E: true}}
+      task: 'USB خطای File System دارد. آن را بررسی و تعمیر کن.'
+      checks: [{type: switch, value: '/f', cmd: chkdsk, anyRun: true}, {type: lastOutputIncludes, value: 'made corrections'}]
+      hints: ['Switch تعمیر `/f` است.', '`chkdsk E: /f`']
+      answer: 'chkdsk E: /f'
+  quiz:
+    - kind: mcq
+      q: 'کدام File System فایل بزرگ‌تر از 4GB را قبول نمی‌کند؟'
+      options: ['FAT32', 'NTFS', 'exFAT', 'هیچ‌کدام']
+      answer: 0
+      explain: 'محدودیت FAT32.'
+    - kind: predict
+      q: 'در CMD ادمین: `chkdsk C: /f`. نتیجه؟'
+      code: 'chkdsk C: /f'
+      options: ['پیشنهاد بررسی بعد از Restart', 'فوراً تعمیر می‌شود', 'C: پاک می‌شود', 'خطای Access denied']
+      answer: 0
+      explain: 'C: در حال استفاده است.'
+    - kind: tf
+      q: '`chkdsk` بدون `/f` چیزی را تغییر نمی‌دهد.'
+      answer: true
+      explain: 'فقط می‌خواند.'
+  recap: 'NTFS برای Windows، FAT32/exFAT برای USB. `vol` = مشخصات. `chkdsk` بررسی، `/f` تعمیر، `/r` بخش خراب (Administrator).'
+
+- n: 94
+  term: 'sfc /scannow'
+  fullForm: 'System File Checker'
+  difficulty: 3
+  objective: 'فایل‌های سیستمی خراب Windows را با sfc پیدا و تعمیر کنی.'
+  summary: '`sfc /scannow` همه فایل‌های محافظت‌شده Windows را بررسی می‌کند و نسخه‌های خراب را با نسخه سالم جایگزین می‌کند.'
+  meaning: 'نتایج ممکن: «did not find any integrity violations» یعنی سالم، «found corrupt files and successfully repaired them» یعنی تعمیر شد، «found corrupt files but was unable to fix some» یعنی باید اول DISM اجرا شود (درس بعد). نیاز به Administrator دارد.'
+  usage: 'وقتی Windows خطاهای عجیب می‌دهد، برنامه‌های داخلی ویندوز باز نمی‌شوند یا بعد از ویروس.'
+  syntax: "sfc /scannow\nsfc /verifyonly"
+  demo:
+    admin: true
+    setup: {sysCorrupt: true}
+    cmds: ['sfc /scannow', 'sfc /scannow']
+  examples:
+    - c: 'sfc /scannow'
+      d: 'بررسی و تعمیر.'
+    - c: 'sfc /verifyonly'
+      d: 'فقط بررسی.'
+  mistakes:
+    - 'اجرا در CMD معمولی.'
+    - 'بستن پنجره وسط اسکن.'
+  tip: 'بعد از تعمیر، کامپیوتر را Restart کن.'
+  practice:
+    - id: P94a
+      start: 'C:\Windows\System32'
+      admin: true
+      setup: {sysCorrupt: true}
+      task: 'Windows رفتار عجیبی دارد. فایل‌های سیستمی را بررسی و تعمیر کن.'
+      checks: [{type: anyCmd, value: sfc}, {type: lastOutputIncludes, value: 'successfully repaired'}]
+      hints: ['System File Checker با Switch اسکن.', '`sfc /scannow`']
+      answer: 'sfc /scannow'
+  quiz:
+    - kind: mcq
+      q: 'پیام «did not find any integrity violations» یعنی چه؟'
+      options: ['فایل‌های سیستمی سالم‌اند', 'تعمیر انجام شد', 'دیسک خراب است', 'اسکن ناقص ماند']
+      answer: 0
+      explain: 'هیچ مشکلی پیدا نشد.'
+    - kind: tf
+      q: '`sfc /scannow` در CMD معمولی (بدون Administrator) اجرا می‌شود.'
+      answer: false
+      explain: 'Administrator لازم است.'
+    - kind: type
+      q: 'فایل‌های سیستمی را فقط بررسی کن، بدون تعمیر.'
+      accept: ['sfc /verifyonly']
+      explain: '`/verifyonly`'
+  recap: '`sfc /scannow` (Administrator) = بررسی و تعمیر فایل‌های سیستمی. بعدش Restart.'
+
+- n: 95
+  term: DISM
+  fullForm: 'Deployment Image Servicing and Management'
+  difficulty: 3
+  objective: 'با DISM منبع تعمیر Windows (Component Store) را سالم کنی و ترتیب درست DISM و SFC را بدانی.'
+  summary: '`sfc` برای تعمیر از یک نسخه پشتیبان داخلی استفاده می‌کند. اگر خود آن پشتیبان خراب باشد، DISM آن را با کمک Windows Update تعمیر می‌کند.'
+  meaning: 'سه مرحله: `/checkhealth` (سریع، فقط وضعیت)، `/scanhealth` (بررسی کامل)، `/restorehealth` (تعمیر، نیاز به اینترنت). ترتیب پیشنهادی وقتی sfc نتوانست تعمیر کند: اول `dism ... /restorehealth`، بعد دوباره `sfc /scannow`.'
+  usage: 'خرابی‌های عمیق Windows، شکست به‌روزرسانی‌ها، وقتی sfc موفق نمی‌شود.'
+  syntax: "dism /online /cleanup-image /checkhealth\ndism /online /cleanup-image /scanhealth\ndism /online /cleanup-image /restorehealth"
+  demo:
+    admin: true
+    setup: {storeCorrupt: true}
+    cmds: ['dism /online /cleanup-image /checkhealth', 'dism /online /cleanup-image /restorehealth']
+  examples:
+    - c: 'dism /online /cleanup-image /checkhealth'
+      d: 'بررسی سریع.'
+    - c: 'dism /online /cleanup-image /restorehealth'
+      d: 'تعمیر (اینترنت لازم است).'
+  mistakes:
+    - 'اجرای restorehealth بدون اینترنت و گرفتن خطای `0x800f081f`.'
+    - 'جا انداختن `/online` یا `/cleanup-image`.'
+  tip: 'restorehealth ممکن است مدتی روی یک درصد بماند؛ صبر کن.'
+  practice:
+    - id: P95a
+      start: 'C:\Windows\System32'
+      admin: true
+      setup: {storeCorrupt: true}
+      task: 'با DISM اول وضعیت Component Store را سریع بررسی کن و بعد آن را تعمیر کن.'
+      multi: true
+      checks: [{type: switch, value: '/checkhealth', cmd: dism, anyRun: true}, {type: lastOutputIncludes, value: 'restore operation completed'}]
+      hints: ['`dism /online /cleanup-image /checkhealth`', 'بعد `dism /online /cleanup-image /restorehealth`']
+      answer: ['dism /online /cleanup-image /checkhealth', 'dism /online /cleanup-image /restorehealth']
+  quiz:
+    - kind: order
+      q: 'sfc گفت نتوانست همه فایل‌ها را تعمیر کند. قدم‌ها را مرتب کن.'
+      items: ['dism /online /cleanup-image /restorehealth', 'sfc /scannow', 'Restart']
+      explain: 'اول منبع تعمیر را درست کن، بعد sfc، بعد Restart.'
+    - kind: mcq
+      q: 'کدام گزینه DISM فقط وضعیت را سریع نشان می‌دهد؟'
+      options: ['/checkhealth', '/restorehealth', '/scanhealth', '/scannow']
+      answer: 0
+      code_options: true
+      explain: '`/scannow` مال sfc است.'
+    - kind: tf
+      q: '`/restorehealth` معمولاً به اینترنت نیاز دارد.'
+      answer: true
+      explain: 'از Windows Update فایل سالم می‌گیرد.'
+  recap: 'DISM منبع تعمیر را درست می‌کند: checkhealth → scanhealth → restorehealth. بعد `sfc /scannow`.'
+
+- n: 96
+  term: 'WinRE'
+  fullForm: 'Windows Recovery Environment'
+  difficulty: 3
+  objective: 'بدانی Recovery Environment چیست، چطور به آن برسی و در CMD آن جهت‌یابی کنی.'
+  summary: 'WinRE یک Windows کوچک جداگانه برای تعمیر است. وقتی Windows اصلی بالا نمی‌آید، از اینجا می‌توانی CMD باز کنی، فایل‌ها را نجات دهی و Boot را تعمیر کنی.'
+  meaning: 'راه‌های رسیدن: نگه داشتن Shift هنگام زدن Restart؛ Settings → System → Recovery → Advanced startup؛ یا خودکار بعد از دو بار Boot ناموفق. بعد: Troubleshoot → Advanced options → Command Prompt. در اینجا Drive فعلی `X:` است و حرف Drive ویندوز ممکن است `C:` نباشد؛ با `dir C:\` و `dir D:\` پیدایش کن.'
+  usage: 'Windows بالا نمی‌آید، نجات فایل‌ها قبل از نصب مجدد، تعمیر Boot.'
+  syntax: "X:\\Windows\\System32>\ndir C:\\\ncopy C:\\Users\\...\\file E:\\"
+  demo:
+    mode: winre
+    cmds: ['dir C:\ /b', 'whoami']
+  examples:
+    - c: 'dir C:\'
+      d: 'آیا Windows روی C: است؟'
+    - c: 'dir D:\'
+      d: 'شاید حرف Driveها جابه‌جا شده باشد.'
+    - c: 'notepad'
+      d: 'در WinRE واقعی، پنجره Open در Notepad مثل یک File Explorer ساده است.'
+      noTry: true
+  mistakes:
+    - 'فرض اینکه Windows حتماً روی `C:` است.'
+    - 'شروع تعمیر قبل از نجات دادن فایل‌های مهم.'
+  tip: 'در Simulator، در صفحه Simulator حالت «Recovery» را انتخاب کن.'
+  practice:
+    - id: P96a
+      mode: winre
+      task: 'در Recovery Environment هستی (Drive X:). به Drive C برو و ببین Windows آنجاست (پوشه Windows را در ریشه پیدا کن).'
+      multi: true
+      checks: [{type: drive, value: C}, {type: lastOutputIncludes, value: 'Windows'}]
+      hints: ['اول `C:` و بعد `dir`.', 'یا مستقیم `dir C:\`']
+      answer: ['C:', 'dir']
+    - id: P96b
+      mode: winre
+      task: 'قبل از هر تعمیری، فایل مهم `C:\Users\Student\Documents\menu.txt` را روی USB (`E:\`) نجات بده.'
+      checks: [{type: fileExists, path: 'E:\menu.txt'}]
+      hints: ['با copy و مسیر کامل.', '`copy C:\Users\Student\Documents\menu.txt E:\`']
+      answer: 'copy C:\Users\Student\Documents\menu.txt E:\'
+  quiz:
+    - kind: mcq
+      q: 'در CMD محیط Recovery، Drive فعلی معمولاً کدام است؟'
+      options: ['X:', 'C:', 'A:', 'E:']
+      answer: 0
+      code_options: true
+      explain: 'X: یک Drive موقت در حافظه است.'
+    - kind: mcq
+      q: 'کدام راه تو را به WinRE می‌برد؟'
+      options: ['نگه داشتن Shift و زدن Restart', 'زدن F5 در Desktop', 'اجرای cls', 'باز کردن Task Manager']
+      answer: 0
+      explain: 'یا Settings → Recovery → Advanced startup.'
+    - kind: tf
+      q: 'در WinRE حرف Drive ویندوز ممکن است با حالت عادی فرق داشته باشد.'
+      answer: true
+      explain: 'با dir بررسی کن.'
+  recap: 'WinRE = Windows تعمیر. Shift+Restart. Drive فعلی X:، Drive ویندوز را با `dir` پیدا کن. اول فایل‌ها را نجات بده.'
+
+- n: 97
+  term: bootrec
+  fullForm: 'bootrec · bcdboot'
+  difficulty: 3
+  objective: 'مشکلات Boot (بالا نیامدن Windows) را با ابزارهای WinRE تعمیر کنی.'
+  summary: '`bootrec` چهار کار اصلی دارد: `/scanos` پیدا کردن Windowsها، `/rebuildbcd` ساختن دوباره فهرست Boot، `/fixmbr` و `/fixboot` نوشتن دوباره بخش‌های شروع دیسک. `bcdboot C:\Windows` فایل‌های Boot را از نو می‌سازد.'
+  meaning: 'BCD (Boot Configuration Data) فهرستی است که می‌گوید Windows کجاست. در کامپیوترهای جدید (UEFI)، `bootrec /fixboot` اغلب `Access is denied` می‌دهد و `bcdboot` راه بهتری است. این دستورها فقط در WinRE هستند.'
+  usage: 'خطاهایی مثل «Boot device not found»، «BOOTMGR is missing» یا Boot شدن مستقیم به BIOS.'
+  syntax: "bootrec /scanos\nbootrec /rebuildbcd\nbootrec /fixmbr\nbcdboot C:\\Windows"
+  warning: 'این دستورها بخش‌های حیاتی دیسک را بازنویسی می‌کنند. روی کامپیوتر واقعی فقط وقتی Windows Boot نمی‌شود و بعد از Backup از آن‌ها استفاده کن.'
+  demo:
+    mode: winre
+    inputs: ['Y']
+    cmds: ['bootrec /scanos', 'bootrec /rebuildbcd', 'bootrec /fixboot', 'bcdboot C:\Windows']
+  examples:
+    - c: 'bootrec /scanos'
+      d: 'یافتن Windowsها.'
+    - c: 'bootrec /rebuildbcd'
+      d: 'ساختن دوباره BCD (می‌پرسد اضافه شود یا نه).'
+    - c: 'bcdboot C:\Windows'
+      d: 'ساختن فایل‌های Boot؛ راه اصلی در UEFI.'
+  mistakes:
+    - 'اجرای bootrec در Windows معمولی؛ فقط در WinRE وجود دارد.'
+    - 'دادن مسیر اشتباه به bcdboot (اگر Windows روی D: است: `bcdboot D:\Windows`).'
+  tip: 'ترتیب رایج: `/scanos` → `/rebuildbcd` → در صورت نیاز `bcdboot`.'
+  practice:
+    - id: P97a
+      mode: winre
+      task: 'Windows بالا نمی‌آید. اول همه نصب‌های Windows را روی دیسک‌ها پیدا کن.'
+      checks: [{type: anyCmd, value: bootrec}, {type: lastOutputIncludes, value: 'Total identified Windows installations: 1'}]
+      hints: ['گزینه «اسکن سیستم‌عامل» bootrec.', '`bootrec /scanos`']
+      answer: 'bootrec /scanos'
+    - id: P97b
+      mode: winre
+      inputs: ['Y']
+      task: 'فهرست Boot (BCD) را دوباره بساز و Windows پیدا شده را به آن اضافه کن.'
+      checks: [{type: switch, value: '/rebuildbcd', cmd: bootrec, anyRun: true}, {type: lastOutputIncludes, value: 'completed successfully'}]
+      hints: ['`bootrec /rebuildbcd`', 'وقتی پرسید، `Y` بزن.']
+      answer: 'bootrec /rebuildbcd'
+  quiz:
+    - kind: mcq
+      q: 'در کامپیوتر UEFI که `bootrec /fixboot` خطای Access denied می‌دهد، بهترین جایگزین چیست؟'
+      options: ['bcdboot C:\Windows', 'format C:', 'chkdsk /r', 'sfc /scannow']
+      answer: 0
+      code_options: true
+      explain: 'bcdboot فایل‌های Boot را می‌سازد.'
+    - kind: tf
+      q: '`bootrec` در CMD عادی Windows هم اجرا می‌شود.'
+      answer: false
+      explain: 'فقط در WinRE.'
+    - kind: order
+      q: 'ترتیب رایج تعمیر BCD را مرتب کن.'
+      items: ['bootrec /scanos', 'bootrec /rebuildbcd', 'Restart و امتحان']
+      explain: 'پیدا کن، بساز، امتحان کن.'
+  recap: 'WinRE: `bootrec /scanos` → `/rebuildbcd`. در UEFI: `bcdboot C:\Windows`.'
+
+- n: 98
+  term: diskpart
+  fullForm: 'diskpart · format'
+  difficulty: 3
+  objective: 'ساختار دیسک‌ها و پارتیشن‌ها را با diskpart ببینی و یک USB را از نو آماده کنی، با رعایت کامل ایمنی.'
+  summary: '`diskpart` یک محیط جداست با Prompt `DISKPART>`. اول `list disk`، بعد `select disk n` و بعد کارها روی همان دیسک انجام می‌شوند. `format` در CMD یک Drive را پاک و آماده می‌کند.'
+  meaning: 'دستورهای خواندنی: `list disk`، `list volume`، `list partition`، `detail disk`. دستورهای خطرناک: `clean` (همه چیز دیسک را پاک می‌کند)، `delete partition`، `format`. آماده کردن USB: `select disk 1` → `clean` → `create partition primary` → `format fs=ntfs quick label=NAME` → `assign`.'
+  usage: 'آماده کردن USB یا هارد جدید، دیدن پارتیشن‌های مخفی (EFI، Recovery)، رفع USBی که درست کار نمی‌کند.'
+  syntax: "diskpart\nDISKPART> list disk\nDISKPART> select disk 1\nDISKPART> clean\nformat E: /fs:ntfs /q"
+  warning: 'مهم‌ترین قانون: قبل از `clean` همیشه `list disk` بزن و از اندازه مطمئن شو دیسک درست انتخاب شده است. انتخاب اشتباه یعنی پاک شدن کامل هارد اصلی. روی کامپیوتر واقعی با احتیاط کامل.'
+  demo:
+    admin: true
+    inputs: ['list disk', 'select disk 1', 'list partition', 'list volume', 'exit']
+    cmds: ['diskpart']
+  examples:
+    - c: 'diskpart'
+      d: 'ورود به diskpart (Administrator).'
+    - c: 'format E: /fs:exfat /q /v:USB'
+      d: 'Quick Format USB با exFAT.'
+      noTry: true
+  mistakes:
+    - '`select disk 0` و `clean` به‌جای دیسک USB: پاک شدن Windows.'
+    - 'فراموش کردن `assign`؛ دیسک آماده است ولی در File Explorer دیده نمی‌شود.'
+  tip: 'در Simulator، Windows اجازه `clean` روی دیسک سیستم را نمی‌دهد (مثل واقعیت)، ولی دیسک USB را واقعاً (به‌طور مجازی) پاک می‌کند. با «ریست» همه چیز برمی‌گردد.'
+  practice:
+    - id: P98a
+      start: 'C:\Windows\System32'
+      admin: true
+      inputs: ['list disk', 'list volume', 'exit']
+      task: 'وارد diskpart شو، فهرست دیسک‌ها و Volumeها را ببین و خارج شو. (هیچ تغییری نده.)'
+      checks: [{type: anyCmd, value: diskpart}, {type: dpUsed, value: 'list disk'}, {type: dpUsed, value: 'list vol'}, {type: driveExists, value: E}]
+      hints: ['بعد از `diskpart` در Prompt `DISKPART>` بنویس `list disk`.', 'بعد `list volume` و در آخر `exit`.']
+      answer: 'diskpart'
+      explain: 'در DISKPART>: list disk ← list volume ← exit'
+    - id: P98b
+      start: 'C:\Windows\System32'
+      admin: true
+      inputs: ['list disk', 'select disk 1', 'clean', 'create partition primary', 'format fs=ntfs quick label=Backup', 'assign letter=F', 'exit']
+      task: 'USB (دیسک 1، 14GB) خراب شده. با diskpart آن را کامل پاک کن، یک پارتیشن بساز، با NTFS و نام `Backup` Format کن و حرف `F` بده.'
+      checks: [{type: driveExists, value: F}, {type: driveLabel, drive: F, value: Backup}, {type: dpUsed, value: 'select disk 1'}]
+      hints: ['ترتیب: list disk → select disk 1 → clean → create partition primary', 'بعد: format fs=ntfs quick label=Backup → assign letter=F → exit']
+      answer: 'diskpart'
+      explain: 'list disk ← select disk 1 ← clean ← create partition primary ← format fs=ntfs quick label=Backup ← assign letter=F ← exit'
+  quiz:
+    - kind: order
+      q: 'ترتیب آماده کردن USB در diskpart را مرتب کن.'
+      items: ['list disk', 'select disk 1', 'clean', 'create partition primary', 'format fs=ntfs quick', 'assign']
+      explain: 'دیدن → انتخاب → پاک کردن → ساختن → Format → حرف دادن.'
+    - kind: mcq
+      q: 'مهم‌ترین کار قبل از `clean` چیست؟'
+      options: ['با list disk مطمئن شوی دیسک درست انتخاب شده', 'Restart کردن', 'اجرای sfc', 'بستن همه برنامه‌ها']
+      answer: 0
+      explain: 'clean روی دیسک اشتباه یعنی فاجعه.'
+    - kind: tf
+      q: '`format E: /q` همه اطلاعات Drive E را پاک می‌کند.'
+      answer: true
+      explain: 'Quick Format هم اطلاعات را غیرقابل دسترس می‌کند.'
+  recap: 'diskpart: list → select → (با احتیاط) clean → create → format → assign. همیشه اول `list disk`.'
+
+- n: 99
+  term: 'Troubleshooting'
+  fullForm: 'A basic Windows troubleshooting workflow'
+  difficulty: 3
+  objective: 'یک روند منظم برای عیب‌یابی رایج‌ترین مشکلات Windows داشته باشی.'
+  summary: 'عیب‌یابی خوب حدس زدن نیست: مشکل را دقیق مشخص کن، اطلاعات جمع کن، از ساده‌ترین علت شروع کن، یک تغییر در هر بار بده و نتیجه را بسنج.'
+  meaning: 'نقشه کلی: کندی → `tasklist` (حافظه)، `taskkill` برنامه هنگ‌کرده. اینترنت → روند درس ۶۱. پرینتر → `sc query spooler` و Restart سرویس. خطاهای سیستمی → `dism` و `sfc`. خطای دیسک → `chkdsk`. Windows بالا نمی‌آید → WinRE، نجات فایل‌ها، `bootrec`.'
+  usage: 'پشتیبانی فنی برای خودت، خانواده یا محل کار.'
+  syntax: "tasklist /fi \"memusage gt 100000\"\nsc query spooler\nipconfig & ping 8.8.8.8\nsfc /scannow"
+  demo:
+    admin: true
+    cmds: ['tasklist /fi "status eq not responding"', 'sc query spooler | find "STATE"', 'ping -n 1 8.8.8.8']
+  examples:
+    - c: 'tasklist /fi "status eq not responding"'
+      d: 'برنامه‌های هنگ‌کرده.'
+    - c: 'systeminfo | find "Boot Time"'
+      d: 'آیا کامپیوتر اخیراً Restart شده؟'
+    - c: 'dir C:\ | find "bytes free"'
+      d: 'فضای خالی C:.'
+  mistakes:
+    - 'تغییر چند چیز با هم؛ نمی‌فهمی کدام مشکل را حل کرد.'
+    - 'رفتن مستقیم سراغ ابزارهای سنگین (format، نصب مجدد).'
+  tip: 'هر کاری کردی را یادداشت کن (حتی با `>>` در یک فایل)؛ اگر مشکل برگشت، می‌دانی از کجا شروع کنی.'
+  practice:
+    - id: P99a
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'کاربر می‌گوید «کامپیوتر کند است و پرینتر چاپ نمی‌کند». برنامه‌ای را که جواب نمی‌دهد پیدا و ببند، و سرویس `Spooler` را Restart کن.'
+      multi: true
+      checks: [{type: procGone, value: 'Spotify.exe'}, {type: serviceState, name: Spooler, value: RUNNING}, {type: any, of: [{type: argIncludes, cmd: net, value: 'stop'}, {type: argIncludes, cmd: sc, value: 'stop'}]}, {type: anyCmd, value: tasklist}]
+      hints: ['`tasklist /fi "status eq not responding"` برنامه هنگ‌کرده را نشان می‌دهد؛ با `taskkill /im ... /f` ببندش.', 'بعد `net stop spooler` و `net start spooler`.']
+      answer: ['tasklist /fi "status eq not responding"', 'taskkill /im Spotify.exe /f', 'net stop spooler', 'net start spooler']
+  quiz:
+    - kind: order
+      q: 'روند کلی عیب‌یابی را مرتب کن.'
+      items: ['مشکل را دقیق مشخص کن', 'اطلاعات جمع کن', 'ساده‌ترین علت را امتحان کن', 'نتیجه را بسنج و یادداشت کن']
+      explain: 'تعریف → اطلاعات → تست ساده → بررسی.'
+    - kind: mcq
+      q: 'پرینتر چاپ نمی‌کند و صف چاپ گیر کرده. اولین دستور مناسب؟'
+      options: ['sc query spooler', 'format C:', 'bootrec /fixmbr', 'diskpart']
+      answer: 0
+      code_options: true
+      explain: 'وضعیت سرویس چاپ را ببین.'
+    - kind: tf
+      q: 'بهتر است در هر مرحله فقط یک تغییر بدهی.'
+      answer: true
+      explain: 'تا بدانی کدام تغییر مشکل را حل کرد.'
+  recap: 'تعریف مشکل → جمع اطلاعات → ساده‌ترین علت → یک تغییر در هر بار → بررسی و یادداشت.'
+
+- n: 100
+  term: 'toolbox.bat'
+  fullForm: 'Final project'
+  difficulty: 3
+  objective: 'همه چیزهایی را که یاد گرفتی در یک ابزار کامل با منو ترکیب کنی.'
+  summary: 'پروژه نهایی یک «جعبه‌ابزار» است: منویی با `choice` که اطلاعات سیستم را نشان می‌دهد، از Documents Backup می‌گیرد، فایل‌های موقت را پاک می‌کند و خارج می‌شود.'
+  meaning: 'این پروژه از متغیرها، `choice` و `if errorlevel`، Labelها و `goto`، `call :function`، `xcopy`، `del` با Wildcard، `>>` برای Log و `if exist` استفاده می‌کند. هر بخش را جدا بنویس و امتحان کن، بعد کنار هم بگذار.'
+  usage: 'یک ابزار واقعی که می‌توانی روی کامپیوتر خودت نگه داری و گسترش دهی.'
+  syntax: ":menu\nchoice /c 1234 /m \"Choose\"\nif errorlevel 4 goto end\n...\ncall :log \"message\""
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['1', '4']
+    files: [{path: 'C:\Users\Student\Desktop\toolbox.bat', content: "@echo off\ntitle CMD Academy Toolbox\nset \"log=%USERPROFILE%\\Desktop\\toolbox.log\"\n:menu\necho.\necho ===== TOOLBOX =====\necho 1. System info\necho 2. Backup Documents\necho 3. Clean temp files\necho 4. Quit\nchoice /c 1234 /m \"Choose\"\nif errorlevel 4 goto end\nif errorlevel 3 goto clean\nif errorlevel 2 goto backup\n:info\necho Computer: %COMPUTERNAME%   User: %USERNAME%\nipconfig | find \"IPv4\"\ncall :log \"info shown\"\ngoto menu\n:backup\nxcopy \"%USERPROFILE%\\Documents\" \"D:\\Backup\\Documents\" /s /i /y /q\ncall :log \"backup done\"\ngoto menu\n:clean\nif exist \"%TEMP%\\*.tmp\" del /q \"%TEMP%\\*.tmp\"\necho Temp files cleaned.\ncall :log \"temp cleaned\"\ngoto menu\n:end\necho Bye!\ngoto :eof\n\n:log\necho %DATE% %TIME% - %~1 >> \"%log%\"\nexit /b\n"}]
+    cmds: ['toolbox.bat']
+  examples:
+    - c: 'call :log "backup done"'
+      d: 'یک تابع برای Log.'
+      noTry: true
+    - c: 'title CMD Academy Toolbox'
+      d: 'عنوان پنجره.'
+  mistakes:
+    - 'نوشتن همه چیز با هم و بعد پیدا نکردن خطا؛ قدم‌به‌قدم بساز.'
+    - 'فراموش کردن `goto menu` در آخر هر بخش.'
+  tip: 'بعد از تمام کردن، یک گزینه جدید خودت اضافه کن؛ مثلاً «5. Ping Google».'
+  practice:
+    - id: P100a
+      batch: {file: 'toolbox.bat', starter: "@echo off\n:menu\necho 1. System info\necho 2. Backup Documents\necho 3. Clean temp files\necho 4. Quit\nchoice /c 1234 /m \"Choose\"\n"}
+      inputs: ['1', '2', '3', '4']
+      task: 'منوی جعبه‌ابزار را کامل کن: 1 نام کامپیوتر (`%COMPUTERNAME%`) و خط IPv4 را نشان دهد، 2 پوشه Documents را با زیرپوشه‌ها به `D:\Backup\Documents` کپی کند، 3 همه `*.tmp`های `%TEMP%` را حذف کند و 4 با پیام `Bye!` خارج شود. بعد از هر گزینه به منو برگرد. (1، 2، 3 و بعد 4 را امتحان کن.)'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['ACADEMY-PC', '192.168.1.24', 'Bye!']}, {type: fileExists, path: 'D:\Backup\Documents\Work\report.txt'}, {type: countFiles, path: 'C:\Users\Student\AppData\Local\Temp\*.tmp', value: 0}, {type: fileContains, path: 'C:\Users\Student\Desktop\toolbox.bat', value: ['goto menu', 'errorlevel']}]
+      hints: ['بعد از choice: `if errorlevel 4 goto end`، `if errorlevel 3 goto clean`، `if errorlevel 2 goto backup` و بعد بخش info.', 'هر بخش با Label شروع و با `goto menu` تمام شود: `:backup` → `xcopy "%USERPROFILE%\Documents" "D:\Backup\Documents" /s /i /y` → `goto menu`.']
+      answer: ['@echo off', ':menu', 'echo 1. System info', 'echo 2. Backup Documents', 'echo 3. Clean temp files', 'echo 4. Quit', 'choice /c 1234 /m "Choose"', 'if errorlevel 4 goto end', 'if errorlevel 3 goto clean', 'if errorlevel 2 goto backup', 'echo Computer: %COMPUTERNAME%', 'ipconfig | find "IPv4"', 'goto menu', ':backup', 'xcopy "%USERPROFILE%\Documents" "D:\Backup\Documents" /s /i /y /q', 'goto menu', ':clean', 'del /q "%TEMP%\*.tmp"', 'echo Temp files cleaned.', 'goto menu', ':end', 'echo Bye!']
+  quiz:
+    - kind: order
+      q: 'ساختار هر بخش منو را مرتب کن.'
+      items: [':backup', 'xcopy ... /s /i /y', 'call :log "backup done"', 'goto menu']
+      explain: 'Label → کار → Log → برگشت به منو.'
+    - kind: mcq
+      q: 'اگر `goto menu` را در آخر بخش info فراموش کنی چه می‌شود؟'
+      options: ['اجرا به بخش بعدی (backup) ادامه پیدا می‌کند', 'Script خطا می‌دهد', 'منو دوباره نمایش داده می‌شود', 'هیچ']
+      answer: 0
+      explain: 'Batch خط‌به‌خط ادامه می‌دهد.'
+    - kind: tf
+      q: 'بهتر است پروژه بزرگ را بخش‌به‌بخش بسازی و هر بخش را جدا امتحان کنی.'
+      answer: true
+      explain: 'پیدا کردن خطا آسان‌تر می‌شود.'
+  recap: 'تبریک! حالا با CMD کار می‌کنی، فایل‌ها و شبکه را مدیریت می‌کنی، Windows را عیب‌یابی می‌کنی و Batch Script می‌نویسی. ادامه بده: Challengeها را حل کن و ابزار خودت را بساز.'

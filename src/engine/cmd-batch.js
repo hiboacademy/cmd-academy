@@ -94,9 +94,11 @@
     return true;
   });
 
-  def("pause", [], { summary: "Suspends processing of a batch file and displays a message.", usage: "Suspends processing of a batch program and displays the message\n    Press any key to continue . . .\n\nPAUSE", keep: true }, function* (sh, rest, lines) {
+  def("pause", [], { summary: "Suspends processing of a batch file and displays a message.", usage: "Suspends processing of a batch program and displays the message\n    Press any key to continue . . .\n\nPAUSE", keep: true }, function* (sh, rest, lines, rec, io) {
     if (rest.trim() === "/?") { showUsage(lines, COMMANDS.pause); return true; }
-    yield* ask("Press any key to continue . . . ", "key");
+    // "pause >nul" waits without showing the message
+    const hidden = io.stdout && io.stdout.kind && io.stdout.kind !== "screen";
+    yield* ask(hidden ? "" : "Press any key to continue . . . ", "key");
     return true;
   });
 

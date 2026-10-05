@@ -1,0 +1,538 @@
+# Lessons 68–77 · Chapter 10: Batch basics
+# Practice tasks with "batch:" open the script editor. "answer" is a working script.
+
+- n: 68
+  term: '.bat'
+  fullForm: 'Batch Script'
+  difficulty: 2
+  objective: 'بفهمی Batch Script چیست و چرا کار با CMD را خودکار می‌کند.'
+  summary: 'Batch Script یک فایل متنی با پسوند `.bat` است که داخلش چند دستور CMD نوشته شده. با اجرای فایل، دستورها یکی‌یکی از بالا به پایین اجرا می‌شوند.'
+  meaning: 'هر کاری که در CMD تایپ می‌کنی را می‌شود در یک فایل Batch نوشت. Batch علاوه بر آن، متغیر، شرط (`if`)، حلقه (`for`) و پرش (`goto`) دارد؛ پس می‌تواند تصمیم بگیرد و تکرار کند.'
+  usage: 'کارهای تکراری: Backup روزانه، مرتب کردن فایل‌ها، نصب و تنظیم چند کامپیوتر، گزارش‌گیری.'
+  syntax: "file.bat\n(each line = one command)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\first.bat', content: "echo Hello Batch\nver\n"}]
+    cmds: ['type first.bat', 'first.bat']
+  examples:
+    - c: 'first.bat'
+      d: 'اجرای یک Batch در پوشه فعلی.'
+    - c: 'first'
+      d: 'بدون پسوند هم اجرا می‌شود.'
+    - c: 'type first.bat'
+      d: 'دیدن محتوای Script.'
+  mistakes:
+    - 'ذخیره فایل در Notepad با نام `first.bat.txt`؛ در پنجره Save، نوع فایل را All Files بگذار.'
+  tip: 'در CMD Academy، Batch Editor (از صفحه تمرین) جای امن نوشتن و اجرای Script است.'
+  restaurant: 'Batch مثل برگه سفارش یک مهمانی است: به‌جای اینکه گارسون ده بار بیاید، همه سفارش‌ها را روی یک برگه می‌نویسی و آشپزخانه به ترتیب آماده می‌کند.'
+  practice:
+    - id: P68a
+      batch: {file: 'first.bat', starter: "echo Hello Batch\n"}
+      task: 'این Script یک خط دارد. خط دوم را اضافه کن که نسخه Windows را نشان بدهد (`ver`)، بعد اجرایش کن.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello Batch', 'Microsoft Windows']}]
+      hints: ['زیر خط اول بنویس `ver`.', 'بعد دکمه «اجرا» را بزن.']
+      answer: ['echo Hello Batch', 'ver']
+    - id: P68b
+      start: 'C:\Users\Student\Desktop'
+      task: 'بدون ویرایشگر و فقط با CMD، فایل `hi.bat` بساز که دستور `echo Hi from a file` داخلش باشد، و بعد آن را اجرا کن.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\hi.bat', value: 'echo Hi from a file'}, {type: ranBatch}, {type: outputIncludes, value: 'Hi from a file'}]
+      hints: ['با `echo` متن دستور را به فایل بفرست: `echo echo Hi from a file > hi.bat`', 'بعد بنویس `hi.bat`']
+      answer: ['echo echo Hi from a file > hi.bat', 'hi.bat']
+  quiz:
+    - kind: mcq
+      q: 'دستورهای یک Batch Script به چه ترتیبی اجرا می‌شوند؟'
+      options: ['از بالا به پایین، یکی‌یکی', 'همه با هم', 'از پایین به بالا', 'به ترتیب الفبا']
+      answer: 0
+      explain: 'مگر اینکه `goto` یا `call` ترتیب را عوض کند.'
+    - kind: tf
+      q: 'هر دستوری که در CMD کار می‌کند، داخل Batch هم کار می‌کند.'
+      answer: true
+      explain: 'Batch همان دستورهای CMD است، به‌علاوه امکانات Script.'
+    - kind: type
+      q: 'Script `backup.bat` را که در پوشه فعلی است اجرا کن.'
+      accept: ['backup.bat', 'backup', 'call backup.bat', '.\backup.bat']
+      explain: 'نام فایل را بنویس.'
+  recap: 'Batch = فایل `.bat` با چند دستور که به ترتیب اجرا می‌شوند. با نام فایل اجرا می‌شود.'
+
+- n: 69
+  term: '.bat · .cmd'
+  fullForm: 'Batch file types'
+  difficulty: 2
+  objective: 'تفاوت `.bat` و `.cmd` را بدانی و هر دو را اجرا کنی.'
+  summary: '`.bat` و `.cmd` هر دو فایل Batch هستند و در Windows امروزی تقریباً یکسان اجرا می‌شوند.'
+  meaning: '`.bat` از زمان MS-DOS مانده و `.cmd` برای Windows NT به بعد ساخته شد. تفاوت کوچک: در `.cmd` بعضی دستورها مثل `set` همیشه ERRORLEVEL را صفر می‌کنند. برای یادگیری، `.bat` کافی است.'
+  usage: 'شناختن هر دو نوع وقتی Scriptهای دیگران را می‌بینی.'
+  syntax: "script.bat\nscript.cmd"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\tools.cmd', content: "@echo off\necho This is a .cmd script\n"}]
+    cmds: ['tools', 'tools.cmd']
+  examples:
+    - c: 'tools.cmd'
+      d: 'اجرای فایل .cmd.'
+    - c: 'tools'
+      d: 'بدون پسوند؛ CMD خودش .bat یا .cmd را پیدا می‌کند.'
+  mistakes:
+    - 'داشتن `tools.bat` و `tools.cmd` با هم در یک پوشه؛ با نوشتن `tools` معلوم نیست کدام اجرا شود.'
+  tip: 'هیچ‌وقت نام Script را هم‌نام یک دستور (مثل `dir.bat` یا `ping.bat`) نگذار؛ گیج‌کننده و خطرناک است.'
+  practice:
+    - id: P69a
+      start: 'C:\Users\Student\Desktop'
+      files: [{path: 'C:\Users\Student\Desktop\tools.cmd', content: "@echo off\necho This is a .cmd script\n"}]
+      task: 'روی Desktop فایل `tools.cmd` هست. آن را فقط با نوشتن نامش، بدون پسوند، اجرا کن.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'This is a .cmd script'}, {type: not, check: {type: inputIncludes, value: '.cmd'}}]
+      hints: ['CMD خودش پسوند را پیدا می‌کند.', 'فقط بنویس `tools`']
+      answer: 'tools'
+    - id: P69b
+      batch: {file: 'info.cmd', starter: "@echo off\n"}
+      task: 'یک Script با پسوند `.cmd` بنویس که نام کاربر را با متغیر `%USERNAME%` چاپ کند.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\info.cmd', value: '%username%'}, {type: outputIncludes, value: 'Student'}]
+      hints: ['از `echo` و متغیر استفاده کن.', '`echo User: %USERNAME%`']
+      answer: ['@echo off', 'echo User: %USERNAME%']
+  quiz:
+    - kind: tf
+      q: 'فایل `.cmd` هم مثل `.bat` با نوشتن نامش اجرا می‌شود.'
+      answer: true
+      explain: 'هر دو Batch هستند.'
+    - kind: mcq
+      q: 'کدام پسوند قدیمی‌تر است و از MS-DOS مانده؟'
+      options: ['.bat', '.cmd', '.ps1', '.exe']
+      answer: 0
+      code_options: true
+      explain: '`.cmd` برای Windows NT آمد.'
+    - kind: mcq
+      q: 'چرا نام Script نباید `ping.bat` باشد؟'
+      options: ['ممکن است به‌جای دستور ping اجرا شود و گیج‌کننده باشد', 'نام‌های چهارحرفی ممنوع است', 'Windows آن را پاک می‌کند', 'فرقی ندارد']
+      answer: 0
+      explain: 'CMD اول پوشه فعلی را می‌گردد.'
+  recap: '`.bat` و `.cmd` هر دو Batch‌اند. نام Script را هم‌نام دستورها نگذار.'
+
+- n: 70
+  term: 'hello.bat'
+  fullForm: 'Your first batch file'
+  difficulty: 2
+  objective: 'اولین Script واقعی‌ات را بنویسی، ذخیره و اجرا کنی.'
+  summary: 'در Windows واقعی: Notepad را باز کن، دستورها را بنویس، با نام `hello.bat` و نوع All Files ذخیره کن و آن را از CMD یا با دو بار کلیک اجرا کن.'
+  meaning: 'وقتی با دو بار کلیک اجرا کنی، پنجره بعد از آخرین دستور فوراً بسته می‌شود؛ برای همین Scriptها معمولاً در آخر `pause` دارند (درس ۷۲). اجرای Script از داخل CMD پنجره را باز نگه می‌دارد.'
+  usage: 'هر Script با همین چرخه ساخته می‌شود: نوشتن، ذخیره، اجرا، اصلاح.'
+  syntax: "echo ...\ndir ...\n(save as hello.bat)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\hello.bat', content: "echo Hello, World!\necho Today is %DATE%\ndir /b\n"}]
+    cmds: ['hello.bat']
+  examples:
+    - c: 'notepad hello.bat'
+      d: 'در Windows واقعی Notepad فایل را برای ویرایش باز می‌کند.'
+      noTry: true
+    - c: 'hello'
+      d: 'اجرای Script.'
+  mistakes:
+    - 'ذخیره به‌صورت `hello.bat.txt`.'
+    - 'فراموش کردن ذخیره قبل از اجرا (در Batch Editor دکمه اجرا خودش ذخیره می‌کند).'
+  tip: 'در Script، `%DATE%` و `%USERNAME%` مثل خط فرمان کار می‌کنند.'
+  practice:
+    - id: P70a
+      batch: {file: 'hello.bat', starter: ""}
+      task: 'Script `hello.bat` را بنویس: اول `Hello, World!` را چاپ کند و بعد خط `Today is` به همراه تاریخ (`%DATE%`).'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello, World!', 'Today is']}, {type: fileContains, path: 'C:\Users\Student\Desktop\hello.bat', value: '%date%'}]
+      hints: ['دو خط با `echo`.', "خط اول: `echo Hello, World!` خط دوم: `echo Today is %DATE%`"]
+      answer: ['echo Hello, World!', 'echo Today is %DATE%']
+  quiz:
+    - kind: mcq
+      q: 'چرا وقتی روی Script دو بار کلیک می‌کنی، پنجره سریع بسته می‌شود؟'
+      options: ['Script تمام شده و CMD هم بسته می‌شود', 'Script خراب است', 'Windows آن را مسدود کرد', 'پسوند اشتباه است']
+      answer: 0
+      explain: 'برای دیدن نتیجه از `pause` استفاده کن.'
+    - kind: tf
+      q: 'در Notepad باید نوع فایل را All Files بگذاری تا `.txt` به نام اضافه نشود.'
+      answer: true
+      explain: 'وگرنه فایل `hello.bat.txt` می‌شود.'
+    - kind: order
+      q: 'چرخه ساخت Script را مرتب کن.'
+      items: ['نوشتن دستورها', 'ذخیره با پسوند .bat', 'اجرا', 'خواندن خروجی و اصلاح']
+      explain: 'نوشتن → ذخیره → اجرا → اصلاح.'
+  recap: 'نوشتن → ذخیره `.bat` → اجرا. دو بار کلیک پنجره را می‌بندد؛ `pause` لازم است.'
+
+- n: 71
+  term: '@echo off'
+  fullForm: 'echo off · rem · ::'
+  difficulty: 2
+  objective: 'نمایش خود دستورها را خاموش کنی و در Script توضیح بنویسی.'
+  summary: 'به‌طور پیش‌فرض، Batch هر دستور را قبل از اجرا با Prompt نشان می‌دهد. `@echo off` در خط اول این نمایش را خاموش می‌کند. `rem` و `::` برای نوشتن توضیح (Comment) هستند.'
+  meaning: '`echo off` نمایش دستورها را خاموش می‌کند و `@` قبل از هر خط، نمایش همان یک خط را. پس `@echo off` یعنی «از اینجا به بعد دستورها را نشان نده، خود این خط را هم نه». Comment اجرا نمی‌شود و فقط برای خواننده است.'
+  usage: 'تقریباً همه Scriptها با `@echo off` شروع می‌شوند. Comment کمک می‌کند بعدها بفهمی هر بخش چه می‌کند.'
+  syntax: "@echo off\nrem comment\n:: comment"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files:
+      - {path: 'C:\Users\Student\Desktop\noisy.bat', content: "echo Step 1\necho Step 2\n"}
+      - {path: 'C:\Users\Student\Desktop\quiet.bat', content: "@echo off\nrem This line is a comment\necho Step 1\necho Step 2\n"}
+    cmds: ['noisy.bat', 'quiet.bat']
+  examples:
+    - c: '@echo off'
+      d: 'خط اول تقریباً همه Scriptها.'
+      noTry: true
+    - c: 'rem Backup of Documents'
+      d: 'یک توضیح.'
+      noTry: true
+    - c: ':: Step 2: copy files'
+      d: 'شکل دیگر توضیح.'
+      noTry: true
+  mistakes:
+    - 'نوشتن `echo off` بدون `@`: خود این خط یک بار نمایش داده می‌شود.'
+    - 'استفاده از `::` داخل پرانتز `( )`؛ آنجا `rem` امن‌تر است.'
+  tip: 'برای عیب‌یابی Script، موقتاً `@echo off` را به `@echo on` تغییر بده تا ببینی کدام خط اجرا می‌شود.'
+  practice:
+    - id: P71a
+      batch: {file: 'steps.bat', starter: "echo Step 1: check files\ndir /b\necho Step 2: done\n"}
+      task: 'این Script هنگام اجرا خود دستورها را هم نشان می‌دهد. کاری کن که فقط خروجی‌ها نمایش داده شوند و یک خط توضیح با `rem` هم اضافه کن.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\steps.bat', value: ['@echo off', 'rem']}, {type: outputIncludes, value: 'Step 2: done'}, {type: outputExcludes, value: '>echo'}]
+      hints: ['خط اول Script باید `@echo off` باشد.', 'یک خط مثل `rem List the desktop files` اضافه کن.']
+      answer: ['@echo off', 'rem List the desktop files', 'echo Step 1: check files', 'dir /b', 'echo Step 2: done']
+  quiz:
+    - kind: mcq
+      q: '`@` در ابتدای یک خط Batch چه می‌کند؟'
+      options: ['نمایش همان خط را خاموش می‌کند', 'خط را Comment می‌کند', 'خط را دو بار اجرا می‌کند', 'خط را با Administrator اجرا می‌کند']
+      answer: 0
+      explain: '`@echo off` = خاموش کردن نمایش + پنهان کردن خود این خط.'
+    - kind: tf
+      q: 'خطی که با `rem` شروع می‌شود اجرا نمی‌شود.'
+      answer: true
+      explain: 'Comment است.'
+    - kind: predict
+      q: 'خروجی این Script (بدون @echo off) چه شکلی است؟'
+      code: "echo Hi"
+      options: ["C:\\...>echo Hi\nHi", 'Hi', 'echo Hi', 'هیچ']
+      answer: 0
+      code_options: true
+      explain: 'با echo روشن، اول خود دستور با Prompt دیده می‌شود.'
+  recap: '`@echo off` در خط اول. `rem` یا `::` برای توضیح.'
+
+- n: 72
+  term: pause
+  fullForm: 'Pause'
+  difficulty: 2
+  objective: 'Script را متوقف کنی تا کاربر نتیجه را ببیند یا آماده ادامه شود.'
+  summary: '`pause` پیام `Press any key to continue . . .` را نشان می‌دهد و تا فشردن یک کلید منتظر می‌ماند.'
+  meaning: '`pause >nul` بدون نمایش پیام منتظر می‌ماند؛ می‌توانی قبلش پیام خودت را با `echo` بنویسی.'
+  usage: 'آخر Scriptهایی که با دو بار کلیک اجرا می‌شوند، یا قبل از کار مهم («برای شروع Backup یک کلید بزن»).'
+  syntax: "pause\necho message & pause >nul"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\wait.bat', content: "@echo off\necho Ready?\npause\necho Go!\n"}]
+    cmds: ['wait.bat']
+  examples:
+    - c: 'pause'
+      d: 'پیام استاندارد و انتظار.'
+      noTry: true
+    - c: 'echo Press any key to start the backup... & pause >nul'
+      d: 'پیام فارسی یا دلخواه خودت.'
+      noTry: true
+  mistakes:
+    - 'گذاشتن `pause` در Scriptهایی که خودکار (مثلاً با Task Scheduler) اجرا می‌شوند؛ Script تا ابد منتظر می‌ماند.'
+  tip: 'در Simulator وقتی `pause` منتظر است، هر کلیدی را بزن.'
+  practice:
+    - id: P72a
+      batch: {file: 'wait.bat', starter: "@echo off\necho Ready?\necho Go!\n"}
+      task: 'Script را طوری تغییر بده که بعد از `Ready?` منتظر فشردن کلید بماند و بعد `Go!` را چاپ کند.'
+      checks: [{type: ranBatch}, {type: outputOrder, value: ['Ready?', 'Press any key to continue', 'Go!']}]
+      hints: ['دستور توقف بین دو خط echo.', 'بین دو خط بنویس `pause`']
+      answer: ['@echo off', 'echo Ready?', 'pause', 'echo Go!']
+    - id: P72b
+      batch: {file: 'start.bat', starter: "@echo off\n"}
+      task: 'Script بنویس که پیام `Press a key to start...` را نشان دهد و بدون پیام استاندارد pause منتظر بماند و بعد `Started` را چاپ کند.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Press a key to start', 'Started']}, {type: outputExcludes, value: 'Press any key to continue'}]
+      hints: ['پیام استاندارد pause را با `>nul` پنهان کن.', '`echo Press a key to start...` ، `pause >nul` ، `echo Started`']
+      answer: ['@echo off', 'echo Press a key to start...', 'pause >nul', 'echo Started']
+  quiz:
+    - kind: mcq
+      q: 'پیام استاندارد `pause` چیست؟'
+      options: ['Press any key to continue . . .', 'Paused.', 'Wait...', 'Hit Enter']
+      answer: 0
+      explain: 'می‌شود با `>nul` پنهانش کرد.'
+    - kind: tf
+      q: '`pause >nul` منتظر نمی‌ماند.'
+      answer: false
+      explain: 'منتظر می‌ماند؛ فقط پیام را نشان نمی‌دهد.'
+    - kind: mcq
+      q: 'کجا نباید `pause` بگذاری؟'
+      options: ['در Scriptی که خودکار و بدون کاربر اجرا می‌شود', 'آخر Script دو بار کلیکی', 'قبل از کار مهم', 'هنگام عیب‌یابی']
+      answer: 0
+      explain: 'کسی نیست که کلید بزند.'
+  recap: '`pause` = منتظر کلید. `pause >nul` = منتظر بدون پیام.'
+
+- n: 73
+  term: '%var%'
+  fullForm: 'Variables in batch files'
+  difficulty: 2
+  objective: 'در Script متغیر بسازی و با آن Script را خواناتر و قابل تغییر کنی.'
+  summary: 'در Batch هم با `set name=value` متغیر می‌سازی و با `%name%` می‌خوانی. مزیت بزرگ: مقدارهایی مثل مسیرها را یک بار بالای Script تعریف می‌کنی.'
+  meaning: 'فرق مهم با خط فرمان: اگر متغیری وجود نداشته باشد، داخل Batch `%name%` به «هیچ» تبدیل می‌شود (نه خود متن). برای مقدار با فاصله از `set "name=value"` و هنگام استفاده از `"%name%"` استفاده کن.'
+  usage: 'تعریف مسیر مبدأ و مقصد، نام فایل‌ها و تنظیمات در بالای Script.'
+  syntax: "set \"name=value\"\necho %name%\ndir \"%folder%\""
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\vars.bat', content: "@echo off\nset name=Hibo\nset \"city=New York\"\necho %name% lives in %city%.\necho Missing: [%nothing%]\n"}]
+    cmds: ['vars.bat']
+  examples:
+    - c: 'set "folder=%USERPROFILE%\Documents"'
+      d: 'متغیر برای یک مسیر.'
+      noTry: true
+    - c: 'dir "%folder%" /b'
+      d: 'استفاده از آن با Quotes.'
+      noTry: true
+  mistakes:
+    - 'فاصله دور `=`.'
+    - 'استفاده از مسیر فاصله‌دار بدون Quotes: `dir %folder%`.'
+  tip: 'نام متغیرها را معنی‌دار بگذار: `source` و `target` بهتر از `a` و `b` است.'
+  practice:
+    - id: P73a
+      batch: {file: 'vars.bat', starter: "@echo off\n"}
+      task: 'در Script دو متغیر بساز: `name` با مقدار `Hibo` و `city` با مقدار `Vienna`، و جمله `Hibo lives in Vienna` را با همین متغیرها چاپ کن.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hibo lives in Vienna'}, {type: fileContains, path: 'C:\Users\Student\Desktop\vars.bat', value: ['%name%', '%city%']}]
+      hints: ['`set name=Hibo` و `set city=Vienna`', '`echo %name% lives in %city%`']
+      answer: ['@echo off', 'set name=Hibo', 'set city=Vienna', 'echo %name% lives in %city%']
+    - id: P73b
+      batch: {file: 'docs.bat', starter: "@echo off\n"}
+      task: 'متغیری به نام `folder` بساز که مسیر Documents کاربر را با `%USERPROFILE%` نگه دارد، و محتوای آن پوشه را با `dir /b` و همین متغیر نمایش بده.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'menu.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\docs.bat', value: ['%userprofile%', '%folder%']}]
+      hints: ['`set "folder=%USERPROFILE%\Documents"`', '`dir "%folder%" /b`']
+      answer: ['@echo off', 'set "folder=%USERPROFILE%\Documents"', 'dir "%folder%" /b']
+  quiz:
+    - kind: predict
+      q: 'متغیر `x` تعریف نشده. داخل یک فایل Batch خروجی این خط چیست؟'
+      code: 'echo [%x%]'
+      options: ['[]', '[%x%]', 'خطا', '[x]']
+      answer: 0
+      code_options: true
+      explain: 'در Batch متغیر ناموجود به هیچ تبدیل می‌شود.'
+    - kind: mcq
+      q: 'امن‌ترین شکل تعریف متغیری با مقدار فاصله‌دار؟'
+      options: ['set "msg=Hello World"', 'set msg = Hello World', 'set msg="Hello World"', 'set "msg"=Hello World']
+      answer: 0
+      code_options: true
+      explain: 'Quote دور کل `name=value`.'
+    - kind: tf
+      q: 'تعریف مسیرها در بالای Script با متغیر، تغییر بعدی را آسان می‌کند.'
+      answer: true
+      explain: 'فقط یک خط را عوض می‌کنی.'
+  recap: '`set "name=value"` و `"%name%"`. در Batch متغیر ناموجود = خالی.'
+
+- n: 74
+  term: 'set /p'
+  fullForm: 'Read user input'
+  difficulty: 2
+  objective: 'از کاربر ورودی بگیری و از آن در Script استفاده کنی.'
+  summary: '`set /p name=سؤال` سؤال را نشان می‌دهد، منتظر می‌ماند کاربر چیزی بنویسد و Enter بزند و جواب را در متغیر `name` می‌گذارد.'
+  meaning: 'بعد از `=`، متن سؤال می‌آید (معمولاً با یک فاصله در آخر). اگر کاربر فقط Enter بزند، متغیر تغییر نمی‌کند. با `set /p line=<file.txt` اولین خط یک فایل در متغیر قرار می‌گیرد.'
+  usage: 'پرسیدن نام، مسیر، تأیید (Y/N) یا انتخاب از منو.'
+  syntax: "set /p name=Your name? \nset /p first=<file.txt"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['Sara']
+    files: [{path: 'C:\Users\Student\Desktop\ask.bat', content: "@echo off\nset /p name=What is your name? \necho Hello %name%!\n"}]
+    cmds: ['ask.bat']
+  examples:
+    - c: 'set /p name=What is your name? '
+      d: 'پرسیدن نام.'
+      noTry: true
+    - c: 'set /p first=<todo.txt'
+      d: 'خط اول یک فایل.'
+      noTry: true
+  mistakes:
+    - 'فراموش کردن فاصله آخر سؤال؛ جواب کاربر به سؤال می‌چسبد.'
+    - 'فرض اینکه کاربر حتماً چیزی می‌نویسد؛ با `if` خالی بودن را بررسی کن (درس ۷۸).'
+  tip: 'در Simulator وقتی Script سؤال پرسید، جواب را در Terminal بنویس و Enter بزن.'
+  practice:
+    - id: P74a
+      batch: {file: 'ask.bat', starter: "@echo off\n"}
+      inputs: ['Sara']
+      task: 'Script بنویس که اسم کاربر را بپرسد و بعد بگوید `Hello` و همان اسم. (اجرا کن و اسمت را وارد کن.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\ask.bat', value: ['set /p', '%name%']}, {type: outputIncludes, value: 'Hello'}]
+      hints: ['`set /p name=What is your name? `', '`echo Hello %name%`']
+      answer: ['@echo off', 'set /p name=What is your name? ', 'echo Hello %name%']
+    - id: P74b
+      batch: {file: 'first.bat', starter: "@echo off\n"}
+      task: 'Script بنویس که خط اول فایل `C:\Users\Student\Documents\todo.txt` را در یک متغیر بخواند و آن را با متن `First task:` چاپ کند.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'First task: 1. Learn dir'}]
+      hints: ['ورودی `set /p` را با `<` از فایل بده.', '`set /p line=<C:\Users\Student\Documents\todo.txt` و بعد `echo First task: %line%`']
+      answer: ['@echo off', 'set /p line=<C:\Users\Student\Documents\todo.txt', 'echo First task: %line%']
+  quiz:
+    - kind: mcq
+      q: 'در `set /p age=How old are you? ` جواب کاربر کجا ذخیره می‌شود؟'
+      options: ['در متغیر age', 'در فایل age', 'در ERRORLEVEL', 'جایی ذخیره نمی‌شود']
+      answer: 0
+      explain: 'نام قبل از `=`.'
+    - kind: tf
+      q: 'با `set /p x=<a.txt` همه خطوط فایل در x قرار می‌گیرند.'
+      answer: false
+      explain: 'فقط خط اول.'
+    - kind: type
+      q: 'از کاربر شهرش را بپرس و در متغیر `city` بگذار (سؤال: `City? `).'
+      accept: ['set /p city=city? ', 'set /p city=city?', 'set /p "city=city? "']
+      show: 'set /p city=City? '
+      explain: '`set /p city=City? `'
+  recap: '`set /p name=سؤال ` = گرفتن ورودی. `set /p x=<file` = خط اول فایل.'
+
+- n: 75
+  term: 'set /a'
+  fullForm: 'Arithmetic'
+  difficulty: 2
+  objective: 'در Batch با اعداد محاسبه کنی و شمارنده بسازی.'
+  summary: '`set /a` عبارت ریاضی را حساب می‌کند: `set /a total=price*qty`. فقط عدد صحیح؛ اعشار ندارد.'
+  meaning: 'داخل `set /a` نام متغیرها بدون `%` هم کار می‌کنند. عملگرها: `+ - * /` و `%` برای باقیمانده (در فایل Batch باید `%%` بنویسی). `+=` و `-=` برای افزایش و کاهش. تقسیم اعشار را دور می‌ریزد: `7/2` می‌شود `3`.'
+  usage: 'شمارنده در حلقه‌ها، حساب کردن تعداد فایل‌ها، محاسبه ساده قیمت.'
+  syntax: "set /a x=5+3\nset /a total=price*qty\nset /a count+=1\nset /a r=10%%3"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\math.bat', content: "@echo off\nset price=8\nset qty=3\nset /a total=price*qty\necho Total: %total%\nset /a half=7/2\necho 7/2 = %half%\nset /a rest=7%%2\necho 7 mod 2 = %rest%\n"}]
+    cmds: ['math.bat', 'set /a 10*4+2']
+  examples:
+    - c: 'set /a 10*4+2'
+      d: 'در خط فرمان، نتیجه را هم چاپ می‌کند.'
+    - c: 'set /a count+=1'
+      d: 'یکی اضافه کن.'
+      noTry: true
+    - c: 'set /a "x=(2+3)*4"'
+      d: 'پرانتز؛ داخل Quotes امن‌تر است.'
+  mistakes:
+    - 'انتظار اعشار: `set /a x=5/2` نتیجه 2 است، نه 2.5.'
+    - 'نوشتن `%` تکی برای باقیمانده داخل فایل Batch؛ باید `%%` باشد.'
+  tip: 'اگر مقدار متغیر عدد نباشد، `set /a` آن را صفر حساب می‌کند.'
+  practice:
+    - id: P75a
+      batch: {file: 'price.bat', starter: "@echo off\nset price=8\nset qty=3\n"}
+      task: 'قیمت هر پیتزا `8` و تعداد `3` است. با `set /a` قیمت کل را حساب کن و `Total: 24` را چاپ کن.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Total: 24'}, {type: fileContains, path: 'C:\Users\Student\Desktop\price.bat', value: 'set /a'}]
+      hints: ['`set /a total=price*qty`', '`echo Total: %total%`']
+      answer: ['@echo off', 'set price=8', 'set qty=3', 'set /a total=price*qty', 'echo Total: %total%']
+    - id: P75b
+      batch: {file: 'count.bat', starter: "@echo off\nset count=0\n"}
+      task: 'شمارنده `count` را با `set /a` سه بار یکی‌یکی زیاد کن و در آخر `Count: 3` را چاپ کن.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Count: 3'}, {type: fileContains, path: 'C:\Users\Student\Desktop\count.bat', value: '+='}]
+      hints: ['`set /a count+=1` را سه بار بنویس.', 'بعد `echo Count: %count%`']
+      answer: ['@echo off', 'set count=0', 'set /a count+=1', 'set /a count+=1', 'set /a count+=1', 'echo Count: %count%']
+  quiz:
+    - kind: predict
+      q: 'خروجی چیست؟'
+      code: "set /a x=9/2\necho %x%"
+      options: ['4', '4.5', '5', '9/2']
+      answer: 0
+      code_options: true
+      explain: 'فقط عدد صحیح؛ اعشار حذف می‌شود.'
+    - kind: mcq
+      q: 'در فایل Batch، باقیمانده تقسیم 10 بر 3 را چطور حساب می‌کنی؟'
+      options: ['set /a r=10%%3', 'set /a r=10%3', 'set /a r=10 mod 3', 'set r=10%%3']
+      answer: 0
+      code_options: true
+      explain: 'در Batch، `%` باید دوتایی باشد.'
+    - kind: type
+      q: 'یکی به متغیر `n` اضافه کن.'
+      accept: ['set /a n+=1', 'set /a n=n+1', 'set /a n=%n%+1', 'set /a "n+=1"']
+      show: 'set /a n+=1'
+      explain: '`+=`'
+  recap: '`set /a` = حساب با عدد صحیح. `+=` افزایش. باقیمانده در Batch: `%%`.'
+
+- n: 76
+  term: '%1 %2 %*'
+  fullForm: 'Arguments'
+  difficulty: 3
+  objective: 'به Script ورودی بدهی و Scriptهای قابل استفاده دوباره بنویسی.'
+  summary: 'هر چیزی که بعد از نام Script بنویسی، Argument است. `%1` اولی، `%2` دومی، تا `%9`. `%*` همه Argumentها و `%0` نام خود Script است.'
+  meaning: 'مثلاً `greet.bat Ali Sara` → `%1` = Ali و `%2` = Sara. Argument فاصله‌دار را داخل Quotes بده و برای حذف Quotes از `%~1` استفاده کن. `%~nx1` فقط نام و پسوند یک مسیر را می‌دهد.'
+  usage: 'Scriptهایی مثل `backup.bat مبدأ مقصد` که برای هر بار اجرا ورودی متفاوت می‌گیرند.'
+  syntax: "script.bat arg1 arg2\necho %1 %2\necho %*"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\greet.bat', content: "@echo off\necho Script: %~nx0\necho Hello %1\necho Second: %2\necho All: %*\n"}]
+    cmds: ['greet.bat Ali Sara Reza']
+  examples:
+    - c: 'greet.bat Ali'
+      d: '`%1` = Ali.'
+      noTry: true
+    - c: 'copyto.bat "my file.txt" E:\'
+      d: 'Argument فاصله‌دار با Quotes.'
+      noTry: true
+  mistakes:
+    - 'استفاده از `%10`؛ فقط `%0` تا `%9` وجود دارد (برای بیشتر: `shift`، درس بعد).'
+    - 'فرض اینکه کاربر Argument داده؛ با `if "%1"==""` بررسی کن (درس ۷۸).'
+  tip: 'در Batch Editor، Argumentها را در کادر «Arguments» بنویس.'
+  practice:
+    - id: P76a
+      batch: {file: 'greet.bat', starter: "@echo off\n", args: 'Ali'}
+      task: 'Script بنویس که با اولین Argument سلام کند. با Argument `Ali` اجرا کن تا `Hello Ali` چاپ شود.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hello Ali'}, {type: fileContains, path: 'C:\Users\Student\Desktop\greet.bat', value: '%1'}]
+      hints: ['اولین Argument با `%1` خوانده می‌شود.', '`echo Hello %1`']
+      answer: ['@echo off', 'echo Hello %1']
+    - id: P76b
+      batch: {file: 'copyto.bat', starter: "@echo off\n", args: '..\Documents\todo.txt E:\'}
+      task: 'Script بنویس که فایل `%1` را به مقصد `%2` کپی کند. با Argumentهای داده‌شده اجرا کن (todo.txt → USB).'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'E:\todo.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\copyto.bat', value: ['%1', '%2']}]
+      hints: ['دستور copy با دو Argument.', '`copy %1 %2`']
+      answer: ['@echo off', 'copy %1 %2']
+  quiz:
+    - kind: predict
+      q: '`show.bat red green blue` اجرا شد. `%2` چیست؟'
+      code: 'echo %2'
+      options: ['green', 'red', 'blue', 'show.bat']
+      answer: 0
+      code_options: true
+      explain: '`%1` red، `%2` green.'
+    - kind: mcq
+      q: '`%*` چه چیزی را نشان می‌دهد؟'
+      options: ['همه Argumentها', 'نام Script', 'تعداد Argumentها', 'آخرین Argument']
+      answer: 0
+      explain: '`%0` نام Script است.'
+    - kind: mcq
+      q: 'برای Argumentی که فاصله دارد چه باید کرد؟'
+      options: ['آن را داخل Quotes داد', 'فاصله را با _ عوض کرد', 'از %10 استفاده کرد', 'نمی‌شود']
+      answer: 0
+      explain: 'و در Script با `%~1` Quotes را حذف کن.'
+  recap: '`%1`…`%9` Argumentها، `%*` همه، `%0` نام Script. Argument فاصله‌دار در Quotes.'
+
+- n: 77
+  term: shift
+  fullForm: 'Shift arguments'
+  difficulty: 3
+  objective: 'با `shift` Argumentها را یکی به چپ جابه‌جا کنی تا به همه آن‌ها دسترسی داشته باشی.'
+  summary: 'بعد از `shift`، `%2` جای `%1` می‌آید، `%3` جای `%2` و همین‌طور تا آخر. Argument اول کنار گذاشته می‌شود.'
+  meaning: 'با `shift` می‌توانی بیش از ۹ Argument را پردازش کنی، یا Argument اول را (مثلاً یک تنظیم) جدا کنی و بقیه را بعداً بخوانی. معمولاً همراه حلقه `goto` استفاده می‌شود (درس ۸۲).'
+  usage: 'Scriptهایی که تعداد نامعلومی فایل یا نام می‌گیرند.'
+  syntax: "echo %1\nshift\necho %1"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\colors.bat', content: "@echo off\necho First: %1\nshift\necho Now first: %1\nshift\necho Now first: %1\n"}]
+    cmds: ['colors.bat red green blue']
+  examples:
+    - c: 'shift'
+      d: 'یک جابه‌جایی.'
+      noTry: true
+  mistakes:
+    - 'انتظار اینکه `%*` بعد از `shift` تغییر کند؛ `%*` همیشه همه Argumentهای اول را نشان می‌دهد.'
+  tip: 'الگوی رایج: `if "%1"=="" goto end` بعد پردازش `%1` و بعد `shift` و `goto` به اول حلقه.'
+  practice:
+    - id: P77a
+      batch: {file: 'colors.bat', starter: "@echo off\necho First: %1\n", args: 'red green blue'}
+      task: 'Script الان اولین رنگ را چاپ می‌کند. با `shift` کاری کن که بعدش `Then: green` هم چاپ شود (با Argumentهای `red green blue`).'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['First: red', 'Then: green']}, {type: fileContains, path: 'C:\Users\Student\Desktop\colors.bat', value: 'shift'}]
+      hints: ['بعد از `shift`، رنگ دوم با `%1` خوانده می‌شود.', '`shift` و بعد `echo Then: %1`']
+      answer: ['@echo off', 'echo First: %1', 'shift', 'echo Then: %1']
+  quiz:
+    - kind: predict
+      q: '`s.bat A B C` اجرا شد. بعد از دو بار `shift`، `%1` چیست؟'
+      code: "shift\nshift\necho %1"
+      options: ['C', 'A', 'B', 'خالی']
+      answer: 0
+      code_options: true
+      explain: 'هر shift یکی را کنار می‌گذارد.'
+    - kind: tf
+      q: 'بعد از `shift`، Argument اول برای همیشه از `%1` حذف شده است.'
+      answer: true
+      explain: 'دیگر با `%1` در دسترس نیست.'
+    - kind: mcq
+      q: '`shift` بیشتر همراه کدام دستور استفاده می‌شود؟'
+      options: ['goto (برای حلقه)', 'cls', 'ver', 'pause']
+      answer: 0
+      explain: 'برای پردازش همه Argumentها در یک حلقه.'
+  recap: '`shift` = `%2` می‌شود `%1`. برای پردازش Argumentهای زیاد، همراه `goto`.'
