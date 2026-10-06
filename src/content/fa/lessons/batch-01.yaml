@@ -100,103 +100,119 @@
   recap: 'Terminal = پنجره. Shell = اجراکننده دستور. CMD یک Shell در Windows است.'
 
 - n: 3
-  term: 'Win + R → cmd'
-  fullForm: 'Run dialog'
+  term: 'Win + R'
+  fullForm: 'Run → cmd → Enter'
   difficulty: 1
-  objective: 'CMD را باز کنی، Prompt را بشناسی و صفحه را پاک کنی.'
-  summary: 'سه راه ساده برای باز کردن CMD وجود دارد. وقتی باز شد، خطی مثل `C:\Users\Student>` می‌بینی که یعنی CMD آماده دستور است.'
-  meaning: 'روش ۱: منوی Start ← تایپ `cmd` ← Enter. روش ۲: کلید Win + R ← تایپ `cmd` ← Enter. روش ۳: در نوار آدرس File Explorer بنویس `cmd` تا CMD در همان پوشه باز شود.'
-  usage: 'خط `C:\Users\Student>` را Prompt می‌گویند. Prompt نشان می‌دهد الان کجا هستی و CMD منتظر دستور توست.'
+  objective: 'CMD را باز کنی و بفهمی Prompt چیست.'
+  summary: 'ساده‌ترین راه باز کردن CMD سه قدم دارد. وقتی CMD باز شد، خطی مثل `C:\Users\Student>` می‌بینی. این خط Prompt نام دارد و یعنی CMD آماده است تا دستور تو را بگیرد.'
+  steps:
+    - 'کلیدهای `Win` و `R` را با هم بزن. پنجره کوچکی به نام Run باز می‌شود.'
+    - 'در پنجره Run بنویس: `cmd`'
+    - 'کلید `Enter` را بزن.'
+    - 'پنجره Command Prompt باز می‌شود و Prompt را می‌بینی: `C:\Users\Student>`'
+  meaning: 'Prompt دو چیز به تو می‌گوید: ۱) CMD آماده است و منتظر دستور توست. ۲) الان در کدام پوشه هستی؛ اینجا پوشه `C:\Users\Student`. علامت `>` آخر Prompt یعنی «از اینجا بنویس».'
+  usage: 'راه‌های دیگر باز کردن CMD: منوی Start را باز کن، `cmd` را تایپ کن و Enter بزن؛ یا در نوار آدرس File Explorer بنویس `cmd` تا CMD در همان پوشه باز شود.'
   terminal:
     - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
     - {o: '(c) Microsoft Corporation. All rights reserved.'}
     - {o: ''}
     - {p: 'C:\Users\Student>', c: ''}
-  tip: 'Prompt جزو دستور نیست. فقط بعد از علامت `>` تایپ کن.'
-  daily: 'Prompt مثل چراغ «آماده» روی دستگاه کارت‌خوان است: تا روشن نباشد، کارت نکش.'
+  tip: 'Prompt جزو دستور نیست و آن را تایپ نمی‌کنی؛ CMD خودش آن را نشان می‌دهد. تو فقط بعد از علامت `>` می‌نویسی.'
+  daily: 'Prompt مثل چراغ «آماده» روی دستگاه کارت‌خوان است: وقتی روشن است، یعنی دستگاه منتظر توست.'
+  restaurant: 'باز کردن CMD مثل نشستن پشت میز رستوران است و Prompt مثل گارسونی که کنار میز ایستاده و می‌پرسد: «چه سفارشی دارید؟»'
   examples:
-    - c: 'cls'
-      d: 'صفحه را پاک می‌کند؛ فایل‌ها و تاریخچه دستورها دست نمی‌خورند.'
+    - c: 'ver'
+      d: 'بعد از Prompt یک دستور بنویس، مثلاً `ver` از درس ۱، و Enter بزن. CMD جواب را چاپ می‌کند و دوباره Prompt را نشان می‌دهد.'
   mistakes:
-    - 'تایپ کردن خود Prompt (مثل `C:\Users\Student>`) قبل از دستور.'
-    - 'فکر کردن به اینکه `cls` چیزی را حذف می‌کند؛ فقط صفحه را تمیز می‌کند.'
+    - 'تایپ کردن خود Prompt قبل از دستور، مثل `C:\Users\Student>ver`. فقط `ver` را بنویس.'
+    - 'نوشتن `cmd` در نوار جست‌وجوی مرورگر به‌جای پنجره Run.'
   practice:
     - id: P3a
       start: 'C:\Users\Student'
-      preload:
-        - {p: 'C:\Users\Student>', c: 'ver'}
-        - {o: ''}
-        - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
-        - {p: 'C:\Users\Student>', c: 'echo Hello'}
-        - {o: 'Hello'}
-        - {p: 'C:\Users\Student>', c: 'echo test test test'}
-        - {o: 'test test test'}
-      task: 'صفحه CMD شلوغ شده. آن را پاک کن.'
-      checks: [{type: cmd, value: cls}]
+      task: 'CMD باز است و Prompt (`C:\Users\Student>`) آماده است. بعد از Prompt، دستور `ver` را که در درس ۱ دیدی بنویس و Enter بزن. خود Prompt را تایپ نکن.'
+      checks: [{type: cmd, value: ver}, {type: ok}]
       hints:
-        - 'دستورش کوتاه‌شده Clear Screen است.'
-        - 'حرف اول Clear و حرف اول و آخر Screen: سه حرف.'
-      answer: 'cls'
+        - 'Prompt را CMD خودش نشان می‌دهد. تو فقط دستور را بعد از علامت `>` می‌نویسی.'
+        - 'فقط سه حرف دستور را تایپ کن، بدون `C:\Users\Student>`، و Enter بزن.'
+      answer: 'ver'
+      explain: 'CMD منتظر دستور بود (Prompt آماده بود). تو فقط دستور `ver` را نوشتی و CMD نسخه Windows را نشان داد.'
   quiz:
     - kind: mcq
       q: 'کدام کلید میانبر پنجره Run را باز می‌کند؟'
       options: ['Win + R', 'Ctrl + C', 'Alt + F4', 'Win + D']
       answer: 0
-      explain: 'Win + R پنجره Run را باز می‌کند؛ بعد `cmd` بنویس.'
+      explain: 'Win + R پنجره Run را باز می‌کند؛ بعد `cmd` را می‌نویسی و Enter می‌زنی.'
     - kind: tf
       q: 'باید عبارت `C:\Users\Student>` را هم خودت تایپ کنی.'
       answer: false
-      explain: 'این Prompt است و CMD خودش آن را نمایش می‌دهد.'
+      explain: 'این Prompt است و CMD خودش آن را نمایش می‌دهد. تو فقط بعد از `>` می‌نویسی.'
     - kind: mcq
       q: 'در پنجره Run چه بنویسیم تا CMD باز شود؟'
       options: ['cmd', 'run', 'open', 'start']
       answer: 0
       code_options: true
       explain: 'نام برنامه `cmd` است.'
-  recap: 'Win + R ← `cmd` ← Enter. Prompt یعنی CMD آماده است. `cls` = پاک کردن صفحه.'
+    - kind: order
+      q: 'قدم‌های باز کردن CMD را به ترتیب بچین.'
+      items: ['Win + R', 'cmd', 'Enter']
+      explain: 'اول پنجره Run با Win + R، بعد نوشتن `cmd`، در آخر Enter.'
+    - kind: mcq
+      q: 'Prompt (مثل `C:\Users\Student>`) یعنی چه؟'
+      options: ['CMD آماده است تا دستور بگیرد', 'یک پیام خطا', 'دستوری که باید تایپ کنی', 'نام فایلی که باز شده']
+      answer: 0
+      explain: 'Prompt یعنی CMD منتظر دستور توست و نشان می‌دهد در کدام پوشه هستی.'
+  recap: '① Win + R ② `cmd` ③ Enter. Prompt یعنی CMD آماده است؛ تو فقط بعد از `>` می‌نویسی.'
 
 - n: 4
-  term: 'command  argument  /switch'
+  term: 'dir Pictures /w'
   fullForm: 'Command · Argument · Switch'
   difficulty: 1
-  objective: 'اجزای یک دستور (Command، Argument، Switch) را تشخیص بدهی.'
-  summary: 'هر Command سه بخش دارد: نام دستور، Argument (روی چه چیزی) و Switch (چطور). بین بخش‌ها Space می‌گذاریم.'
-  meaning: 'Command: کاری که می‌خواهی انجام شود. Argument: روی چه فایل یا پوشه‌ای. Switch: تنظیم نحوه انجام کار؛ در CMD با `/` شروع می‌شود.'
-  usage: 'وقتی ساختار را بشناسی، هر دستور جدید را راحت می‌خوانی و راهنمای Windows را می‌فهمی.'
+  objective: 'سه بخش یک دستور را بشناسی: Command، Argument و Switch.'
+  summary: 'بیشتر دستورهای CMD از چند بخش ساخته می‌شوند که با Space از هم جدا می‌شوند: Command (چه کاری)، Argument یا Target (روی چه چیزی) و Switch (چطور). همه دستورها همه بخش‌ها را ندارند.'
+  anatomy:
+    cmd: 'dir Pictures /w'
+    parts:
+      - {t: 'dir', role: command, d: 'Command: کاری که CMD باید انجام دهد. `dir` یعنی «محتوای پوشه را فهرست کن».'}
+      - {t: 'Pictures', role: argument, d: 'Argument / Target: چیزی که دستور روی آن کار می‌کند. اینجا پوشه Pictures.'}
+      - {t: '/w', role: switch, d: 'Switch: گزینه‌ای که نحوه کار یا نمایش نتیجه را عوض می‌کند. `/w` یعنی فهرست فشرده در چند ستون (Wide).'}
+  meaning: 'Switch یعنی گزینه‌ای که طرز کار یک دستور را تغییر می‌دهد. خود دستور همان کار را می‌کند، فقط نتیجه را جور دیگری انجام می‌دهد یا نشان می‌دهد. بیشتر Switchهای CMD با `/` شروع می‌شوند (مثل `/w` یا `/?`)، ولی بعضی دستورها Switch را با `-` می‌نویسند، مثل `ping -n 2`.'
+  usage: 'وقتی ساختار را بشناسی، هر دستور جدید را راحت می‌خوانی و راهنمای Windows (`/?`) را می‌فهمی.'
   syntax: 'command [argument] [/switch]'
   terminal:
-    - {p: 'C:\Users\Student>', c: 'dir Documents /w'}
-  tip: 'بین بخش‌ها Space لازم است. `dirDocuments` یک کلمه ناشناخته است. با `/?` بعد از هر دستور، راهنمای آن را می‌بینی.'
-  restaurant: '«قهوه بیار، بدون شکر». «بیار» Command است، «قهوه» Argument (چه چیزی) و «بدون شکر» Switch (چطور).'
+    - {p: 'C:\Users\Student>', c: 'dir Pictures /w'}
+  tip: 'بین بخش‌ها Space لازم است. `dirPictures` یک کلمه ناشناخته است. با `/?` بعد از هر دستور، راهنمای آن را می‌بینی.'
+  restaurant: '«قهوه بیار، بدون شکر». «بیار» Command است (چه کاری)، «قهوه» Argument (روی چه چیزی) و «بدون شکر» Switch (چطور).'
   examples:
     - c: 'dir'
-      d: 'فقط Command.'
+      d: 'فقط Command: محتوای پوشه فعلی.'
     - c: 'dir Documents'
-      d: 'Command + Argument (نام پوشه).'
+      d: 'Command + Argument: محتوای پوشه Documents.'
     - c: 'dir /w'
-      d: 'Command + Switch (نمایش فشرده).'
-    - c: 'dir Documents /b'
-      d: 'Command + Argument + Switch.'
+      d: 'Command + Switch: محتوای پوشه فعلی، فشرده.'
+    - c: 'dir Documents /w'
+      d: 'Command + Argument + Switch: محتوای Documents، فشرده.'
   mistakes:
     - 'چسباندن Argument به Command بدون Space، مثل `dirDocuments`.'
     - 'استفاده از `\` به‌جای `/` برای Switch، مثل `dir \w`.'
   practice:
     - id: P4a
       start: 'C:\Users\Student'
-      task: 'محتوای پوشه Documents را به شکل فشرده ببین. Command: `dir`، Argument: `Documents`، Switch: `/w`'
+      task: 'محتوای پوشه Documents را به شکل فشرده (Wide) ببین.'
       checks: [{type: cmd, value: dir}, {type: argIncludes, value: documents}, {type: switch, value: '/w'}, {type: ok}]
       hints:
-        - 'سه بخش را به ترتیب بنویس و بینشان Space بگذار.'
-        - 'اول `dir`، بعد نام پوشه، بعد Switch.'
+        - 'برای دیدن محتوای یک پوشه از `dir` استفاده کن. بعد نام پوشه را بنویس و در آخر Switchی را اضافه کن که نمایش را فشرده (Wide) می‌کند.'
+        - 'سه سؤال، سه بخش: چه کاری؟ (`dir`) روی چه چیزی؟ (نام پوشه) چطور نمایش بدهد؟ (Switch حرف اول Wide با `/`). بینشان Space بگذار.'
       answer: 'dir Documents /w'
+      explain: '`dir` کار را مشخص می‌کند (فهرست محتوا)، `Documents` می‌گوید کدام پوشه، و `/w` نتیجه را فشرده در چند ستون نشان می‌دهد.'
     - id: P4b
       start: 'C:\Users\Student'
-      task: 'راهنمای دستور `cd` را ببین. (Switch راهنما `/?` است.)'
+      task: 'راهنمای دستور `cd` را ببین. Switch راهنما در CMD `/?` است.'
       checks: [{type: cmd, value: cd}, {type: switch, value: '/?'}]
       hints:
-        - 'نام دستور، یک Space، بعد Switch راهنما.'
-        - 'Switch راهنما از `/` و علامت سؤال درست شده است.'
+        - 'راهنما هم یک Switch است: Command را بنویس و Switch راهنما را بعدش اضافه کن.'
+        - 'Command اینجا `cd` است و Switch از `/` و علامت سؤال ساخته می‌شود. بینشان یک Space بگذار.'
       answer: 'cd /?'
+      explain: '`cd` Command است و `/?` Switchی که به‌جای اجرای دستور، راهنمای آن را نشان می‌دهد.'
   quiz:
     - kind: predict
       q: 'در این دستور کدام بخش Switch است؟'
@@ -204,7 +220,7 @@
       options: ['/w', 'dir', 'Pictures', 'هیچ‌کدام']
       answer: 0
       code_options: true
-      explain: 'Switch با `/` شروع می‌شود.'
+      explain: '`/w` گزینه‌ای است که نحوه نمایش را عوض می‌کند، پس Switch است. `dir` Command و `Pictures` Argument است.'
     - kind: fix
       q: 'این دستور چه مشکلی دارد؟'
       code: 'dirPictures'
@@ -214,8 +230,13 @@
     - kind: tf
       q: 'در CMD، Switchها معمولاً با `/` شروع می‌شوند.'
       answer: true
-      explain: 'مثل `/w` یا `/?`'
-  recap: '`command argument /switch`. Argument می‌گوید روی چه چیزی، Switch می‌گوید چگونه.'
+      explain: 'بیشتر Switchها مثل `/w` یا `/?` با `/` شروع می‌شوند، ولی همیشه نه؛ مثلاً `ping` از `-n` استفاده می‌کند.'
+    - kind: mcq
+      q: 'در `dir Pictures /w`، بخش `Pictures` چه نقشی دارد؟'
+      options: ['Argument (روی چه چیزی)', 'Command (چه کاری)', 'Switch (چطور)', 'Prompt']
+      answer: 0
+      explain: '`Pictures` چیزی است که `dir` روی آن کار می‌کند: Argument یا Target.'
+  recap: 'Command = چه کاری، Argument = روی چه چیزی، Switch = چطور. مثال: `dir` + `Pictures` + `/w`.'
 
 - n: 5
   term: 'File · Folder'
