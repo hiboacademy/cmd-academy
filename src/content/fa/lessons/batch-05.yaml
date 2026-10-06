@@ -32,14 +32,20 @@
       task: 'متغیری به نام `city` با مقدار `Vienna` بساز و بعد با `echo` مقدارش را چاپ کن.'
       multi: true
       checks: [{type: envEquals, name: city, value: Vienna}, {type: inputIncludes, value: '%city%'}, {type: lastOutputIncludes, value: 'Vienna'}]
-      hints: ['`set city=Vienna` (بدون فاصله دور `=`).', 'بعد `echo %city%`']
+      hints:
+        - 'دو قدم: اول با `set` یک Variable بساز (نام، علامت `=`، مقدار)، بعد با `echo` مقدارش را چاپ کن. برای استفاده از مقدار، نام متغیر را بین دو `%` می‌گذاری.'
+        - 'خط ۱: `set`، Space، بعد نام city و `=` و Vienna، همه چسبیده (دور `=` فاصله نگذار). خط ۲: `echo` و نام city بین دو علامت `%`.'
       answer: ['set city=Vienna', 'echo %city%']
+      explain: '`set city=Vienna` متغیر `city` را با مقدار Vienna می‌سازد. در خط دوم، CMD قبل از اجرا `%city%` را با Vienna جایگزین می‌کند و `echo` آن را چاپ می‌کند.'
     - id: P45b
       start: 'C:\Users\Student'
       task: 'همه متغیرهایی را که نامشان با `user` شروع می‌شود نمایش بده.'
       checks: [{type: anyCmd, value: set}, {type: lastOutputIncludes, value: 'USERNAME='}, {type: lastOutputIncludes, value: 'USERPROFILE='}]
-      hints: ['`set` با یک پیشوند، متغیرهای هم‌شروع را نشان می‌دهد.', '`set user`']
+      hints:
+        - '`set` اگر فقط ابتدای یک نام را بگیرد، همه متغیرهایی را نشان می‌دهد که نامشان با همان حروف شروع می‌شود.'
+        - 'دو بخش: چه کاری؟ (`set`) چه پیشوندی؟ (حروف user). علامت `=` و `%` لازم نیست؛ اینجا چیزی نمی‌سازی، فقط نگاه می‌کنی.'
       answer: 'set user'
+      explain: '`set user` همه متغیرهایی را که نامشان با `user` شروع می‌شود، مثل `USERNAME` و `USERPROFILE`، همراه مقدارشان نشان می‌دهد.'
   quiz:
     - kind: fix
       q: 'چرا `echo %food%` چیزی جز `%food%` چاپ نمی‌کند؟'
@@ -95,14 +101,20 @@
       start: 'C:\Users\Student'
       task: 'نام کامپیوتر را با یک Environment Variable چاپ کن.'
       checks: [{type: inputIncludes, value: '%computername%'}, {type: lastOutputIncludes, value: 'ACADEMY-PC'}]
-      hints: ['نام متغیر COMPUTERNAME است.', '`echo %COMPUTERNAME%`']
+      hints:
+        - 'Windows نام کامپیوتر را در یک Environment Variable آماده نگه داشته. با `echo` مقدار آن را چاپ کن؛ نام متغیر COMPUTERNAME است.'
+        - 'دو بخش: چه کاری؟ (`echo`) چه چیزی؟ (نام متغیر COMPUTERNAME بین دو `%`). بدون `%`، خود کلمه COMPUTERNAME چاپ می‌شود.'
       answer: 'echo %COMPUTERNAME%'
+      explain: 'CMD قبل از اجرا `%COMPUTERNAME%` را با نام واقعی کامپیوتر (`ACADEMY-PC`) جایگزین می‌کند و `echo` آن را نمایش می‌دهد.'
     - id: P46b
       start: 'C:\Users\Student'
       task: 'با متغیر `%windir%` به پوشه Windows برو.'
       checks: [{type: cwd, value: 'C:\Windows'}, {type: inputIncludes, value: '%windir%'}]
-      hints: ['`cd` و بعد متغیر.', '`cd %windir%`']
+      hints:
+        - 'متغیر `%windir%` مسیر پوشه Windows را در خود دارد. می‌توانی آن را به‌جای Path به `cd` بدهی.'
+        - 'دو بخش: چه کاری؟ (`cd`) به کجا؟ (به‌جای نوشتن مسیر، متغیر windir بین دو `%`).'
       answer: 'cd %windir%'
+      explain: 'CMD اول `%windir%` را با `C:\Windows` جایگزین می‌کند و بعد `cd` تو را به همان پوشه می‌برد.'
   quiz:
     - kind: mcq
       q: 'کدام متغیر هر بار عدد متفاوتی می‌دهد؟'
@@ -151,14 +163,20 @@
       start: 'C:\'
       task: 'از `C:\` با متغیر `%USERPROFILE%` به پوشه شخصی کاربر برو.'
       checks: [{type: cwd, value: 'C:\Users\Student'}, {type: inputIncludes, value: '%userprofile%'}]
-      hints: ['`cd` و متغیر پوشه کاربر.', '`cd %USERPROFILE%`']
+      hints:
+        - 'متغیر `%USERPROFILE%` مسیر پوشه شخصی کاربر فعلی را نگه می‌دارد. آن را به‌عنوان مقصد به `cd` بده.'
+        - 'دو بخش: چه کاری؟ (`cd`) به کجا؟ (متغیر USERPROFILE بین دو `%`). لازم نیست نام کاربر را بدانی.'
       answer: 'cd %USERPROFILE%'
+      explain: '`%USERPROFILE%` به `C:\Users\Student` تبدیل می‌شود و `cd` تو را از `C:\` به همان پوشه شخصی می‌برد.'
     - id: P47b
       start: 'C:\Users\Student'
       task: 'محتوای پوشه فایل‌های موقت را با متغیر `%TEMP%` نمایش بده.'
       checks: [{type: inputIncludes, value: '%temp%'}, {type: lastOutputIncludes, value: 'log1.tmp'}]
-      hints: ['`dir` و متغیر پوشه موقت.', '`dir %TEMP%`']
+      hints:
+        - 'متغیر `%TEMP%` مسیر پوشه فایل‌های موقت را دارد. به‌جای تایپ کردن آن مسیر طولانی، متغیر را به `dir` بده.'
+        - 'دو بخش: چه کاری؟ (`dir`) روی چه پوشه‌ای؟ (متغیر TEMP بین دو `%`).'
       answer: 'dir %TEMP%'
+      explain: 'CMD `%TEMP%` را با مسیر پوشه موقت جایگزین می‌کند و `dir` محتوای آن، مثل `log1.tmp`، را فهرست می‌کند.'
   quiz:
     - kind: mcq
       q: 'روی کامپیوتری که کاربرش Sara است، `%USERPROFILE%` معمولاً چیست؟'
@@ -204,16 +222,22 @@
       start: 'C:\Users\Student'
       task: 'مقدار PATH را نمایش بده.'
       checks: [{type: lastOutputIncludes, value: 'C:\Windows\system32'}]
-      hints: ['متغیر PATH را با `echo` چاپ کن، یا دستور `path` را بزن.', '`echo %PATH%`']
+      hints:
+        - 'PATH هم یک Environment Variable است. مقدارش را می‌توانی مثل هر متغیر دیگری با `echo` چاپ کنی (یا با دستور کوتاه `path`).'
+        - 'دو بخش: چه کاری؟ (`echo`) چه چیزی؟ (نام متغیر PATH بین دو `%`). خروجی، فهرست پوشه‌هایی است که با `;` جدا شده‌اند.'
       answer: 'echo %PATH%'
+      explain: '`%PATH%` با فهرست پوشه‌های جست‌وجوی CMD جایگزین می‌شود و `echo` آن را چاپ می‌کند؛ پوشه‌ها با `;` از هم جدا شده‌اند.'
     - id: P48b
       start: 'C:\Users\Student'
       files: [{path: 'C:\Tools\hello.bat', content: "@echo off\necho Hello from Tools\n"}]
       task: 'در `C:\Tools` یک Script به نام `hello.bat` هست. پوشه `C:\Tools` را به PATH اضافه کن (بدون پاک کردن مسیرهای قبلی) و بعد از همین‌جا فقط با نوشتن `hello` آن را اجرا کن.'
       multi: true
       checks: [{type: envIncludes, name: PATH, value: 'C:\Tools'}, {type: envIncludes, name: PATH, value: 'System32'}, {type: lastOutputIncludes, value: 'Hello from Tools'}]
-      hints: ['مقدار جدید = PATH فعلی + `;C:\Tools`', '`set PATH=%PATH%;C:\Tools` و بعد `hello`']
+      hints:
+        - 'مقدار جدید PATH باید «PATH فعلی + `;` + پوشه جدید» باشد، وگرنه مسیرهای قبلی پاک می‌شوند. بعد از تغییر، برنامه `hello` را فقط با نامش اجرا کن.'
+        - 'خط ۱: `set`، بعد `PATH=`، بعد مقدار فعلی (`%PATH%`)، بعد `;` و `C:\Tools`. خط ۲: فقط نام Script، بدون Path و بدون `.bat`.'
       answer: ['set PATH=%PATH%;C:\Tools', 'hello']
+      explain: 'در خط اول `%PATH%` مقدار قبلی را نگه می‌دارد و `;C:\Tools` پوشه جدید را به آخرش اضافه می‌کند. حالا CMD در `C:\Tools` هم می‌گردد و `hello` را پیدا و اجرا می‌کند.'
   quiz:
     - kind: mcq
       q: 'پوشه‌ها در PATH با چه علامتی از هم جدا می‌شوند؟'
@@ -259,14 +283,20 @@
       start: 'C:\Users\Student'
       task: 'نام کاربر فعلی را با دستور مخصوصش نمایش بده.'
       checks: [{type: anyCmd, value: whoami}, {type: lastOutputIncludes, value: 'student'}]
-      hints: ['دستورش یعنی «من کی هستم؟» به انگلیسی.', '`whoami`']
+      hints:
+        - 'یک دستور مخصوص هست که فقط جواب می‌دهد «من کی هستم؟». نامش همین جمله انگلیسی است که به هم چسبیده.'
+        - 'یک کلمه، بدون Argument: who و am و i، بدون Space بینشان.'
       answer: 'whoami'
+      explain: '`whoami` (Who am I) نام کاربر فعلی را نشان می‌دهد؛ معمولاً به شکل «نام کامپیوتر\نام کاربر».'
     - id: P49b
       start: 'C:\Users\Student'
       task: 'نام کامپیوتر را در فایل `pcname.txt` ذخیره کن.'
       checks: [{type: fileContains, path: 'C:\Users\Student\pcname.txt', value: 'ACADEMY-PC'}]
-      hints: ['دستور نام کامپیوتر `hostname` است.', '`hostname > pcname.txt`']
+      hints:
+        - 'دستور `hostname` نام کامپیوتر را چاپ می‌کند. برای ذخیره آن، خروجی را با Redirect (`>`) به فایل بفرست.'
+        - 'سه بخش: دستوری که نام کامپیوتر را می‌دهد (`hostname`)، علامت `>`، نام فایل مقصد (`pcname.txt`).'
       answer: 'hostname > pcname.txt'
+      explain: '`hostname` نام کامپیوتر (`ACADEMY-PC`) را تولید می‌کند و `>` آن را به‌جای صفحه در `pcname.txt` می‌نویسد.'
   quiz:
     - kind: predict
       q: 'خروجی `whoami` روی این کامپیوتر چیست؟'
@@ -315,14 +345,20 @@
       start: 'C:\Users\Student'
       task: 'از خروجی `systeminfo` فقط خط نام سیستم‌عامل (`OS Name`) را نمایش بده.'
       checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'Windows 11'}, {type: lastOutputExcludes, value: 'Host Name'}]
-      hints: ['خروجی را با Pipe به `find` بده.', '`systeminfo | find "OS Name"`']
+      hints:
+        - 'خروجی `systeminfo` خیلی بلند است. آن را با Pipe به `find` بده تا فقط خطی بماند که عبارت OS Name را دارد.'
+        - 'سه بخش: دستور اطلاعات سیستم (`systeminfo`)، علامت `|`، دستور فیلتر (`find` + عبارت OS Name داخل `" "`). چون عبارت Space دارد، Quotes لازم است.'
       answer: 'systeminfo | find "OS Name"'
+      explain: '`systeminfo` همه اطلاعات سیستم را می‌دهد و `|` آن را به `find "OS Name"` می‌فرستد که فقط خط نام سیستم‌عامل را نگه می‌دارد.'
     - id: P50b
       start: 'C:\Users\Student'
       task: 'نسخه Windows را با کوتاه‌ترین دستور نمایش بده.'
       checks: [{type: anyCmd, value: ver}]
-      hints: ['سه حرف اول Version.', '`ver`']
+      hints:
+        - '`systeminfo` اطلاعات زیادی می‌دهد، ولی برای دیدن فقط نسخه Windows یک دستور خیلی کوتاه‌تر هست؛ همان که در درس ۱ دیدی.'
+        - 'یک کلمه، بدون Argument: سه حرف اول Version.'
       answer: 'ver'
+      explain: '`ver` کوتاه‌شده Version است و فقط یک خط، یعنی نسخه Windows، را نشان می‌دهد.'
   quiz:
     - kind: mcq
       q: 'کدام دستور زمان آخرین روشن شدن کامپیوتر را نشان می‌دهد؟'
@@ -370,14 +406,20 @@
       start: 'C:\Users\Student'
       task: 'PID برنامه Notepad (`notepad.exe`) را پیدا کن.'
       checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: '7344'}, {type: lastOutputExcludes, value: 'chrome'}]
-      hints: ['از فیلتر imagename یا Pipe به find استفاده کن.', '`tasklist /fi "imagename eq notepad.exe"`']
+      hints:
+        - '`tasklist` همه Processها را نشان می‌دهد. با Switch `/fi` (Filter) می‌توانی فقط Processی را نگه داری که نام فایلش (imagename) مساوی (`eq`) `notepad.exe` است.'
+        - 'به ترتیب: Command (`tasklist`)، Switch فیلتر (`/fi`)، و شرط داخل `" "`: کلمه imagename، بعد `eq`، بعد `notepad.exe`. PID در ستون دوم خروجی است.'
       answer: 'tasklist /fi "imagename eq notepad.exe"'
+      explain: '`/fi` خروجی `tasklist` را فیلتر می‌کند و شرط `"imagename eq notepad.exe"` یعنی «فقط Processی که نامش notepad.exe است»؛ پس PID آن (7344) دیده می‌شود.'
     - id: P51b
       start: 'C:\Users\Student'
       task: 'فقط Processهایی را نشان بده که بیش از `100000` کیلوبایت حافظه مصرف می‌کنند.'
       checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: 'MsMpEng.exe'}, {type: lastOutputExcludes, value: 'notepad.exe'}]
-      hints: ['فیلتر حافظه `memusage` است.', '`tasklist /fi "memusage gt 100000"`']
+      hints:
+        - 'باز هم `tasklist` با Switch `/fi`، ولی این بار فیلتر روی حافظه (memusage) است و شرط «بزرگ‌تر از» (`gt`) لازم داری.'
+        - 'به ترتیب: Command (`tasklist`)، Switch (`/fi`)، و شرط داخل `" "`: memusage، بعد `gt`، بعد عدد 100000 (بدون KB و بدون ویرگول).'
       answer: 'tasklist /fi "memusage gt 100000"'
+      explain: 'شرط `"memusage gt 100000"` یعنی «مصرف حافظه بیشتر از 100000 کیلوبایت»؛ پس فقط Processهای پرمصرف مثل `MsMpEng.exe` می‌مانند.'
   quiz:
     - kind: mcq
       q: 'PID چیست؟'
@@ -423,15 +465,21 @@
       start: 'C:\Users\Student'
       task: 'برنامه Notepad (`notepad.exe`) را با نام آن ببند.'
       checks: [{type: procGone, value: 'notepad.exe'}]
-      hints: ['Switch نام برنامه `/im` است.', '`taskkill /im notepad.exe`']
+      hints:
+        - 'برای بستن یک Process از `taskkill` استفاده کن. با Switch `/im` (Image name) می‌گویی کدام برنامه را بر اساس نامش ببندد.'
+        - 'سه بخش: چه کاری؟ (`taskkill`) چطور شناسایی شود؟ (Switch `/im`) کدام برنامه؟ (نام فایل `notepad.exe`).'
       answer: 'taskkill /im notepad.exe'
+      explain: '`taskkill` Process را می‌بندد و `/im notepad.exe` می‌گوید Processی را که نامش notepad.exe است ببندد.'
     - id: P52b
       start: 'C:\Users\Student'
       task: 'Spotify هنگ کرده (Not Responding). اول PID آن را پیدا کن و بعد با PID به‌اجبار ببندش.'
       multi: true
       checks: [{type: procGone, value: 'Spotify.exe'}, {type: anyCmd, value: tasklist}, {type: switch, value: '/f', cmd: taskkill, anyRun: true}, {type: argIncludes, cmd: taskkill, value: '7810'}]
-      hints: ['`tasklist | find "Spotify"` شماره PID را نشان می‌دهد.', '`taskkill /pid 7810 /f`']
+      hints:
+        - 'دو قدم: اول با `tasklist` و یک Pipe به `find` خط Spotify و PID آن را پیدا کن. بعد با `taskkill` و Switch `/pid` آن را ببند؛ برنامه هنگ‌کرده فقط با Switch اجباری `/f` بسته می‌شود.'
+        - 'خط ۱: `tasklist`، علامت `|`، بعد `find` + Spotify داخل `" "`. خط ۲: `taskkill`، Switch `/pid` + شماره‌ای که در خط ۱ دیدی، و در آخر `/f`.'
       answer: ['tasklist | find "Spotify"', 'taskkill /pid 7810 /f']
+      explain: '`tasklist | find "Spotify"` خط Spotify را با PID آن (7810) نشان می‌دهد. بعد `taskkill /pid 7810 /f` همان Process را با شماره‌اش پیدا می‌کند و `/f` آن را به‌اجبار می‌بندد.'
   quiz:
     - kind: predict
       q: 'برنامه X جواب نمی‌دهد. نتیجه این دستور؟'

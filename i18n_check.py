@@ -43,10 +43,13 @@ def compare(fa, tr, path, errs):
             errs.append(f"{path}: expected text"); return
         if FA.search(tr):
             errs.append(f"{path}: still contains Persian: {tr[:80]!r}")
-        a = sorted(c for c in CODE.findall(fa) if not FA.search(c))
-        b = sorted(c for c in CODE.findall(tr) if not FA.search(c))
-        if a != b:
-            errs.append(f"{path}: code spans changed {sorted(set(a) ^ set(b))[:4]}")
+        # code spans without Persian must survive unchanged; spans that contain
+        # Persian (like `copy مبدأ مقصد`) are translated, so only their count must match
+        fa_spans, tr_spans = CODE.findall(fa), CODE.findall(tr)
+        rest = list(tr_spans)
+        lost = [c for c in fa_spans if not FA.search(c) and not (c in rest and not rest.remove(c))]
+        if lost or len(fa_spans) != len(tr_spans):
+            errs.append(f"{path}: code spans changed (lost {lost[:3]}, {len(fa_spans)} vs {len(tr_spans)} spans)")
         if sorted(PH.findall(fa)) != sorted(PH.findall(tr)):
             errs.append(f"{path}: placeholders changed {PH.findall(fa)} vs {PH.findall(tr)}")
         return

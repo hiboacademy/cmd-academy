@@ -27,14 +27,16 @@
       start: 'C:\Users\Student'
       task: 'ببین شبکه داخلی خود کامپیوتر کار می‌کند: آدرس localhost (`127.0.0.1`) را ping کن.'
       checks: [{type: anyCmd, value: ping}, {type: lastOutputIncludes, value: 'Reply from 127.0.0.1'}]
-      hints: ['دستور تست اتصال `ping` است.', '`ping 127.0.0.1`']
+      hints: ['برای اینکه بفهمی یک آدرس جواب می‌دهد یا نه، از Command `ping` استفاده می‌شود. اینجا مقصد، خود همین کامپیوتر (localhost) است.', 'ساختار: اول نام Command یعنی `ping`، بعد یک فاصله، و بعد آدرس localhost یعنی `127.0.0.1` به‌عنوان Argument.']
       answer: 'ping 127.0.0.1'
+      explain: '`ping` چند بسته کوچک به مقصد می‌فرستد و `127.0.0.1` یعنی خود همین کامپیوتر؛ پس جواب `Reply from 127.0.0.1` نشان می‌دهد شبکه داخلی کامپیوتر سالم است.'
     - id: P53b
       start: 'C:\Users\Student'
       task: 'IP Address این کامپیوتر را پیدا کن.'
       checks: [{type: anyCmd, value: ipconfig}, {type: lastOutputIncludes, value: '192.168.1.24'}]
-      hints: ['دستوری که تنظیمات IP را نشان می‌دهد.', '`ipconfig`']
+      hints: ['دنبال Commandی هستی که تنظیمات IP کارت‌های شبکه (IP Configuration) را نشان بدهد. نامش کوتاه‌شده همین دو کلمه است.', 'نام Command از `ip` + `config` ساخته شده و هیچ Argument یا Switchی لازم ندارد. در خروجی، خط `IPv4 Address` را بخوان.']
       answer: 'ipconfig'
+      explain: '`ipconfig` برای هر کارت شبکه IP، Subnet Mask و Default Gateway را نشان می‌دهد و خط `IPv4 Address` همان IP این کامپیوتر (`192.168.1.24`) است.'
   quiz:
     - kind: mcq
       q: '`127.0.0.1` به چه چیزی اشاره دارد؟'
@@ -81,14 +83,16 @@
       start: 'C:\Users\Student'
       task: 'فقط خط Default Gateway (آدرس Router) را از خروجی ipconfig نمایش بده.'
       checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: '192.168.1.1'}, {type: lastOutputExcludes, value: 'IPv4'}]
-      hints: ['خروجی را به `find` بده.', '`ipconfig | find "Gateway"`']
+      hints: ['خروجی `ipconfig` چند خط دارد. با Pipe (`|`) آن را به `find` بده تا فقط خطی که کلمه مورد نظر را دارد باقی بماند.', 'سه بخش: ۱) Command اصلی `ipconfig` ۲) علامت `|` ۳) `find` با کلمه `"Gateway"` داخل Quotes.']
       answer: 'ipconfig | find "Gateway"'
+      explain: '`|` خروجی `ipconfig` را به `find` می‌دهد و `find "Gateway"` فقط خطی را نگه می‌دارد که کلمه Gateway در آن است؛ یعنی آدرس Router.'
     - id: P54b
       start: 'C:\Users\Student'
       task: 'حافظه DNS (DNS Cache) را پاک کن.'
       checks: [{type: switch, value: '/flushdns', cmd: ipconfig, anyRun: true}, {type: lastOutputIncludes, value: 'Successfully flushed'}]
-      hints: ['ipconfig یک Switch برای «flush» دارد.', '`ipconfig /flushdns`']
+      hints: ['`ipconfig` برای پاک کردن DNS Cache یک Switch مخصوص دارد. «خالی کردن» به انگلیسی flush است.', 'بعد از `ipconfig` یک فاصله بگذار و Switch را با `/` شروع کن: `/` + `flush` + `dns` (همه به هم چسبیده).']
       answer: 'ipconfig /flushdns'
+      explain: 'Switch `/flushdns` به `ipconfig` می‌گوید حافظه DNS (نام‌ها و IPهای ذخیره‌شده) را خالی کند تا دفعه بعد نام‌ها دوباره از DNS Server پرسیده شوند.'
   quiz:
     - kind: mcq
       q: 'Default Gateway معمولاً آدرس کدام دستگاه است؟'
@@ -133,14 +137,16 @@
       start: 'C:\Users\Student'
       task: 'آدرس DNS Server را از خروجی کامل ipconfig پیدا کن.'
       checks: [{type: switch, value: '/all', cmd: ipconfig, anyRun: true}, {type: lastOutputIncludes, value: 'DNS Servers'}]
-      hints: ['`ipconfig /all` و فیلتر با find.', '`ipconfig /all | find "DNS Servers"`']
+      hints: ['آدرس DNS Server فقط در خروجی کامل `ipconfig` (با Switch `/all`) هست. برای پیدا کردن همان خط، خروجی را با Pipe و `find` فیلتر کن.', 'دو بخش با `|` به هم وصل می‌شوند: سمت چپ `ipconfig /all`، سمت راست `find` با متن `"DNS Servers"` داخل Quotes.']
       answer: 'ipconfig /all | find "DNS Servers"'
+      explain: '`ipconfig /all` همه جزئیات را نشان می‌دهد و `| find "DNS Servers"` فقط خط آدرس DNS Server را از آن جدا می‌کند.'
     - id: P55b
       start: 'C:\Users\Student'
       task: 'MAC Address کارت‌های شبکه را با دستور مخصوص آن نمایش بده.'
       checks: [{type: anyCmd, value: getmac}, {type: lastOutputIncludes, value: '3C-52-82-4A-1F-9B'}]
-      hints: ['دستورش یعنی «get MAC».', '`getmac`']
+      hints: ['برای دیدن فقط MAC Addressها یک Command جداگانه هست که نامش یعنی «MAC را بگیر».', 'نام Command از `get` + `mac` ساخته می‌شود و بدون Argument اجرا می‌شود. در خروجی، ستون `Physical Address` همان MAC است.']
       answer: 'getmac'
+      explain: '`getmac` فقط Physical Address (MAC) هر کارت شبکه را نشان می‌دهد، مثل `3C-52-82-4A-1F-9B`.'
   quiz:
     - kind: mcq
       q: 'MAC Address در خروجی `ipconfig /all` با چه نامی آمده است؟'
@@ -187,14 +193,16 @@
       start: 'C:\Users\Student'
       task: 'به `google.com` فقط دو بار ping بفرست.'
       checks: [{type: anyCmd, value: ping}, {type: lastOutputIncludes, value: 'Sent = 2'}, {type: lastOutputIncludes, value: 'Received = 2'}]
-      hints: ['تعداد بسته‌ها با `-n` تعیین می‌شود.', '`ping -n 2 google.com`']
+      hints: ['`ping` به‌طور پیش‌فرض چهار بسته می‌فرستد. با Switch `-n` می‌توانی تعداد بسته‌ها را خودت تعیین کنی.', 'ترتیب: `ping`، بعد Switch `-n` و بلافاصله عدد تعداد (`2`)، و در آخر مقصد یعنی `google.com`.']
       answer: 'ping -n 2 google.com'
+      explain: '`-n 2` تعداد بسته‌ها را دو تا می‌کند و `google.com` مقصد است؛ برای همین در آمار پایان `Sent = 2` و `Received = 2` می‌بینی.'
     - id: P56b
       start: 'C:\Users\Student'
       task: 'بررسی کن Router خانه (`192.168.1.1`) جواب می‌دهد یا نه.'
       checks: [{type: lastOutputIncludes, value: 'Reply from 192.168.1.1'}]
-      hints: ['ping با IP Router.', '`ping 192.168.1.1`']
+      hints: ['برای فهمیدن اینکه یک دستگاه در شبکه جواب می‌دهد، به آن `ping` بفرست. این بار به‌جای نام سایت، IP Router مقصد است.', 'Command `ping` و بعد IP Router (`192.168.1.1`) به‌عنوان Argument. اگر خط‌های `Reply from` دیدی، Router جواب داده است.']
       answer: 'ping 192.168.1.1'
+      explain: '`ping` به IP Router بسته می‌فرستد و هر خط `Reply from 192.168.1.1` یعنی Router روشن است و مسیر تا آن سالم است.'
   quiz:
     - kind: mcq
       q: '`Request timed out.` یعنی چه؟'
@@ -246,14 +254,16 @@
       start: 'C:\Users\Student'
       task: 'مسیر رسیدن به `google.com` را دنبال کن.'
       checks: [{type: anyCmd, value: tracert}, {type: lastOutputIncludes, value: 'Trace complete'}]
-      hints: ['دستورش ترکیب trace و route است.', '`tracert google.com`']
+      hints: ['برای دیدن تک‌تک Routerهای مسیر (Hop) تا یک سایت، از Command `tracert` (Trace Route) استفاده کن.', 'نام Command `tracert` و بعد مقصد `google.com` به‌عنوان Argument. صبر کن تا خط `Trace complete` بیاید.']
       answer: 'tracert google.com'
+      explain: '`tracert` بسته‌ها را Hop به Hop تا `google.com` دنبال می‌کند و برای هر Router زمان پاسخ را نشان می‌دهد.'
     - id: P57b
       start: 'C:\Users\Student'
       task: 'مسیر رسیدن به `example.com` را بدون پیدا کردن نام Routerها (فقط IP) نمایش بده.'
       checks: [{type: switch, value: '-d', cmd: tracert, anyRun: true}, {type: lastOutputIncludes, value: '93.184.215.14'}, {type: lastOutputExcludes, value: 'router.home'}]
-      hints: ['یک Switch جلوی پیدا کردن نام‌ها را می‌گیرد.', '`tracert -d example.com`']
+      hints: ['`tracert` به‌طور پیش‌فرض برای هر Hop نامش را هم پیدا می‌کند. Switch `-d` این کار را خاموش می‌کند تا فقط IP بماند.', 'ترتیب: `tracert`، بعد Switch `-d`، بعد مقصد `example.com`. Switch قبل از مقصد می‌آید.']
       answer: 'tracert -d example.com'
+      explain: 'Switch `-d` جلوی پیدا کردن نام Routerها را می‌گیرد، پس خروجی فقط IP دارد و سریع‌تر هم تمام می‌شود.'
   quiz:
     - kind: mcq
       q: 'در خروجی tracert، Hop شماره 1 معمولاً چیست؟'
@@ -300,14 +310,16 @@
       start: 'C:\Users\Student'
       task: 'از DNS بپرس `github.com` چه IP Addressی دارد.'
       checks: [{type: anyCmd, value: nslookup}, {type: lastOutputIncludes, value: '140.82.121.4'}]
-      hints: ['دستور پرسیدن از Name Server.', '`nslookup github.com`']
+      hints: ['برای اینکه مستقیم از DNS بپرسی یک نام چه IPی دارد، از Command `nslookup` (Name Server Lookup) استفاده کن.', 'Command `nslookup` و بعد فقط نام دامنه `github.com` (بدون `http://` یا `www`). IP را در خط `Address` زیر `Name` ببین.']
       answer: 'nslookup github.com'
+      explain: '`nslookup github.com` از DNS Server می‌پرسد `github.com` به چه IPی می‌رسد و جواب (`140.82.121.4`) را نشان می‌دهد.'
     - id: P58b
       start: 'C:\Users\Student'
       task: 'بفهم IP `8.8.8.8` متعلق به چه نامی است (Reverse Lookup).'
       checks: [{type: anyCmd, value: nslookup}, {type: lastOutputIncludes, value: 'dns.google'}]
-      hints: ['به nslookup به‌جای نام، IP بده.', '`nslookup 8.8.8.8`']
+      hints: ['Reverse Lookup یعنی برعکس: از IP به نام. همان `nslookup` این کار را هم انجام می‌دهد.', 'به `nslookup` به‌جای نام سایت، خود IP یعنی `8.8.8.8` را به‌عنوان Argument بده. نام در خط `Name` می‌آید.']
       answer: 'nslookup 8.8.8.8'
+      explain: 'وقتی به `nslookup` یک IP بدهی، از DNS نام صاحب آن را می‌پرسد؛ برای `8.8.8.8` جواب `dns.google` است.'
   quiz:
     - kind: mcq
       q: '`Non-existent domain` در خروجی nslookup یعنی چه؟'
@@ -352,14 +364,16 @@
       start: 'C:\Users\Student'
       task: 'همه اتصال‌ها و Portها را با آدرس عددی و PID نمایش بده.'
       checks: [{type: anyCmd, value: netstat}, {type: lastOutputIncludes, value: 'LISTENING'}, {type: lastOutputIncludes, value: '7810'}]
-      hints: ['سه Switch: a، n و o.', '`netstat -ano`']
+      hints: ['`netstat` اتصال‌های شبکه را نشان می‌دهد. برای «همه اتصال‌ها»، «آدرس عددی» و «PID» هر کدام یک Switch تک‌حرفی داری که می‌شود پشت هم نوشت.', 'Switchها: `a` = all (همه)، `n` = numeric (عددی)، `o` = owner PID. هر سه را بعد از یک `-` کنار هم بنویس.']
       answer: 'netstat -ano'
+      explain: '`-a` همه اتصال‌ها و Portهای `LISTENING`، `-n` آدرس‌های عددی و `-o` شماره PID برنامه صاحب هر اتصال را نشان می‌دهد.'
     - id: P59b
       start: 'C:\Users\Student'
       task: 'یک اتصال با PID `7810` به اینترنت وصل است. بفهم این PID مال کدام برنامه است.'
       checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: 'Spotify.exe'}]
-      hints: ['`tasklist` با فیلتر PID.', '`tasklist /fi "pid eq 7810"`']
+      hints: ['نام برنامه از روی PID با `tasklist` پیدا می‌شود. به‌جای نگاه کردن به کل فهرست، از فیلتر آن (Switch `/fi`) استفاده کن.', 'بعد از `tasklist /fi` یک شرط داخل Quotes بنویس: نام ستون `pid`، عملگر `eq` (equal یعنی برابر) و عدد `7810`.']
       answer: 'tasklist /fi "pid eq 7810"'
+      explain: '`/fi` فهرست Processها را فیلتر می‌کند و شرط `"pid eq 7810"` فقط Processی را نگه می‌دارد که PIDش 7810 است، یعنی `Spotify.exe`.'
   quiz:
     - kind: mcq
       q: 'Switch `-o` در netstat چه چیزی اضافه می‌کند؟'
@@ -404,8 +418,9 @@
       start: 'C:\Users\Student'
       task: 'MAC Address Router (`192.168.1.1`) را از جدول ARP پیدا کن.'
       checks: [{type: anyCmd, value: arp}, {type: lastOutputIncludes, value: 'f4-6b-ef-12-a0-01'}]
-      hints: ['جدول ARP با `arp -a` نمایش داده می‌شود.', '`arp -a`']
+      hints: ['جدولی که IPهای شبکه محلی را به MAC وصل می‌کند، جدول ARP است. Command آن `arp` است و برای نمایش جدول یک Switch لازم دارد.', 'بعد از `arp` Switch `-a` (all = نمایش همه) را بنویس. در خروجی خط `192.168.1.1` را پیدا کن و ستون `Physical Address` را بخوان.']
       answer: 'arp -a'
+      explain: '`arp -a` جدول ARP را نشان می‌دهد؛ در خط `192.168.1.1` ستون Physical Address همان MAC Router (`f4-6b-ef-12-a0-01`) است.'
   quiz:
     - kind: mcq
       q: 'ARP چه چیزی را به چه چیزی وصل می‌کند؟'
@@ -452,16 +467,18 @@
       start: 'C:\Users\Student'
       task: 'جدول Route کامپیوتر را نمایش بده.'
       checks: [{type: anyCmd, value: route}, {type: lastOutputIncludes, value: 'Active Routes'}]
-      hints: ['`route` و دستور «print».', '`route print`']
+      hints: ['جدول مسیرها با Command `route` نشان داده می‌شود. `route` بعد از خودش یک کلمه می‌خواهد که بگوید «نشان بده/چاپ کن».', 'ساختار: `route` + فاصله + کلمه `print`. در خروجی بخش `Active Routes` را پیدا کن.']
       answer: 'route print'
+      explain: '`route print` جدول Route را نشان می‌دهد؛ در بخش `Active Routes` خط `0.0.0.0` همان Default Gateway است.'
     - id: P61b
       start: 'C:\Users\Student'
       setup: {net: false}
       task: 'اینترنت این کامپیوتر کار نمی‌کند. با `ipconfig` وضعیت را ببین، مشکل را درست کن و در آخر با `ping google.com` نشان بده اینترنت برگشته است.'
       multi: true
       checks: [{type: netConnected, value: true}, {type: anyCmd, value: ipconfig}, {type: lastOutputIncludes, value: 'Reply from'}]
-      hints: ['در خروجی `ipconfig` خط IPv4 نیست؛ یعنی IP ندارد.', '`ipconfig /renew` و بعد `ping google.com`']
+      hints: ['اول با `ipconfig` وضعیت را ببین: اگر خط IPv4 نیست، کامپیوتر از Router آدرس نگرفته. یکی از Switchهای `ipconfig` آدرس را «دوباره دریافت» (renew) می‌کند.', 'سه قدم به ترتیب: ۱) `ipconfig` برای دیدن وضعیت ۲) `ipconfig` با Switch `/renew` برای گرفتن IP تازه ۳) `ping` به `google.com` برای اثبات اینکه اینترنت برگشته.']
       answer: ['ipconfig', 'ipconfig /renew', 'ping google.com']
+      explain: '`ipconfig` نشان می‌دهد IP نداری، `ipconfig /renew` از Router (DHCP) دوباره IP می‌گیرد و `ping google.com` با جواب `Reply from` ثابت می‌کند اتصال و DNS کار می‌کنند.'
   quiz:
     - kind: order
       q: 'قدم‌های عیب‌یابی اینترنت را از ساده به پیچیده مرتب کن.'

@@ -32,14 +32,20 @@
       start: 'C:\Users\Student\Documents'
       task: 'از فایل `todo.txt` یک نسخه به نام `todo_backup.txt` در همین پوشه بساز.'
       checks: [{type: fileExists, path: 'C:\Users\Student\Documents\todo_backup.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\todo.txt'}]
-      hints: ['دستور `copy` دو Argument می‌گیرد: مبدأ و مقصد.', '`copy todo.txt todo_backup.txt`']
+      hints:
+        - 'برای ساختن نسخه دوم یک فایل از `copy` استفاده کن. `copy` دو Argument می‌گیرد: اول فایل مبدأ (چه چیزی؟)، بعد نام مقصد (به کجا یا با چه نامی؟).'
+        - 'سه بخش: چه کاری؟ (`copy`) مبدأ؟ (فایل اصلی `todo.txt`) مقصد؟ (نام نسخه جدید `todo_backup.txt`). ترتیب مهم است: اول مبدأ، بعد مقصد.'
       answer: 'copy todo.txt todo_backup.txt'
+      explain: '`copy` فایل اول (`todo.txt`) را می‌خواند و یک نسخه با نام دوم (`todo_backup.txt`) در همین پوشه می‌سازد؛ فایل اصلی دست نمی‌خورد.'
     - id: P21b
       start: 'C:\Users\Student\Documents'
       task: 'فایل `menu.txt` را به ریشه USB (Drive E) کپی کن.'
       checks: [{type: fileExists, path: 'E:\menu.txt'}]
-      hints: ['مقصد ریشه Drive E است: `E:\`', '`copy menu.txt E:\`']
+      hints:
+        - 'باز هم `copy` با مبدأ و مقصد. این بار مقصد یک نام فایل نیست، بلکه ریشه یک Drive دیگر است؛ نام فایل همان می‌ماند.'
+        - 'سه بخش: چه کاری؟ (`copy`) مبدأ؟ (`menu.txt`) مقصد؟ (ریشه Drive E: حرف Drive، دو نقطه و یک `\`).'
       answer: 'copy menu.txt E:\'
+      explain: '`copy` فایل `menu.txt` را برمی‌دارد و چون مقصد `E:\` یک پوشه (ریشه USB) است، نسخه‌ای با همان نام آنجا می‌سازد.'
   quiz:
     - kind: mcq
       q: 'بعد از `copy a.txt D:\Backup`، فایل `a.txt` اصلی چه می‌شود؟'
@@ -96,14 +102,20 @@
       start: 'C:\Users\Student\Documents'
       task: 'فایل `todo.txt` را به داخل پوشه `Work` منتقل کن.'
       checks: [{type: fileExists, path: 'C:\Users\Student\Documents\Work\todo.txt'}, {type: fileNotExists, path: 'C:\Users\Student\Documents\todo.txt'}]
-      hints: ['`move` مثل `copy` مبدأ و مقصد می‌گیرد.', '`move todo.txt Work`']
+      hints:
+        - '`move` مثل `copy` مبدأ و مقصد می‌گیرد، با این فرق که فایل از جای اول برداشته می‌شود. مقصد اینجا یک پوشه است.'
+        - 'سه بخش: چه کاری؟ (`move`) چه فایلی؟ (`todo.txt`) به کجا؟ (نام پوشه Work که داخل همین Documents است).'
       answer: 'move todo.txt Work'
+      explain: '`move` فایل `todo.txt` را به داخل پوشه `Work` می‌برد؛ برخلاف `copy`، در Documents دیگر نسخه‌ای از آن نمی‌ماند.'
     - id: P22b
       start: 'C:\Users\Student'
       task: 'بدون رفتن به پوشه‌ها، فایل `invoice.pdf` را از Downloads به Documents منتقل کن.'
       checks: [{type: fileExists, path: 'C:\Users\Student\Documents\invoice.pdf'}, {type: fileNotExists, path: 'C:\Users\Student\Downloads\invoice.pdf'}]
-      hints: ['مبدأ: `Downloads\invoice.pdf`', '`move Downloads\invoice.pdf Documents`']
+      hints:
+        - 'از `move` استفاده کن، ولی چون در `C:\Users\Student` هستی، هم مبدأ و هم مقصد را با Relative Path (از همین‌جا) بنویس.'
+        - 'سه بخش: چه کاری؟ (`move`) مبدأ؟ (Path فایل: پوشه `Downloads`، `\`، بعد `invoice.pdf`) مقصد؟ (نام پوشه Documents).'
       answer: 'move Downloads\invoice.pdf Documents'
+      explain: '`move` فایل را از `Downloads\invoice.pdf` برمی‌دارد و در پوشه `Documents` می‌گذارد. هر دو Path نسبت به `C:\Users\Student` حساب می‌شوند.'
   quiz:
     - kind: tf
       q: 'بعد از `move`، فایل در جای اولش هم باقی می‌ماند.'
@@ -154,14 +166,20 @@
       start: 'C:\Users\Student\Desktop'
       task: 'نام فایل `notes.txt` را به `ideas.txt` تغییر بده.'
       checks: [{type: fileExists, path: 'C:\Users\Student\Desktop\ideas.txt'}, {type: fileNotExists, path: 'C:\Users\Student\Desktop\notes.txt'}]
-      hints: ['دستور تغییر نام سه حرف است.', '`ren notes.txt ideas.txt`']
+      hints:
+        - 'برای تغییر نام از `ren` (Rename) استفاده کن. اول نام فعلی فایل را می‌دهی، بعد نام جدیدش را.'
+        - 'سه بخش: چه کاری؟ (`ren`) نام فعلی؟ (`notes.txt`) نام جدید؟ (`ideas.txt`). Extension را در هر دو نام بنویس.'
       answer: 'ren notes.txt ideas.txt'
+      explain: '`ren` نام فایل اول (`notes.txt`) را به نام دوم (`ideas.txt`) تغییر می‌دهد؛ محتوای فایل و جایش همان می‌ماند.'
     - id: P23b
       start: 'C:\Users\Student\Documents'
       task: 'نام پوشه `Work` را به `Office` تغییر بده.'
       checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Office'}, {type: dirNotExists, path: 'C:\Users\Student\Documents\Work'}]
-      hints: ['`ren` روی پوشه هم کار می‌کند.', '`ren Work Office`']
+      hints:
+        - '`ren` فقط برای فایل نیست؛ روی پوشه هم کار می‌کند. دوباره همان ترتیب: نام فعلی، بعد نام جدید.'
+        - 'سه بخش: چه کاری؟ (`ren`) نام فعلی پوشه؟ (Work) نام جدید؟ (Office). پوشه Extension ندارد.'
       answer: 'ren Work Office'
+      explain: '`ren` نام پوشه `Work` را به `Office` تغییر می‌دهد و همه فایل‌های داخلش سر جای خود می‌مانند.'
   quiz:
     - kind: fix
       q: 'این دستور خطای `The syntax of the command is incorrect.` می‌دهد. چرا؟'
@@ -210,14 +228,20 @@
       start: 'C:\Users\Student\Downloads'
       task: 'فایل `temp1.tmp` را حذف کن.'
       checks: [{type: fileNotExists, path: 'C:\Users\Student\Downloads\temp1.tmp'}, {type: fileExists, path: 'C:\Users\Student\Downloads\temp2.tmp'}]
-      hints: ['دستور حذف فایل سه حرف است.', '`del temp1.tmp`']
+      hints:
+        - 'برای حذف فایل از `del` (Delete) استفاده کن و دقیقاً نام فایلی را بده که باید پاک شود؛ فایل‌های دیگر باید بمانند.'
+        - 'دو بخش: چه کاری؟ (`del`) کدام فایل؟ (نام کامل `temp1.tmp` با Extension). مراقب باش `temp2.tmp` را ننویسی.'
       answer: 'del temp1.tmp'
+      explain: '`del` فقط همان فایلی را که نامش آمده (`temp1.tmp`) پاک می‌کند. فایل حذف‌شده با `del` به Recycle Bin نمی‌رود.'
     - id: P24b
       start: 'C:\Users\Student'
       task: 'بدون رفتن به Downloads، فایل `photos.zip` داخل آن را حذف کن.'
       checks: [{type: fileNotExists, path: 'C:\Users\Student\Downloads\photos.zip'}, {type: cwd, value: 'C:\Users\Student'}]
-      hints: ['از Path نسبی استفاده کن.', '`del Downloads\photos.zip`']
+      hints:
+        - 'باز هم `del`، ولی فایل داخل پوشه Downloads است و تو در `C:\Users\Student` هستی. به `del` یک Relative Path بده.'
+        - 'دو بخش: چه کاری؟ (`del`) کدام فایل؟ (Path: پوشه `Downloads`، جداکننده `\`، بعد `photos.zip`).'
       answer: 'del Downloads\photos.zip'
+      explain: '`del` فایلی را که در `Downloads\photos.zip` است پاک می‌کند؛ Path از Current Directory حساب می‌شود، پس لازم نیست جابه‌جا شوی.'
   quiz:
     - kind: tf
       q: 'فایلی که با `del` حذف شود به Recycle Bin می‌رود.'
@@ -276,15 +300,21 @@
       setup: {mkdir: ['C:\Users\Student\Empty']}
       task: 'یک پوشه خالی به نام `Empty` اینجا هست. آن را حذف کن.'
       checks: [{type: dirNotExists, path: 'C:\Users\Student\Empty'}]
-      hints: ['دستور حذف پوشه `rd` یا `rmdir` است.', '`rd Empty`']
+      hints:
+        - 'برای حذف پوشه از `rd` (یا `rmdir`) استفاده کن. چون پوشه خالی است، هیچ Switchی لازم نیست.'
+        - 'دو بخش: چه کاری؟ (`rd`) کدام پوشه؟ (نام پوشه: Empty). `del` اینجا کار نمی‌کند؛ آن برای فایل است.'
       answer: 'rd Empty'
+      explain: '`rd` (Remove Directory) پوشه خالی `Empty` را حذف می‌کند. اگر پوشه خالی نبود، بدون Switch خطا می‌داد.'
     - id: P25b
       start: 'C:\Users\Student'
       task: 'پوشه `Pictures\Holidays` را با فایل داخلش حذف کن. (اگر سؤال پرسید، جواب بده.)'
       checks: [{type: dirNotExists, path: 'C:\Users\Student\Pictures\Holidays'}, {type: dirExists, path: 'C:\Users\Student\Pictures'}]
       inputs: ['y']
-      hints: ['پوشه خالی نیست؛ یک Switch لازم داری.', '`rd /s Pictures\Holidays` و بعد `Y`']
+      hints:
+        - 'پوشه Holidays خالی نیست، پس `rd` به‌تنهایی آن را پاک نمی‌کند. یک Switch لازم است که پوشه را با همه محتوایش حذف کند.'
+        - 'سه بخش: چه کاری؟ (`rd`) چطور؟ (Switch حرف `s` با `/`) کدام پوشه؟ (Path `Pictures\Holidays`). وقتی پرسید `Are you sure (Y/N)?` جواب `Y` بده.'
       answer: 'rd /s Pictures\Holidays'
+      explain: '`rd` پوشه حذف می‌کند، `/s` یعنی همراه همه فایل‌ها و زیرپوشه‌ها، و `Pictures\Holidays` پوشه هدف است. جواب `Y` حذف را تأیید می‌کند و Pictures سالم می‌ماند.'
   quiz:
     - kind: predict
       q: 'پوشه `Work` دو فایل دارد. خروجی این دستور چیست؟'
@@ -339,14 +369,20 @@
       start: 'C:\Users\Student\Pictures'
       task: 'فقط فایل‌های `.jpg` این پوشه را نمایش بده.'
       checks: [{type: cmd, value: dir}, {type: ok}, {type: outputIncludes, value: ['beach.jpg', 'cat.jpg']}, {type: outputExcludes, value: 'logo.png'}]
-      hints: ['`*` یعنی هر نامی.', '`dir *.jpg`']
+      hints:
+        - 'با Wildcard `*` می‌توانی بگویی «هر نامی». به `dir` الگویی بده که هر نام را بپذیرد ولی فقط Extension `.jpg` داشته باشد.'
+        - 'دو بخش: چه کاری؟ (`dir`) چه الگویی؟ (`*` به‌جای نام فایل، بعد نقطه و `jpg`). فایل‌های `.png` با این الگو جور نیستند.'
       answer: 'dir *.jpg'
+      explain: '`dir` فقط فایل‌هایی را نشان می‌دهد که با الگوی `*.jpg` جورند: `*` هر نامی را می‌پذیرد و `.jpg` فقط عکس‌های JPG را نگه می‌دارد.'
     - id: P26b
       start: 'C:\Users\Student\Downloads'
       task: 'همه فایل‌های `.tmp` این پوشه را با یک دستور حذف کن (بقیه فایل‌ها باید بمانند).'
       checks: [{type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}, {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}]
-      hints: ['اول با `dir *.tmp` ببین کدام فایل‌ها انتخاب می‌شوند.', '`del *.tmp`']
+      hints:
+        - 'با `del` و Wildcard `*` می‌توانی چند فایل را با یک دستور پاک کنی. قبل از حذف، بهتر است با `dir` و همان الگو ببینی کدام فایل‌ها انتخاب می‌شوند.'
+        - 'دو بخش: چه کاری؟ (`del`) کدام فایل‌ها؟ (الگو: `*` برای هر نام، بعد نقطه و `tmp`). اگر Extension را ننویسی، همه فایل‌ها پاک می‌شوند!'
       answer: 'del *.tmp'
+      explain: '`del` همه فایل‌هایی را که با الگوی `*.tmp` جورند حذف می‌کند؛ فایل‌هایی مثل `setup.exe` با این الگو جور نیستند و می‌مانند.'
   quiz:
     - kind: mcq
       q: 'کدام فایل با الگوی `r*.txt` جور است؟'
@@ -400,8 +436,11 @@
       start: 'C:\Users\Student\Documents\Work'
       task: 'فقط گزارش‌های تک‌رقمی (`report1.txt` و `report2.txt`) را به `D:\Backup` کپی کن؛ `report10.txt` نباید کپی شود.'
       checks: [{type: fileExists, path: 'D:\Backup\report1.txt'}, {type: fileExists, path: 'D:\Backup\report2.txt'}, {type: fileNotExists, path: 'D:\Backup\report10.txt'}]
-      hints: ['`?` فقط یک کاراکتر را می‌گیرد.', '`copy report?.txt D:\Backup`']
+      hints:
+        - '`?` در Wildcard یعنی «دقیقاً یک کاراکتر». با `copy` و الگویی که بعد از report فقط یک کاراکتر بپذیرد، `report10.txt` کنار گذاشته می‌شود.'
+        - 'سه بخش: چه کاری؟ (`copy`) چه فایل‌هایی؟ (الگو: `report`، یک `?`، بعد `.txt`) به کجا؟ (Absolute Path پوشه `D:\Backup`).'
       answer: 'copy report?.txt D:\Backup'
+      explain: 'در `report?.txt`، علامت `?` فقط جای یک کاراکتر است؛ پس `report1` و `report2` جورند ولی `report10` (دو رقم) نه. `copy` آن‌ها را به `D:\Backup` می‌برد.'
   quiz:
     - kind: mcq
       q: 'کدام فایل با `photo?.jpg` جور نیست؟'
@@ -451,14 +490,20 @@
       start: 'C:\Users\Student\Desktop'
       task: 'فایلی به نام `hello.txt` بساز که داخلش نوشته باشد `Hello CMD`.'
       checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\hello.txt', value: 'Hello CMD'}]
-      hints: ['`echo` متن را چاپ می‌کند و `>` آن را به فایل می‌برد.', '`echo Hello CMD > hello.txt`']
+      hints:
+        - '`echo` متن را چاپ می‌کند. با علامت `>` می‌توانی خروجی را به‌جای صفحه، به یک فایل بفرستی؛ اگر فایل نباشد، ساخته می‌شود.'
+        - 'سه بخش به ترتیب: دستور خروجی‌دار (`echo` + متن Hello CMD)، علامت Redirect (`>`)، و نام فایل مقصد (`hello.txt`).'
       answer: 'echo Hello CMD > hello.txt'
+      explain: '`echo Hello CMD` متن را تولید می‌کند و `>` آن را به‌جای صفحه در فایل `hello.txt` می‌نویسد؛ فایل اگر نباشد ساخته می‌شود.'
     - id: P28b
       start: 'C:\Users\Student'
       task: 'فهرست فایل‌های Documents را در فایلی به نام `list.txt` (در همین پوشه) ذخیره کن.'
       checks: [{type: fileContains, path: 'C:\Users\Student\list.txt', value: 'menu.txt'}, {type: usedOp, value: '>'}]
-      hints: ['دستوری که فهرست را نشان می‌دهد `dir` است.', '`dir Documents > list.txt`']
+      hints:
+        - 'خروجی هر دستوری را می‌شود با `>` در فایل ذخیره کرد. اول دستوری را بنویس که فهرست Documents را می‌دهد، بعد خروجی‌اش را به فایل بفرست.'
+        - 'سه بخش: دستور فهرست (`dir` + نام پوشه Documents)، علامت `>`، نام فایل مقصد (`list.txt`). روی صفحه چیزی نمی‌بینی؛ همه در فایل می‌رود.'
       answer: 'dir Documents > list.txt'
+      explain: '`dir Documents` فهرست پوشه را می‌سازد و `>` آن را در `list.txt` (داخل Current Directory) ذخیره می‌کند، به‌جای نمایش روی صفحه.'
   quiz:
     - kind: predict
       q: 'بعد از این دو دستور، `a.txt` چه دارد؟'
@@ -513,15 +558,21 @@
       files: [{path: 'C:\Users\Student\Desktop\log.txt', content: "Day 1\n"}]
       task: 'فایل `log.txt` یک خط دارد (`Day 1`). خط `Day 2` را به آخرش اضافه کن، بدون پاک شدن خط اول.'
       checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\log.txt', value: ['Day 1', 'Day 2']}]
-      hints: ['برای اضافه کردن، دو علامت `>` لازم است.', '`echo Day 2 >> log.txt`']
+      hints:
+        - '`>` فایل را از نو می‌نویسد و خط قبلی پاک می‌شود. برای اضافه کردن به آخر فایل، از نسخه دوعلامتی آن (`>>`) استفاده کن.'
+        - 'سه بخش: دستور خروجی (`echo` + متن Day 2)، علامت Append (دو `>` پشت‌سرهم)، نام فایل (`log.txt`).'
       answer: 'echo Day 2 >> log.txt'
+      explain: '`echo Day 2` متن را می‌سازد و `>>` آن را به آخر `log.txt` اضافه می‌کند؛ برخلاف `>`، خط `Day 1` پاک نمی‌شود.'
     - id: P29b
       start: 'C:\Users\Student\Desktop'
       task: 'فایلی به نام `names.txt` بساز که دو خط داشته باشد: خط اول `Ali` و خط دوم `Sara`.'
       multi: true
       checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\names.txt', value: ['Ali', 'Sara']}, {type: fileLines, path: 'C:\Users\Student\Desktop\names.txt', value: 2}]
-      hints: ['خط اول با `>`، خط دوم با `>>`.', '`echo Ali > names.txt` و بعد `echo Sara >> names.txt`']
+      hints:
+        - 'دو دستور `echo` لازم داری. اولی باید فایل را بسازد (با `>`) و دومی باید یک خط به آخرش اضافه کند (با `>>`).'
+        - 'خط ۱: `echo` + Ali، بعد `>`، بعد `names.txt`. خط ۲: `echo` + Sara، بعد `>>`، بعد همان `names.txt`. اگر خط دوم هم `>` باشد، Ali پاک می‌شود.'
       answer: ['echo Ali > names.txt', 'echo Sara >> names.txt']
+      explain: 'خط اول با `>` فایل `names.txt` را با `Ali` می‌سازد و خط دوم با `>>` کلمه `Sara` را در خط بعدی اضافه می‌کند؛ پس فایل دو خط دارد.'
   quiz:
     - kind: predict
       q: 'بعد از این دستورها، `a.txt` چند خط دارد؟'
@@ -571,14 +622,20 @@
       start: 'C:\Users\Student\Desktop'
       task: 'دستور `type missing.txt` خطا می‌دهد. آن را طوری اجرا کن که پیام خطا در فایل `error.txt` ذخیره شود.'
       checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\error.txt', value: 'cannot find'}, {type: usedOp, value: '2>'}]
-      hints: ['پیام خطا جریان شماره 2 است.', '`type missing.txt 2> error.txt`']
+      hints:
+        - 'پیام خطا از جریان شماره 2 (stderr) بیرون می‌آید، نه جریان عادی. `>` معمولی فقط جریان 1 را می‌گیرد؛ پس شماره 2 را قبل از `>` بنویس.'
+        - 'سه بخش: دستوری که خطا می‌دهد (`type missing.txt`)، علامت Redirect خطا (`2` چسبیده به `>`)، و فایل مقصد (`error.txt`).'
       answer: 'type missing.txt 2> error.txt'
+      explain: '`type missing.txt` خطای «فایل پیدا نشد» می‌دهد و `2>` همین پیام خطا (جریان 2) را به‌جای صفحه در `error.txt` ذخیره می‌کند.'
     - id: P30b
       start: 'C:\Users\Student'
       task: 'دستور `dir Documents\nothing` را اجرا کن و هم خروجی عادی و هم خطا را در فایل `all.txt` ذخیره کن.'
       checks: [{type: fileContains, path: 'C:\Users\Student\all.txt', value: ['Volume', 'File Not Found']}, {type: usedOp, value: '2>&1'}]
-      hints: ['اول خروجی عادی را با `>` به فایل ببر.', 'بعد `2>&1` را اضافه کن: `dir Documents\nothing > all.txt 2>&1`']
+      hints:
+        - 'باید هر دو جریان را به یک فایل بفرستی: اول خروجی عادی را با `>` به فایل ببر، بعد بگو جریان خطا (2) هم به همان جایی برود که جریان 1 می‌رود.'
+        - 'به ترتیب: دستور (`dir Documents\nothing`)، بعد `>` و نام فایل `all.txt`، و در آخر بخش «خطا را به جریان 1 بفرست»: `2>` و بعد `&1`.'
       answer: 'dir Documents\nothing > all.txt 2>&1'
+      explain: '`> all.txt` خروجی عادی را به فایل می‌فرستد و `2>&1` یعنی «جریان 2 (خطا) را هم به همان جای جریان 1 بفرست»؛ پس هر دو در `all.txt` ذخیره می‌شوند.'
   quiz:
     - kind: mcq
       q: 'شماره جریان پیام‌های خطا در CMD کدام است؟'
@@ -632,14 +689,20 @@
       start: 'C:\Users\Student'
       task: 'در یک خط، پوشه `Shop` را بساز و فقط اگر ساخته شد، وارد آن شو.'
       checks: [{type: cwd, value: 'C:\Users\Student\Shop'}, {type: usedOp, value: '&&'}]
-      hints: ['علامت «فقط اگر موفق بود» دو `&` است.', '`mkdir Shop && cd Shop`']
+      hints:
+        - 'دو دستور را می‌شود در یک خط به هم وصل کرد. علامتی لازم داری که دستور دوم را فقط وقتی اجرا کند که اولی موفق بوده.'
+        - 'سه بخش: دستور اول (`mkdir` + نام Shop)، علامت «فقط اگر موفق بود» (دو `&`)، دستور دوم (`cd` + نام Shop).'
       answer: 'mkdir Shop && cd Shop'
+      explain: '`mkdir Shop` پوشه را می‌سازد و `&&` فقط در صورت موفقیت آن، `cd Shop` را اجرا می‌کند؛ اگر ساخت شکست می‌خورد، وارد پوشه نمی‌شدی.'
     - id: P31b
       start: 'C:\Users\Student'
       task: 'در یک خط فایل `nofile.txt` را نمایش بده و اگر شکست خورد، پیام `File not found` را چاپ کن.'
       checks: [{type: lastOutputIncludes, value: 'File not found'}, {type: usedOp, value: '||'}]
-      hints: ['علامت «فقط اگر شکست خورد» دو `|` است.', '`type nofile.txt || echo File not found`']
+      hints:
+        - 'این بار دستور دوم باید فقط وقتی اجرا شود که اولی شکست خورده. علامتش دو خط عمودی (`||`) است.'
+        - 'سه بخش: دستور اول (`type` + نام فایل nofile.txt)، علامت «فقط اگر شکست خورد» (`||`)، دستور دوم (`echo` + پیام File not found).'
       answer: 'type nofile.txt || echo File not found'
+      explain: '`type nofile.txt` شکست می‌خورد چون فایل وجود ندارد، و `||` در این حالت `echo File not found` را اجرا می‌کند تا پیام خودت چاپ شود.'
   quiz:
     - kind: predict
       q: 'فایل `a.txt` وجود ندارد. چه چیزی چاپ می‌شود؟'
@@ -688,15 +751,21 @@
       task: 'در Documents یک پوشه به نام `Archive` بساز، همه فایل‌های `.txt` را به آن کپی کن و در آخر محتوای Archive را ببین.'
       multi: true
       checks: [{type: fileExists, path: 'C:\Users\Student\Documents\Archive\menu.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\Archive\todo.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\Archive\guests.txt'}, {type: argIncludes, cmd: dir, value: archive}]
-      hints: ['سه قدم: `mkdir`، `copy` با Wildcard، `dir`.', '`mkdir Archive` ، `copy *.txt Archive` ، `dir Archive`']
+      hints:
+        - 'سه قدم پشت‌سرهم: اول پوشه Archive را بساز، بعد همه فایل‌های `.txt` را با Wildcard `*` در آن کپی کن، و در آخر محتوایش را ببین.'
+        - 'خط ۱: `mkdir` + نام پوشه. خط ۲: `copy` + الگوی همه txtها (`*` و `.txt`) + پوشه مقصد. خط ۳: `dir` + نام همان پوشه.'
       answer: ['mkdir Archive', 'copy *.txt Archive', 'dir Archive']
+      explain: '`mkdir Archive` پوشه را می‌سازد، `copy *.txt Archive` همه فایل‌های متنی را در آن کپی می‌کند و `dir Archive` نشان می‌دهد که کپی‌ها رسیده‌اند.'
     - id: P32b
       start: 'C:\Users\Student\Pictures'
       task: 'همه عکس‌های `.jpg` این پوشه را به `E:\Photos` کپی کن و فهرست فایل‌های آن پوشه را در `E:\photos.txt` ذخیره کن.'
       multi: true
       checks: [{type: fileExists, path: 'E:\Photos\beach.jpg'}, {type: fileExists, path: 'E:\Photos\cat.jpg'}, {type: fileContains, path: 'E:\photos.txt', value: 'beach.jpg'}]
-      hints: ['اول `copy *.jpg E:\Photos`.', 'بعد `dir E:\Photos > E:\photos.txt`']
+      hints:
+        - 'دو قدم: اول همه عکس‌های `.jpg` را با `copy` و Wildcard به پوشه روی USB بفرست، بعد فهرست آن پوشه را با `dir` و `>` در یک فایل ذخیره کن.'
+        - 'خط ۱: `copy` + الگوی jpgها + مقصد `E:\Photos`. خط ۲: `dir` + همان `E:\Photos` + علامت `>` + فایل مقصد `E:\photos.txt`.'
       answer: ['copy *.jpg E:\Photos', 'dir E:\Photos > E:\photos.txt']
+      explain: '`copy *.jpg E:\Photos` همه jpgها را به USB می‌برد. بعد `dir E:\Photos` فهرست آن پوشه را می‌سازد و `>` آن را در `E:\photos.txt` می‌نویسد.'
   quiz:
     - kind: order
       q: 'برای انتقال همه فایل‌های `.pdf` از Downloads به یک پوشه جدید `Docs`، دستورها را مرتب کن. (از `C:\Users\Student` شروع می‌کنی.)'

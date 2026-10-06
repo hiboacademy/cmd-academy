@@ -33,15 +33,17 @@
       batch: {file: 'first.bat', starter: "echo Hello Batch\n"}
       task: 'این Script یک خط دارد. خط دوم را اضافه کن که نسخه Windows را نشان بدهد (`ver`)، بعد اجرایش کن.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello Batch', 'Microsoft Windows']}]
-      hints: ['زیر خط اول بنویس `ver`.', 'بعد دکمه «اجرا» را بزن.']
+      hints: ['هر خط Batch Script یک Command است و خط‌ها به ترتیب از بالا اجرا می‌شوند. Command نمایش نسخه Windows را در یک خط تازه، زیر خط `echo`، بنویس.', 'خط ۱ همان `echo Hello Batch` بماند؛ خط ۲: Command `ver`. بعد دکمه «اجرا» را بزن تا هر دو خروجی را ببینی.']
       answer: ['echo Hello Batch', 'ver']
+      explain: 'Script اول `echo Hello Batch` را اجرا می‌کند و متن را چاپ می‌کند، بعد `ver` نسخه Windows (`Microsoft Windows ...`) را نشان می‌دهد.'
     - id: P68b
       start: 'C:\Users\Student\Desktop'
       task: 'بدون ویرایشگر و فقط با CMD، فایل `hi.bat` بساز که دستور `echo Hi from a file` داخلش باشد، و بعد آن را اجرا کن.'
       multi: true
       checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\hi.bat', value: 'echo Hi from a file'}, {type: ranBatch}, {type: outputIncludes, value: 'Hi from a file'}]
-      hints: ['با `echo` متن دستور را به فایل بفرست: `echo echo Hi from a file > hi.bat`', 'بعد بنویس `hi.bat`']
+      hints: ['دو قدم: اول با `echo` و Redirect (`>`) یک خط متن را در فایل `hi.bat` بنویس؛ آن متن خودش یک Command است. بعد فایل را با نامش اجرا کن.', 'خط اول سه بخش دارد: `echo` + متنی که باید داخل فایل برود (`echo Hi from a file`) + `>` و نام فایل `hi.bat`. خط دوم: فقط نام فایل `hi.bat`.']
       answer: ['echo echo Hi from a file > hi.bat', 'hi.bat']
+      explain: '`echo` اول، متن `echo Hi from a file` را با `>` در `hi.bat` می‌نویسد؛ وقتی `hi.bat` را اجرا می‌کنی، همان خط اجرا می‌شود و `Hi from a file` چاپ می‌شود.'
   quiz:
     - kind: mcq
       q: 'دستورهای یک Batch Script به چه ترتیبی اجرا می‌شوند؟'
@@ -87,14 +89,16 @@
       files: [{path: 'C:\Users\Student\Desktop\tools.cmd', content: "@echo off\necho This is a .cmd script\n"}]
       task: 'روی Desktop فایل `tools.cmd` هست. آن را فقط با نوشتن نامش، بدون پسوند، اجرا کن.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: 'This is a .cmd script'}, {type: not, check: {type: inputIncludes, value: '.cmd'}}]
-      hints: ['CMD خودش پسوند را پیدا می‌کند.', 'فقط بنویس `tools`']
+      hints: ['وقتی نام یک Script را بدون پسوند بنویسی، CMD خودش در پوشه فعلی دنبال فایل `.bat` یا `.cmd` با همان نام می‌گردد.', 'نام فایل `tools.cmd` است؛ فقط بخش قبل از نقطه را بنویس و Enter بزن. `.cmd` را ننویس.']
       answer: 'tools'
+      explain: 'CMD برای `tools` پسوندهای اجرایی مثل `.cmd` را امتحان می‌کند، `tools.cmd` را پیدا و اجرا می‌کند و پیامش چاپ می‌شود.'
     - id: P69b
       batch: {file: 'info.cmd', starter: "@echo off\n"}
       task: 'یک Script با پسوند `.cmd` بنویس که نام کاربر را با متغیر `%USERNAME%` چاپ کند.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\info.cmd', value: '%username%'}, {type: outputIncludes, value: 'Student'}]
-      hints: ['از `echo` و متغیر استفاده کن.', '`echo User: %USERNAME%`']
+      hints: ['نام کاربر فعلی در Variable آماده `%USERNAME%` است. با `echo` می‌توانی یک متن و این Variable را با هم چاپ کنی.', 'خط اولِ آماده را دست نزن. خط دوم: `echo`، یک برچسب مثل `User:`، و بعد `%USERNAME%` (با `%` در دو طرف).']
       answer: ['@echo off', 'echo User: %USERNAME%']
+      explain: 'در اجرای `echo User: %USERNAME%`، CMD به‌جای `%USERNAME%` نام کاربر (`Student`) را می‌گذارد و بعد کل جمله را چاپ می‌کند.'
   quiz:
     - kind: tf
       q: 'فایل `.cmd` هم مثل `.bat` با نوشتن نامش اجرا می‌شود.'
@@ -142,8 +146,9 @@
       batch: {file: 'hello.bat', starter: ""}
       task: 'Script `hello.bat` را بنویس: اول `Hello, World!` را چاپ کند و بعد خط `Today is` به همراه تاریخ (`%DATE%`).'
       checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello, World!', 'Today is']}, {type: fileContains, path: 'C:\Users\Student\Desktop\hello.bat', value: '%date%'}]
-      hints: ['دو خط با `echo`.', "خط اول: `echo Hello, World!` خط دوم: `echo Today is %DATE%`"]
+      hints: ['هر چیزی که باید چاپ شود یک خط `echo` جدا می‌خواهد. تاریخ امروز در Variable آماده `%DATE%` است.', 'خط ۱: `echo` + متن `Hello, World!`. خط ۲: `echo` + متن `Today is` + فاصله + `%DATE%`.']
       answer: ['echo Hello, World!', 'echo Today is %DATE%']
+      explain: 'خط اول متن خوشامد را چاپ می‌کند و در خط دوم CMD به‌جای `%DATE%` تاریخ امروز را می‌گذارد، پس `Today is` همراه تاریخ چاپ می‌شود.'
   quiz:
     - kind: mcq
       q: 'چرا وقتی روی Script دو بار کلیک می‌کنی، پنجره سریع بسته می‌شود؟'
@@ -194,8 +199,9 @@
       batch: {file: 'steps.bat', starter: "echo Step 1: check files\ndir /b\necho Step 2: done\n"}
       task: 'این Script هنگام اجرا خود دستورها را هم نشان می‌دهد. کاری کن که فقط خروجی‌ها نمایش داده شوند و یک خط توضیح با `rem` هم اضافه کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\steps.bat', value: ['@echo off', 'rem']}, {type: outputIncludes, value: 'Step 2: done'}, {type: outputExcludes, value: '>echo'}]
-      hints: ['خط اول Script باید `@echo off` باشد.', 'یک خط مثل `rem List the desktop files` اضافه کن.']
+      hints: ['دو چیز لازم است: یک خط در بالای Script که نمایش خود دستورها را خاموش کند (`echo off` همراه `@`)، و یک خط Comment که با `rem` شروع شود و اجرا نشود.', 'خط ۱ (بالاترین خط): `@echo off`. خط ۲: `rem` و بعد یک توضیح کوتاه انگلیسی درباره کار Script. بقیه خط‌های قبلی بدون تغییر بمانند.']
       answer: ['@echo off', 'rem List the desktop files', 'echo Step 1: check files', 'dir /b', 'echo Step 2: done']
+      explain: '`@echo off` باعث می‌شود دستورها قبل از اجرا با Prompt نمایش داده نشوند (و `@` خود این خط را هم پنهان می‌کند)؛ خط `rem` فقط توضیح است و اجرا نمی‌شود.'
   quiz:
     - kind: mcq
       q: '`@` در ابتدای یک خط Batch چه می‌کند؟'
@@ -243,14 +249,16 @@
       batch: {file: 'wait.bat', starter: "@echo off\necho Ready?\necho Go!\n"}
       task: 'Script را طوری تغییر بده که بعد از `Ready?` منتظر فشردن کلید بماند و بعد `Go!` را چاپ کند.'
       checks: [{type: ranBatch}, {type: outputOrder, value: ['Ready?', 'Press any key to continue', 'Go!']}]
-      hints: ['دستور توقف بین دو خط echo.', 'بین دو خط بنویس `pause`']
+      hints: ['Commandی لازم داری که Script را نگه دارد تا کاربر یک کلید بزند. جایش مهم است: باید بین چاپ `Ready?` و چاپ `Go!` باشد.', 'یک خط تازه بعد از `echo Ready?` و قبل از `echo Go!` باز کن و Command `pause` را تنها در آن خط بنویس.']
       answer: ['@echo off', 'echo Ready?', 'pause', 'echo Go!']
+      explain: '`pause` بعد از `Ready?` پیام `Press any key to continue . . .` را نشان می‌دهد و تا فشردن کلید صبر می‌کند؛ بعد Script ادامه می‌دهد و `Go!` چاپ می‌شود.'
     - id: P72b
       batch: {file: 'start.bat', starter: "@echo off\n"}
       task: 'Script بنویس که پیام `Press a key to start...` را نشان دهد و بدون پیام استاندارد pause منتظر بماند و بعد `Started` را چاپ کند.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: ['Press a key to start', 'Started']}, {type: outputExcludes, value: 'Press any key to continue'}]
-      hints: ['پیام استاندارد pause را با `>nul` پنهان کن.', '`echo Press a key to start...` ، `pause >nul` ، `echo Started`']
+      hints: ['پیام خودت را با `echo` چاپ کن و برای انتظار از `pause` استفاده کن؛ پیام استاندارد `pause` را با فرستادن خروجی‌اش به `nul` پنهان کن.', 'بعد از `@echo off` سه خط: ۱) `echo` با متن `Press a key to start...` ۲) `pause` همراه `>nul` ۳) `echo` با متن `Started`.']
       answer: ['@echo off', 'echo Press a key to start...', 'pause >nul', 'echo Started']
+      explain: '`echo` پیام دلخواه را نشان می‌دهد، `pause >nul` منتظر کلید می‌ماند ولی پیام استانداردش را به `nul` (هیچ‌جا) می‌فرستد، و بعد `Started` چاپ می‌شود.'
   quiz:
     - kind: mcq
       q: 'پیام استاندارد `pause` چیست؟'
@@ -297,14 +305,16 @@
       batch: {file: 'vars.bat', starter: "@echo off\n"}
       task: 'در Script دو متغیر بساز: `name` با مقدار `Hibo` و `city` با مقدار `Vienna`، و جمله `Hibo lives in Vienna` را با همین متغیرها چاپ کن.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hibo lives in Vienna'}, {type: fileContains, path: 'C:\Users\Student\Desktop\vars.bat', value: ['%name%', '%city%']}]
-      hints: ['`set name=Hibo` و `set city=Vienna`', '`echo %name% lives in %city%`']
+      hints: ['با `set` دو Variable بساز (نام=مقدار، بدون فاصله دور `=`). بعد در جمله `echo` به‌جای نوشتن مستقیم اسم و شهر، Variableها را با `%...%` بخوان.', 'خط ۲: `set` برای `name` با مقدار `Hibo`. خط ۳: `set` برای `city` با مقدار `Vienna`. خط ۴: `echo` جمله‌ای که در آن `%name%` و `%city%` با `lives in` بینشان آمده‌اند.']
       answer: ['@echo off', 'set name=Hibo', 'set city=Vienna', 'echo %name% lives in %city%']
+      explain: 'دو خط `set` مقدارهای `Hibo` و `Vienna` را در Variableها ذخیره می‌کنند و در خط `echo`، `%name%` و `%city%` با همین مقدارها جایگزین می‌شوند.'
     - id: P73b
       batch: {file: 'docs.bat', starter: "@echo off\n"}
       task: 'متغیری به نام `folder` بساز که مسیر Documents کاربر را با `%USERPROFILE%` نگه دارد، و محتوای آن پوشه را با `dir /b` و همین متغیر نمایش بده.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: 'menu.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\docs.bat', value: ['%userprofile%', '%folder%']}]
-      hints: ['`set "folder=%USERPROFILE%\Documents"`', '`dir "%folder%" /b`']
+      hints: ['`%USERPROFILE%` مسیر پوشه کاربر است؛ `\Documents` را به آخرش بچسبان و نتیجه را با `set` در Variable `folder` بگذار. بعد `dir /b` را روی همین Variable اجرا کن.', 'خط ۲: `set` با Quotes دور کل `folder=%USERPROFILE%\Documents`. خط ۳: `dir`، بعد `"%folder%"` داخل Quotes، بعد Switch `/b`.']
       answer: ['@echo off', 'set "folder=%USERPROFILE%\Documents"', 'dir "%folder%" /b']
+      explain: '`set "folder=..."` مسیر Documents کاربر را در `folder` ذخیره می‌کند و `dir "%folder%" /b` محتوای همان پوشه را فقط با نام فایل‌ها نشان می‌دهد؛ Quotes مسیر را در برابر فاصله امن می‌کند.'
   quiz:
     - kind: predict
       q: 'متغیر `x` تعریف نشده. داخل یک فایل Batch خروجی این خط چیست؟'
@@ -356,14 +366,16 @@
       inputs: ['Sara']
       task: 'Script بنویس که اسم کاربر را بپرسد و بعد بگوید `Hello` و همان اسم. (اجرا کن و اسمت را وارد کن.)'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\ask.bat', value: ['set /p', '%name%']}, {type: outputIncludes, value: 'Hello'}]
-      hints: ['`set /p name=What is your name? `', '`echo Hello %name%`']
+      hints: ['برای گرفتن ورودی از کاربر از `set /p` استفاده کن: سؤال را نشان می‌دهد و جواب را در یک Variable می‌گذارد. بعد آن Variable را با `echo` چاپ کن.', 'خط ۲: `set /p`، نام Variable (`name`)، `=`، و متن سؤال مثل `What is your name?` با یک فاصله در آخر. خط ۳: `echo Hello` و بعد `%name%`.']
       answer: ['@echo off', 'set /p name=What is your name? ', 'echo Hello %name%']
+      explain: '`set /p name=...` سؤال را نشان می‌دهد و جواب کاربر را در `name` می‌گذارد؛ `echo Hello %name%` آن جواب را بعد از `Hello` چاپ می‌کند.'
     - id: P74b
       batch: {file: 'first.bat', starter: "@echo off\n"}
       task: 'Script بنویس که خط اول فایل `C:\Users\Student\Documents\todo.txt` را در یک متغیر بخواند و آن را با متن `First task:` چاپ کند.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: 'First task: 1. Learn dir'}]
-      hints: ['ورودی `set /p` را با `<` از فایل بده.', '`set /p line=<C:\Users\Student\Documents\todo.txt` و بعد `echo First task: %line%`']
+      hints: ['`set /p` می‌تواند ورودی را به‌جای کیبورد از یک فایل بگیرد: با `<` فایل را به آن بده تا خط اول فایل در Variable قرار بگیرد.', 'خط ۲: `set /p`، یک Variable مثل `line`، `=`، و بلافاصله `<` و مسیر کامل `C:\Users\Student\Documents\todo.txt`. خط ۳: `echo` با متن `First task:` و بعد `%line%`.']
       answer: ['@echo off', 'set /p line=<C:\Users\Student\Documents\todo.txt', 'echo First task: %line%']
+      explain: '`<` محتوای `todo.txt` را به‌جای کیبورد به `set /p` می‌دهد و فقط خط اول در `line` می‌نشیند؛ `echo First task: %line%` آن را چاپ می‌کند.'
   quiz:
     - kind: mcq
       q: 'در `set /p age=How old are you? ` جواب کاربر کجا ذخیره می‌شود؟'
@@ -411,14 +423,16 @@
       batch: {file: 'price.bat', starter: "@echo off\nset price=8\nset qty=3\n"}
       task: 'قیمت هر پیتزا `8` و تعداد `3` است. با `set /a` قیمت کل را حساب کن و `Total: 24` را چاپ کن.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: 'Total: 24'}, {type: fileContains, path: 'C:\Users\Student\Desktop\price.bat', value: 'set /a'}]
-      hints: ['`set /a total=price*qty`', '`echo Total: %total%`']
+      hints: ['محاسبه با `set /a` انجام می‌شود: نتیجه یک عبارت ریاضی را در یک Variable تازه می‌گذارد. داخل `set /a` نام Variableها بدون `%` هم کار می‌کنند و ضرب با `*` است.', 'خط تازه: `set /a`، Variable نتیجه (`total`)، `=`، و ضرب `price` در `qty`. خط آخر: `echo Total:` و بعد `%total%`.']
       answer: ['@echo off', 'set price=8', 'set qty=3', 'set /a total=price*qty', 'echo Total: %total%']
+      explain: '`set /a total=price*qty` مقدار 8 را در 3 ضرب می‌کند و 24 را در `total` می‌گذارد؛ `echo Total: %total%` نتیجه را چاپ می‌کند.'
     - id: P75b
       batch: {file: 'count.bat', starter: "@echo off\nset count=0\n"}
       task: 'شمارنده `count` را با `set /a` سه بار یکی‌یکی زیاد کن و در آخر `Count: 3` را چاپ کن.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: 'Count: 3'}, {type: fileContains, path: 'C:\Users\Student\Desktop\count.bat', value: '+='}]
-      hints: ['`set /a count+=1` را سه بار بنویس.', 'بعد `echo Count: %count%`']
+      hints: ['برای یکی اضافه کردن به یک شمارنده، `set /a` عملگر `+=` دارد. این کار را سه بار تکرار کن و بعد مقدار را چاپ کن.', 'سه خط یکسان: `set /a` + `count` + `+=1`. بعد یک خط `echo` با متن `Count:` و `%count%`.']
       answer: ['@echo off', 'set count=0', 'set /a count+=1', 'set /a count+=1', 'set /a count+=1', 'echo Count: %count%']
+      explain: 'هر `set /a count+=1` یکی به `count` اضافه می‌کند، پس از 0 به 3 می‌رسد و `echo Count: %count%` عدد 3 را نشان می‌دهد.'
   quiz:
     - kind: predict
       q: 'خروجی چیست؟'
@@ -469,14 +483,16 @@
       batch: {file: 'greet.bat', starter: "@echo off\n", args: 'Ali'}
       task: 'Script بنویس که با اولین Argument سلام کند. با Argument `Ali` اجرا کن تا `Hello Ali` چاپ شود.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hello Ali'}, {type: fileContains, path: 'C:\Users\Student\Desktop\greet.bat', value: '%1'}]
-      hints: ['اولین Argument با `%1` خوانده می‌شود.', '`echo Hello %1`']
+      hints: ['Argument چیزی است که بعد از نام Script نوشته می‌شود. داخل Script اولین Argument با `%1` خوانده می‌شود؛ آن را در جمله `echo` بگذار.', 'بعد از `@echo off` یک خط: `echo`، کلمه `Hello`، و بعد `%1`. در کادر Arguments مقدار `Ali` باشد و اجرا کن.']
       answer: ['@echo off', 'echo Hello %1']
+      explain: 'هنگام اجرا با Argument `Ali`، CMD به‌جای `%1` کلمه `Ali` را می‌گذارد و `Hello Ali` چاپ می‌شود.'
     - id: P76b
       batch: {file: 'copyto.bat', starter: "@echo off\n", args: '..\Documents\todo.txt E:\'}
       task: 'Script بنویس که فایل `%1` را به مقصد `%2` کپی کند. با Argumentهای داده‌شده اجرا کن (todo.txt → USB).'
       checks: [{type: ranBatch}, {type: fileExists, path: 'E:\todo.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\copyto.bat', value: ['%1', '%2']}]
-      hints: ['دستور copy با دو Argument.', '`copy %1 %2`']
+      hints: ['`copy` دو Argument می‌خواهد: مبدأ و مقصد. اینجا به‌جای نوشتن مسیرهای ثابت، Argumentهای Script (`%1` و `%2`) را به `copy` بده.', 'یک خط بعد از `@echo off`: `copy`، بعد `%1` (فایل مبدأ)، بعد `%2` (مقصد). با Argumentهای داده‌شده اجرا کن.']
       answer: ['@echo off', 'copy %1 %2']
+      explain: 'با Argumentهای `..\Documents\todo.txt` و `E:\`، خط `copy %1 %2` همان کپی `todo.txt` به `E:\` می‌شود؛ پس Script برای هر فایل و مقصدی قابل استفاده است.'
   quiz:
     - kind: predict
       q: '`show.bat red green blue` اجرا شد. `%2` چیست؟'
@@ -522,8 +538,9 @@
       batch: {file: 'colors.bat', starter: "@echo off\necho First: %1\n", args: 'red green blue'}
       task: 'Script الان اولین رنگ را چاپ می‌کند. با `shift` کاری کن که بعدش `Then: green` هم چاپ شود (با Argumentهای `red green blue`).'
       checks: [{type: ranBatch}, {type: outputIncludes, value: ['First: red', 'Then: green']}, {type: fileContains, path: 'C:\Users\Student\Desktop\colors.bat', value: 'shift'}]
-      hints: ['بعد از `shift`، رنگ دوم با `%1` خوانده می‌شود.', '`shift` و بعد `echo Then: %1`']
+      hints: ['`shift` همه Argumentها را یکی به چپ می‌برد: بعد از آن، Argument دوم (`green`) در `%1` قرار می‌گیرد. پس بعد از `shift` دوباره `%1` را چاپ کن.', 'بعد از خط `echo First: %1` دو خط اضافه کن: ۱) Command `shift` ۲) `echo` با متن `Then:` و `%1`.']
       answer: ['@echo off', 'echo First: %1', 'shift', 'echo Then: %1']
+      explain: 'خط اول `red` را چاپ می‌کند؛ `shift` Argumentها را جابه‌جا می‌کند تا `%1` برابر `green` شود و `echo Then: %1` چاپ می‌کند `Then: green`.'
   quiz:
     - kind: predict
       q: '`s.bat A B C` اجرا شد. بعد از دو بار `shift`، `%1` چیست؟'

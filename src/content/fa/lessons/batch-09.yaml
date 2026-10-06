@@ -31,14 +31,16 @@
       inputs: ['Y']
       task: 'Script از کاربر می‌پرسد CMD را دوست دارد یا نه. اگر جواب `y` یا `Y` بود، `Great!` چاپ کن. (اجرا کن و `y` بزن.)'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\like.bat', value: ['if', '/i']}, {type: outputIncludes, value: 'Great!'}]
-      hints: ['برای قبول y و Y از `/i` استفاده کن.', '`if /i "%answer%"=="y" echo Great!`']
+      hints: ['باید جواب کاربر را که در متغیر `answer` ذخیره شده با `y` مقایسه کنی؛ برای این کار از `if` استفاده کن. چون `Y` بزرگ هم باید قبول شود، Switch `/i` لازم است.', 'یک خط به آخر Script اضافه کن با این بخش‌ها: `if /i` ← دو طرف مقایسه داخل Quotes یعنی `"%answer%"` و `"y"` با `==` بین آن‌ها ← در آخر دستوری که باید اجرا شود: `echo` با متن `Great!`.']
       answer: ['@echo off', 'set /p answer=Do you like CMD? (y/n) ', 'if /i "%answer%"=="y" echo Great!']
+      explain: '`if /i "%answer%"=="y"` جواب کاربر را بدون توجه به بزرگی و کوچکی حروف با `y` مقایسه می‌کند و اگر برابر باشند `echo Great!` اجرا می‌شود. Quotes هم جلوی خطا را وقتی جواب خالی است می‌گیرند.'
     - id: P78b
       batch: {file: 'hello.bat', starter: "@echo off\n", args: ''}
       task: 'Script بنویس که اگر بدون Argument اجرا شد، پیام `Please give a name` را نشان دهد. (بدون Argument اجرا کن.)'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\hello.bat', value: ['if', '%1']}, {type: outputIncludes, value: 'Please give a name'}]
-      hints: ['خالی بودن `%1` را با Quotes بررسی کن.', '`if "%1"=="" echo Please give a name`']
+      hints: ['اولین Argument در `%1` است. اگر Script بدون Argument اجرا شود، `%1` خالی است؛ پس با `if` بررسی کن که `%1` با «هیچ» برابر است یا نه.', 'بخش‌های خط: `if` ← سمت چپ `"%1"` ← `==` ← سمت راست یک جفت Quote خالی `""` ← بعد `echo` با پیام `Please give a name`.']
       answer: ['@echo off', 'if "%1"=="" echo Please give a name']
+      explain: 'وقتی Argumentی داده نشود، `"%1"` به `""` تبدیل می‌شود و با `""` برابر است، پس `echo` پیام را نشان می‌دهد. Quotes باعث می‌شوند خط حتی با `%1` خالی بدون خطا کار کند.'
   quiz:
     - kind: fix
       q: 'وقتی `%x%` خالی است این خط خطا می‌دهد. اصلاح درست کدام است؟'
@@ -91,14 +93,16 @@
       inputs: ['20']
       task: 'اگر سن وارد شده `18` یا بیشتر بود `Adult` و وگرنه `Child` چاپ کن. (با `20` امتحان کن.)'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\age.bat', value: ['geq', 'else']}, {type: outputIncludes, value: 'Adult'}, {type: outputExcludes, value: 'Child'}]
-      hints: ['عملگر «بیشتر یا مساوی» `geq` است.', '`if %age% geq 18 (echo Adult) else (echo Child)`']
+      hints: ['دو مسیر لازم داری: یکی برای `18` یا بیشتر و یکی برای بقیه. از `if ... else` و عملگر عددی «بیشتر یا مساوی» یعنی `geq` استفاده کن.', 'ساختار: شرط `if %age% geq 18` و یک پرانتز باز که داخلش `echo Adult` است ← بعد `) else (` در یک خط ← داخل بخش else دستور `echo Child` ← و در آخر بستن پرانتز با `)`.']
       answer: ['@echo off', 'set /p age=How old are you? ', 'if %age% geq 18 (', '  echo Adult', ') else (', '  echo Child', ')']
+      explain: '`geq` یعنی «بیشتر یا مساوی»، پس با `20` شرط درست است و بخش اول (`echo Adult`) اجرا می‌شود. بخش بعد از `else` فقط وقتی اجرا می‌شود که سن کمتر از `18` باشد.'
     - id: P79b
       batch: {file: 'stock.bat', starter: "@echo off\nset /a pizzas=5\n"}
       task: 'اگر تعداد پیتزاها (`pizzas`) بیشتر از `3` است `Enough pizza` و وگرنه `Order more` چاپ کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\stock.bat', value: ['gtr', 'else']}, {type: outputIncludes, value: 'Enough pizza'}]
-      hints: ['عملگر «بیشتر» `gtr` است.', '`if %pizzas% gtr 3 (echo Enough pizza) else (echo Order more)`']
+      hints: ['مقدار `pizzas` را با عدد `3` مقایسه کن و با `if ... else` یکی از دو پیام را چاپ کن. عملگر «بیشتر از» `gtr` است (نه `>`).', 'بخش‌ها در یک خط: `if` ← `%pizzas%` ← `gtr 3` ← پرانتز اول با `echo Enough pizza` ← `else` ← پرانتز دوم با `echo Order more`.']
       answer: ['@echo off', 'set /a pizzas=5', 'if %pizzas% gtr 3 (echo Enough pizza) else (echo Order more)']
+      explain: '`%pizzas%` برابر `5` است و `5 gtr 3` درست است، پس پرانتز اول اجرا می‌شود و `Enough pizza` چاپ می‌شود. اگر تعداد `3` یا کمتر بود، بخش `else` یعنی `Order more` اجرا می‌شد.'
   quiz:
     - kind: mcq
       q: 'کدام عملگر یعنی «کمتر از»؟'
@@ -152,14 +156,16 @@
       batch: {file: 'prepare.bat', starter: "@echo off\n"}
       task: 'Script بنویس که پوشه `Reports` را روی Desktop فقط اگر وجود ندارد بسازد و بعد `Ready` چاپ کند. (دو بار اجرا کن؛ بار دوم هم نباید خطا بدهد.)'
       checks: [{type: ranBatch}, {type: dirExists, path: 'C:\Users\Student\Desktop\Reports'}, {type: fileContains, path: 'C:\Users\Student\Desktop\prepare.bat', value: 'if not exist'}, {type: outputIncludes, value: 'Ready'}, {type: outputExcludes, value: 'already exists'}]
-      hints: ['`if not exist Reports mkdir Reports`', 'بعد `echo Ready`']
+      hints: ['می‌خواهی پوشه فقط وقتی ساخته شود که وجود ندارد؛ این کار `if not exist` است و برای ساختن پوشه از `mkdir` استفاده کن. بعد پیام را چاپ کن.', 'دو خط بنویس: خط اول = `if not exist` + نام پوشه `Reports` + دستور ساختن همان پوشه با `mkdir`. خط دوم = `echo` با متن `Ready`.']
       answer: ['@echo off', 'if not exist Reports mkdir Reports', 'echo Ready']
+      explain: '`if not exist Reports mkdir Reports` فقط وقتی پوشه نیست آن را می‌سازد، پس اجرای دوم خطای `already exists` نمی‌دهد. بعد `echo Ready` در هر دو اجرا پیام را نشان می‌دهد.'
     - id: P80b
       batch: {file: 'menu.bat', starter: "@echo off\n"}
       task: 'اگر فایل `%USERPROFILE%\Documents\menu.txt` وجود دارد `Menu found` و وگرنه `No menu` چاپ کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\menu.bat', value: 'if exist'}, {type: outputIncludes, value: 'Menu found'}]
-      hints: ['`if exist "مسیر" ( ... ) else ( ... )`', '`if exist "%USERPROFILE%\Documents\menu.txt" (echo Menu found) else (echo No menu)`']
+      hints: ['وجود یک فایل را با `if exist` بررسی کن و چون دو پیام مختلف لازم است، از `else` هم استفاده کن. مسیر را داخل Quotes بنویس.', 'بخش‌ها: `if exist` ← مسیر `"%USERPROFILE%\Documents\menu.txt"` ← پرانتز اول با `echo Menu found` ← `else` ← پرانتز دوم با `echo No menu`.']
       answer: ['@echo off', 'if exist "%USERPROFILE%\Documents\menu.txt" (echo Menu found) else (echo No menu)']
+      explain: '`if exist` بررسی می‌کند فایل `menu.txt` در Documents هست یا نه؛ چون هست، بخش اول یعنی `Menu found` چاپ می‌شود. اگر فایل نبود، بخش `else` پیام `No menu` را نشان می‌داد.'
   quiz:
     - kind: mcq
       q: 'کدام خط پوشه Backup را فقط اگر وجود ندارد می‌سازد؟'
@@ -209,14 +215,16 @@
       batch: {file: 'pizza.bat', starter: "@echo off\nfind \"Pizza\" \"%USERPROFILE%\\Documents\\menu.txt\" >nul\n"}
       task: 'بعد از `find`، اگر Pizza پیدا نشد `No pizza` و اگر پیدا شد `We have pizza` چاپ کن (با ERRORLEVEL).'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\pizza.bat', value: 'errorlevel'}, {type: outputIncludes, value: 'We have pizza'}, {type: outputExcludes, value: 'No pizza'}]
-      hints: ['`find` اگر پیدا نکند کد 1 می‌دهد.', '`if errorlevel 1 (echo No pizza) else (echo We have pizza)`']
+      hints: ['`find` اگر متن را پیدا کند ERRORLEVEL را `0` و اگر پیدا نکند `1` می‌کند. با `if errorlevel` و `else` بر اساس این کد یکی از دو پیام را چاپ کن.', 'بخش‌ها: `if errorlevel 1` (یعنی پیدا نشد) ← پرانتز اول با `echo No pizza` ← `else` ← پرانتز دوم با `echo We have pizza`.']
       answer: ['@echo off', 'find "Pizza" "%USERPROFILE%\Documents\menu.txt" >nul', 'if errorlevel 1 (echo No pizza) else (echo We have pizza)']
+      explain: '`if errorlevel 1` یعنی «کد 1 یا بیشتر»، که برای `find` یعنی متن پیدا نشد. چون Pizza در منو هست، کد `0` است و بخش `else` یعنی `We have pizza` اجرا می‌شود.'
     - id: P81b
       batch: {file: 'server.bat', starter: "@echo off\nping -n 1 10.0.0.99 >nul\n"}
       task: 'اگر ping موفق نبود (`%errorlevel%` صفر نبود)، پیام `Server is down` را نشان بده.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\server.bat', value: '%errorlevel%'}, {type: outputIncludes, value: 'Server is down'}]
-      hints: ['مقایسه دقیق با `neq 0`.', '`if %errorlevel% neq 0 echo Server is down`']
+      hints: ['بعد از `ping`، کد نتیجه در `%errorlevel%` است: `0` یعنی موفق. با `if` بررسی کن که این عدد «نامساوی» صفر است یا نه؛ عملگر نامساوی `neq` است.', 'بخش‌های خط: `if` ← `%errorlevel%` ← `neq 0` ← بعد `echo` با پیام `Server is down`.']
       answer: ['@echo off', 'ping -n 1 10.0.0.99 >nul', 'if %errorlevel% neq 0 echo Server is down']
+      explain: 'اگر `ping` جواب نگیرد، `%errorlevel%` صفر نیست و شرط `neq 0` درست می‌شود، پس پیام `Server is down` چاپ می‌شود. `neq 0` مقایسه دقیق است و هر کد خطایی را می‌گیرد.'
   quiz:
     - kind: predict
       q: 'ERRORLEVEL برابر 3 است. کدام خط‌ها اجرا می‌شوند؟'
@@ -267,14 +275,16 @@
       batch: {file: 'countdown.bat', starter: "@echo off\nset /a n=3\n"}
       task: 'با Label و `goto` شمارش معکوس `3`، `2`، `1` را چاپ کن و در آخر `Liftoff!`.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\countdown.bat', value: ['goto', ':']}, {type: outputOrder, value: ['3', '2', '1', 'Liftoff!']}]
-      hints: ['Label `:loop`، چاپ `%n%`، کم کردن با `set /a n-=1`.', '`if %n% gtr 0 goto loop` و بعد `echo Liftoff!`']
+      hints: ['برای تکرار، یک Label بالای بخش تکرار بگذار و با `goto` به آن برگرد. هر بار `%n%` را چاپ کن و یکی کمش کن؛ شرط خروج را فراموش نکن تا حلقه بی‌پایان نشود.', 'ترتیب خطوط بعد از `set /a n=3`: Label `:loop` ← چاپ `%n%` با `echo` ← کم کردن با `set /a n-=1` ← اگر `%n%` هنوز `gtr 0` است، `goto loop` ← بعد از حلقه `echo Liftoff!`.']
       answer: ['@echo off', 'set /a n=3', ':loop', 'echo %n%', 'set /a n-=1', 'if %n% gtr 0 goto loop', 'echo Liftoff!']
+      explain: 'Label `:loop` نقطه شروع حلقه است: هر دور `echo %n%` عدد را چاپ و `set /a n-=1` یکی کم می‌کند. `if %n% gtr 0 goto loop` تا وقتی `n` بیشتر از صفر است برمی‌گردد و بعد اجرا به `echo Liftoff!` می‌رسد.'
     - id: P82b
       batch: {file: 'skip.bat', starter: "@echo off\necho Start\necho This line must be skipped\necho End\n"}
       task: 'با `goto` و یک Label کاری کن که خط `This line must be skipped` اجرا نشود ولی `Start` و `End` چاپ شوند.'
       checks: [{type: ranBatch}, {type: outputIncludes, value: ['Start', 'End']}, {type: outputExcludes, value: 'must be skipped'}]
-      hints: ['بعد از Start بنویس `goto finish` و قبل از End یک Label `:finish` بگذار.', 'خط وسط بین goto و Label می‌ماند و اجرا نمی‌شود.']
+      hints: ['با `goto` می‌توانی از روی چند خط بپری و به یک Label پایین‌تر بروی. خطی که بین `goto` و Label است اجرا نمی‌شود.', 'دو خط اضافه کن: بعد از `echo Start` یک `goto` با یک نام دلخواه (مثلاً `finish`)، و درست قبل از `echo End` همان نام را به شکل Label با `:` در اول خط.']
       answer: ['@echo off', 'echo Start', 'goto finish', 'echo This line must be skipped', ':finish', 'echo End']
+      explain: '`goto finish` اجرا را مستقیم به خط `:finish` می‌برد، پس `echo This line must be skipped` که بین آن‌هاست اجرا نمی‌شود. `Start` قبل از پرش و `End` بعد از Label چاپ می‌شوند.'
   quiz:
     - kind: predict
       q: 'خروجی؟'
@@ -325,14 +335,16 @@
       batch: {file: 'photos.bat', starter: "@echo off\n"}
       task: 'برای هر فایل `.jpg` در پوشه Pictures کاربر، خط `Photo:` و بعد نام فایل را چاپ کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\photos.bat', value: ['for', '%%']}, {type: outputIncludes, value: ['beach.jpg', 'cat.jpg']}, {type: outputExcludes, value: 'logo.png'}]
-      hints: ['الگو: `"%USERPROFILE%\Pictures\*.jpg"`', '`for %%f in ("%USERPROFILE%\Pictures\*.jpg") do echo Photo: %%~nxf`']
+      hints: ['با `for` می‌توانی برای هر فایلی که با یک الگو جور است یک دستور اجرا کنی. الگو همه فایل‌های `*.jpg` در پوشه Pictures کاربر است و در Batch متغیر حلقه `%%f` نوشته می‌شود.', 'بخش‌ها: `for %%f in` ← داخل پرانتز الگو با Quotes: `"%USERPROFILE%\Pictures\*.jpg"` ← `do echo Photo:` ← در آخر نام فایل با `%%~nxf` (نام و پسوند، بدون مسیر).']
       answer: ['@echo off', 'for %%f in ("%USERPROFILE%\Pictures\*.jpg") do echo Photo: %%~nxf']
+      explain: '`for` برای هر فایل jpg یک بار اجرا می‌شود و مسیر آن را در `%%f` می‌گذارد. `%%~nxf` فقط نام و پسوند فایل (مثل `beach.jpg`) را می‌دهد و `logo.png` چون با `*.jpg` جور نیست چاپ نمی‌شود.'
     - id: P83b
       batch: {file: 'totext.bat', starter: "@echo off\nif not exist E:\\Texts mkdir E:\\Texts\n"}
       task: 'با یک حلقه `for` همه فایل‌های `.txt` پوشه Documents را یکی‌یکی به `E:\Texts` کپی کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\totext.bat', value: 'for'}, {type: fileExists, path: 'E:\Texts\menu.txt'}, {type: fileExists, path: 'E:\Texts\guests.txt'}]
-      hints: ['داخل حلقه از `copy "%%f" E:\Texts` استفاده کن.', '`for %%f in ("%USERPROFILE%\Documents\*.txt") do copy "%%f" E:\Texts >nul`']
+      hints: ['یک حلقه `for` روی همه فایل‌های `*.txt` پوشه Documents بساز و داخل آن هر فایل را با `copy` به `E:\Texts` بفرست.', 'بخش‌ها: `for %%f in` ← الگو داخل پرانتز با Quotes: `"%USERPROFILE%\Documents\*.txt"` ← `do copy` ← فایل فعلی `"%%f"` ← مقصد `E:\Texts` ← (اختیاری) `>nul` برای پنهان کردن پیام‌ها.']
       answer: ['@echo off', 'if not exist E:\Texts mkdir E:\Texts', 'for %%f in ("%USERPROFILE%\Documents\*.txt") do copy "%%f" E:\Texts >nul']
+      explain: 'حلقه هر فایل txt را یکی‌یکی در `%%f` می‌گذارد و `copy "%%f" E:\Texts` آن را به مقصد کپی می‌کند. Quotes دور `%%f` برای نام‌های فاصله‌دار و `>nul` برای خروجی تمیز است.'
   quiz:
     - kind: mcq
       q: 'در فایل Batch متغیر حلقه `for` چطور نوشته می‌شود؟'
@@ -386,14 +398,16 @@
       batch: {file: 'numbers.bat', starter: "@echo off\n"}
       task: 'با `for /l` عددهای 1 تا 5 را به شکل `Number 1` تا `Number 5` چاپ کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\numbers.bat', value: 'for /l'}, {type: outputOrder, value: ['Number 1', 'Number 3', 'Number 5']}, {type: outputExcludes, value: 'Number 6'}]
-      hints: ['(1,1,5) یعنی از 1 با گام 1 تا 5.', '`for /l %%i in (1,1,5) do echo Number %%i`']
+      hints: ['برای شمارش از `for /l` استفاده کن؛ داخل پرانتز سه عدد می‌آید: شروع، گام و پایان. در هر دور عدد فعلی را همراه متن `Number` چاپ کن.', 'بخش‌ها: `for /l %%i in` ← پرانتز `(1,1,5)` یعنی از 1 با گام 1 تا 5 ← `do echo Number` ← در آخر متغیر حلقه `%%i`.']
       answer: ['@echo off', 'for /l %%i in (1,1,5) do echo Number %%i']
+      explain: '`for /l %%i in (1,1,5)` شمارنده‌ای است که `%%i` را از 1 تا 5 یکی‌یکی زیاد می‌کند. در هر دور `echo Number %%i` یک خط مثل `Number 3` چاپ می‌کند.'
     - id: P84b
       batch: {file: 'prices.bat', starter: "@echo off\n"}
       task: 'فایل `%USERPROFILE%\Documents\menu.txt` را با `for /f` بخوان (دو خط اول عنوان‌اند) و برای هر غذا بنویس: `Pizza costs 8.50`.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\prices.bat', value: ['for /f', 'skip=2']}, {type: outputIncludes, value: ['Pizza costs 8.50', 'Coffee costs 2.50']}, {type: outputExcludes, value: 'Restaurant costs'}]
-      hints: ['گزینه‌ها: `"skip=2 tokens=1,2"`', '`for /f "skip=2 tokens=1,2" %%a in (%USERPROFILE%\Documents\menu.txt) do echo %%a costs %%b`']
+      hints: ['برای خواندن خط‌به‌خط فایل از `for /f` استفاده کن. دو خط اول را با گزینه `skip` رد کن و با `tokens` نام غذا و قیمت را جدا بگیر.', 'بخش‌ها: `for /f` ← گزینه‌ها داخل Quotes: `"skip=2 tokens=1,2"` ← متغیر `%%a` (بخش دوم خودکار در `%%b` می‌آید) ← `in` و مسیر فایل داخل پرانتز ← `do echo` با `%%a`، کلمه `costs` و `%%b`.']
       answer: ['@echo off', 'for /f "skip=2 tokens=1,2" %%a in (%USERPROFILE%\Documents\menu.txt) do echo %%a costs %%b']
+      explain: '`skip=2` دو خط عنوان را رد می‌کند و `tokens=1,2` بخش اول هر خط (نام غذا) را در `%%a` و بخش دوم (قیمت) را در `%%b` می‌گذارد. بعد `echo %%a costs %%b` جمله‌ای مثل `Pizza costs 8.50` می‌سازد.'
   quiz:
     - kind: predict
       q: 'این حلقه چند بار اجرا می‌شود؟'
@@ -444,8 +458,9 @@
       batch: {file: 'list.bat', starter: "@echo off\nset count=0\nfor %%f in (\"%USERPROFILE%\\Documents\\*.txt\") do (\n  set /a count+=1\n  echo %count%. %%~nxf\n)\n"}
       task: 'این Script باید فهرست شماره‌دار فایل‌ها را چاپ کند (`1. guests.txt` ...) ولی همه شماره‌ها `0` است. با Delayed Expansion درستش کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\list.bat', value: ['enabledelayedexpansion', '!count!']}, {type: outputIncludes, value: ['1. guests.txt', '3. todo.txt']}]
-      hints: ['بعد از `@echo off` بنویس `setlocal enabledelayedexpansion`.', 'داخل حلقه `%count%` را به `!count!` تغییر بده.']
+      hints: ['مشکل این است که `%count%` داخل پرانتز حلقه فقط یک بار، قبل از اجرا، خوانده می‌شود. باید Delayed Expansion را روشن کنی و مقدار لحظه‌ای را با `!` بخوانی.', 'دو تغییر لازم است: ۱) درست بعد از `@echo off` خط روشن کردن Delayed Expansion یعنی `setlocal enabledelayedexpansion`. ۲) داخل حلقه، `%count%` را به `!count!` تبدیل کن. (در آخر هم می‌توانی `endlocal` بگذاری.)']
       answer: ['@echo off', 'setlocal enabledelayedexpansion', 'set count=0', 'for %%f in ("%USERPROFILE%\Documents\*.txt") do (', '  set /a count+=1', '  echo !count!. %%~nxf', ')', 'endlocal']
+      explain: '`setlocal enabledelayedexpansion` اجازه می‌دهد `!count!` هر بار مقدار فعلی متغیر را بخواند، پس بعد از هر `set /a count+=1` شماره درست (1، 2، 3) چاپ می‌شود. `endlocal` در آخر تغییرات متغیرها را محلی نگه می‌دارد.'
   quiz:
     - kind: predict
       q: 'بدون Delayed Expansion، خروجی خط دوم چیست؟'
@@ -494,15 +509,17 @@
       batch: {file: 'func.bat', starter: "@echo off\n"}
       task: 'یک تابع `:greet` بنویس که `Hi` و اولین Argument خودش را چاپ کند. آن را یک بار برای `Ali` و یک بار برای `Mina` صدا بزن و در آخر `Done` چاپ کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\func.bat', value: ['call :greet', ':greet']}, {type: outputOrder, value: ['Hi Ali', 'Hi Mina', 'Done']}]
-      hints: ['`call :greet Ali` و `call :greet Mina` و `echo Done` و بعد `goto :eof`.', 'زیر آن: `:greet` ، `echo Hi %1` ، `exit /b`']
+      hints: ['تابع یعنی یک Label در پایین Script که با `call :نام` صدا زده می‌شود و با `exit /b` برمی‌گردد؛ داخل تابع اولین Argument در `%1` است. قبل از تابع `goto :eof` بگذار تا Script وارد آن نشود.', 'ترتیب خطوط: دو خط `call :greet` (یکی با `Ali`، یکی با `Mina`) ← `echo Done` ← `goto :eof` ← Label `:greet` ← `echo Hi` همراه `%1` ← `exit /b`.']
       answer: ['@echo off', 'call :greet Ali', 'call :greet Mina', 'echo Done', 'goto :eof', ':greet', 'echo Hi %1', 'exit /b']
+      explain: 'هر `call :greet` به Label `:greet` می‌رود، `echo Hi %1` نام داده‌شده را چاپ می‌کند و `exit /b` به خط بعد از `call` برمی‌گرداند. `goto :eof` بعد از `echo Done` باعث می‌شود Script بعد از کار اصلی وارد تابع نشود.'
     - id: P86b
       batch: {file: 'main.bat', starter: "@echo off\n"}
       files: [{path: 'C:\Users\Student\Desktop\helper.bat', content: "@echo off\necho Helper says %1\n"}]
       task: 'روی Desktop فایل `helper.bat` هست. از `main.bat` آن را با Argument `hello` صدا بزن و بعد `Back in main` را چاپ کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\main.bat', value: 'call'}, {type: outputOrder, value: ['Helper says hello', 'Back in main']}]
-      hints: ['بدون `call` به main برنمی‌گردی.', '`call helper.bat hello` و بعد `echo Back in main`']
+      hints: ['برای اجرای یک Script دیگر و برگشتن به Script فعلی باید از `call` استفاده کنی؛ بدون آن، `main.bat` بعد از `helper.bat` ادامه پیدا نمی‌کند.', 'دو خط: اول `call` + نام فایل `helper.bat` + Argument `hello`. دوم `echo` با متن `Back in main`.']
       answer: ['@echo off', 'call helper.bat hello', 'echo Back in main']
+      explain: '`call helper.bat hello` فایل کمکی را با Argument `hello` اجرا می‌کند (پس `%1` در آن `hello` است) و بعد کنترل به `main.bat` برمی‌گردد. برای همین `echo Back in main` بعد از آن اجرا می‌شود.'
   quiz:
     - kind: predict
       q: 'خروجی؟ (main.bat)'
@@ -554,14 +571,16 @@
       inputs: ['N']
       task: 'با `choice` بپرس `Continue?` (Y/N). اگر کاربر `N` زد `Stopped` و اگر `Y` زد `Continuing` چاپ کن. (با `N` امتحان کن.)'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\confirm.bat', value: ['choice', 'errorlevel']}, {type: outputIncludes, value: 'Stopped'}, {type: outputExcludes, value: 'Continuing'}]
-      hints: ['N گزینه دوم است، پس ERRORLEVEL برابر 2 می‌شود.', '`choice /c YN /m "Continue?"` و بعد `if errorlevel 2 (echo Stopped) else (echo Continuing)`']
+      hints: ['با `choice` و Switch `/c` کلیدهای مجاز (`Y` و `N`) و با `/m` متن سؤال را بده. شماره کلید زده‌شده در ERRORLEVEL می‌آید: `Y` = 1 و `N` = 2.', 'دو خط: ۱) `choice /c YN` + `/m` با متن `"Continue?"`. ۲) `if errorlevel 2` (یعنی N) ← پرانتز با `echo Stopped` ← `else` ← پرانتز با `echo Continuing`.']
       answer: ['@echo off', 'choice /c YN /m "Continue?"', 'if errorlevel 2 (echo Stopped) else (echo Continuing)']
+      explain: '`choice /c YN` منتظر `Y` یا `N` می‌ماند و برای `N` (گزینه دوم) ERRORLEVEL را 2 می‌کند. `if errorlevel 2` برای 2 یا بیشتر درست است، پس `Stopped` چاپ می‌شود؛ با `Y` بخش `else` یعنی `Continuing` اجرا می‌شد.'
     - id: P87b
       batch: {file: 'wait.bat', starter: "@echo off\necho Starting soon...\n"}
       task: 'قبل از چاپ `Done`، با `timeout` سه ثانیه صبر کن.'
       checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\wait.bat', value: 'timeout'}, {type: outputOrder, value: ['Starting soon', 'Waiting for', 'Done']}]
-      hints: ['`timeout /t 3`', 'بعد `echo Done`']
+      hints: ['برای صبر کردن چند ثانیه‌ای در Script از `timeout` استفاده کن؛ Switch `/t` تعداد ثانیه‌ها را می‌گیرد. این دستور باید قبل از چاپ `Done` بیاید.', 'بعد از `echo Starting soon...` دو خط اضافه کن: اول `timeout` با `/t` و عدد `3`، بعد `echo Done`.']
       answer: ['@echo off', 'echo Starting soon...', 'timeout /t 3', 'echo Done']
+      explain: '`timeout /t 3` سه ثانیه صبر می‌کند و پیام `Waiting for ...` را نشان می‌دهد. چون قبل از `echo Done` آمده، `Done` بعد از تمام شدن صبر چاپ می‌شود.'
   quiz:
     - kind: predict
       q: 'کاربر در این choice کلید `C` را می‌زند. ERRORLEVEL چیست؟'

@@ -31,15 +31,17 @@
       task: 'در `menu.txt` دنبال کلمه `Burger` بگرد (وجود ندارد) و بلافاصله Exit Code آن را چاپ کن.'
       multi: true
       checks: [{type: anyCmd, value: find, evenIfFailed: true}, {type: inputIncludes, value: '%errorlevel%'}, {type: lastOutputIncludes, value: '1'}]
-      hints: ['اول `find "Burger" menu.txt`.', 'بعد `echo %ERRORLEVEL%`']
+      hints: ['دو قدم داری: اول با `find` دنبال کلمه بگرد، بعد بلافاصله مقدار Variable `%ERRORLEVEL%` را چاپ کن تا Exit Code همان `find` را ببینی.', 'خط اول: `find` + کلمه `"Burger"` داخل Quotes + نام فایل `menu.txt`. خط دوم: `echo` و بعد `%ERRORLEVEL%`. بین این دو هیچ Command دیگری اجرا نکن.']
       answer: ['find "Burger" menu.txt', 'echo %ERRORLEVEL%']
+      explain: '`find` چون `Burger` را پیدا نمی‌کند Exit Code برابر 1 برمی‌گرداند و `echo %ERRORLEVEL%` بلافاصله همان عدد را چاپ می‌کند.'
     - id: P62b
       start: 'C:\Users\Student'
       task: 'یک بار Router (`192.168.1.1`) را ping کن و بعد Exit Code را چاپ کن. (باید 0 باشد.)'
       multi: true
       checks: [{type: anyCmd, value: ping}, {type: inputIncludes, value: '%errorlevel%'}, {type: errorlevel, value: 0}, {type: lastOutputIncludes, value: '0'}]
-      hints: ['`ping -n 1 192.168.1.1`', 'بعد `echo %ERRORLEVEL%`']
+      hints: ['اول با `ping` و Switch `-n` فقط یک بسته به Router بفرست، بعد مقدار Variable `%ERRORLEVEL%` را چاپ کن.', 'خط اول: `ping` + `-n 1` + IP Router یعنی `192.168.1.1`. خط دوم: `echo` با `%ERRORLEVEL%`. چون Router جواب می‌دهد، عدد باید `0` باشد.']
       answer: ['ping -n 1 192.168.1.1', 'echo %ERRORLEVEL%']
+      explain: '`ping -n 1` یک بسته می‌فرستد و چون جواب می‌آید Exit Code برابر 0 (موفق) است؛ `echo %ERRORLEVEL%` همین عدد را نشان می‌دهد.'
   quiz:
     - kind: mcq
       q: 'Exit Code برابر `0` معمولاً یعنی چه؟'
@@ -88,16 +90,18 @@
       start: 'C:\Users\Student'
       task: 'بررسی کن این CMD با دسترسی کامل Administrator اجرا شده یا نه (گروه‌های کاربر را ببین).'
       checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'deny only'}]
-      hints: ['دستور whoami یک Switch برای گروه‌ها دارد.', '`whoami /groups`']
+      hints: ['سطح دسترسی CMD را `whoami` نشان می‌دهد، ولی فقط وقتی گروه‌های کاربر را هم ببینی. `whoami` برای این کار یک Switch دارد.', 'بعد از `whoami` Switch `/groups` را بنویس. در خروجی دنبال خط Administrators بگرد: `Group used for deny only` یعنی دسترسی کامل نیست.']
       answer: 'whoami /groups'
+      explain: '`whoami /groups` گروه‌های کاربر را نشان می‌دهد و عبارت `deny only` جلوی Administrators یعنی این CMD با Run as administrator باز نشده است.'
     - id: P63b
       start: 'C:\Users\Student\Desktop'
       setup: {readonly: ['C:\Users\Student\Desktop\notes.txt']}
       task: 'خط `Buy bread` را به آخر `notes.txt` اضافه کن. (اگر `Access is denied` دیدی، دلیلش را پیدا و رفع کن.)'
       multi: true
       checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\notes.txt', value: ['Remember', 'Buy bread']}]
-      hints: ['فایل Read-only است؛ با `attrib` ببین.', '`attrib -r notes.txt` و بعد `echo Buy bread >> notes.txt`']
+      hints: ['اضافه کردن متن خطای `Access is denied` می‌دهد چون فایل Read-only است. اول با `attrib` این ویژگی را بردار، بعد متن را به آخر فایل اضافه کن.', 'قدم ۱: `attrib` با `-r` (حذف Read-only) روی `notes.txt`. قدم ۲: `echo` با متن `Buy bread`، بعد `>>` و نام فایل (نه `>` که محتوای قبلی را پاک می‌کند).']
       answer: ['attrib -r notes.txt', 'echo Buy bread >> notes.txt']
+      explain: '`attrib -r` ویژگی Read-only را برمی‌دارد تا فایل قابل تغییر شود، و `>>` خط `Buy bread` را به آخر فایل اضافه می‌کند بدون اینکه خط قبلی (`Remember`) پاک شود.'
   quiz:
     - kind: mcq
       q: 'کدام دلیل باعث `Access is denied` نمی‌شود؟'
@@ -141,15 +145,17 @@
       admin: true
       task: 'این CMD با Administrator باز شده. با `whoami` ثابت کن سطح دسترسی High است.'
       checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'High Mandatory'}]
-      hints: ['گروه‌ها را نشان بده.', '`whoami /groups`']
+      hints: ['سطح دسترسی (Mandatory Level) در فهرست گروه‌های کاربر آمده است. همان `whoami` را با Switch مخصوص گروه‌ها اجرا کن.', '`whoami` + Switch `/groups`. در خروجی خط `Mandatory Label` را ببین: `High Mandatory Level` یعنی Administrator و `Medium` یعنی معمولی.']
       answer: 'whoami /groups'
+      explain: 'در CMD ادمین، `whoami /groups` خط `High Mandatory Level` را نشان می‌دهد که ثابت می‌کند دسترسی کامل Administrator فعال است.'
     - id: P64b
       start: 'C:\Windows\System32'
       admin: true
       task: 'فایل‌های سیستمی Windows را با ابزار System File Checker بررسی کن.'
       checks: [{type: anyCmd, value: sfc}, {type: lastOutputIncludes, value: 'integrity violations'}]
-      hints: ['`sfc` با Switch اسکن فوری.', '`sfc /scannow`']
+      hints: ['ابزار System File Checker با Command `sfc` اجرا می‌شود و یک Switch برای «همین حالا اسکن کن» دارد. این ابزار فقط در CMD ادمین کار می‌کند.', 'بعد از `sfc` یک فاصله و بعد Switch را بنویس: `/` + `scan` + `now` (همه به هم چسبیده).']
       answer: 'sfc /scannow'
+      explain: '`sfc /scannow` همه فایل‌های سیستمی Windows را بررسی می‌کند و نتیجه را با عبارت `integrity violations` گزارش می‌دهد.'
   quiz:
     - kind: mcq
       q: 'میانبر باز کردن CMD با Administrator از منوی Start کدام است؟'
@@ -196,16 +202,18 @@
       start: 'C:\Users\Student'
       task: 'وضعیت سرویس Print Spooler (نام کوتاه: `Spooler`) را ببین.'
       checks: [{type: anyCmd, value: sc}, {type: lastOutputIncludes, value: 'RUNNING'}, {type: lastOutputIncludes, value: 'Spooler'}]
-      hints: ['`sc` و دستور query.', '`sc query spooler`']
+      hints: ['وضعیت سرویس‌ها با `sc` دیده می‌شود. کلمه‌ای که بعد از `sc` می‌آید می‌گوید چه کاری کند؛ اینجا می‌خواهی وضعیت را «بپرسی» (query).', 'سه بخش: `sc`، بعد کار `query`، بعد نام کوتاه سرویس `spooler`. در خروجی خط `STATE` را ببین.']
       answer: 'sc query spooler'
+      explain: '`sc query` وضعیت سرویس را می‌پرسد و با نام کوتاه `spooler` فقط Print Spooler را نشان می‌دهد که `RUNNING` است.'
     - id: P65b
       start: 'C:\Windows\System32'
       admin: true
       task: 'پرینتر گیر کرده است. سرویس `Spooler` را متوقف و دوباره اجرا کن (Restart).'
       multi: true
       checks: [{type: serviceState, name: Spooler, value: RUNNING}, {type: any, of: [{type: argIncludes, cmd: net, value: 'stop'}, {type: argIncludes, cmd: sc, value: 'stop'}]}]
-      hints: ['اول `net stop spooler`.', 'بعد `net start spooler`']
+      hints: ['Restart یعنی دو کار پشت هم: اول سرویس را متوقف کن، بعد دوباره اجرا کن. Command `net` برای هر کدام یک کلمه دارد: `stop` و `start`.', 'خط اول: `net` + `stop` + نام کوتاه سرویس `spooler`. خط دوم: همین، ولی با `start`. چون CMD ادمین است، اجازه این کار را داری.']
       answer: ['net stop spooler', 'net start spooler']
+      explain: '`net stop spooler` سرویس چاپ را متوقف می‌کند و `net start spooler` آن را دوباره اجرا می‌کند؛ این Restart صف چاپ گیرکرده را آزاد می‌کند.'
   quiz:
     - kind: mcq
       q: 'سرویس چیست؟'
@@ -253,15 +261,17 @@
       start: 'C:\Users\Student'
       task: 'دستور `type Desktop\shopping list.txt` خطا می‌دهد. آن را اصلاح و اجرا کن.'
       checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'shopping list'}]
-      hints: ['نام فایل فاصله دارد.', '`type "Desktop\shopping list.txt"`']
+      hints: ['پیام خطا را بخوان: CMD فاصله را جداکننده Argumentها می‌داند، پس `shopping` و `list.txt` را دو چیز جدا می‌بیند. مسیری که فاصله دارد باید داخل Quotes باشد.', 'Command `type` همان بماند؛ فقط کل مسیر `Desktop\shopping list.txt` را از اول تا آخر داخل `" "` بگذار.']
       answer: 'type "Desktop\shopping list.txt"'
+      explain: 'Quotes دور مسیر به CMD می‌گوید `Desktop\shopping list.txt` یک Argument است، نه دو تا؛ پس `type` فایل را پیدا می‌کند و محتوایش را نشان می‌دهد.'
     - id: P66b
       start: 'C:\Users\Student\Documents'
       task: 'می‌خواهی همه txtها را به `D:\Archive` کپی کنی ولی این پوشه وجود ندارد. کار را درست انجام بده.'
       multi: true
       checks: [{type: fileExists, path: 'D:\Archive\menu.txt'}, {type: fileExists, path: 'D:\Archive\todo.txt'}]
-      hints: ['اول مقصد را بساز.', '`mkdir D:\Archive` و بعد `copy *.txt D:\Archive`']
+      hints: ['کپی به پوشه‌ای که وجود ندارد درست کار نمی‌کند. اول پوشه مقصد را با `mkdir` بساز، بعد فایل‌ها را با `copy` و Wildcard (`*`) کپی کن.', 'قدم ۱: `mkdir` و مسیر `D:\Archive`. قدم ۲: `copy`، بعد الگوی همه txtها یعنی `*.txt`، بعد مقصد `D:\Archive`.']
       answer: ['mkdir D:\Archive', 'copy *.txt D:\Archive']
+      explain: '`mkdir D:\Archive` پوشه مقصد را می‌سازد و `copy *.txt D:\Archive` همه فایل‌هایی را که پسوند `.txt` دارند از پوشه فعلی به آنجا کپی می‌کند.'
   quiz:
     - kind: mcq
       q: '`The system cannot find the path specified.` بیشتر یعنی چه؟'
@@ -310,14 +320,16 @@
       task: 'فایل `report.txt` بساز که این‌ها را داشته باشد: نام کامپیوتر، نام کاربر، خط IPv4 و Processهای `chrome`.'
       multi: true
       checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\report.txt', value: ['ACADEMY-PC', 'student', '192.168.1.24', 'chrome.exe']}]
-      hints: ['خط اول با `>`: `hostname > report.txt`.', 'بقیه با `>>`: `whoami >> report.txt`، `ipconfig | find "IPv4" >> report.txt`، `tasklist | find "chrome" >> report.txt`']
+      hints: ['گزارش را خط به خط بساز: خروجی هر Command را با Redirect به `report.txt` بفرست. اولین خط با `>` (فایل تازه)، بقیه با `>>` (اضافه به آخر). برای IPv4 و chrome، خروجی را با `|` و `find` فیلتر کن.', 'ترتیب: ۱) `hostname` با `>` ۲) `whoami` با `>>` ۳) `ipconfig` فیلترشده با `find "IPv4"` و بعد `>>` ۴) `tasklist` فیلترشده با `find "chrome"` و بعد `>>`. مقصد همه `report.txt` است.']
       answer: ['hostname > report.txt', 'whoami >> report.txt', 'ipconfig | find "IPv4" >> report.txt', 'tasklist | find "chrome" >> report.txt']
+      explain: '`>` فایل را از نو می‌سازد و نام کامپیوتر را در آن می‌نویسد، `>>` بقیه خروجی‌ها را به آخر آن اضافه می‌کند، و `| find` فقط خط IPv4 و Processهای chrome را نگه می‌دارد.'
     - id: P67b
       start: 'C:\Users\Student'
       task: 'همه عکس‌های `.jpg` پوشه Pictures و زیرپوشه‌هایش را به `E:\AllPhotos` کپی کن.'
       checks: [{type: fileExists, path: 'E:\AllPhotos\beach.jpg'}, {type: any, of: [{type: fileExists, path: 'E:\AllPhotos\Holidays\family.jpg'}, {type: fileExists, path: 'E:\AllPhotos\family.jpg'}]}, {type: fileNotExists, path: 'E:\AllPhotos\logo.png'}]
-      hints: ['robocopy یا xcopy می‌توانند فقط jpgها را با زیرپوشه‌ها کپی کنند.', '`robocopy Pictures E:\AllPhotos *.jpg /s`']
+      hints: ['برای کپی فقط یک نوع فایل همراه با زیرپوشه‌ها، `robocopy` مناسب است: مبدأ، مقصد، الگوی فایل‌ها و یک Switch برای زیرپوشه‌ها.', 'ترتیب در `robocopy`: اول پوشه مبدأ `Pictures`، بعد مقصد `E:\AllPhotos`، بعد الگوی `*.jpg`، و در آخر Switch `/s` (Subdirectories).']
       answer: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+      explain: '`robocopy` از `Pictures` به `E:\AllPhotos` فقط فایل‌های `*.jpg` را کپی می‌کند و `/s` زیرپوشه‌ها (مثل `Holidays`) را هم با همان ساختار می‌آورد؛ پس `logo.png` کپی نمی‌شود.'
   quiz:
     - kind: order
       q: 'برای ساختن گزارش «نام کامپیوتر + IP + سرویس Spooler» دستورها را مرتب کن.'
