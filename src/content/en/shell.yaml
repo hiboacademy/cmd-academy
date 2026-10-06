@@ -146,3 +146,4 @@ bootrec_fixboot: 'This error is common on Windows 10/11. On UEFI systems, use `b
 bcdboot_path: 'Give the correct Windows path, for example `bcdboot C:\Windows`'
 bcdedit_change: '⚠ Changing the BCD can stop Windows from booting. In the simulator, only `bcdedit /enum` is enabled.'
 timeout_cap: 'In the simulator, the maximum wait is 10 seconds.'
+list_sep: ', '

@@ -564,7 +564,7 @@
   mistakes:
     - 'نوشتن شرط‌ها از کوچک به بزرگ با `if errorlevel`: گزینه 1 همیشه برنده می‌شود.'
     - 'استفاده از `timeout` در Scriptی که ورودی‌اش Redirect شده.'
-  tip: 'برای منو: نمایش گزینه‌ها با echo → `choice` → پرش با `if errorlevel` → برگشت با `goto menu`.'
+  tip: 'برای منو: نمایش گزینه‌ها با echo ← `choice` ← پرش با `if errorlevel` ← برگشت با `goto menu`.'
   practice:
     - id: P87a
       batch: {file: 'confirm.bat', starter: "@echo off\n"}
@@ -599,4 +599,4 @@
       options: ['۱۰ ثانیه صبر می‌کند و با کلید قطع نمی‌شود', '۱۰ دقیقه صبر می‌کند', 'تا فشردن کلید صبر می‌کند', 'کامپیوتر را خاموش می‌کند']
       answer: 0
       explain: '`/nobreak` = کلید را نادیده بگیر.'
-  recap: '`choice /c گزینه‌ها /m "پیام"` → ERRORLEVEL = شماره گزینه. شرط‌ها از بزرگ به کوچک. `timeout /t n` صبر.'
+  recap: '`choice /c گزینه‌ها /m "پیام"` ← ERRORLEVEL = شماره گزینه. شرط‌ها از بزرگ به کوچک. `timeout /t n` صبر.'

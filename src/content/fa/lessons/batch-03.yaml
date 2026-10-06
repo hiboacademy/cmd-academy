@@ -729,7 +729,7 @@
   objective: 'دستورهای Level 1 را برای یک کار واقعی با هم ترکیب کنی.'
   summary: 'در این درس، مسیر، پوشه، کپی، Wildcard و Redirect را با هم استفاده می‌کنی تا یک کار کامل انجام دهی.'
   meaning: 'یک کار واقعی معمولاً چند مرحله دارد: رفتن به جای درست، دیدن محتوا، ساختن مقصد، انجام کار و بررسی نتیجه.'
-  usage: 'الگوی کلی: `cd` → `dir` → `mkdir` → `copy`/`move` → `dir` برای اطمینان.'
+  usage: 'الگوی کلی: `cd` ← `dir` ← `mkdir` ← `copy`/`move` ← `dir` برای اطمینان.'
   syntax: "cd folder\nmkdir target\ncopy *.ext target\ndir target"
   demo:
     start: 'C:\Users\Student\Documents'

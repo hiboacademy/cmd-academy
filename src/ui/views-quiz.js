@@ -17,21 +17,21 @@ function QuizHomeView() {
     const ls = Content.chapterLessons(ch.id).filter((l) => l.full);
     if (!ls.length) return null;
     return h("details", { class: "group" },
-      h("summary", null, icon("chev", "chev"), h("div", { class: "grow" }, h("div", { class: "ln" }, "Chapter " + ch.id), h("h3", null, ch.title))),
-      ls.map((l) => row(Content.quiz("L" + l.n), "Lesson " + l.n)));
+      h("summary", null, icon("chev", "chev"), h("div", { class: "grow" }, h("div", { class: "ln" }, T("w_chapter") + " " + ch.id), h("h3", null, ch.title))),
+      ls.map((l) => row(Content.quiz("L" + l.n), T("w_lesson") + " " + l.n)));
   });
   return h("div", { class: "stack view" },
-    h("h1", { class: "mono", style: { direction: "ltr", textAlign: "right" } }, "Quiz"),
+    h("h1", { class: "mono", style: { direction: "ltr", textAlign: "var(--start)" } }, T("t_quiz")),
     mist ? h("button", { class: "card tap row", onClick: () => App.go("quiz-R") },
       h("span", { style: { color: "var(--warn)", display: "flex" } }, icon("review")),
       h("div", { class: "grow" }, h("div", { style: { fontWeight: 600 } }, T("review_title")), h("div", { class: "muted small" }, T("review_desc", { n: fa(mist) }))),
       icon("chev", "chev")) : null,
     h("section", { class: "card chapter" },
       h("div", { class: "chapter-head" }, h("h3", null, T("quiz_levels"))),
-      Content.levels().map((lv) => Content.quiz("V" + lv.id)).filter(Boolean).map((q) => row(q, "Level " + q.level))),
+      Content.levels().map((lv) => Content.quiz("V" + lv.id)).filter(Boolean).map((q) => row(q, T("w_level") + " " + q.level))),
     h("section", { class: "card chapter" },
       h("div", { class: "chapter-head" }, h("h3", null, T("quiz_chapters"))),
-      Content.chapterQuizzes().map((q) => row(q, "Chapter " + q.chapter))),
+      Content.chapterQuizzes().map((q) => row(q, T("w_chapter") + " " + q.chapter))),
     h("h2", null, T("quiz_lessons")),
     lessonGroups);
 }
@@ -52,9 +52,9 @@ function QuizRunView(id) {
     run = App.state.quizRun = { id, i: 0, score: 0, answered: false, qs: qs.map(prepareQuestion) };
   }
   const backRoute = quiz.lesson ? "lesson" + quiz.lesson : "quiz";
-  const eyebrow = { lesson: "MINI QUIZ · LESSON " + quiz.lesson, chapter: "CHAPTER QUIZ · " + quiz.chapter, level: "LEVEL QUIZ · " + quiz.level, review: "REVIEW" }[quiz.kind];
+  const eyebrow = { lesson: T("w_mini_quiz") + " · " + T("w_lesson") + " " + quiz.lesson, chapter: T("w_chapter_quiz") + " · " + quiz.chapter, level: T("w_level_quiz") + " · " + quiz.level, review: T("w_review") }[quiz.kind];
   const head = h("div", { class: "stack-sm" },
-    backBtn(quiz.lesson ? "درس " + fa(quiz.lesson) : "Quiz", backRoute),
+    backBtn(quiz.lesson ? T("lesson_n", { n: fa(quiz.lesson) }) : T("t_quiz"), backRoute),
     h("div", { class: "eyebrow" }, eyebrow),
     h("h1", null, fmt(quiz.title)));
 
@@ -89,7 +89,7 @@ function QuizRunView(id) {
     fb.innerHTML = "";
     fb.appendChild(h("div", { class: "stack-sm" },
       h("div", { class: "feedback " + (ok ? "ok pop" : "no shake") },
-        h("div", { class: "fh mono", style: { direction: "ltr", textAlign: "right" } }, ok ? T("quiz_correct") : T("quiz_wrong")),
+        h("div", { class: "fh mono", style: { direction: "ltr", textAlign: "var(--start)" } }, ok ? T("quiz_correct") : T("quiz_wrong")),
         q.explain ? h("div", null, fmt(q.explain)) : null,
         !ok && quiz.kind !== "lesson" && q.lesson ? h("button", { class: "linkish small", onClick: () => App.go("lesson" + q.lesson) }, T("review_lesson", { n: fa(q.lesson) })) : null),
       nextBtn()));

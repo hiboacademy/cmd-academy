@@ -34,7 +34,12 @@ function fmt(text) {
   });
   return frag;
 }
-const fa = (n) => String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
+/* Current UI language. Persian is right-to-left and uses Persian digits;
+   German and English are left-to-right. Code is always left-to-right. */
+let LANG = "fa";
+const setLang = (l) => { LANG = l; };
+const isRTL = () => LANG === "fa";
+const fa = (n) => (LANG === "fa" ? String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]) : String(n));
 
 const ICONS = {
   home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
@@ -109,7 +114,7 @@ function toast(text) {
   toastTimer = setTimeout(() => t.remove(), 2200);
 }
 function starButton(kind, id, label) {
-  const b = h("button", { class: "icon-btn plain star", "aria-pressed": Store.isFav(kind, id) ? "true" : "false", "aria-label": label || "Favorite", title: label || "Favorite" }, icon("star"));
+  const b = h("button", { class: "icon-btn plain star", "aria-pressed": Store.isFav(kind, id) ? "true" : "false", "aria-label": label || T("fav_generic"), title: label || T("fav_generic") }, icon("star"));
   b.addEventListener("click", (e) => {
     e.stopPropagation();
     const on = Store.toggleFav(kind, id);

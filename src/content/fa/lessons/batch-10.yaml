@@ -45,8 +45,8 @@
     - kind: order
       q: 'ترتیب منطقی خطوط این Script را بچین.'
       items: ['@echo off', 'cd /d "%USERPROFILE%\Downloads"', 'if not exist PDF mkdir PDF', 'move *.pdf PDF >nul', 'echo Done']
-      explain: 'تنظیم → رفتن → ساختن → انتقال → گزارش.'
-  recap: 'Script مرتب‌سازی: `cd /d` → ساختن پوشه‌ها با `if not exist` → `move` با Wildcard.'
+      explain: 'تنظیم ← رفتن ← ساختن ← انتقال ← گزارش.'
+  recap: 'Script مرتب‌سازی: `cd /d` ← ساختن پوشه‌ها با `if not exist` ← `move` با Wildcard.'
 
 - n: 89
   term: 'backup.bat'
@@ -105,7 +105,7 @@
   fullForm: 'Batch rename script'
   difficulty: 3
   objective: 'نام تعداد زیادی فایل را با یک Script و یک الگوی ثابت عوض کنی.'
-  summary: 'با `for` روی فایل‌ها و `ren` می‌شود به نام همه فایل‌ها پیشوند یا پسوند اضافه کرد، مثلاً `beach.jpg` → `holiday_beach.jpg`.'
+  summary: 'با `for` روی فایل‌ها و `ren` می‌شود به نام همه فایل‌ها پیشوند یا پسوند اضافه کرد، مثلاً `beach.jpg` ← `holiday_beach.jpg`.'
   meaning: 'نکته فنی: اگر هنگام `for %%f in (*.jpg)` نام فایل‌ها را عوض کنی، ممکن است حلقه فایل تغییرنام‌یافته را دوباره ببیند. امن‌تر: اول فهرست را با `for /f ... in (''dir /b *.jpg'')` بگیر و بعد تغییر نام بده.'
   usage: 'نام‌گذاری عکس‌های یک سفر، اضافه کردن تاریخ به گزارش‌ها، یکدست کردن نام فایل‌ها.'
   syntax: "for /f \"delims=\" %%f in ('dir /b *.jpg') do ren \"%%f\" \"prefix_%%f\""
@@ -202,7 +202,7 @@
       q: 'Exit Code برابر 1 بعد از findstr یعنی کلمه پیدا نشد.'
       answer: true
       explain: '0 = پیدا شد.'
-  recap: 'Script جستجو: `set /p` → بررسی خالی بودن → `findstr /s /i /m` → `if errorlevel 1`.'
+  recap: 'Script جستجو: `set /p` ← بررسی خالی بودن ← `findstr /s /i /m` ← `if errorlevel 1`.'
 
 - n: 92
   term: 'Automation'
@@ -422,7 +422,7 @@
       q: '`/restorehealth` معمولاً به اینترنت نیاز دارد.'
       answer: true
       explain: 'از Windows Update فایل سالم می‌گیرد.'
-  recap: 'DISM منبع تعمیر را درست می‌کند: checkhealth → scanhealth → restorehealth. بعد `sfc /scannow`.'
+  recap: 'DISM منبع تعمیر را درست می‌کند: checkhealth ← scanhealth ← restorehealth. بعد `sfc /scannow`.'
 
 - n: 96
   term: 'WinRE'
@@ -430,7 +430,7 @@
   difficulty: 3
   objective: 'بدانی Recovery Environment چیست، چطور به آن برسی و در CMD آن جهت‌یابی کنی.'
   summary: 'WinRE یک Windows کوچک جداگانه برای تعمیر است. وقتی Windows اصلی بالا نمی‌آید، از اینجا می‌توانی CMD باز کنی، فایل‌ها را نجات دهی و Boot را تعمیر کنی.'
-  meaning: 'راه‌های رسیدن: نگه داشتن Shift هنگام زدن Restart؛ Settings → System → Recovery → Advanced startup؛ یا خودکار بعد از دو بار Boot ناموفق. بعد: Troubleshoot → Advanced options → Command Prompt. در اینجا Drive فعلی `X:` است و حرف Drive ویندوز ممکن است `C:` نباشد؛ با `dir C:\` و `dir D:\` پیدایش کن.'
+  meaning: 'راه‌های رسیدن: نگه داشتن Shift هنگام زدن Restart؛ Settings ← System ← Recovery ← Advanced startup؛ یا خودکار بعد از دو بار Boot ناموفق. بعد: Troubleshoot ← Advanced options ← Command Prompt. در اینجا Drive فعلی `X:` است و حرف Drive ویندوز ممکن است `C:` نباشد؛ با `dir C:\` و `dir D:\` پیدایش کن.'
   usage: 'Windows بالا نمی‌آید، نجات فایل‌ها قبل از نصب مجدد، تعمیر Boot.'
   syntax: "X:\\Windows\\System32>\ndir C:\\\ncopy C:\\Users\\...\\file E:\\"
   demo:
@@ -475,7 +475,7 @@
       q: 'کدام راه تو را به WinRE می‌برد؟'
       options: ['نگه داشتن Shift و زدن Restart', 'زدن F5 در Desktop', 'اجرای cls', 'باز کردن Task Manager']
       answer: 0
-      explain: 'یا Settings → Recovery → Advanced startup.'
+      explain: 'یا Settings ← Recovery ← Advanced startup.'
     - kind: tf
       q: 'در WinRE حرف Drive ویندوز ممکن است با حالت عادی فرق داشته باشد.'
       answer: true
@@ -506,7 +506,7 @@
   mistakes:
     - 'اجرای bootrec در Windows معمولی؛ فقط در WinRE وجود دارد.'
     - 'دادن مسیر اشتباه به bcdboot (اگر Windows روی D: است: `bcdboot D:\Windows`).'
-  tip: 'ترتیب رایج: `/scanos` → `/rebuildbcd` → در صورت نیاز `bcdboot`.'
+  tip: 'ترتیب رایج: `/scanos` ← `/rebuildbcd` ← در صورت نیاز `bcdboot`.'
   practice:
     - id: P97a
       mode: winre
@@ -538,7 +538,7 @@
       q: 'ترتیب رایج تعمیر BCD را مرتب کن.'
       items: ['bootrec /scanos', 'bootrec /rebuildbcd', 'Restart و امتحان']
       explain: 'پیدا کن، بساز، امتحان کن.'
-  recap: 'WinRE: `bootrec /scanos` → `/rebuildbcd`. در UEFI: `bcdboot C:\Windows`.'
+  recap: 'WinRE: `bootrec /scanos` ← `/rebuildbcd`. در UEFI: `bcdboot C:\Windows`.'
 
 - n: 98
   term: diskpart
@@ -546,7 +546,7 @@
   difficulty: 3
   objective: 'ساختار دیسک‌ها و پارتیشن‌ها را با diskpart ببینی و یک USB را از نو آماده کنی، با رعایت کامل ایمنی.'
   summary: '`diskpart` یک محیط جداست با Prompt `DISKPART>`. اول `list disk`، بعد `select disk n` و بعد کارها روی همان دیسک انجام می‌شوند. `format` در CMD یک Drive را پاک و آماده می‌کند.'
-  meaning: 'دستورهای خواندنی: `list disk`، `list volume`، `list partition`، `detail disk`. دستورهای خطرناک: `clean` (همه چیز دیسک را پاک می‌کند)، `delete partition`، `format`. آماده کردن USB: `select disk 1` → `clean` → `create partition primary` → `format fs=ntfs quick label=NAME` → `assign`.'
+  meaning: 'دستورهای خواندنی: `list disk`، `list volume`، `list partition`، `detail disk`. دستورهای خطرناک: `clean` (همه چیز دیسک را پاک می‌کند)، `delete partition`، `format`. آماده کردن USB: `select disk 1` ← `clean` ← `create partition primary` ← `format fs=ntfs quick label=NAME` ← `assign`.'
   usage: 'آماده کردن USB یا هارد جدید، دیدن پارتیشن‌های مخفی (EFI، Recovery)، رفع USBی که درست کار نمی‌کند.'
   syntax: "diskpart\nDISKPART> list disk\nDISKPART> select disk 1\nDISKPART> clean\nformat E: /fs:ntfs /q"
   warning: 'مهم‌ترین قانون: قبل از `clean` همیشه `list disk` بزن و از اندازه مطمئن شو دیسک درست انتخاب شده است. انتخاب اشتباه یعنی پاک شدن کامل هارد اصلی. روی کامپیوتر واقعی با احتیاط کامل.'
@@ -587,7 +587,7 @@
     - kind: order
       q: 'ترتیب آماده کردن USB در diskpart را مرتب کن.'
       items: ['list disk', 'select disk 1', 'clean', 'create partition primary', 'format fs=ntfs quick', 'assign']
-      explain: 'دیدن → انتخاب → پاک کردن → ساختن → Format → حرف دادن.'
+      explain: 'دیدن ← انتخاب ← پاک کردن ← ساختن ← Format ← حرف دادن.'
     - kind: mcq
       q: 'مهم‌ترین کار قبل از `clean` چیست؟'
       options: ['با list disk مطمئن شوی دیسک درست انتخاب شده', 'Restart کردن', 'اجرای sfc', 'بستن همه برنامه‌ها']
@@ -597,7 +597,7 @@
       q: '`format E: /q` همه اطلاعات Drive E را پاک می‌کند.'
       answer: true
       explain: 'Quick Format هم اطلاعات را غیرقابل دسترس می‌کند.'
-  recap: 'diskpart: list → select → (با احتیاط) clean → create → format → assign. همیشه اول `list disk`.'
+  recap: 'diskpart: list ← select ← (با احتیاط) clean ← create ← format ← assign. همیشه اول `list disk`.'
 
 - n: 99
   term: 'Troubleshooting'
@@ -605,7 +605,7 @@
   difficulty: 3
   objective: 'یک روند منظم برای عیب‌یابی رایج‌ترین مشکلات Windows داشته باشی.'
   summary: 'عیب‌یابی خوب حدس زدن نیست: مشکل را دقیق مشخص کن، اطلاعات جمع کن، از ساده‌ترین علت شروع کن، یک تغییر در هر بار بده و نتیجه را بسنج.'
-  meaning: 'نقشه کلی: کندی → `tasklist` (حافظه)، `taskkill` برنامه هنگ‌کرده. اینترنت → روند درس ۶۱. پرینتر → `sc query spooler` و Restart سرویس. خطاهای سیستمی → `dism` و `sfc`. خطای دیسک → `chkdsk`. Windows بالا نمی‌آید → WinRE، نجات فایل‌ها، `bootrec`.'
+  meaning: 'نقشه کلی: کندی ← `tasklist` (حافظه)، `taskkill` برنامه هنگ‌کرده. اینترنت ← روند درس ۶۱. پرینتر ← `sc query spooler` و Restart سرویس. خطاهای سیستمی ← `dism` و `sfc`. خطای دیسک ← `chkdsk`. Windows بالا نمی‌آید ← WinRE، نجات فایل‌ها، `bootrec`.'
   usage: 'پشتیبانی فنی برای خودت، خانواده یا محل کار.'
   syntax: "tasklist /fi \"memusage gt 100000\"\nsc query spooler\nipconfig & ping 8.8.8.8\nsfc /scannow"
   demo:
@@ -636,7 +636,7 @@
     - kind: order
       q: 'روند کلی عیب‌یابی را مرتب کن.'
       items: ['مشکل را دقیق مشخص کن', 'اطلاعات جمع کن', 'ساده‌ترین علت را امتحان کن', 'نتیجه را بسنج و یادداشت کن']
-      explain: 'تعریف → اطلاعات → تست ساده → بررسی.'
+      explain: 'تعریف ← اطلاعات ← تست ساده ← بررسی.'
     - kind: mcq
       q: 'پرینتر چاپ نمی‌کند و صف چاپ گیر کرده. اولین دستور مناسب؟'
       options: ['sc query spooler', 'format C:', 'bootrec /fixmbr', 'diskpart']
@@ -647,7 +647,7 @@
       q: 'بهتر است در هر مرحله فقط یک تغییر بدهی.'
       answer: true
       explain: 'تا بدانی کدام تغییر مشکل را حل کرد.'
-  recap: 'تعریف مشکل → جمع اطلاعات → ساده‌ترین علت → یک تغییر در هر بار → بررسی و یادداشت.'
+  recap: 'تعریف مشکل ← جمع اطلاعات ← ساده‌ترین علت ← یک تغییر در هر بار ← بررسی و یادداشت.'
 
 - n: 100
   term: 'toolbox.bat'
@@ -679,14 +679,14 @@
       inputs: ['1', '2', '3', '4']
       task: 'منوی جعبه‌ابزار را کامل کن: 1 نام کامپیوتر (`%COMPUTERNAME%`) و خط IPv4 را نشان دهد، 2 پوشه Documents را با زیرپوشه‌ها به `D:\Backup\Documents` کپی کند، 3 همه `*.tmp`های `%TEMP%` را حذف کند و 4 با پیام `Bye!` خارج شود. بعد از هر گزینه به منو برگرد. (1، 2، 3 و بعد 4 را امتحان کن.)'
       checks: [{type: ranBatch}, {type: outputIncludes, value: ['ACADEMY-PC', '192.168.1.24', 'Bye!']}, {type: fileExists, path: 'D:\Backup\Documents\Work\report.txt'}, {type: countFiles, path: 'C:\Users\Student\AppData\Local\Temp\*.tmp', value: 0}, {type: fileContains, path: 'C:\Users\Student\Desktop\toolbox.bat', value: ['goto menu', 'errorlevel']}]
-      hints: ['بعد از `choice`، شماره گزینه در ERRORLEVEL است. با `if errorlevel` و `goto` به Label هر بخش بپر؛ چون `if errorlevel n` یعنی «n یا بیشتر»، شرط‌ها را از 4 به 2 بنویس. هر بخش باید با `goto menu` به منو برگردد.', 'ساختار: سه خط `if errorlevel` (4 → `end`، 3 → `clean`، 2 → `backup`) ← بخش info درست زیر آن‌ها (`echo` با `%COMPUTERNAME%`، `ipconfig | find "IPv4"`، `goto menu`) ← `:backup` با `xcopy` و `/s /i /y` و `goto menu` ← `:clean` با `del /q` روی `"%TEMP%\*.tmp"` و `goto menu` ← `:end` با `echo Bye!`.']
+      hints: ['بعد از `choice`، شماره گزینه در ERRORLEVEL است. با `if errorlevel` و `goto` به Label هر بخش بپر؛ چون `if errorlevel n` یعنی «n یا بیشتر»، شرط‌ها را از 4 به 2 بنویس. هر بخش باید با `goto menu` به منو برگردد.', 'ساختار: سه خط `if errorlevel` (4 ← `end`، 3 ← `clean`، 2 ← `backup`) ← بخش info درست زیر آن‌ها (`echo` با `%COMPUTERNAME%`، `ipconfig | find "IPv4"`، `goto menu`) ← `:backup` با `xcopy` و `/s /i /y` و `goto menu` ← `:clean` با `del /q` روی `"%TEMP%\*.tmp"` و `goto menu` ← `:end` با `echo Bye!`.']
       answer: ['@echo off', ':menu', 'echo 1. System info', 'echo 2. Backup Documents', 'echo 3. Clean temp files', 'echo 4. Quit', 'choice /c 1234 /m "Choose"', 'if errorlevel 4 goto end', 'if errorlevel 3 goto clean', 'if errorlevel 2 goto backup', 'echo Computer: %COMPUTERNAME%', 'ipconfig | find "IPv4"', 'goto menu', ':backup', 'xcopy "%USERPROFILE%\Documents" "D:\Backup\Documents" /s /i /y /q', 'goto menu', ':clean', 'del /q "%TEMP%\*.tmp"', 'echo Temp files cleaned.', 'goto menu', ':end', 'echo Bye!']
       explain: 'شرط‌های `if errorlevel` از بزرگ به کوچک هر گزینه را به Label درست می‌فرستند و گزینه 1 مستقیم به بخش info زیر آن‌ها می‌رسد. `xcopy ... /s /i /y` Backup می‌گیرد، `del /q "%TEMP%\*.tmp"` فایل‌های موقت را بی‌سؤال پاک می‌کند و `goto menu` در آخر هر بخش منو را دوباره نشان می‌دهد.'
   quiz:
     - kind: order
       q: 'ساختار هر بخش منو را مرتب کن.'
       items: [':backup', 'xcopy ... /s /i /y', 'call :log "backup done"', 'goto menu']
-      explain: 'Label → کار → Log → برگشت به منو.'
+      explain: 'Label ← کار ← Log ← برگشت به منو.'
     - kind: mcq
       q: 'اگر `goto menu` را در آخر بخش info فراموش کنی چه می‌شود؟'
       options: ['اجرا به بخش بعدی (backup) ادامه پیدا می‌کند', 'Script خطا می‌دهد', 'منو دوباره نمایش داده می‌شود', 'هیچ']

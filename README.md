@@ -38,7 +38,16 @@ The content tests run every practice answer, challenge, quiz simulator task and
   For Play Store publishing, create your own key and add it as the secrets
   `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
 
+## Languages
+The app is available in Persian (fa, right-to-left), German (de) and English (en); the
+learner picks the language in Settings (or with `?lang=de` in the address).
+Persian in `src/content/fa/` is the source. `src/content/de/` and `src/content/en/` have
+the same files with only the learner-facing text translated. `python3 i18n_check.py de`
+(run automatically by the build) makes sure every translation keeps the same structure,
+code spans and placeholders, and that commands, paths, answers and checks are identical.
+
 ## Adding content
-Add or edit lessons in `src/content/fa/lessons/*.yaml`; practice checks are described in
+Add or edit lessons in `src/content/fa/lessons/*.yaml`, then update the same entry in the
+German and English files; practice checks are described in
 `src/engine/checker.js`. Run the build and tests; a lesson whose answer does not pass its
 own checks fails the tests.

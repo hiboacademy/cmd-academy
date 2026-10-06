@@ -162,8 +162,8 @@
     - kind: order
       q: 'چرخه ساخت Script را مرتب کن.'
       items: ['نوشتن دستورها', 'ذخیره با پسوند .bat', 'اجرا', 'خواندن خروجی و اصلاح']
-      explain: 'نوشتن → ذخیره → اجرا → اصلاح.'
-  recap: 'نوشتن → ذخیره `.bat` → اجرا. دو بار کلیک پنجره را می‌بندد؛ `pause` لازم است.'
+      explain: 'نوشتن ← ذخیره ← اجرا ← اصلاح.'
+  recap: 'نوشتن ← ذخیره `.bat` ← اجرا. دو بار کلیک پنجره را می‌بندد؛ `pause` لازم است.'
 
 - n: 71
   term: '@echo off'
@@ -460,7 +460,7 @@
   difficulty: 3
   objective: 'به Script ورودی بدهی و Scriptهای قابل استفاده دوباره بنویسی.'
   summary: 'هر چیزی که بعد از نام Script بنویسی، Argument است. `%1` اولی، `%2` دومی، تا `%9`. `%*` همه Argumentها و `%0` نام خود Script است.'
-  meaning: 'مثلاً `greet.bat Ali Sara` → `%1` = Ali و `%2` = Sara. Argument فاصله‌دار را داخل Quotes بده و برای حذف Quotes از `%~1` استفاده کن. `%~nx1` فقط نام و پسوند یک مسیر را می‌دهد.'
+  meaning: 'مثلاً `greet.bat Ali Sara` ← `%1` = Ali و `%2` = Sara. Argument فاصله‌دار را داخل Quotes بده و برای حذف Quotes از `%~1` استفاده کن. `%~nx1` فقط نام و پسوند یک مسیر را می‌دهد.'
   usage: 'Scriptهایی مثل `backup.bat مبدأ مقصد` که برای هر بار اجرا ورودی متفاوت می‌گیرند.'
   syntax: "script.bat arg1 arg2\necho %1 %2\necho %*"
   demo:
@@ -488,7 +488,7 @@
       explain: 'هنگام اجرا با Argument `Ali`، CMD به‌جای `%1` کلمه `Ali` را می‌گذارد و `Hello Ali` چاپ می‌شود.'
     - id: P76b
       batch: {file: 'copyto.bat', starter: "@echo off\n", args: '..\Documents\todo.txt E:\'}
-      task: 'Script بنویس که فایل `%1` را به مقصد `%2` کپی کند. با Argumentهای داده‌شده اجرا کن (todo.txt → USB).'
+      task: 'Script بنویس که فایل `%1` را به مقصد `%2` کپی کند. با Argumentهای داده‌شده اجرا کن (todo.txt ← USB).'
       checks: [{type: ranBatch}, {type: fileExists, path: 'E:\todo.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\copyto.bat', value: ['%1', '%2']}]
       hints: ['`copy` دو Argument می‌خواهد: مبدأ و مقصد. اینجا به‌جای نوشتن مسیرهای ثابت، Argumentهای Script (`%1` و `%2`) را به `copy` بده.', 'یک خط بعد از `@echo off`: `copy`، بعد `%1` (فایل مبدأ)، بعد `%2` (مقصد). با Argumentهای داده‌شده اجرا کن.']
       answer: ['@echo off', 'copy %1 %2']

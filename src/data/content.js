@@ -80,7 +80,7 @@ const Content = (() => {
     }
     if (id === "R") {
       const qs = Store.mistakes().map(question).filter(Boolean);
-      return { id, kind: "review", title: "مرور اشتباه‌ها", questions: qs, pick: 12 };
+      return { id, kind: "review", title: t("review_title"), questions: qs, pick: 12 };
     }
     return null;
   }

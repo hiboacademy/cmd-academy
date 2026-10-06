@@ -18,10 +18,14 @@ FA = re.compile(r"[؀-ۿ]")
 CODE = re.compile(r"`[^`]*`")
 PH = re.compile(r"\{[a-z_]+\}")
 FREE_KEYS = {"keywords"}
+# UI labels and course titles may be translated even when the Persian file uses
+# an English word there (e.g. "Command Library", "Absolute Path"); their
+# {placeholders} must still match.
+FREE_TEXT = {"ui.yaml": None, "curriculum.yaml": {"t", "title"}}
 FILES = ["curriculum.yaml", "ui.yaml", "shell.yaml", "commands.yaml", "challenges.yaml"]
 
 
-def compare(fa, tr, path, errs):
+def compare(fa, tr, path, errs, free=None, key=None):
     if isinstance(fa, dict):
         if not isinstance(tr, dict):
             errs.append(f"{path}: expected a mapping"); return
@@ -30,13 +34,17 @@ def compare(fa, tr, path, errs):
             errs.append(f"{path}: keys differ (missing {miss}, extra {extra})")
         for k in fa:
             if k in tr and k not in FREE_KEYS:
-                compare(fa[k], tr[k], f"{path}.{k}", errs)
+                compare(fa[k], tr[k], f"{path}.{k}", errs, free, k)
         return
     if isinstance(fa, list):
         if not isinstance(tr, list) or len(fa) != len(tr):
             errs.append(f"{path}: list length differs ({len(fa)} vs {len(tr) if isinstance(tr, list) else type(tr).__name__})"); return
         for i, (a, b) in enumerate(zip(fa, tr)):
-            compare(a, b, f"{path}[{i}]", errs)
+            compare(a, b, f"{path}[{i}]", errs, free, key)
+        return
+    if isinstance(fa, str) and free is not False and (free is True or (free and key in free)) and not FA.search(fa):
+        if not isinstance(tr, str) or sorted(PH.findall(fa)) != sorted(PH.findall(tr)):
+            errs.append(f"{path}: expected text with the same placeholders")
         return
     if isinstance(fa, str) and FA.search(fa):
         if not isinstance(tr, str):
@@ -67,7 +75,8 @@ def check_file(lang, rel):
     except yaml.YAMLError as e:
         return [f"{lang}/{rel}: invalid YAML: {e}"]
     errs = []
-    compare(fa, tr, f"{lang}/{rel}", errs)
+    free = FREE_TEXT.get(rel, False)
+    compare(fa, tr, f"{lang}/{rel}", errs, True if free is None else free)
     return errs
 
 

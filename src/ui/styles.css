@@ -7,6 +7,8 @@
    Font sizes use rem so the "text size" setting scales them.
    ============================================================ */
 :root {
+  --dir: rtl;
+  --start: right;
   --bg: #0b0d0e;
   --surface: #131618;
   --surface-2: #1a1e21;
@@ -150,7 +152,7 @@ code.ic {
     position: sticky; top: 0; height: 100vh; overflow-y: auto;
     padding: 24px 14px; border-inline-end: 1px solid var(--line); background: var(--surface);
   }
-  .sidebar .brand { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.18em; color: var(--green); font-size: 0.875rem; padding: 0 10px 18px; direction: ltr; text-align: right; }
+  .sidebar .brand { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.18em; color: var(--green); font-size: 0.875rem; padding: 0 10px 18px; direction: ltr; text-align: var(--start); }
   .side-btn {
     display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: 0; border-radius: var(--r-sm);
     background: none; color: var(--muted); text-align: start; font-size: 0.92rem;
@@ -258,7 +260,7 @@ p { margin: 0; }
 .term-line .pr { color: var(--term-fg); }
 .term-line .cm { color: var(--term-green); }
 .term-note {
-  direction: rtl; text-align: right; font-family: var(--font-fa); font-size: 0.84rem; line-height: 1.8;
+  direction: var(--dir); text-align: var(--start); font-family: var(--font-fa); font-size: 0.84rem; line-height: 1.8;
   margin: 6px 0 10px; padding: 8px 12px; border-radius: var(--r-sm);
   background: var(--term-note-bg); color: var(--term-note-fg); white-space: normal;
 }
@@ -303,7 +305,7 @@ p { margin: 0; }
 
 /* ---------- home ---------- */
 .home-top { display: flex; align-items: center; gap: 8px; }
-.brand-title { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.2em; color: var(--green); font-size: 0.94rem; direction: ltr; text-align: right; flex: 1; }
+.brand-title { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.2em; color: var(--green); font-size: 0.94rem; direction: ltr; text-align: var(--start); flex: 1; }
 .hero-line { font-size: 1.375rem; font-weight: 700; line-height: 1.5; text-wrap: balance; }
 .mini-term { cursor: pointer; }
 .mini-term .term-body { padding: 14px 16px 16px; }
@@ -314,7 +316,7 @@ p { margin: 0; }
   background: var(--surface-2); color: var(--green);
 }
 .feature .ico svg { width: 22px; height: 22px; }
-.feature .t { font-family: var(--font-mono); font-weight: 600; font-size: 0.94rem; direction: ltr; unicode-bidi: isolate; text-align: right; }
+.feature .t { font-family: var(--font-mono); font-weight: 600; font-size: 0.94rem; direction: ltr; unicode-bidi: isolate; text-align: var(--start); }
 .chev { color: var(--muted); width: 18px; height: 18px; flex: 0 0 auto; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -362,9 +364,9 @@ button.chip { min-height: 34px; padding: 0 10px; font-size: 0.8125rem; }
 .lt { font-weight: 500; line-height: 1.5; }
 
 /* ---------- lesson ---------- */
-.term-hero { font-family: var(--font-mono); font-size: 2.125rem; font-weight: 700; color: var(--green); direction: ltr; unicode-bidi: isolate; text-align: right; line-height: 1.25; word-break: break-word; }
+.term-hero { font-family: var(--font-mono); font-size: 2.125rem; font-weight: 700; color: var(--green); direction: ltr; unicode-bidi: isolate; text-align: var(--start); line-height: 1.25; word-break: break-word; }
 .term-hero.long { font-size: 1.5rem; }
-.full-form { font-family: var(--font-mono); font-size: 0.875rem; color: var(--muted); direction: ltr; unicode-bidi: isolate; text-align: right; }
+.full-form { font-family: var(--font-mono); font-size: 0.875rem; color: var(--muted); direction: ltr; unicode-bidi: isolate; text-align: var(--start); }
 .objective { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: var(--r-sm); background: var(--blue-soft); }
 .objective svg { width: 18px; height: 18px; color: var(--blue); flex: 0 0 auto; margin-top: 4px; }
 .lead { font-size: 1.03rem; line-height: 1.9; max-width: 62ch; }
@@ -539,3 +541,35 @@ mark { background: color-mix(in srgb, var(--warn) 30%, transparent); color: inhe
 }
 h1[tabindex="-1"]:focus { outline: none; }
 .term.static .term-body { max-height: 30em; overflow-y: auto; }
+
+/* ---------- left-to-right languages (German, English) ---------- */
+html[dir="ltr"] { --dir: ltr; --start: left; }
+html[dir="ltr"] .back svg, html[dir="ltr"] .chev { transform: scaleX(-1); }
+html[dir="ltr"] details.group > summary .chev { transform: rotate(-90deg); }
+html[dir="ltr"] details.group[open] > summary .chev { transform: rotate(90deg); }
+
+/* ---------- command breakdown (lessons and practice feedback) ---------- */
+.breakdown { display: flex; flex-direction: column; gap: 10px; }
+.bd-rows { display: flex; flex-direction: column; gap: 8px; }
+.bd-row { display: flex; gap: 12px; align-items: flex-start; }
+.bd-code { flex: 0 0 auto; min-width: 4.5em; max-width: 45%; font-family: var(--font-mono); font-size: 0.875rem; color: var(--term-green); background: var(--term); border-radius: 6px; padding: 4px 10px; direction: ltr; unicode-bidi: isolate; text-align: center; overflow-wrap: anywhere; }
+.bd-text { min-width: 0; flex: 1; }
+.bd-role { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; }
+.bd-role.role-command { color: var(--green); }
+.bd-role.role-argument { color: var(--blue); }
+.bd-role.role-switch { color: var(--warn); }
+.bd-role.role-operator { color: var(--muted); }
+.bd-structure { border-top: 1px dashed var(--line); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+.bd-sline { font-size: 0.84rem; color: var(--muted); direction: ltr; unicode-bidi: isolate; text-align: var(--start); }
+.bd-sline.code { font-family: var(--font-mono); color: var(--fg); }
+/* numbered steps (e.g. how to open CMD) */
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: step; }
+.steps li { display: flex; gap: 12px; align-items: flex-start; counter-increment: step; }
+.steps li::before { content: counter(step); flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--green-soft, var(--surface-2)); color: var(--green); font-weight: 700; font-family: var(--font-mono); font-size: 0.875rem; }
+.steps li > span { padding-top: 2px; }
+/* practice: hints and solution */
+.hint-box { display: flex; flex-direction: column; gap: 8px; }
+.hint-item { padding: 10px 12px; border-radius: var(--r-sm); background: var(--blue-soft); }
+.hint-item b { color: var(--blue); }
+.solution { display: flex; flex-direction: column; gap: 12px; }
+.solution h3 { font-size: 0.9rem; margin: 0; }

@@ -44,7 +44,7 @@ function InteractiveTerminal({ sh, preload, banner, title, onCommand, keys = tru
   function addLine(l) {
     let el;
     if (l.t === "note" || l.t === "warn") {
-      el = h("div", { class: "term-note" + (l.t === "warn" ? " warn" : "") }, h("b", null, l.t === "warn" ? "هشدار" : "راهنما"), fmt(l.text));
+      el = h("div", { class: "term-note" + (l.t === "warn" ? " warn" : "") }, h("b", null, l.t === "warn" ? T("term_warn") : T("term_note")), fmt(l.text));
     } else if (l.t === "cmd") {
       el = h("div", { class: "term-line" }, h("span", { class: "pr" }, l.p), h("span", { class: "cm" }, l.c));
     } else {
@@ -70,7 +70,7 @@ function InteractiveTerminal({ sh, preload, banner, title, onCommand, keys = tru
       // a multi-line question: earlier lines become output, the last line is the prompt
       const parts = String(wait.prompt || "").split("\n");
       prompt.textContent = parts[parts.length - 1];
-      input.placeholder = wait.kind === "key" ? "یک کلید بزن" : wait.kind === "sleep" ? "" : "";
+      input.placeholder = wait.kind === "key" ? T("term_press_key") : wait.kind === "sleep" ? "" : "";
     } else {
       prompt.textContent = Shell.prompt(sh);
       input.placeholder = "";
@@ -206,7 +206,7 @@ function InteractiveTerminal({ sh, preload, banner, title, onCommand, keys = tru
     keyBtn("Tab", () => { complete(); input.focus(); }, { class: "key wide" }),
     keyBtn("↑", () => { recall(-1); input.focus(); }, { "aria-label": "history" }),
     keyBtn("Ctrl+C", ctrlC, { class: "key wide danger-key", "aria-label": "Ctrl+C" }),
-    h("button", { type: "button", class: "key run", onClick: () => { if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event("submit", { cancelable: true })); } }, "اجرا ↵"),
+    h("button", { type: "button", class: "key run", onClick: () => { if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event("submit", { cancelable: true })); } }, T("term_run") + " ↵"),
   ) : null;
 
   const bar = h("div", { class: "term-bar" }, h("div", { class: "term-tab" }, h("span", { class: "ti" }, ">_"), titleEl), h("div", { class: "spacer" }));

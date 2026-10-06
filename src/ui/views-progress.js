@@ -20,10 +20,10 @@ function ProgressView() {
     const on = Math.round(p / 10);
     return h("div", { class: "lvl-line" },
       h("div", { class: "row between" },
-        h("span", { class: "mono", style: { direction: "ltr" } }, `Level ${lv.id}`),
+        h("span", { class: "mono", style: { direction: "ltr" } }, `${T("w_level")} ${lv.id}`),
         h("span", { class: "muted small grow", style: { textAlign: "center" } }, `${lv.title} · ${fa(d)}/${fa(ls.length)}`),
         h("span", { class: "pct" }, p + "%")),
-      h("div", { class: "blocks", role: "img", "aria-label": `Level ${lv.id}: ${p}%` }, Array.from({ length: 10 }, (_, i) => h("i", { class: i < on ? "on" : "" }))));
+      h("div", { class: "blocks", role: "img", "aria-label": `${T("w_level")} ${lv.id}: ${p}%` }, Array.from({ length: 10 }, (_, i) => h("i", { class: i < on ? "on" : "" }))));
   };
 
   return h("div", { class: "stack view" },
@@ -67,7 +67,13 @@ function SettingsView() {
     h("section", { class: "card" },
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_theme")), segOf("theme", [["dark", T("theme_dark")], ["light", T("theme_light")], ["system", T("theme_system")]], applySettings)),
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_font")), segOf("font", [[0.9, "A−"], [1, "A"], [1.12, "A+"], [1.25, "A++"]], applySettings, true)),
-      h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_lang")), h("div", { class: "seg", role: "group" }, h("button", { "aria-pressed": "true" }, "فارسی"), h("button", { disabled: true }, "English · " + T("coming_soon")), h("button", { disabled: true }, "Deutsch · " + T("coming_soon"))))),
+      h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_lang")), h("div", { class: "seg", role: "group", "aria-label": T("set_lang") },
+        [["fa", "فارسی"], ["de", "Deutsch"], ["en", "English"]].map(([code, name]) =>
+          h("button", { "aria-pressed": LANG === code ? "true" : "false", lang: code, dir: code === "fa" ? "rtl" : "ltr", onClick: () => {
+            if (LANG === code) return;
+            Store.setSetting("lang", code);
+            location.reload();   // reload so every text, lesson and the simulator switch language together
+          } }, name))))),
     h("section", { class: "card" },
       h("div", { class: "set-row" },
         h("div", { class: "lab" }, T("set_sim")),
@@ -87,7 +93,7 @@ function SettingsView() {
     h("section", { class: "card" },
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_offline")), h("div", { class: "small" }, h("span", { class: "status-dot " + (offline.on ? "on" : "off") }), offline.t)),
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_storage")), h("div", { class: "small" }, Store.isPersistent() ? T("saved_local") : T("storage_off"))),
-      h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_version")), h("div", { class: "small mono", style: { direction: "ltr", textAlign: "right" } }, `CMD Academy ${meta.version || "1.0.0"} · build ${meta.build || "dev"}`)),
+      h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_version")), h("div", { class: "small mono", style: { direction: "ltr", textAlign: "var(--start)" } }, `CMD Academy ${meta.version || "1.0.0"} · build ${meta.build || "dev"}`)),
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_about")), h("p", { class: "small muted" }, T("about_text")))));
 }
 

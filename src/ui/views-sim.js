@@ -41,7 +41,7 @@ function SimView() {
   return h("div", { class: "sim-wrap view" },
     h("div", { class: "row between wrap" },
       h("div", { class: "stack-xs" },
-        h("h1", { class: "mono", style: { fontSize: "1.125rem", direction: "ltr", textAlign: "right" } }, "CMD Simulator"),
+        h("h1", { class: "mono", style: { fontSize: "1.125rem", direction: "ltr", textAlign: "var(--start)" } }, T("t_sim")),
         h("div", { class: "muted small" }, T("sim_badge"))),
       resetBtn),
     seg,

@@ -146,3 +146,4 @@ bootrec_fixboot: 'این خطا در Windows 10/11 رایج است. در سیس�
 bcdboot_path: 'مسیر Windows را درست بده، مثلاً `bcdboot C:\Windows`'
 bcdedit_change: '⚠ تغییر BCD می‌تواند Boot شدن Windows را خراب کند. در Simulator فقط `bcdedit /enum` فعال است.'
 timeout_cap: 'در Simulator انتظار حداکثر ۱۰ ثانیه است.'
+list_sep: ' ، '

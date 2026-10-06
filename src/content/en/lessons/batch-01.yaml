@@ -103,7 +103,7 @@
 
 - n: 3
   term: 'Win + R'
-  fullForm: 'Run → cmd → Enter'
+  fullForm: 'Run · cmd · Enter'
   difficulty: 1
   objective: 'Open CMD and understand what the prompt is.'
   summary: 'The easiest way to open CMD takes three steps. Once CMD is open, you see a line like `C:\Users\Student>`. This line is called the prompt, and it means CMD is ready for your command.'
@@ -163,7 +163,7 @@
       options: ['CMD is ready to take a command', 'An error message', 'A command you have to type', 'The name of an open file']
       answer: 0
       explain: 'The prompt means CMD is waiting for your command, and it shows which folder you are in.'
-  recap: '① Win + R ② `cmd` ③ Enter. The prompt means CMD is ready; you only type after `>`.'
+  recap: 'Open CMD in three steps: step 1 `Win + R`, step 2 `cmd`, step 3 `Enter`. The prompt means CMD is ready; you only type after `>`.'
 
 - n: 4
   term: 'dir Pictures /w'
@@ -424,7 +424,7 @@
   difficulty: 1
   objective: 'Understand how a path is built and what `\` does.'
   summary: 'A path is the address of a file or folder. Folder names are separated by `\` (backslash).'
-  meaning: 'Read a path from left to right: drive `C:` → folder `Users` → `Student` → `Documents` → file `todo.txt`.'
+  meaning: 'Read a path from left to right: drive `C:` → folder `Users` → `Student` → `Documents` → file `todo.txt`. The parts are separated by `\`.'
   usage: 'Every time you tell CMD which file or folder to work with, you are actually giving it a path.'
   syntax: 'Drive:\Folder\Folder\File'
   terminal:

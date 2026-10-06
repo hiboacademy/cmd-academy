@@ -124,7 +124,7 @@
   difficulty: 2
   objective: 'CMD را با دسترسی Administrator باز کنی و آن را از CMD معمولی تشخیص دهی.'
   summary: 'برای ابزارهای سیستمی مثل `sfc`، `chkdsk` و `diskpart` باید CMD را با Run as administrator باز کنی. عنوان پنجره با `Administrator:` شروع می‌شود.'
-  meaning: 'راه‌ها: Start → تایپ `cmd` → Run as administrator؛ یا Start → تایپ `cmd` → `Ctrl + Shift + Enter`؛ یا Win + X → Terminal (Admin). Windows پنجره UAC را نشان می‌دهد و باید Yes بزنی. CMD ادمین معمولاً در `C:\Windows\System32` باز می‌شود.'
+  meaning: 'راه‌ها: Start ← تایپ `cmd` ← Run as administrator؛ یا Start ← تایپ `cmd` ← `Ctrl + Shift + Enter`؛ یا Win + X ← Terminal (Admin). Windows پنجره UAC را نشان می‌دهد و باید Yes بزنی. CMD ادمین معمولاً در `C:\Windows\System32` باز می‌شود.'
   usage: 'تعمیر سیستم، مدیریت سرویس‌ها و دیسک‌ها، تغییر تنظیمات شبکه.'
   syntax: "(Start → cmd → Ctrl+Shift+Enter)\nwhoami /groups"
   warning: 'در CMD ادمین هر اشتباهی می‌تواند به سیستم آسیب بزند. فقط وقتی لازم است از آن استفاده کن و کارت که تمام شد، پنجره را ببند.'
@@ -195,7 +195,7 @@
       mode: admin
       d: 'Restart سرویس چاپ (Administrator).'
   mistakes:
-    - 'استفاده از نام نمایشی بدون Quotes: `net stop Print Spooler` → `net stop "Print Spooler"` یا `net stop spooler`.'
+    - 'استفاده از نام نمایشی بدون Quotes: `net stop Print Spooler` ← `net stop "Print Spooler"` یا `net stop spooler`.'
   tip: '`sc query` فقط سرویس‌های در حال اجرا را نشان می‌دهد؛ برای همه: `sc query state= all` (با فاصله بعد از `=`).'
   practice:
     - id: P65a
@@ -238,7 +238,7 @@
   difficulty: 2
   objective: 'پیام‌های خطای رایج CMD را بخوانی و سریع رفعشان کنی.'
   summary: 'بیشتر خطاهای CMD چند پیام تکراری‌اند. اگر بدانی هر کدام چه می‌گوید، نصف عیب‌یابی را انجام داده‌ای.'
-  meaning: '`is not recognized` → اشتباه تایپی یا برنامه در PATH نیست. `cannot find the path` → مسیر اشتباه است. `cannot find the file` → نام فایل اشتباه است. `syntax ... incorrect` → شکل دستور اشتباه است (اغلب Quotes جاافتاده). `Access is denied` → اجازه نداری. `already exists` → از قبل هست. `being used by another process` → فایل یا پوشه در حال استفاده است.'
+  meaning: '`is not recognized` ← اشتباه تایپی یا برنامه در PATH نیست. `cannot find the path` ← مسیر اشتباه است. `cannot find the file` ← نام فایل اشتباه است. `syntax ... incorrect` ← شکل دستور اشتباه است (اغلب Quotes جاافتاده). `Access is denied` ← اجازه نداری. `already exists` ← از قبل هست. `being used by another process` ← فایل یا پوشه در حال استفاده است.'
   usage: 'خواندن دقیق پیام قبل از تغییر دستور.'
   syntax: "command /?\ndir\ncd"
   demo:

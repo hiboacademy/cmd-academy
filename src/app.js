@@ -17,10 +17,10 @@ const App = (() => {
     { route: "progress", key: "nav_progress", icon: "progress", match: (r) => r === "progress" },
   ];
   const SIDE_MORE = [
-    { route: "batch", label: "Batch Editor", icon: "code", match: (r) => r === "batch" },
-    { route: "commands", label: "Command Library", icon: "library", match: (r) => r === "commands" || r.startsWith("cmd-") },
-    { route: "challenges", label: "Challenges", icon: "trophy", match: (r) => r.startsWith("challenge") },
-    { route: "quiz", label: "Quiz", icon: "quiz", match: (r) => r.startsWith("quiz") },
+    { route: "batch", key: "t_batch", icon: "code", match: (r) => r === "batch" },
+    { route: "commands", key: "t_library", icon: "library", match: (r) => r === "commands" || r.startsWith("cmd-") },
+    { route: "challenges", key: "t_challenges", icon: "trophy", match: (r) => r.startsWith("challenge") },
+    { route: "quiz", key: "t_quiz", icon: "quiz", match: (r) => r.startsWith("quiz") },
     { route: "search", key: "nav_search", icon: "search", match: (r) => r === "search" },
     { route: "favorites", key: "nav_favorites", icon: "star", match: (r) => r === "favorites" },
     { route: "settings", key: "nav_settings", icon: "settings", match: (r) => r === "settings" },
@@ -84,13 +84,24 @@ const App = (() => {
 
   function boot() {
     const root = document.documentElement;
-    root.setAttribute("dir", "rtl");
-    root.setAttribute("lang", "fa");
-    const data = JSON.parse(document.getElementById("cmd-content").textContent);
-    Content.init(data);
+    const bundle = JSON.parse(document.getElementById("cmd-content").textContent);
+    Store.load();
+    // UI language: saved choice, else Persian (the course's original language)
+    // ?lang=de in the address (or a test hook) picks a language and remembers it
+    let asked = null;
+    try { asked = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+    asked = asked || window.__CMD_LANG__ || null;
+    if (asked && bundle[asked] && asked !== Store.settings().lang) Store.setSetting("lang", asked);
+    const lang = bundle[Store.settings().lang] ? Store.settings().lang : "fa";
+    setLang(lang);
+    root.setAttribute("dir", isRTL() ? "rtl" : "ltr");
+    root.setAttribute("lang", lang);
+    const appEl = document.getElementById("app");
+    appEl.setAttribute("dir", isRTL() ? "rtl" : "ltr");
+    appEl.setAttribute("lang", lang);
+    Content.init(bundle[lang]);
     Shell.setMessages(Content.shellMessages());
     Shell.setLessonIndex(Content.shellIndex());
-    Store.load();
     applySettings();
     if (window.matchMedia) {
       const mq = window.matchMedia("(prefers-color-scheme: light)");

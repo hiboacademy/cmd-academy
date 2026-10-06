@@ -103,7 +103,7 @@
 
 - n: 3
   term: 'Win + R'
-  fullForm: 'Run → cmd → Enter'
+  fullForm: 'Run · cmd · Enter'
   difficulty: 1
   objective: 'Du öffnest CMD und verstehst, was der Prompt ist.'
   summary: 'Der einfachste Weg, CMD zu öffnen, hat drei Schritte. Wenn CMD offen ist, siehst du eine Zeile wie `C:\Users\Student>`. Diese Zeile heißt Prompt (Eingabeaufforderung) und bedeutet: CMD ist bereit für deinen Befehl.'
@@ -163,7 +163,7 @@
       options: ['CMD ist bereit für einen Befehl', 'Eine Fehlermeldung', 'Ein Befehl, den du eintippen musst', 'Der Name einer geöffneten Datei']
       answer: 0
       explain: 'Der Prompt bedeutet, dass CMD auf deinen Befehl wartet, und zeigt, in welchem Ordner du bist.'
-  recap: '① Win + R ② `cmd` ③ Enter. Der Prompt heißt: CMD ist bereit; du schreibst nur nach dem `>`.'
+  recap: 'CMD öffnen in drei Schritten: Schritt 1 `Win + R`, Schritt 2 `cmd`, Schritt 3 `Enter`. Der Prompt heißt: CMD ist bereit; du schreibst nur nach dem `>`.'
 
 - n: 4
   term: 'dir Pictures /w'
@@ -424,7 +424,7 @@
   difficulty: 1
   objective: 'Du verstehst den Aufbau eines Pfads (Path) und die Rolle von `\`.'
   summary: 'Ein Pfad (Path) ist die Adresse einer Datei oder eines Ordners. Die Ordnernamen werden mit `\` (Backslash) getrennt.'
-  meaning: 'Lies den Pfad von links nach rechts: Laufwerk `C:` → Ordner `Users` → `Student` → `Documents` → Datei `todo.txt`.'
+  meaning: 'Lies den Pfad von links nach rechts: Laufwerk `C:` → Ordner `Users` → `Student` → `Documents` → Datei `todo.txt`. Die Teile werden durch `\` getrennt.'
   usage: 'Jedes Mal, wenn du CMD sagst, mit welcher Datei oder welchem Ordner es arbeiten soll, gibst du eigentlich einen Pfad an.'
   syntax: 'Drive:\Folder\Folder\File'
   terminal:

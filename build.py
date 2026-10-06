@@ -4,23 +4,35 @@ Later the Vite project imports the same JSON files instead."""
 import json, glob, yaml, pathlib
 R = pathlib.Path(__file__).parent
 def y(p): return yaml.safe_load(open(R / p, encoding="utf8"))
-lessons = []
-for f in sorted(glob.glob(str(R / "src/content/fa/lessons/*.yaml"))):
-    lessons += yaml.safe_load(open(f, encoding="utf8"))
-lib = y("src/content/fa/commands.yaml")
-VERSION = "1.0.0"
-content = {"curriculum": y("src/content/fa/curriculum.yaml"), "lessons": lessons,
-           "shell": y("src/content/fa/shell.yaml"), "ui": y("src/content/fa/ui.yaml"),
-           "categories": lib["categories"], "commands": lib["commands"],
-           "challenges": y("src/content/fa/challenges.yaml") or [],
-           "meta": {"version": VERSION}}
+import i18n_check
+VERSION = "1.1.0"
+LANGS = ["fa", "de", "en"]          # Persian is the source; de/en must match its structure
+
+def load_lang(lang):
+    lessons = []
+    for f in sorted(glob.glob(str(R / f"src/content/{lang}/lessons/*.yaml"))):
+        lessons += yaml.safe_load(open(f, encoding="utf8"))
+    lib = y(f"src/content/{lang}/commands.yaml")
+    return {"lang": lang, "curriculum": y(f"src/content/{lang}/curriculum.yaml"), "lessons": lessons,
+            "shell": y(f"src/content/{lang}/shell.yaml"), "ui": y(f"src/content/{lang}/ui.yaml"),
+            "categories": lib["categories"], "commands": lib["commands"],
+            "challenges": y(f"src/content/{lang}/challenges.yaml") or [],
+            "meta": {"version": VERSION}}
+
+errs = [e for lang in LANGS[1:] for rel in i18n_check.all_files() for e in i18n_check.check_file(lang, rel)]
+if errs:
+    raise SystemExit("translations do not match the Persian source:\n" + "\n".join(errs[:40]))
+bundle = {lang: load_lang(lang) for lang in LANGS}
+content = bundle["fa"]
+lessons = content["lessons"]
 # sanity checks
 nums = [l["n"] for lv in content["curriculum"]["levels"] for ch in lv["chapters"] for l in ch["lessons"]]
 assert nums == list(range(1, len(nums) + 1)), "lesson numbers must be continuous"
 ids = [p["id"] for l in lessons for p in l["practice"]]
 assert len(ids) == len(set(ids)), "duplicate practice id"
 pathlib.Path(R / "dist").mkdir(exist_ok=True)
-json.dump(content, open(R / "dist/content.fa.json", "w", encoding="utf8"), ensure_ascii=False, indent=1)
+for lang in LANGS:
+    json.dump(bundle[lang], open(R / f"dist/content.{lang}.json", "w", encoding="utf8"), ensure_ascii=False, indent=1)
 order = ["src/engine/vfs.js", "src/engine/sysdata.js", "src/engine/seta.js", "src/engine/shell.js",
          "src/engine/cmd-core.js", "src/engine/cmd-files.js", "src/engine/cmd-text.js", "src/engine/cmd-system.js",
          "src/engine/cmd-network.js", "src/engine/cmd-disk.js", "src/engine/cmd-batch.js", "src/engine/checker.js", "src/data/content.js",
@@ -29,13 +41,14 @@ order = ["src/engine/vfs.js", "src/engine/sysdata.js", "src/engine/seta.js", "sr
          "src/ui/views-library.js", "src/ui/views-challenges.js", "src/ui/views-progress.js", "src/app.js"]
 js = "\n".join(open(R / f, encoding="utf8").read() for f in order)
 import hashlib as _h
-content["meta"]["build"] = _h.sha1((js + json.dumps(content, ensure_ascii=False)).encode()).hexdigest()[:8]
+build_id = _h.sha1((js + json.dumps(bundle, ensure_ascii=False)).encode()).hexdigest()[:8]
+for lang in LANGS: bundle[lang]["meta"]["build"] = build_id
 css = open(R / "src/ui/styles.css", encoding="utf8").read()
-data = json.dumps(content, ensure_ascii=False).replace("</", "<\\/")
+data = json.dumps(bundle, ensure_ascii=False).replace("</", "<\\/")
 html = open(R / "src/index.template.html", encoding="utf8").read()
 html = html.replace("/*STYLES*/", css).replace("/*CONTENT*/", data).replace("/*SCRIPTS*/", js)
 open(R / "dist/cmd-academy.html", "w", encoding="utf8").write(html)
-print(f"{len(nums)} lessons in outline, {len(lessons)} written, {len(ids)} practice tasks, {len(html)//1024} KB")
+print(f"{len(nums)} lessons in outline, {len(lessons)} written, {len(ids)} practice tasks, languages {'/'.join(LANGS)}, {len(html)//1024} KB")
 
 # ---------- PWA (installable app) -> docs/ for GitHub Pages ----------
 import shutil, hashlib

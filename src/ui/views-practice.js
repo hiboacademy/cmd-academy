@@ -55,24 +55,46 @@ function BatchEditor({ sh, term, file = "script.bat", starter = "", persist = nu
   return { el, run, save, setCode(c) { ta.value = c; syncGutter(); }, getCode: () => ta.value, nameIn, ta };
 }
 
-/* Runs a task (practice or challenge): terminal or batch editor + checks + hints */
+/* Runs a task (practice or challenge): terminal or batch editor + checks.
+   Hints are progressive and on demand (hint 1 = idea, hint 2 = structure).
+   After the first wrong attempt the learner sees the correct answer, why it is
+   correct and a breakdown of every part, then can try again themselves. */
 function TaskRunner(spec, { onSolved, solvedBefore }) {
   const sh = Checker.shellFor(spec);
-  const st = { attempt: [], output: "", fails: 0, solved: false, revealed: false };
+  const st = { attempt: [], output: "", fails: 0, solved: false };
   const fb = h("div", { "aria-live": "polite" });
   const answerLines = [].concat(spec.answer || []);
+  const hints = spec.hints || [];
+
+  // ---- progressive hints ----
+  const hintsEl = h("div", { class: "hint-box" });
+  let hintIdx = 0;
+  const hintLabel = h("span", null, T("hint_btn"));
+  const hintBtn = hints.length ? h("button", { class: "btn small ghost", onClick: () => showHint() }, icon("tip"), hintLabel) : null;
+  function showHint() {
+    if (hintIdx >= hints.length) return;
+    hintsEl.appendChild(h("div", { class: "hint-item pop" }, h("b", null, T("hint_label", { n: fa(hintIdx + 1) }) + ": "), fmt(hints[hintIdx])));
+    hintIdx++;
+    if (hintIdx >= hints.length) hintBtn.remove(); else hintLabel.textContent = T("hint_more");
+  }
 
   function showFb(kind, content) {
     fb.innerHTML = "";
     fb.appendChild(h("div", { class: "feedback " + kind + (kind === "no" ? " shake" : " pop") }, content));
   }
-  function answerBox() {
-    const box = () => h("div", { class: "stack-xs" },
-      h("div", { class: "answer-code" }, answerLines.join("\n")),
-      spec.explain ? h("div", { class: "small" }, fmt(spec.explain)) : null);
-    if (st.revealed) return box();
-    const b = h("button", { class: "btn small", onClick: () => { st.revealed = true; b.replaceWith(box()); } }, T("show_answer"));
-    return b;
+  function tryAgain() {
+    showFb("mid", h("div", null, T("fb_try_again_note")));
+    if (editor) editor.ta.focus(); else term.focus();
+  }
+  // the correct answer, why it is correct, and what each part does
+  function solution() {
+    const script = !!spec.batch;
+    return h("div", { class: "solution" },
+      h("div", { class: "stack-xs" }, h("h3", null, script ? T("fb_script") : T("fb_answer")), h("div", { class: "answer-code" }, answerLines.join("\n"))),
+      spec.explain ? h("div", { class: "stack-xs" }, h("h3", null, T("fb_why")), h("div", { class: "small" }, fmt(spec.explain))) : null,
+      !script && answerLines.length ? h("div", { class: "stack-sm" }, h("h3", null, T("fb_parts")),
+        answerLines.slice(0, 4).map((l) => CommandBreakdown(l, answerLines.length === 1 ? spec.parts : null))) : null,
+      h("div", { class: "btn-row" }, h("button", { class: "btn primary", onClick: tryAgain }, icon("reset"), T("fb_try_again"))));
   }
   function check(res) {
     st.attempt.push(...res.recs);
@@ -81,21 +103,26 @@ function TaskRunner(spec, { onSolved, solvedBefore }) {
     const extra = { output: st.output, lastOutput: res.output || "" };
     if (Checker.evaluate(spec.checks, sh, st.attempt, extra)) {
       st.solved = true;
-      showFb("ok", h("div", { class: "stack-sm" }, h("div", { class: "fh" }, T("correct")), spec.success ? h("div", null, fmt(spec.success)) : null, onSolved ? onSolved() : null));
+      showFb("ok", h("div", { class: "stack-sm" },
+        h("div", { class: "fh" }, T("correct")),
+        spec.success ? h("div", null, fmt(spec.success)) : null,
+        spec.explain ? h("div", { class: "small" }, fmt(spec.explain)) : null,
+        onSolved ? onSolved() : null));
       return;
     }
     const failed = res.recs.filter((r) => !r.ok && r.name && r.name !== "batch");
     if (!spec.batch) failed.forEach((r) => Store.cmdError(r.name));
     if (res.cancelled) return;
-    if ((spec.multi || spec.batch) && !failed.length && !res.recs.some((r) => r.syntaxError)) {
-      if (spec.batch) { st.fails++; }
-      else { showFb("mid", h("div", { class: "fh" }, T("keep_going"))); return; }
-    } else st.fails++;
-    const hint = (spec.hints || [])[Math.min(st.fails - 1, (spec.hints || []).length - 1)];
+    // a correct step of a multi-step task is not a mistake
+    if (spec.multi && !spec.batch && !failed.length && !res.recs.some((r) => r.syntaxError)) {
+      showFb("mid", h("div", { class: "fh" }, T("keep_going")));
+      return;
+    }
+    st.fails++;
     showFb("no", h("div", { class: "stack-sm" },
       h("div", { class: "fh" }, T("not_yet")),
-      hint ? h("div", null, h("b", { class: "mono" }, "Hint: "), fmt(hint)) : null,
-      st.fails >= 2 && answerLines.length ? answerBox() : null));
+      answerLines.length ? h("div", null, T("fb_wrong")) : null,
+      answerLines.length ? solution() : null));
   }
 
   const term = InteractiveTerminal({ sh, preload: spec.preload, onCommand: check, title: spec.mode === "winre" ? "Administrator: X:\\windows\\system32\\cmd.exe" : undefined, cls: spec.batch ? "short" : "" });
@@ -109,7 +136,9 @@ function TaskRunner(spec, { onSolved, solvedBefore }) {
       h("p", { class: "task" }, fmt(spec.task)),
       spec.admin ? h("div", { class: "small muted" }, "🛡 " + T("admin_task")) : null,
       spec.mode === "winre" ? h("div", { class: "small muted" }, "🧰 " + T("winre_task")) : null,
-      solvedBefore ? h("div", { class: "small", style: { color: "var(--green)" } }, "✓ " + T("solved_before")) : null),
+      solvedBefore ? h("div", { class: "small", style: { color: "var(--green)" } }, "✓ " + T("solved_before")) : null,
+      hintsEl,
+      hintBtn ? h("div", null, hintBtn) : null),
     editor ? h("div", { class: "split side" }, editor.el, term.el) : term.el,
     fb);
   setTimeout(() => (editor ? editor.ta.focus() : term.focus()), 60);
@@ -128,10 +157,10 @@ function PracticeView() {
     const ts = tasks.filter((t) => ls.some((l) => l.n === t.lesson));
     const d = ts.filter((t) => Store.practiceDone(t.id)).length;
     const det = h("details", { class: "group" },
-      h("summary", null, icon("chev", "chev"), h("div", { class: "grow" }, h("div", { class: "ln" }, "Chapter " + ch.id), h("h3", null, ch.title)), h("span", { class: "pct small muted" }, `${d}/${ts.length}`)),
+      h("summary", null, icon("chev", "chev"), h("div", { class: "grow" }, h("div", { class: "ln" }, T("w_chapter") + " " + ch.id), h("h3", null, ch.title)), h("span", { class: "pct small muted" }, `${d}/${ts.length}`)),
       ts.map((t) => h("button", { class: "task-row", onClick: () => App.go("task-" + t.id) },
         h("span", { class: "st" + (Store.practiceDone(t.id) ? " done" : "") }, Store.practiceDone(t.id) ? "✓" : ""),
-        h("div", { class: "grow small" }, h("div", { class: "ln" }, "Lesson " + t.lesson + (t.batch ? " · .bat" : "")), fmt(t.task)))));
+        h("div", { class: "grow small" }, h("div", { class: "ln" }, T("w_lesson") + " " + t.lesson + (t.batch ? " · .bat" : "")), fmt(t.task)))));
     if (ch.id === curCh) det.open = true;
     return det;
   });
@@ -143,8 +172,8 @@ function PracticeView() {
       h("button", { class: "btn primary block", onClick: () => App.go("task-" + next.id) }, T("practice_next")))
       : h("div", { class: "card" }, T("practice_all_done")),
     h("div", { class: "grid2" },
-      h("button", { class: "card tap tile", onClick: () => App.go("challenges") }, h("span", { class: "ti-ico" }, icon("trophy")), h("span", { class: "tt" }, "Challenges"), h("span", { class: "muted small" }, T("card_ch_desc"))),
-      h("button", { class: "card tap tile", onClick: () => App.go("batch") }, h("span", { class: "ti-ico" }, icon("code")), h("span", { class: "tt" }, "Batch Editor"), h("span", { class: "muted small" }, T("card_batch_desc")))),
+      h("button", { class: "card tap tile", onClick: () => App.go("challenges") }, h("span", { class: "ti-ico" }, icon("trophy")), h("span", { class: "tt" }, T("t_challenges")), h("span", { class: "muted small" }, T("card_ch_desc"))),
+      h("button", { class: "card tap tile", onClick: () => App.go("batch") }, h("span", { class: "ti-ico" }, icon("code")), h("span", { class: "tt" }, T("t_batch")), h("span", { class: "muted small" }, T("card_batch_desc")))),
     groups);
 }
 
@@ -169,9 +198,9 @@ function TaskView(id) {
     },
   });
   return h("div", { class: "stack view" },
-    backBtn("درس " + fa(task.lesson), "lesson" + task.lesson),
+    backBtn(T("lesson_n", { n: fa(task.lesson) }), "lesson" + task.lesson),
     h("div", { class: "row between" },
-      h("div", { class: "eyebrow" }, `PRACTICE · LESSON ${task.lesson} · ${idx + 1}/${lessonTasks.length}`),
+      h("div", { class: "eyebrow" }, `${T("w_practice")} · ${T("w_lesson")} ${task.lesson} · ${idx + 1}/${lessonTasks.length}`),
       runner.resetBtn),
     runner.el);
 }
@@ -211,7 +240,7 @@ function BatchView() {
   } }, icon("reset"), T("sim_reset"));
   return h("div", { class: "stack view" },
     h("div", { class: "row between wrap" },
-      h("div", { class: "stack-xs" }, h("h1", { class: "mono", style: { direction: "ltr", textAlign: "right" } }, "Batch Editor"), h("div", { class: "muted small" }, T("batch_intro"))),
+      h("div", { class: "stack-xs" }, h("h1", { class: "mono", style: { direction: "ltr", textAlign: "var(--start)" } }, T("t_batch")), h("div", { class: "muted small" }, T("batch_intro"))),
       h("div", { class: "row" }, pick, resetBtn)),
     h("div", { class: "split side" }, ed.el, term.el),
     h("div", { class: "callout info" }, icon("info"), h("div", { class: "small" }, fmt(T("batch_help")))));

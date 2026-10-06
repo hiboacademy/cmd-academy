@@ -10,7 +10,7 @@ function ChallengesView() {
     const lvl = Content.level(lv);
     return h("section", { class: "card chapter" },
       h("div", { class: "chapter-head row between" },
-        h("div", null, h("div", { class: "eyebrow" }, "LEVEL " + lv), h("h2", null, lvl.title)),
+        h("div", null, h("div", { class: "eyebrow" }, T("w_level") + " " + lv), h("h2", null, lvl.title)),
         h("span", { class: "pct small muted" }, `${list.filter((c) => Store.challengeDone(c.id)).length}/${list.length}`)),
       list.map((c) => {
         const ok = Store.challengeDone(c.id);
@@ -24,7 +24,7 @@ function ChallengesView() {
       }));
   });
   return h("div", { class: "stack view" },
-    h("div", { class: "row between" }, h("h1", { class: "mono", style: { direction: "ltr", textAlign: "right" } }, "Challenges"), h("span", { class: "pct muted" }, `${done}/${all.length}`)),
+    h("div", { class: "row between" }, h("h1", { class: "mono", style: { direction: "ltr", textAlign: "var(--start)" } }, T("t_challenges")), h("span", { class: "pct muted" }, `${done}/${all.length}`)),
     h("p", { class: "muted" }, T("ch_intro")),
     byLevel);
 }
@@ -46,9 +46,9 @@ function ChallengeView(id) {
   });
   const rec = c.after ? Content.lesson(c.after) : null;
   return h("div", { class: "stack view" },
-    backBtn("Challenges", "challenges"),
+    backBtn(T("t_challenges"), "challenges"),
     h("div", { class: "stack-xs" },
-      h("div", { class: "row between wrap" }, h("div", { class: "eyebrow" }, `CHALLENGE ${i + 1}/${all.length}`), runner.resetBtn),
+      h("div", { class: "row between wrap" }, h("div", { class: "eyebrow" }, `${T("w_challenge")} ${i + 1}/${all.length}`), runner.resetBtn),
       h("h1", null, fmt(c.title)),
       c.story ? h("p", { class: "muted" }, fmt(c.story)) : null,
       rec ? h("button", { class: "linkish small", style: { alignSelf: "flex-start" }, onClick: () => App.go("lesson" + rec.n) }, T("after_lesson", { n: fa(rec.n) }) + " · " + rec.t.replace(/`/g, "")) : null),

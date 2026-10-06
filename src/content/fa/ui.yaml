@@ -225,3 +225,53 @@ about_text: 'CMD Academy یک اپ آموزشی است. Simulator یک محیط 
 update_ready: 'نسخه جدید CMD Academy نصب شد.'
 update_reload: 'بارگذاری دوباره'
 close: 'بستن'
+
+# section titles (shown with the English name in every language)
+t_library: Command Library
+t_challenges: Challenges
+t_batch: Batch Editor
+t_quiz: Quiz
+t_progress: Progress
+t_sim: CMD Simulator
+# small labels
+w_lesson: درس
+w_chapter: فصل
+w_level: Level
+w_challenge: چالش
+w_practice: تمرین
+w_mini_quiz: Mini Quiz
+w_chapter_quiz: Quiz فصل
+w_level_quiz: Quiz Level
+w_review: مرور
+lesson_n: 'درس {n}'
+lessons_done_of: '{done} از {total} درس'
+fav_generic: 'نشان کردن'
+search_chip_word: 'پوشه'
+term_note: راهنما
+term_warn: هشدار
+term_press_key: 'یک کلید بزن'
+term_run: اجرا
+# lesson sections
+s_steps: 'قدم‌به‌قدم'
+s_anatomy: 'بخش‌های دستور'
+# practice feedback and hints
+hint_btn: 'راهنمایی (Hint)'
+hint_more: 'راهنمایی بیشتر'
+hint_label: 'Hint {n}'
+hints_left: 'راهنمایی بعدی: {n}'
+fb_wrong: 'این‌جوری درست می‌شود:'
+fb_answer: 'جواب درست'
+fb_why: 'چرا این جواب درست است؟'
+fb_parts: 'بخش‌های دستور'
+fb_structure: 'ساختار'
+fb_try_again: 'دوباره امتحان کن'
+fb_try_again_note: 'حالا خودت دستور را در Terminal بنویس.'
+fb_script: 'Script درست'
+role_command: Command
+role_argument: Argument / Target
+role_switch: Switch
+role_operator: Operator
+rd_command: 'کاری که CMD باید انجام دهد.'
+rd_argument: 'چیزی که دستور روی آن کار می‌کند: فایل، پوشه، متن یا مقدار.'
+rd_switch: 'گزینه‌ای که نحوه کار یا نمایش نتیجه را عوض می‌کند.'
+rd_operator: 'دستورها یا خروجی را به هم وصل می‌کند.'

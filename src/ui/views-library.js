@@ -33,7 +33,7 @@ function LibraryView() {
       h("button", { "aria-pressed": cat === c.id ? "true" : "false", onClick: () => { App.state.libCat = c.id; App.render(); } }, c.title)));
   draw();
   return h("div", { class: "stack view" },
-    h("div", { class: "row between" }, h("h1", { class: "mono", style: { direction: "ltr", textAlign: "right" } }, "Command Library"), h("span", { class: "pct muted" }, String(Content.commandList().length))),
+    h("div", { class: "row between" }, h("h1", { class: "mono", style: { direction: "ltr", textAlign: "var(--start)" } }, T("t_library")), h("span", { class: "pct muted" }, String(Content.commandList().length))),
     input, cats, list);
 }
 
@@ -50,7 +50,7 @@ function CommandView(name) {
         e.noTry ? null : h("button", { class: "icon-btn plain", "aria-label": T("try_it"), title: T("try_it"), onClick: () => tryInSim(e.c, e.at, e.mode) }, icon("play")),
         starButton("ex", `${c.name}#${i}`, T("fav_example"))))))) : null;
   return h("article", { class: "stack view" },
-    h("div", { class: "row between" }, backBtn("Command Library", "commands"), starButton("cmd", c.name, T("fav_command"))),
+    h("div", { class: "row between" }, backBtn(T("t_library"), "commands"), starButton("cmd", c.name, T("fav_command"))),
     h("div", { class: "stack-xs" },
       h("div", { class: "row wrap" }, h("span", { class: "eyebrow" }, (cat ? cat.title : c.category)), levelTag(c.level || 1), dangerChip(c)),
       h("div", { class: "term-hero" }, c.name),
@@ -67,7 +67,7 @@ function CommandView(name) {
     }))) : null,
     (c.lessons || []).length ? sectionCard(T("s_lessons"), h("div", { class: "stack-xs" }, c.lessons.map((n) => {
       const l = Content.lesson(n);
-      return h("button", { class: "task-row", onClick: () => App.go("lesson" + n), disabled: !l.full }, h("span", { class: "ln" }, "Lesson " + n), h("span", { class: "grow small" }, fmt(l.t)));
+      return h("button", { class: "task-row", onClick: () => App.go("lesson" + n), disabled: !l.full }, h("span", { class: "ln" }, T("w_lesson") + " " + n), h("span", { class: "grow small" }, fmt(l.t)));
     }))) : null,
     c.engine !== false ? h("button", { class: "btn block", onClick: () => tryInSim(c.name + " /?") }, icon("sim"), T("open_help_in_sim", { cmd: c.name })) : null);
 }
@@ -90,7 +90,7 @@ function SearchView() {
     App.state.searchQ = input.value;
     results.innerHTML = "";
     const q = input.value.trim();
-    if (!q) { results.appendChild(h("div", { class: "stack-sm" }, h("p", { class: "muted" }, T("search_hint")), h("div", { class: "chips" }, ["copy", "wildcard", "ping", "پوشه", "set /p", "for", "IP", "errorlevel"].map((s) => h("button", { class: "chip", onClick: () => { input.value = s; draw(); } }, s))))); return; }
+    if (!q) { results.appendChild(h("div", { class: "stack-sm" }, h("p", { class: "muted" }, T("search_hint")), h("div", { class: "chips" }, ["copy", "wildcard", "ping", T("search_chip_word"), "set /p", "for", "IP", "errorlevel"].map((s) => h("button", { class: "chip", onClick: () => { input.value = s; draw(); } }, s))))); return; }
     const res = Content.search(q);
     if (!res.length) { results.appendChild(h("p", { class: "muted" }, T("no_results"))); return; }
     groups.forEach(([kind, label]) => {

@@ -146,3 +146,4 @@ bootrec_fixboot: 'Dieser Fehler ist bei Windows 10/11 häufig. Auf UEFI-Systemen
 bcdboot_path: 'Gib den Windows-Pfad richtig an, z. B. `bcdboot C:\Windows`'
 bcdedit_change: '⚠ Änderungen am BCD können den Windows-Start (Boot) kaputt machen. Im Simulator ist nur `bcdedit /enum` aktiv.'
 timeout_cap: 'Im Simulator dauert das Warten höchstens 10 Sekunden.'
+list_sep: ', '

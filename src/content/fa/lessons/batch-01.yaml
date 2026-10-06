@@ -103,7 +103,7 @@
 
 - n: 3
   term: 'Win + R'
-  fullForm: 'Run → cmd → Enter'
+  fullForm: 'Run · cmd · Enter'
   difficulty: 1
   objective: 'CMD را باز کنی و بفهمی Prompt چیست.'
   summary: 'ساده‌ترین راه باز کردن CMD سه قدم دارد. وقتی CMD باز شد، خطی مثل `C:\Users\Student>` می‌بینی. این خط Prompt نام دارد و یعنی CMD آماده است تا دستور تو را بگیرد.'
@@ -163,7 +163,7 @@
       options: ['CMD آماده است تا دستور بگیرد', 'یک پیام خطا', 'دستوری که باید تایپ کنی', 'نام فایلی که باز شده']
       answer: 0
       explain: 'Prompt یعنی CMD منتظر دستور توست و نشان می‌دهد در کدام پوشه هستی.'
-  recap: '① Win + R ② `cmd` ③ Enter. Prompt یعنی CMD آماده است؛ تو فقط بعد از `>` می‌نویسی.'
+  recap: 'باز کردن CMD در سه قدم: قدم ۱ `Win + R`، قدم ۲ `cmd`، قدم ۳ `Enter`. Prompt یعنی CMD آماده است؛ تو فقط بعد از `>` می‌نویسی.'
 
 - n: 4
   term: 'dir Pictures /w'
@@ -424,7 +424,7 @@
   difficulty: 1
   objective: 'ساختار Path و نقش `\` را بفهمی.'
   summary: 'Path آدرس یک فایل یا پوشه است. نام پوشه‌ها با `\` (Backslash) از هم جدا می‌شوند.'
-  meaning: 'Path را از چپ به راست بخوان: Drive `C:` ← پوشه `Users` ← `Student` ← `Documents` ← فایل `todo.txt`.'
+  meaning: 'Path را بخش‌به‌بخش بخوان: اول Drive `C:`، بعد پوشه `Users`، بعد `Student`، بعد `Documents` و در آخر فایل `todo.txt`. بخش‌ها با `\` از هم جدا شده‌اند.'
   usage: 'هر بار به CMD می‌گویی با چه فایل یا پوشه‌ای کار کند، در واقع یک Path می‌دهی.'
   syntax: 'Drive:\Folder\Folder\File'
   terminal:
@@ -511,7 +511,7 @@
       checks: [{type: cwd, value: 'C:\Users\Student\Pictures'}, {type: usedCd, value: absolute}]
       hints:
         - 'Absolute Path از حرف Drive شروع می‌شود و همه پوشه‌ها را تا مقصد پشت‌سرهم می‌آورد. چنین Pathی را به `cd` بده.'
-        - 'دو بخش: چه کاری؟ (`cd`) به کجا؟ (Path کامل به ترتیب: `C:\` ← `Users` ← `Student` ← `Pictures`، با `\` بین پوشه‌ها).'
+        - 'دو بخش: چه کاری؟ (`cd`) به کجا؟ (Path کامل: اول `C:\`، بعد `Users`، بعد `Student` و در آخر `Pictures`، با `\` بین پوشه‌ها).'
       answer: 'cd C:\Users\Student\Pictures'
       explain: '`cd` با Absolute Path `C:\Users\Student\Pictures` کار می‌کند؛ چون Path از `C:\` شروع می‌شود، مهم نیست الان در System32 هستی.'
     - id: P9b

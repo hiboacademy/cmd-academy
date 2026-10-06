@@ -17,7 +17,7 @@
     - c: 'ping 127.0.0.1'
       d: 'تست شبکه داخلی خود کامپیوتر.'
     - c: 'nslookup google.com'
-      d: 'DNS: نام → IP (درس ۵۸).'
+      d: 'DNS: نام ← IP (درس ۵۸).'
   mistakes:
     - 'اشتباه گرفتن IP خصوصی (`192.168...`) با IP عمومی که اینترنت تو را با آن می‌بیند.'
   tip: 'در Simulator: این کامپیوتر `192.168.1.24`، Router `192.168.1.1` و یک پرینتر `192.168.1.50` است.'
@@ -52,7 +52,7 @@
       q: '`192.168.1.24` یک IP خصوصی است.'
       answer: true
       explain: 'IPهای `192.168.x.x` خصوصی‌اند.'
-  recap: 'IP = آدرس دستگاه. Gateway = Router. DNS = نام → IP. `127.0.0.1` = خود کامپیوتر.'
+  recap: 'IP = آدرس دستگاه. Gateway = Router. DNS = نام ← IP. `127.0.0.1` = خود کامپیوتر.'
 
 - n: 54
   term: ipconfig
@@ -426,7 +426,7 @@
       q: 'ARP چه چیزی را به چه چیزی وصل می‌کند؟'
       options: ['IP را به MAC', 'نام را به IP', 'MAC را به نام', 'Port را به برنامه']
       answer: 0
-      explain: 'نام → IP کار DNS است.'
+      explain: 'نام ← IP کار DNS است.'
     - kind: tf
       q: 'جدول ARP دستگاه‌های شبکه محلی را نشان می‌دهد.'
       answer: true
@@ -483,7 +483,7 @@
     - kind: order
       q: 'قدم‌های عیب‌یابی اینترنت را از ساده به پیچیده مرتب کن.'
       items: ['ipconfig', 'ping 127.0.0.1', 'ping 192.168.1.1', 'ping 8.8.8.8', 'ping google.com']
-      explain: 'IP → خود کامپیوتر → Router → اینترنت → DNS.'
+      explain: 'IP ← خود کامپیوتر ← Router ← اینترنت ← DNS.'
     - kind: predict
       q: '`ping 8.8.8.8` جواب می‌دهد ولی `ping google.com` می‌گوید could not find host. مشکل کجاست؟'
       code: "ping 8.8.8.8     -> Reply\nping google.com  -> could not find host"
@@ -495,4 +495,4 @@
       options: ['همه مقصدهای دیگر (Default Route)', 'هیچ مقصدی', 'خود کامپیوتر', 'شبکه محلی']
       answer: 0
       explain: 'مسیر پیش‌فرض به Gateway.'
-  recap: '`route print` = جدول مسیرها. عیب‌یابی: ipconfig → 127.0.0.1 → Gateway → 8.8.8.8 → نام سایت.'
+  recap: '`route print` = جدول مسیرها. عیب‌یابی: ipconfig ← 127.0.0.1 ← Gateway ← 8.8.8.8 ← نام سایت.'

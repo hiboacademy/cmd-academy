@@ -5,11 +5,11 @@ function LearnView() {
   const lvId = App.state.learnLevel || (Store.currentLesson() ? Store.currentLesson().level : 1);
   App.state.learnLevel = lvId;
   const lv = Content.level(lvId);
-  const seg = h("div", { class: "seg mono", role: "group", "aria-label": "Level" },
+  const seg = h("div", { class: "seg mono", role: "group", "aria-label": T("w_level") },
     Content.levels().map((x) => h("button", {
       "aria-pressed": x.id === lvId ? "true" : "false",
       onClick: () => { App.state.learnLevel = x.id; App.render(); },
-    }, "LEVEL " + x.id)));
+    }, T("w_level") + " " + x.id)));
 
   const lessons = Content.levelLessons(lvId);
   const done = lessons.filter((l) => Store.lessonDone(l)).length;
@@ -22,7 +22,7 @@ function LearnView() {
     return h("section", { class: "card chapter" },
       h("div", { class: "chapter-head stack-sm" },
         h("div", { class: "row between" },
-          h("div", { class: "eyebrow" }, "Chapter " + ch.id),
+          h("div", { class: "eyebrow" }, T("w_chapter") + " " + ch.id),
           h("div", { class: "pct small muted" }, `${d}/${ls.length}`)),
         h("h2", null, ch.title),
         h("div", { class: "bar" }, h("i", { style: { width: pct(d, ls.length) + "%" } }))),
@@ -35,10 +35,10 @@ function LearnView() {
   return h("div", { class: "stack view" },
     seg,
     h("div", { class: "level-head stack-sm" },
-      h("div", { class: "eyebrow" }, "LEVEL " + lv.id),
+      h("div", { class: "eyebrow" }, T("w_level") + " " + lv.id),
       h("div", { class: "row between wrap" },
         h("div", { class: "code" }, lv.code),
-        h("div", { class: "muted small" }, `${lv.title} · ${fa(done)} از ${fa(lessons.length)} درس`))),
+        h("div", { class: "muted small" }, `${lv.title} · ${T("lessons_done_of", { done: fa(done), total: fa(lessons.length) })}`))),
     chapters,
     Content.quiz("V" + lvId) ? h("button", { class: "btn block", onClick: () => App.go("quiz-V" + lvId) }, icon("trophy"), T("level_quiz", { n: lvId }) + (lvBest ? ` · ${lvBest.best}/${lvBest.total}` : "")) : null);
 }
@@ -47,10 +47,10 @@ function LessonRow(l) {
   const st = Store.lessonStatus(l);
   const mark = st === "done" ? "✓" : "";
   const label = { done: T("st_done"), current: T("st_current"), started: T("st_started"), open: T("st_open"), soon: T("coming_soon") }[st];
-  return h("button", { class: "lesson-row", disabled: st === "soon", onClick: () => App.go("lesson" + l.n), "aria-label": `Lesson ${l.n}: ${l.t.replace(/`/g, "")} — ${label}` },
+  return h("button", { class: "lesson-row", disabled: st === "soon", onClick: () => App.go("lesson" + l.n), "aria-label": `${T("w_lesson")} ${l.n}: ${l.t.replace(/`/g, "")} — ${label}` },
     h("span", { class: "st " + st, "aria-hidden": "true" }, mark),
     h("div", { class: "grow" },
-      h("div", { class: "ln" }, "Lesson " + l.n),
+      h("div", { class: "ln" }, T("w_lesson") + " " + l.n),
       h("div", { class: "lt" }, fmt(l.t))),
     l.c ? h("span", { class: "chip" + (l.danger ? " danger" : "") }, l.c) : null,
     st === "soon" ? h("span", { class: "tag" }, T("coming_soon")) : null);
@@ -82,13 +82,15 @@ function LessonView(n) {
   return h("article", { class: "stack view" },
     h("div", { class: "row between" }, backBtn(T("nav_learn"), "learn"), starButton("lesson", n, T("fav_lesson"))),
     h("div", { class: "stack-sm" },
-      h("div", { class: "row wrap" }, h("div", { class: "eyebrow" }, `LESSON ${pad2(l.n)} · CHAPTER ${l.chapter}`), levelTag(f.difficulty || l.level)),
+      h("div", { class: "row wrap" }, h("div", { class: "eyebrow" }, `${T("w_lesson")} ${pad2(l.n)} · ${T("w_chapter")} ${l.chapter}`), levelTag(f.difficulty || l.level)),
       h("h1", null, fmt(l.t))),
     h("div", null,
       h("div", { class: "term-hero" + (f.term.length > 14 ? " long" : "") }, f.term),
       f.fullForm ? h("div", { class: "full-form" }, f.fullForm) : null),
     f.objective ? h("div", { class: "objective" }, icon("target"), h("div", null, h("b", null, T("s_objective") + ": "), fmt(f.objective))) : null,
     h("p", { class: "lead" }, fmt(f.summary)),
+    (f.steps || []).length ? sectionCard(T("s_steps"), h("ol", { class: "steps" }, f.steps.map((x) => h("li", null, h("span", null, fmt(x)))))) : null,
+    f.anatomy ? sectionCard(T("s_anatomy"), h("div", { class: "stack-sm" }, h("div", { class: "syntax" }, f.anatomy.cmd), CommandBreakdown(f.anatomy.cmd, f.anatomy.parts))) : null,
     f.terminal ? StaticTerminal(f.terminal, { cls: "static" }) : f.demo ? StaticTerminal(Checker.demo(f.demo), { cls: "static", title: f.demo.admin ? "Administrator: Command Prompt" : f.demo.mode === "winre" ? "X:\\windows\\system32\\cmd.exe" : undefined }) : null,
     h("div", { class: "card facts" },
       fact(T("s_meaning"), fmt(f.meaning)),
@@ -115,7 +117,7 @@ function LessonView(n) {
         } }, T("btn_practice")),
         h("button", { class: "btn", onClick: () => App.go("quiz-L" + l.n) }, T("btn_quiz")))),
     h("nav", { class: "pager", "aria-label": T("lesson_nav") },
-      prev ? h("button", { class: "btn ghost", onClick: () => App.go("lesson" + prev.n) }, h("span", null, `→ ${fa(prev.n)}. ${prev.t.replace(/`/g, "")}`)) : h("span"),
-      next ? h("button", { class: "btn ghost", disabled: !next.full, onClick: () => App.go("lesson" + next.n) }, h("span", null, `${fa(next.n)}. ${next.t.replace(/`/g, "")} ←`)) : h("span")),
+      prev ? h("button", { class: "btn ghost", onClick: () => App.go("lesson" + prev.n) }, h("span", null, `${isRTL() ? "→" : "←"} ${fa(prev.n)}. ${prev.t.replace(/`/g, "")}`)) : h("span"),
+      next ? h("button", { class: "btn ghost", disabled: !next.full, onClick: () => App.go("lesson" + next.n) }, h("span", null, `${fa(next.n)}. ${next.t.replace(/`/g, "")} ${isRTL() ? "←" : "→"}`)) : h("span")),
   );
 }

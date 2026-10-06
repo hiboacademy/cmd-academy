@@ -1072,7 +1072,7 @@ const Shell = (() => {
     err(lines, `'${word}' is not recognized as an internal or external command,`);
     err(lines, "operable program or batch file.");
   }
-  function driveList(sh) { return Object.keys(sh.fs.drives).sort().map((d) => "`" + d + ":`").join(" ، "); }
+  function driveList(sh) { return Object.keys(sh.fs.drives).sort().map((d) => "`" + d + ":`").join(MSG.list_sep || ", "); }
 
   function guiApp(lines, name, rest, sh) {
     const label = GUI[name] || name;
