@@ -1,0 +1,153 @@
+# CMD Academy — full curriculum outline (100 lessons)
+# n = lesson number, t = lesson title, c = main command (optional)
+# aliases = other names of the same command, danger = needs a warning
+course: cmd
+levels:
+  - id: 1
+    code: BEGINNER
+    title: 'Beginner'
+    chapters:
+      - id: 1
+        title: 'Getting to know CMD'
+        lessons:
+          - {n: 1, t: 'What is CMD?'}
+          - {n: 2, t: 'Terminal, Command Line and Shell'}
+          - {n: 3, t: 'Opening CMD'}
+          - {n: 4, t: 'The structure of a command'}
+      - id: 2
+        title: 'Files, drives and paths'
+        lessons:
+          - {n: 5, t: 'Files and folders'}
+          - {n: 6, t: 'What is a drive?'}
+          - {n: 7, t: 'Directory and current directory'}
+          - {n: 8, t: 'What is a path?'}
+          - {n: 9, t: 'Absolute Path'}
+          - {n: 10, t: 'Relative Path'}
+      - id: 3
+        title: 'Moving around'
+        lessons:
+          - {n: 11, t: 'Seeing what is in a folder', c: dir}
+          - {n: 12, t: 'Going to another folder', c: cd, aliases: [chdir]}
+          - {n: 13, t: 'Going back and to the root'}
+          - {n: 14, t: 'Changing drives and cd /d', aliases: [pushd, popd]}
+          - {n: 15, t: 'Clearing the screen', c: cls}
+          - {n: 16, t: 'Getting help', c: help}
+          - {n: 17, t: 'Quotes and names with spaces'}
+      - id: 4
+        title: 'Managing files'
+        lessons:
+          - {n: 18, t: 'Creating a folder', c: mkdir, aliases: [md]}
+          - {n: 19, t: 'Showing text', c: echo}
+          - {n: 20, t: 'Showing a file''s contents', c: type}
+          - {n: 21, t: 'Copying files', c: copy}
+          - {n: 22, t: 'Moving files', c: move}
+          - {n: 23, t: 'Renaming', c: ren, aliases: [rename]}
+          - {n: 24, t: 'Deleting files', c: del, aliases: [erase], danger: true}
+          - {n: 25, t: 'Deleting folders', c: rmdir, aliases: [rd], danger: true}
+          - {n: 26, t: 'The star wildcard *'}
+          - {n: 27, t: 'The question mark wildcard ?'}
+      - id: 5
+        title: 'Redirects and combining commands'
+        lessons:
+          - {n: 28, t: 'Writing output to a file >'}
+          - {n: 29, t: 'Appending to a file >>'}
+          - {n: 30, t: 'Error messages and 2>'}
+          - {n: 31, t: 'Command chains: &, && and ||'}
+          - {n: 32, t: 'Mixed practice: Level 1'}
+  - id: 2
+    code: INTERMEDIATE
+    title: 'Intermediate'
+    chapters:
+      - id: 6
+        title: 'Text, search and copying'
+        lessons:
+          - {n: 33, t: 'Pipe |'}
+          - {n: 34, t: 'Viewing page by page', c: more}
+          - {n: 35, t: 'Sorting', c: sort}
+          - {n: 36, t: 'Input from a file <'}
+          - {n: 37, t: 'Searching text', c: find}
+          - {n: 38, t: 'Advanced text search', c: findstr}
+          - {n: 39, t: 'Showing folders as a tree', c: tree}
+          - {n: 40, t: 'Finding where a program is', c: where}
+          - {n: 41, t: 'Attributes and hidden files', c: attrib}
+          - {n: 42, t: 'Comparing files', c: fc}
+          - {n: 43, t: 'Copying folders', c: xcopy}
+          - {n: 44, t: 'Professional copying', c: robocopy, danger: true}
+      - id: 7
+        title: 'Variables and system information'
+        lessons:
+          - {n: 45, t: 'What is a variable?', c: set}
+          - {n: 46, t: 'Environment Variables'}
+          - {n: 47, t: '%USERNAME% and %USERPROFILE%'}
+          - {n: 48, t: 'PATH and %PATH%'}
+          - {n: 49, t: 'User and computer name', c: whoami, aliases: [hostname]}
+          - {n: 50, t: 'Version and system information', c: systeminfo, aliases: [ver]}
+          - {n: 51, t: 'Listing running programs', c: tasklist}
+          - {n: 52, t: 'Closing a process', c: taskkill, danger: true}
+      - id: 8
+        title: 'Networking'
+        lessons:
+          - {n: 53, t: 'What are IP and networks?'}
+          - {n: 54, t: 'Seeing your IP', c: ipconfig}
+          - {n: 55, t: 'Full network details and MAC', c: getmac}
+          - {n: 56, t: 'Testing a connection', c: ping}
+          - {n: 57, t: 'The route to a server', c: tracert, aliases: [pathping]}
+          - {n: 58, t: 'DNS and finding a website''s IP', c: nslookup}
+          - {n: 59, t: 'Active connections', c: netstat}
+          - {n: 60, t: 'The ARP table', c: arp}
+          - {n: 61, t: 'The route table and network troubleshooting', c: route}
+      - id: 9
+        title: 'More advanced commands'
+        lessons:
+          - {n: 62, t: 'Exit Code'}
+          - {n: 63, t: 'Basic permissions and Access is denied'}
+          - {n: 64, t: 'Administrator CMD'}
+          - {n: 65, t: 'Windows services', c: sc, aliases: [net]}
+          - {n: 66, t: 'Common CMD errors and how to fix them'}
+          - {n: 67, t: 'Combining commands: real-world practice, Level 2'}
+  - id: 3
+    code: ADVANCED
+    title: 'Advanced'
+    chapters:
+      - id: 10
+        title: 'Batch basics'
+        lessons:
+          - {n: 68, t: 'What is a batch script?'}
+          - {n: 69, t: 'The difference between .bat and .cmd'}
+          - {n: 70, t: 'Creating your first batch file'}
+          - {n: 71, t: '@echo off and comments', c: rem}
+          - {n: 72, t: 'Waiting for a key press', c: pause}
+          - {n: 73, t: 'Variables in batch'}
+          - {n: 74, t: 'Getting input with set /p'}
+          - {n: 75, t: 'Calculating with set /a'}
+          - {n: 76, t: 'Arguments: %1 and %2'}
+          - {n: 77, t: 'Shifting arguments', c: shift}
+      - id: 11
+        title: 'Logic and loops'
+        lessons:
+          - {n: 78, t: 'Conditions', c: if}
+          - {n: 79, t: 'if ... else'}
+          - {n: 80, t: 'if exist'}
+          - {n: 81, t: 'errorlevel in batch'}
+          - {n: 82, t: 'goto and labels', c: goto}
+          - {n: 83, t: 'Looping over files', c: for}
+          - {n: 84, t: 'for /l and for /f'}
+          - {n: 85, t: 'Delayed expansion and !var!', c: setlocal, aliases: [endlocal]}
+          - {n: 86, t: 'call: functions and other scripts', c: call}
+          - {n: 87, t: 'A simple menu with choice and timeout', c: choice, aliases: [timeout]}
+      - id: 12
+        title: 'Projects and system repair'
+        lessons:
+          - {n: 88, t: 'A file management script'}
+          - {n: 89, t: 'Backup Script'}
+          - {n: 90, t: 'Rename Script'}
+          - {n: 91, t: 'A file search script'}
+          - {n: 92, t: 'Simple automation: logs and scheduling', c: shutdown}
+          - {n: 93, t: 'File systems and checking disks', c: chkdsk, aliases: [vol], danger: true}
+          - {n: 94, t: 'Repairing system files', c: sfc}
+          - {n: 95, t: 'Repairing the Windows image', c: dism}
+          - {n: 96, t: 'Recovery Environment'}
+          - {n: 97, t: 'Repairing boot', c: bootrec, aliases: [bcdboot, bcdedit], danger: true}
+          - {n: 98, t: 'diskpart and format (simulated)', c: diskpart, aliases: [format], danger: true}
+          - {n: 99, t: 'Basic Windows troubleshooting'}
+          - {n: 100, t: 'Final project'}

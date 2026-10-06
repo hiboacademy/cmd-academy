@@ -1,0 +1,350 @@
+# Lessons 62–67 · Chapter 9: exit codes, permissions, admin, services, errors
+
+- n: 62
+  term: '%ERRORLEVEL%'
+  fullForm: 'Exit Code'
+  difficulty: 2
+  objective: 'Understand that every command returns a result number when it finishes, and learn to read it.'
+  summary: 'Every command gives an Exit Code when it finishes. `0` means success; any other number means a problem. The last Exit Code is stored in the variable `%ERRORLEVEL%`.'
+  meaning: 'What the numbers mean depends on the command: `find` returns 1 if it finds nothing, `ping` returns 1 if no reply comes back, and for `robocopy` 1 means “files were copied”. `&&` and `||` (lesson 31) also work based on this number.'
+  usage: 'Finding out the result of commands in a batch script and making decisions based on it (lesson 81).'
+  syntax: "command\necho %ERRORLEVEL%"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    expectError: true
+    cmds: ['find "Pizza" menu.txt >nul', 'echo %ERRORLEVEL%', 'find "Burger" menu.txt >nul', 'echo %ERRORLEVEL%', 'xyz', 'echo %ERRORLEVEL%']
+  examples:
+    - c: 'echo %ERRORLEVEL%'
+      d: 'The result of the last command.'
+    - c: 'find "Burger" menu.txt & echo %ERRORLEVEL%'
+      d: 'If Burger isn''t there: 1.'
+      noTry: true
+    - c: 'ping -n 1 10.0.0.99 >nul || echo Host is down'
+      d: 'Using the result directly with `||`.'
+  mistakes:
+    - 'Assuming every command returns 1 on error; for example, an unknown command returns 9009.'
+    - 'Forgetting that a following `echo` doesn''t change ERRORLEVEL, but other commands do; read ERRORLEVEL right away.'
+  tip: 'With robocopy, numbers below 8 mean success; this is the well-known exception.'
+  practice:
+    - id: P62a
+      start: 'C:\Users\Student\Documents'
+      task: 'Search `menu.txt` for the word `Burger` (it isn''t there) and print its Exit Code right afterwards.'
+      multi: true
+      checks: [{type: anyCmd, value: find, evenIfFailed: true}, {type: inputIncludes, value: '%errorlevel%'}, {type: lastOutputIncludes, value: '1'}]
+      hints: ['You have two steps: first search for the word with `find`, then right away print the value of the variable `%ERRORLEVEL%` to see the Exit Code of that `find`.', 'Line 1: `find` + the word `"Burger"` in quotes + the file name `menu.txt`. Line 2: `echo` followed by `%ERRORLEVEL%`. Don''t run any other command between these two.']
+      answer: ['find "Burger" menu.txt', 'echo %ERRORLEVEL%']
+      explain: 'Because `find` doesn''t find `Burger`, it returns Exit Code 1, and `echo %ERRORLEVEL%` immediately prints that number.'
+    - id: P62b
+      start: 'C:\Users\Student'
+      task: 'Ping the router (`192.168.1.1`) once, then print the Exit Code. (It should be 0.)'
+      multi: true
+      checks: [{type: anyCmd, value: ping}, {type: inputIncludes, value: '%errorlevel%'}, {type: errorlevel, value: 0}, {type: lastOutputIncludes, value: '0'}]
+      hints: ['First use `ping` with the switch `-n` to send just one packet to the router, then print the value of the variable `%ERRORLEVEL%`.', 'Line 1: `ping` + `-n 1` + the router IP `192.168.1.1`. Line 2: `echo` with `%ERRORLEVEL%`. Since the router replies, the number should be `0`.']
+      answer: ['ping -n 1 192.168.1.1', 'echo %ERRORLEVEL%']
+      explain: '`ping -n 1` sends one packet, and because a reply comes back the Exit Code is 0 (success); `echo %ERRORLEVEL%` shows that number.'
+  quiz:
+    - kind: mcq
+      q: 'What does an Exit Code of `0` usually mean?'
+      options: ['The command succeeded', 'The command failed', 'The command didn''t run', 'The file is empty']
+      answer: 0
+      explain: '0 = no error.'
+    - kind: predict
+      q: 'What is the last output?'
+      code: "notacommand\necho %ERRORLEVEL%"
+      options: ['9009', '0', '1', '%ERRORLEVEL%']
+      answer: 0
+      code_options: true
+      explain: 'An unknown command has code 9009.'
+    - kind: tf
+      q: 'After robocopy, an ERRORLEVEL of 1 means the copy failed.'
+      answer: false
+      explain: 'For robocopy it means files were copied.'
+  recap: '`%ERRORLEVEL%` = result of the last command. 0 = success. The meaning of other numbers depends on the command.'
+
+- n: 63
+  term: 'Access is denied.'
+  fullForm: 'Permissions · UAC'
+  difficulty: 2
+  objective: 'Understand why the `Access is denied` error happens and know the right ways to fix it.'
+  summary: 'Windows decides who is allowed to do what with every file and every task. A normal user can''t change system files or run repair tools.'
+  meaning: 'Even if you are a member of Administrators, a normal CMD runs at Medium level (UAC). `whoami /groups` shows `Group used for deny only` next to Administrators. Other causes of this error: a Read-only file, a file another program has open, or a folder that belongs to another user.'
+  usage: 'Telling whether the problem is about permissions or a mistake in the command.'
+  syntax: "whoami /groups\nattrib file"
+  demo:
+    cmds: ['sfc /scannow', 'whoami /groups']
+  examples:
+    - c: 'whoami /groups'
+      d: 'Your current access level.'
+    - c: 'attrib notes.txt'
+      at: 'C:\Users\Student\Desktop'
+      d: 'Is the file Read-only?'
+    - c: 'attrib -r notes.txt'
+      at: 'C:\Users\Student\Desktop'
+      d: 'Removing Read-only (if the file is yours).'
+  mistakes:
+    - 'Changing the permissions of files in `C:\Windows` to fix an error; this destroys system security.'
+    - 'Always running CMD as administrator; do it only when needed.'
+  tip: 'Rule: first check whether the file is Read-only or in use; if it''s a system task, open CMD as administrator (next lesson).'
+  practice:
+    - id: P63a
+      start: 'C:\Users\Student'
+      task: 'Check whether this CMD is running with full administrator rights (look at the user''s groups).'
+      checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'deny only'}]
+      hints: ['`whoami` shows the CMD''s access level, but only if you also see the user''s groups. `whoami` has a switch for that.', 'After `whoami`, write the switch `/groups`. In the output, look for the Administrators line: `Group used for deny only` means you don''t have full access.']
+      answer: 'whoami /groups'
+      explain: '`whoami /groups` shows the user''s groups, and `deny only` next to Administrators means this CMD was not opened with Run as administrator.'
+    - id: P63b
+      start: 'C:\Users\Student\Desktop'
+      setup: {readonly: ['C:\Users\Student\Desktop\notes.txt']}
+      task: 'Add the line `Buy bread` to the end of `notes.txt`. (If you see `Access is denied`, find the cause and fix it.)'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\notes.txt', value: ['Remember', 'Buy bread']}]
+      hints: ['Adding text gives the error `Access is denied` because the file is Read-only. First remove that attribute with `attrib`, then add the text to the end of the file.', 'Step 1: `attrib` with `-r` (remove Read-only) on `notes.txt`. Step 2: `echo` with the text `Buy bread`, then `>>` and the file name (not `>`, which erases the old content).']
+      answer: ['attrib -r notes.txt', 'echo Buy bread >> notes.txt']
+      explain: '`attrib -r` removes the Read-only attribute so the file can be changed, and `>>` adds the line `Buy bread` to the end of the file without erasing the earlier line (`Remember`).'
+  quiz:
+    - kind: mcq
+      q: 'Which of these does NOT cause `Access is denied`?'
+      options: ['A typo in the command name', 'A Read-only file', 'A system task without administrator', 'A file open in another program']
+      answer: 0
+      explain: 'A wrong command gives the error `is not recognized`.'
+    - kind: tf
+      q: 'A user in the Administrators group has all permissions even in a normal CMD.'
+      answer: false
+      explain: 'UAC doesn''t give full access until you open CMD with Run as administrator.'
+    - kind: type
+      q: 'Remove the Read-only attribute from `report.txt`.'
+      accept: ['attrib -r report.txt']
+      explain: '`attrib -r`'
+  recap: '`Access is denied` = you''re not allowed: Read-only, file in use, or a system task without administrator.'
+
+- n: 64
+  term: 'Administrator CMD'
+  fullForm: 'Run as administrator'
+  difficulty: 2
+  objective: 'Open CMD with administrator rights and tell it apart from a normal CMD.'
+  summary: 'For system tools like `sfc`, `chkdsk` and `diskpart` you must open CMD with Run as administrator. The window title then starts with `Administrator:`.'
+  meaning: 'Ways to do it: Start → type `cmd` → Run as administrator; or Start → type `cmd` → `Ctrl + Shift + Enter`; or Win + X → Terminal (Admin). Windows shows the UAC window and you have to click Yes. An admin CMD usually opens in `C:\Windows\System32`.'
+  usage: 'Repairing the system, managing services and disks, changing network settings.'
+  syntax: "(Start → cmd → Ctrl+Shift+Enter)\nwhoami /groups"
+  warning: 'In an admin CMD, any mistake can damage the system. Use it only when needed, and close the window when you''re done.'
+  demo:
+    admin: true
+    cmds: ['whoami /groups', 'sfc /scannow']
+  examples:
+    - c: 'sfc /scannow'
+      d: 'Works only in an admin CMD.'
+    - c: 'whoami /groups | find "Mandatory Label"'
+      d: 'High means admin, Medium means normal.'
+  mistakes:
+    - 'Forgetting that an admin CMD opens in System32; `cd` somewhere else before working with files.'
+  tip: 'In the simulator, choose “Administrator” mode at the top of the Simulator screen.'
+  practice:
+    - id: P64a
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'This CMD was opened as administrator. Use `whoami` to prove the access level is High.'
+      checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'High Mandatory'}]
+      hints: ['The access level (Mandatory Level) appears in the list of the user''s groups. Run `whoami` with the switch for groups.', '`whoami` + the switch `/groups`. In the output, look at the `Mandatory Label` line: `High Mandatory Level` means administrator and `Medium` means normal.']
+      answer: 'whoami /groups'
+      explain: 'In an admin CMD, `whoami /groups` shows the line `High Mandatory Level`, which proves full administrator access is active.'
+    - id: P64b
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'Check the Windows system files with the System File Checker tool.'
+      checks: [{type: anyCmd, value: sfc}, {type: lastOutputIncludes, value: 'integrity violations'}]
+      hints: ['The System File Checker runs with the command `sfc` and has a switch for “scan right now”. This tool only works in an admin CMD.', 'After `sfc`, type a space and then the switch: `/` + `scan` + `now` (all joined together).']
+      answer: 'sfc /scannow'
+      explain: '`sfc /scannow` checks all Windows system files and reports the result with the phrase `integrity violations`.'
+  quiz:
+    - kind: mcq
+      q: 'Which shortcut opens CMD as administrator from the Start menu?'
+      options: ['Ctrl + Shift + Enter', 'Ctrl + Enter', 'Alt + Enter', 'Shift + Enter']
+      answer: 0
+      explain: 'After typing cmd in Start.'
+    - kind: tf
+      q: 'The title of an admin CMD window starts with `Administrator:`.'
+      answer: true
+      explain: 'A quick way to tell.'
+    - kind: mcq
+      q: 'Which folder does an admin CMD usually open in?'
+      options: ['C:\Windows\System32', 'C:\Users\Student', 'C:\', 'D:\']
+      answer: 0
+      code_options: true
+      explain: 'That''s why you should cd before working with files.'
+  recap: 'Run as administrator (Ctrl+Shift+Enter) for system tools. Title starts with `Administrator:`. Use it only when needed.'
+
+- n: 65
+  term: 'sc · net start'
+  fullForm: 'Windows Services'
+  difficulty: 3
+  objective: 'View Windows services, check their status and (as administrator) stop or start them.'
+  summary: 'A service is a program that runs in the background without a window, like Print Spooler (printing) or Windows Update. `sc query` and `net start` show their status.'
+  meaning: 'Every service has a short name (like `Spooler`) and a display name (Print Spooler). `net stop` and `net start`, or `sc stop` and `sc start`, stop or start it and need administrator rights.'
+  usage: 'Fixing a printer that won''t print (restarting the Spooler service), checking whether a service is running.'
+  syntax: "sc query [name]\nnet start\nnet stop name\nnet start name"
+  warning: 'Stopping security services (like WinDefend) or system services makes the computer vulnerable or unstable.'
+  demo:
+    cmds: ['sc query spooler', 'net start', 'net stop spooler']
+  examples:
+    - c: 'sc query spooler'
+      d: 'Status of the print service.'
+    - c: 'net start'
+      d: 'List of running services.'
+    - c: 'net stop spooler && net start spooler'
+      mode: admin
+      d: 'Restart the print service (administrator).'
+  mistakes:
+    - 'Using the display name without quotes: `net stop Print Spooler` → `net stop "Print Spooler"` or `net stop spooler`.'
+  tip: '`sc query` only shows running services; for all of them: `sc query state= all` (with a space after `=`).'
+  practice:
+    - id: P65a
+      start: 'C:\Users\Student'
+      task: 'Check the status of the Print Spooler service (short name: `Spooler`).'
+      checks: [{type: anyCmd, value: sc}, {type: lastOutputIncludes, value: 'RUNNING'}, {type: lastOutputIncludes, value: 'Spooler'}]
+      hints: ['You see the status of services with `sc`. The word after `sc` says what it should do; here you want to “ask” for the status (query).', 'Three parts: `sc`, then the action `query`, then the service''s short name `spooler`. In the output, look at the `STATE` line.']
+      answer: 'sc query spooler'
+      explain: '`sc query` asks for a service''s status, and with the short name `spooler` it shows only Print Spooler, which is `RUNNING`.'
+    - id: P65b
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'The printer is stuck. Stop the `Spooler` service and start it again (restart).'
+      multi: true
+      checks: [{type: serviceState, name: Spooler, value: RUNNING}, {type: any, of: [{type: argIncludes, cmd: net, value: 'stop'}, {type: argIncludes, cmd: sc, value: 'stop'}]}]
+      hints: ['Restart means two things in a row: first stop the service, then start it again. The command `net` has a word for each: `stop` and `start`.', 'Line 1: `net` + `stop` + the service''s short name `spooler`. Line 2: the same, but with `start`. Because this is an admin CMD, you''re allowed to do this.']
+      answer: ['net stop spooler', 'net start spooler']
+      explain: '`net stop spooler` stops the print service and `net start spooler` starts it again; this restart clears the stuck print queue.'
+  quiz:
+    - kind: mcq
+      q: 'What is a service?'
+      options: ['A program that runs in the background without a window', 'A batch file', 'A Windows user', 'A drive']
+      answer: 0
+      explain: 'Like Print Spooler or DNS Client.'
+    - kind: predict
+      q: 'A normal user runs this. What happens?'
+      code: 'net stop spooler'
+      options: ['System error 5 has occurred. Access is denied.', 'The service stops', 'The service name is invalid.', 'Nothing']
+      answer: 0
+      explain: 'It needs administrator rights.'
+    - kind: type
+      q: 'Show the list of running services.'
+      accept: ['net start', 'sc query']
+      explain: '`net start` or `sc query`'
+  recap: 'Service = background program. `sc query` and `net start` = status. `net stop/start name` = control (administrator).'
+
+- n: 66
+  term: 'Common errors'
+  fullForm: 'Reading CMD error messages'
+  difficulty: 2
+  objective: 'Read common CMD error messages and fix them quickly.'
+  summary: 'Most CMD errors are a handful of repeating messages. If you know what each one says, you''ve already done half the troubleshooting.'
+  meaning: '`is not recognized` → a typo, or the program isn''t in PATH. `cannot find the path` → the path is wrong. `cannot find the file` → the file name is wrong. `syntax ... incorrect` → the command''s form is wrong (often missing quotes). `Access is denied` → you''re not allowed. `already exists` → it''s already there. `being used by another process` → the file or folder is in use.'
+  usage: 'Reading the message carefully before changing the command.'
+  syntax: "command /?\ndir\ncd"
+  demo:
+    start: 'C:\Users\Student'
+    expectError: true
+    cmds: ['dri', 'cd Nowhere', 'type Desktop\shopping list.txt', 'mkdir Documents', 'rd C:\Users\Student']
+  examples:
+    - c: 'dir /?'
+      d: 'When you don''t remember the correct form of a command.'
+    - c: 'cd'
+      d: 'When you don''t know where you are.'
+    - c: 'dir'
+      d: 'When you don''t know the exact file name.'
+  mistakes:
+    - 'Repeating the same command without reading the error message.'
+    - 'Guessing instead of using `/?` and `dir`.'
+  tip: 'Three golden questions: Where am I? (`cd`) What''s here? (`dir`) What''s the correct form of the command? (`/?`)'
+  practice:
+    - id: P66a
+      start: 'C:\Users\Student'
+      task: 'The command `type Desktop\shopping list.txt` gives an error. Fix it and run it.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'shopping list'}]
+      hints: ['Read the error message: CMD treats a space as a separator between arguments, so it sees `shopping` and `list.txt` as two separate things. A path with a space must be in quotes.', 'Keep the command `type`; just put the whole path `Desktop\shopping list.txt` from start to end inside `" "`.']
+      answer: 'type "Desktop\shopping list.txt"'
+      explain: 'Quotes around the path tell CMD that `Desktop\shopping list.txt` is one argument, not two; so `type` finds the file and shows its content.'
+    - id: P66b
+      start: 'C:\Users\Student\Documents'
+      task: 'You want to copy all txt files to `D:\Archive`, but that folder doesn''t exist. Do the job correctly.'
+      multi: true
+      checks: [{type: fileExists, path: 'D:\Archive\menu.txt'}, {type: fileExists, path: 'D:\Archive\todo.txt'}]
+      hints: ['Copying to a folder that doesn''t exist doesn''t work properly. First create the destination folder with `mkdir`, then copy the files with `copy` and a wildcard (`*`).', 'Step 1: `mkdir` and the path `D:\Archive`. Step 2: `copy`, then the pattern for all txt files, `*.txt`, then the destination `D:\Archive`.']
+      answer: ['mkdir D:\Archive', 'copy *.txt D:\Archive']
+      explain: '`mkdir D:\Archive` creates the destination folder, and `copy *.txt D:\Archive` copies every file with the `.txt` extension from the current folder into it.'
+  quiz:
+    - kind: mcq
+      q: 'What does `The system cannot find the path specified.` usually mean?'
+      options: ['One of the folders in the path doesn''t exist', 'The command is wrong', 'You don''t have access', 'The drive is full']
+      answer: 0
+      explain: 'Check the path with `dir`.'
+    - kind: mcq
+      q: 'A user typed `ipconfg`. Which error do they see?'
+      options: ["'ipconfg' is not recognized as an internal or external command", 'Access is denied.', 'The syntax of the command is incorrect.', 'File Not Found']
+      answer: 0
+      explain: 'A typo in the command name.'
+    - kind: fix
+      q: 'Why did this error appear?'
+      code: "C:\\Users\\Student\\Work>rd C:\\Users\\Student\\Work\nThe process cannot access the file because it is being used by another process."
+      options: ['The user is inside that same folder', 'The folder is Read-only', 'The folder isn''t empty', 'You should have used `del`']
+      answer: 0
+      explain: 'First step out with `cd ..`.'
+  recap: 'Read the error message: not recognized = command name, path = path, file = file name, syntax = command form, denied = permissions.'
+
+- n: 67
+  term: 'Level 2 Practice'
+  fullForm: 'Real tasks with combined commands'
+  difficulty: 3
+  objective: 'Combine Level 2 commands for real tech-support tasks.'
+  summary: 'In real work you often have to collect information from several commands, filter it and save it in a report.'
+  meaning: 'Tools: `>` and `>>` for the report, `|` and `find` for filtering, variables for paths, `&&` for safety.'
+  usage: 'A computer status report for support, a quick backup, finding and collecting files.'
+  syntax: "hostname > report.txt\nipconfig | find \"IPv4\" >> report.txt"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['hostname > report.txt', 'whoami >> report.txt', 'ipconfig | find "IPv4" >> report.txt', 'type report.txt']
+  examples:
+    - c: 'echo Report %DATE% > report.txt'
+      d: 'Starting the report with the date.'
+    - c: 'tasklist | find "chrome" >> report.txt'
+      d: 'Adding the Chrome processes.'
+    - c: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+      at: 'C:\Users\Student'
+      d: 'Collecting all jpg files (keeping the folder structure).'
+  mistakes:
+    - 'Using `>` instead of `>>` on later lines of the report, which erases the earlier lines.'
+  tip: 'Test each report line on its own first, then add it to the file with `>>`.'
+  practice:
+    - id: P67a
+      start: 'C:\Users\Student\Desktop'
+      task: 'Create a file `report.txt` that contains: the computer name, the user name, the IPv4 line and the `chrome` processes.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\report.txt', value: ['ACADEMY-PC', 'student', '192.168.1.24', 'chrome.exe']}]
+      hints: ['Build the report line by line: send each command''s output to `report.txt` with a redirect. The first line with `>` (new file), the rest with `>>` (add to the end). For IPv4 and chrome, filter the output with `|` and `find`.', 'Order: 1) `hostname` with `>` 2) `whoami` with `>>` 3) `ipconfig` filtered with `find "IPv4"`, then `>>` 4) `tasklist` filtered with `find "chrome"`, then `>>`. The destination is always `report.txt`.']
+      answer: ['hostname > report.txt', 'whoami >> report.txt', 'ipconfig | find "IPv4" >> report.txt', 'tasklist | find "chrome" >> report.txt']
+      explain: '`>` creates the file fresh and writes the computer name into it, `>>` adds the other outputs to the end, and `| find` keeps only the IPv4 line and the chrome processes.'
+    - id: P67b
+      start: 'C:\Users\Student'
+      task: 'Copy all `.jpg` photos from the Pictures folder and its subfolders to `E:\AllPhotos`.'
+      checks: [{type: fileExists, path: 'E:\AllPhotos\beach.jpg'}, {type: any, of: [{type: fileExists, path: 'E:\AllPhotos\Holidays\family.jpg'}, {type: fileExists, path: 'E:\AllPhotos\family.jpg'}]}, {type: fileNotExists, path: 'E:\AllPhotos\logo.png'}]
+      hints: ['To copy only one type of file including subfolders, `robocopy` is the right tool: source, destination, file pattern and a switch for subfolders.', 'Order in `robocopy`: first the source folder `Pictures`, then the destination `E:\AllPhotos`, then the pattern `*.jpg`, and finally the switch `/s` (Subdirectories).']
+      answer: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+      explain: '`robocopy` copies only the `*.jpg` files from `Pictures` to `E:\AllPhotos`, and `/s` brings along the subfolders (like `Holidays`) with the same structure; so `logo.png` isn''t copied.'
+  quiz:
+    - kind: order
+      q: 'Put the commands in order to build a report of “computer name + IP + Spooler service”.'
+      items: ['hostname > info.txt', 'ipconfig | find "IPv4" >> info.txt', 'sc query spooler >> info.txt', 'type info.txt']
+      explain: 'The first with `>`, the rest with `>>`, and a check at the end.'
+    - kind: predict
+      q: 'After these two lines, what does `r.txt` contain?'
+      code: "hostname > r.txt\nwhoami > r.txt"
+      options: ['Only the user name', 'The computer name and the user name', 'Only the computer name', 'Nothing (empty)']
+      answer: 0
+      explain: 'The second line overwrote the file with `>`.'
+    - kind: mcq
+      q: 'Which command adds only the Chrome lines to the end of `log.txt`?'
+      options: ['tasklist | find "chrome" >> log.txt', 'tasklist >> find "chrome" log.txt', 'find "chrome" tasklist >> log.txt', 'tasklist > log.txt | find "chrome"']
+      answer: 0
+      code_options: true
+      explain: 'Pipe first, then redirect.'
+  recap: 'Report = `>` for the first line, `>>` for the rest, `|` and `find` for filtering.'

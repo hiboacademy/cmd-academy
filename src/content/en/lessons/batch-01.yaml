@@ -1,0 +1,611 @@
+# Lessons 1–10 (Batch 1)
+# Fields: n, term, fullForm, summary, meaning, usage, syntax, terminal,
+#         tip, daily, restaurant, warning, practice[], quiz[]
+# Inline `code` is shown LTR in monospace.
+# Practice checks run against the sandbox (see engine/checker.js).
+
+- n: 1
+  term: CMD
+  fullForm: 'Command Prompt (cmd.exe)'
+  difficulty: 1
+  objective: 'Understand what CMD is and run your very first command.'
+  summary: 'CMD is a program in Windows that lets you work with your computer by typing commands instead of clicking.'
+  meaning: 'The Windows command line: a window that takes a command, runs it, and shows you the result.'
+  usage: 'Working quickly with files, viewing system and network information, troubleshooting, and automating repetitive tasks.'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'ver'}
+    - {o: ''}
+    - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
+  tip: 'CMD does not care about upper or lower case: `DIR` and `dir` are the same.'
+  daily: 'Clicking is like choosing food by pointing at pictures on a menu. CMD is like saying exactly what you want: faster and more precise, once you know the language.'
+  restaurant: 'CMD is like a waiter: you give your order (the command), the waiter takes it to the kitchen (Windows) and brings the result back to you.'
+  examples:
+    - c: 'ver'
+      d: 'Shows the Windows version.'
+    - c: 'VER'
+      d: 'Same result; upper or lower case doesn''t matter.'
+  mistakes:
+    - 'Typing the command into File Explorer or a web browser instead of the CMD window.'
+    - 'Being afraid of breaking the system: read-only commands like `ver` don''t change anything.'
+  practice:
+    - id: P1a
+      start: 'C:\Users\Student'
+      task: 'Type the first command of your life: show the Windows version.'
+      checks: [{type: cmd, value: ver}, {type: ok}]
+      hints:
+        - 'You want Windows to tell you its version. The command for this is a short form of the English word “Version”.'
+        - 'You only need one word: the first three letters of Version. Type it, then press Enter so CMD runs it.'
+      answer: 'ver'
+      explain: '`ver` is short for Version. This command needs nothing else; it just prints the Windows version.'
+  quiz:
+    - kind: mcq
+      q: 'What is CMD in Windows for?'
+      options: ['Working with the computer by typing commands', 'Editing photos', 'Browsing the internet', 'Playing music']
+      answer: 0
+      explain: 'In CMD you type commands instead of clicking.'
+    - kind: tf
+      q: 'In CMD, the command `DIR` is different from `dir`.'
+      answer: false
+      explain: 'CMD does not care about upper or lower case.'
+    - kind: type
+      q: 'Type a command that shows the Windows version.'
+      accept: ['ver']
+      explain: '`ver` is short for Version.'
+  recap: 'CMD = working with Windows by typing commands. Type a command and press Enter.'
+
+- n: 2
+  term: 'Terminal · Shell'
+  fullForm: 'Command Line Interface (CLI)'
+  difficulty: 1
+  objective: 'Know the difference between Terminal, Shell and Command Line.'
+  summary: 'Command Line means working by typing commands. The Terminal is the window you type in. The Shell is the program that understands and runs your command.'
+  meaning: 'Terminal = the window. Shell = the brain that runs the command. In Windows, `CMD` and `PowerShell` are two shells, and Windows Terminal is a window that can show both.'
+  usage: 'Once you know which part does what, it''s easier to understand why a command works in CMD but not in PowerShell or Linux.'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'echo Hello'}
+    - {o: 'Hello'}
+  tip: 'In Windows 11, CMD usually opens inside Windows Terminal. It looks different, but the commands are the same.'
+  restaurant: 'The Terminal is the restaurant table and menu: the place where you order. The Shell is the waiter who understands your order. Windows is the kitchen that does the real work.'
+  examples:
+    - c: 'echo Hello'
+      d: 'The Shell prints the text Hello.'
+    - c: 'echo CMD Academy'
+      d: 'Any text after `echo` is displayed.'
+  mistakes:
+    - 'Thinking CMD and PowerShell are the same: both are shells, but not all their commands are the same.'
+    - 'Running Linux commands like `ls` in CMD.'
+  practice:
+    - id: P2a
+      start: 'C:\Users\Student'
+      task: 'Tell the Shell to print the word Hello. Use the `echo` command to print text.'
+      checks: [{type: cmd, value: echo}, {type: argIncludes, value: hello}]
+      hints:
+        - 'To make the Shell print text on the screen, use `echo`. Write the text you want to see after it.'
+        - 'Two parts: what to do? (`echo`, meaning “print”) What? (the word Hello). Separate them with a space.'
+      answer: 'echo Hello'
+      explain: '`echo` tells the Shell “print”, and whatever comes after it, here `Hello`, is shown on the screen exactly as written.'
+  quiz:
+    - kind: mcq
+      q: 'Which of these is a Shell?'
+      options: ['CMD', 'Monitor', 'Keyboard', 'File Explorer']
+      answer: 0
+      explain: 'CMD understands and runs commands, so it is a Shell.'
+    - kind: mcq
+      q: 'What is a Terminal?'
+      options: ['The window where you type commands', 'A type of file', 'A drive', 'A virus']
+      answer: 0
+      explain: 'The Terminal is the visible interface; the Shell works inside it.'
+    - kind: tf
+      q: 'PowerShell is also a Shell.'
+      answer: true
+      explain: 'PowerShell is another Shell in Windows that we''ll get to later in CMD Academy.'
+  recap: 'Terminal = the window. Shell = the thing that runs commands. CMD is a Shell in Windows.'
+
+- n: 3
+  term: 'Win + R'
+  fullForm: 'Run → cmd → Enter'
+  difficulty: 1
+  objective: 'Open CMD and understand what the prompt is.'
+  summary: 'The easiest way to open CMD takes three steps. Once CMD is open, you see a line like `C:\Users\Student>`. This line is called the prompt, and it means CMD is ready for your command.'
+  steps:
+    - 'Press the `Win` and `R` keys together. A small window called Run opens.'
+    - 'In the Run window, type: `cmd`'
+    - 'Press the `Enter` key.'
+    - 'The Command Prompt window opens and you see the prompt: `C:\Users\Student>`'
+  meaning: 'The prompt tells you two things: 1) CMD is ready and waiting for your command. 2) Which folder you are in right now; here it is the folder `C:\Users\Student`. The `>` sign at the end of the prompt means “type here”.'
+  usage: 'Other ways to open CMD: open the Start menu, type `cmd` and press Enter; or type `cmd` in the File Explorer address bar to open CMD in that same folder.'
+  terminal:
+    - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
+    - {o: '(c) Microsoft Corporation. All rights reserved.'}
+    - {o: ''}
+    - {p: 'C:\Users\Student>', c: ''}
+  tip: 'The prompt is not part of the command, and you don''t type it; CMD shows it for you. You only type after the `>` sign.'
+  daily: 'The prompt is like the “ready” light on a card reader: when it''s on, the machine is waiting for you.'
+  restaurant: 'Opening CMD is like sitting down at a restaurant table, and the prompt is like the waiter standing next to you asking: “What would you like to order?”'
+  examples:
+    - c: 'ver'
+      d: 'Type a command after the prompt, for example `ver` from lesson 1, and press Enter. CMD prints the answer and shows the prompt again.'
+  mistakes:
+    - 'Typing the prompt itself before the command, like `C:\Users\Student>ver`. Just type `ver`.'
+    - 'Typing `cmd` into the browser''s search bar instead of the Run window.'
+  practice:
+    - id: P3a
+      start: 'C:\Users\Student'
+      task: 'CMD is open and the prompt (`C:\Users\Student>`) is ready. After the prompt, type the `ver` command you saw in lesson 1 and press Enter. Don''t type the prompt itself.'
+      checks: [{type: cmd, value: ver}, {type: ok}]
+      hints:
+        - 'CMD shows the prompt by itself. You only type the command after the `>` sign.'
+        - 'Just type the three letters of the command that shows the Windows version (short for Version), without `C:\Users\Student>`, then press Enter.'
+      answer: 'ver'
+      explain: 'CMD was waiting for a command (the prompt was ready). You only typed the `ver` command, and CMD showed the Windows version.'
+  quiz:
+    - kind: mcq
+      q: 'Which keyboard shortcut opens the Run window?'
+      options: ['Win + R', 'Ctrl + C', 'Alt + F4', 'Win + D']
+      answer: 0
+      explain: 'Win + R opens the Run window; then you type `cmd` and press Enter.'
+    - kind: tf
+      q: 'You have to type `C:\Users\Student>` yourself as well.'
+      answer: false
+      explain: 'That is the prompt, and CMD shows it by itself. You only type after `>`.'
+    - kind: mcq
+      q: 'What do you type in the Run window to open CMD?'
+      options: ['cmd', 'run', 'open', 'start']
+      answer: 0
+      code_options: true
+      explain: 'The program''s name is `cmd`.'
+    - kind: order
+      q: 'Put the steps for opening CMD in the right order.'
+      items: ['Win + R', 'cmd', 'Enter']
+      explain: 'First open the Run window with Win + R, then type `cmd`, and finally press Enter.'
+    - kind: mcq
+      q: 'What does the prompt (like `C:\Users\Student>`) mean?'
+      options: ['CMD is ready to take a command', 'An error message', 'A command you have to type', 'The name of an open file']
+      answer: 0
+      explain: 'The prompt means CMD is waiting for your command, and it shows which folder you are in.'
+  recap: '① Win + R ② `cmd` ③ Enter. The prompt means CMD is ready; you only type after `>`.'
+
+- n: 4
+  term: 'dir Pictures /w'
+  fullForm: 'Command · Argument · Switch'
+  difficulty: 1
+  objective: 'Learn the three parts of a command: command, argument and switch.'
+  summary: 'Most CMD commands are made of a few parts separated by spaces: the command (what to do), the argument or target (what to do it to), and the switch (how to do it). Not every command has every part.'
+  anatomy:
+    cmd: 'dir Pictures /w'
+    parts:
+      - {t: 'dir', role: command, d: 'Command: the job CMD should do. `dir` means “list the contents of a folder”.'}
+      - {t: 'Pictures', role: argument, d: 'Argument / target: the thing the command works on. Here, the Pictures folder.'}
+      - {t: '/w', role: switch, d: 'Switch: an option that changes how the command works or how the result is shown. `/w` means a compact list in several columns (Wide).'}
+  meaning: 'A switch is an option that changes the way a command works. The command still does the same job; it just does it or shows the result in a different way. Most CMD switches start with `/` (like `/w` or `/?`), but some commands write switches with `-`, like `ping -n 2`.'
+  usage: 'Once you know this structure, you can easily read any new command and understand the Windows help (`/?`).'
+  syntax: 'command [argument] [/switch]'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'dir Pictures /w'}
+  tip: 'You need a space between the parts. `dirPictures` is one unknown word. Add `/?` after any command to see its help.'
+  restaurant: '“Bring coffee, no sugar.” “Bring” is the command (what to do), “coffee” is the argument (what), and “no sugar” is the switch (how).'
+  examples:
+    - c: 'dir'
+      d: 'Command only: the contents of the current folder.'
+    - c: 'dir Documents'
+      d: 'Command + argument: the contents of the Documents folder.'
+    - c: 'dir /w'
+      d: 'Command + switch: the contents of the current folder, compact.'
+    - c: 'dir Documents /w'
+      d: 'Command + argument + switch: the contents of Documents, compact.'
+  mistakes:
+    - 'Gluing the argument to the command without a space, like `dirDocuments`.'
+    - 'Using `\` instead of `/` for a switch, like `dir \w`.'
+  practice:
+    - id: P4a
+      start: 'C:\Users\Student'
+      task: 'View the contents of the Documents folder in compact (Wide) form.'
+      checks: [{type: cmd, value: dir}, {type: argIncludes, value: documents}, {type: switch, value: '/w'}, {type: ok}]
+      hints:
+        - 'Use `dir` to see the contents of a folder. Then type the folder name, and finally add the switch that makes the list compact (Wide).'
+        - 'Three questions, three parts: what to do? (`dir`) What to do it to? (the folder name) How to show it? (a switch: `/` plus the first letter of Wide). Put spaces between them.'
+      answer: 'dir Documents /w'
+      explain: '`dir` sets the job (list the contents), `Documents` says which folder, and `/w` shows the result compactly in several columns.'
+    - id: P4b
+      start: 'C:\Users\Student'
+      task: 'View the help for the `cd` command. The help switch in CMD is `/?`.'
+      checks: [{type: cmd, value: cd}, {type: switch, value: '/?'}]
+      hints:
+        - 'Help is also a switch: type the command, then add the help switch after it.'
+        - 'The command here is `cd`, and the switch is made of `/` and a question mark. Put a space between them.'
+      answer: 'cd /?'
+      explain: '`cd` is the command and `/?` is a switch that shows the command''s help instead of running it.'
+  quiz:
+    - kind: predict
+      q: 'Which part of this command is the switch?'
+      code: 'dir Pictures /w'
+      options: ['/w', 'dir', 'Pictures', 'None of them']
+      answer: 0
+      code_options: true
+      explain: '`/w` is an option that changes how the result is shown, so it is the switch. `dir` is the command and `Pictures` is the argument.'
+    - kind: fix
+      q: 'What is wrong with this command?'
+      code: 'dirPictures'
+      options: ['There is no space between the command and the argument', 'Pictures must be in capital letters', 'It has no switch', 'Nothing is wrong']
+      answer: 0
+      explain: 'CMD sees the whole thing, `dirPictures`, as one unknown command name.'
+    - kind: tf
+      q: 'In CMD, switches usually start with `/`.'
+      answer: true
+      explain: 'Most switches, like `/w` or `/?`, start with `/`, but not always; for example, `ping` uses `-n`.'
+    - kind: mcq
+      q: 'In `dir Pictures /w`, what role does `Pictures` play?'
+      options: ['Argument (what to do it to)', 'Command (what to do)', 'Switch (how)', 'Prompt']
+      answer: 0
+      explain: '`Pictures` is the thing `dir` works on: the argument, or target.'
+  recap: 'Command = what to do, argument = what to do it to, switch = how. Example: `dir` + `Pictures` + `/w`.'
+
+- n: 5
+  term: 'File · Folder'
+  fullForm: 'File · Folder (Directory)'
+  difficulty: 1
+  objective: 'Know the difference between a file and a folder, and what an extension does.'
+  summary: 'A file is a document, a picture or a program. A folder is a box that holds files and other folders.'
+  meaning: 'A file name usually has two parts: the name and the extension, like `report.txt`. In the output of `dir`, folders are marked with `<DIR>`.'
+  usage: 'Almost everything you do in CMD involves files and folders: viewing, creating, copying, moving and deleting.'
+  terminal:
+    - {p: 'C:\Users\Student\Documents>', c: 'dir'}
+    - {o: '09/28/2026  10:15 AM    <DIR>          Work'}
+    - {o: '10/01/2026  06:40 PM                80 menu.txt'}
+    - {o: '10/01/2026  06:40 PM                55 todo.txt'}
+  tip: 'The extension shows the type of file: `.txt` text, `.jpg` picture, `.mp3` audio, `.exe` program.'
+  daily: 'A wardrobe: each drawer is a folder and each piece of clothing is a file. A drawer can also hold a smaller drawer inside it.'
+  restaurant: 'In the kitchen, the shelves are folders and the ingredient jars are files. The label on a jar (sugar, salt) is like the extension: it tells you what kind of thing is inside.'
+  examples:
+    - c: 'dir'
+      d: 'Folders are shown with `<DIR>` and files with their size.'
+    - c: 'dir *.txt'
+      d: 'Only files with the text extension.'
+  mistakes:
+    - 'Leaving out the extension in a file name, like `type notes` instead of `type notes.txt`.'
+    - 'Thinking that changing the extension changes the real type of the file.'
+  practice:
+    - id: P5a
+      start: 'C:\Users\Student\Documents'
+      task: 'You are inside Documents. See which files and folders are here.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: cwd, value: 'C:\Users\Student\Documents'}]
+      hints:
+        - 'You want to see the contents of the folder you are in right now (Documents). The same command that listed folder contents in lesson 4 works here too.'
+        - 'You only need one part: what to do? (a three-letter command, from the word Directory). No argument needed; without a folder name, this command shows the contents of the current folder.'
+      answer: 'dir'
+      explain: '`dir` without an argument lists the contents of the folder you are in: folders with `<DIR>` and files with their size.'
+    - id: P5b
+      start: 'C:\Users\Student\Documents'
+      task: 'Show the contents of the file `todo.txt`. (The `type` command shows the contents of a text file.)'
+      checks: [{type: cmd, value: type}, {type: argIncludes, value: todo.txt}, {type: ok}]
+      hints:
+        - 'Use `type` to see the text inside a file. After it, say which file: the full name, including the extension.'
+        - 'Two parts: what to do? (`type`) What to do it to? (the file name + the extension `.txt`). If you leave out the extension, CMD won''t find the file.'
+      answer: 'type todo.txt'
+      explain: '`type` is the command that shows a text file''s contents, and `todo.txt` is its argument: the file that should be read.'
+  quiz:
+    - kind: mcq
+      q: 'In the output of `dir`, what does `<DIR>` mean?'
+      options: ['This item is a folder', 'The file is broken', 'The file is hidden', 'This is a drive']
+      answer: 0
+      explain: '`<DIR>` stands for Directory, which is a folder.'
+    - kind: mcq
+      q: 'What is the extension of the file `song.mp3`?'
+      options: ['.mp3', 'song', 'song.mp3', 'mp']
+      answer: 0
+      code_options: true
+      explain: 'The part after the last dot is the extension.'
+    - kind: predict
+      q: 'How many folders are in this output?'
+      code: "<DIR>          Work\n<DIR>          Photos\n          80 menu.txt"
+      options: ['2', '1', '3', '0']
+      answer: 0
+      explain: 'Two lines have `<DIR>`: Work and Photos.'
+  recap: 'File = content with an extension. Folder = a container for files, shown in `dir` with `<DIR>`.'
+
+- n: 6
+  term: 'C:  D:  E:'
+  fullForm: 'Drive letter'
+  difficulty: 1
+  objective: 'Recognize drives and switch between them.'
+  summary: 'A drive is a place where data is stored, like a hard disk or a USB stick. Each drive has a letter, and to go to it you type the letter and a colon.'
+  meaning: '`C:` is usually the drive where Windows is installed. `D:` can be a second hard disk or partition, and `E:` is often a USB stick.'
+  usage: 'To work with files on a USB stick or another hard disk, you first have to go to that drive.'
+  syntax: 'D:'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'D:'}
+    - {p: 'D:\>', c: ''}
+  tip: 'The colon is required. If you type only `D`, CMD treats it as an unknown command.'
+  restaurant: 'A restaurant chain has several branches. Each drive is a branch with its own letter. Typing `D:` takes you to branch D.'
+  examples:
+    - c: 'D:'
+      d: 'Go to drive D.'
+    - c: 'C:'
+      d: 'Go back to drive C.'
+    - c: 'vol'
+      d: 'The name and serial number of the current drive.'
+  mistakes:
+    - 'Typing `cd D:` to go to another drive; just `D:` is enough.'
+    - 'Leaving out the colon: `D` on its own is an unknown command.'
+  practice:
+    - id: P6a
+      start: 'C:\Users\Student'
+      task: 'Go to drive D.'
+      checks: [{type: drive, value: D}]
+      hints:
+        - 'You don''t need a special command to go to another drive; you just type that drive''s letter and put a special sign after it.'
+        - 'Two pieces, no space: the drive letter (`D`) followed right away by a colon. Without the colon, CMD treats it as an unknown command.'
+      answer: 'D:'
+      explain: '`D:` means “go to drive D”. The colon tells CMD that this letter is the name of a drive, not a command.'
+    - id: P6b
+      start: 'C:\Users\Student'
+      task: 'The virtual USB stick is drive E. Go there and see what''s on it.'
+      checks: [{type: drive, value: E}, {type: cmd, value: dir}, {type: ok}]
+      hints:
+        - 'This exercise has two steps: first go to drive E, then use the command from earlier lessons to see its contents.'
+        - 'Step 1: the drive letter and a colon, then Enter. Step 2: the three-letter command for viewing contents, then Enter. Run each command separately.'
+      multi: true
+      answer: ['E:', 'dir']
+      explain: '`E:` takes you to drive E (the USB stick), and then `dir` lists the contents there, because the prompt is now at `E:\`.'
+  quiz:
+    - kind: mcq
+      q: 'Which drive is Windows usually installed on?'
+      options: ['C:', 'A:', 'E:', 'Z:']
+      answer: 0
+      code_options: true
+      explain: 'Normally, Windows is on `C:`.'
+    - kind: type
+      q: 'Type a command that goes to drive D.'
+      accept: ['d:']
+      show: 'D:'
+      explain: 'The drive letter and a colon: `D:`'
+    - kind: fix
+      q: 'Why doesn''t this command work?'
+      code: 'D'
+      options: ['The colon after the drive letter is missing', 'It must be lowercase', 'Drive D doesn''t exist', 'You must type cd first']
+      answer: 0
+      explain: 'To change drives, you have to type `D:`.'
+  recap: 'Each drive has a letter. Type the letter and `:` to go to that drive.'
+
+- n: 7
+  term: 'Current Directory'
+  fullForm: 'Directory = Folder'
+  difficulty: 1
+  objective: 'Know which folder you are in right now and what the prompt is telling you.'
+  summary: 'A directory is just a folder. The current directory is the folder you are in right now, and it is written in the prompt.'
+  meaning: 'In `C:\Users\Student\Music>`, the current folder is `Music`. By default, commands work on this folder.'
+  usage: 'The `cd` command with no argument prints the current directory.'
+  syntax: 'cd'
+  terminal:
+    - {p: 'C:\Users\Student\Music>', c: 'cd'}
+    - {o: 'C:\Users\Student\Music'}
+  tip: 'Each drive remembers its own current directory. If you go to D and come back, you are in the same place on C as before.'
+  daily: 'If you are in the kitchen and someone says “turn on the light”, you turn on the light in the room you are in.'
+  restaurant: 'A waiter only takes orders from the table they are standing at. The current directory is the table you are standing at right now.'
+  examples:
+    - c: 'cd'
+      d: 'Prints the path of the current directory.'
+    - c: 'dir'
+      d: 'The contents of that same current folder.'
+  mistakes:
+    - 'Running a command on a file that is not in the current folder, and then being surprised by the File Not Found message.'
+    - 'Ignoring the prompt; always check where you are before running a command.'
+  practice:
+    - id: P7a
+      start: 'C:\Users\Student\Music'
+      task: 'Without moving, print the current directory.'
+      checks: [{type: cmd, value: cd}, {type: noArgs}, {type: cwd, value: 'C:\Users\Student\Music'}]
+      hints:
+        - 'The command used to change folders (`cd`) just tells you where you are if you type nothing after it.'
+        - 'Only one part: what to do? (`cd`). No argument and no switch; if you type a folder name, you move there instead of printing the path.'
+      answer: 'cd'
+      explain: '`cd` without an argument changes nothing; it just prints the path of the current directory, here `C:\Users\Student\Music`.'
+  quiz:
+    - kind: mcq
+      q: 'In the prompt below, what is the current directory?'
+      code: 'C:\Users\Student\Music>'
+      options: ['C:\Users\Student\Music', 'C:\', 'C:\Users', 'Student']
+      answer: 0
+      code_options: true
+      explain: 'Everything before the `>` is the current directory.'
+    - kind: tf
+      q: 'Directory and folder mean the same thing.'
+      answer: true
+      explain: 'Directory is the more technical name for a folder.'
+    - kind: type
+      q: 'Type a command that shows the current directory.'
+      accept: ['cd', 'chdir']
+      explain: '`cd` with no argument.'
+  recap: 'Current directory = where you are right now. The prompt and `cd` on its own show it.'
+
+- n: 8
+  term: 'Path'
+  fullForm: 'C:\Users\Student\Documents\todo.txt'
+  difficulty: 1
+  objective: 'Understand how a path is built and what `\` does.'
+  summary: 'A path is the address of a file or folder. Folder names are separated by `\` (backslash).'
+  meaning: 'Read a path from left to right: drive `C:` → folder `Users` → `Student` → `Documents` → file `todo.txt`.'
+  usage: 'Every time you tell CMD which file or folder to work with, you are actually giving it a path.'
+  syntax: 'Drive:\Folder\Folder\File'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'cd Documents\Work'}
+    - {p: 'C:\Users\Student\Documents\Work>', c: ''}
+  tip: 'Windows uses `\` for paths. In CMD, the `/` sign is for switches.'
+  daily: 'A path is like a postal address: city, street, house number. Each part brings you one step closer.'
+  examples:
+    - c: 'dir C:\Users\Student\Documents'
+      d: 'The contents of a folder, using its full path.'
+    - c: 'type C:\Users\Student\Desktop\notes.txt'
+      d: 'Reading a file using its full path.'
+  mistakes:
+    - 'Using `/` instead of `\` in a path.'
+    - 'Forgetting the quotes around a path that contains a space, like `"shopping list.txt"`.'
+  practice:
+    - id: P8a
+      start: 'C:\Users\Student'
+      task: 'Go into the Documents folder.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents'}]
+      hints:
+        - 'To go into a folder, use `cd` (Change Directory) and tell it which folder you want to go to.'
+        - 'Two parts: what to do? (`cd`) Where to? (the name of the target folder; Documents is inside the current folder, so its name is enough). After you run it, the prompt changes.'
+      answer: 'cd Documents'
+      explain: '`cd` means “change the folder” and `Documents` is the target. Since Documents is inside `C:\Users\Student`, its name is enough.'
+    - id: P8b
+      start: 'C:\Users\Student'
+      task: 'With a single command, go straight into the Work folder, which is inside Documents.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents\Work'}, {type: cmd, value: cd}]
+      hints:
+        - 'Work is inside Documents. Instead of using `cd` twice, you can give one path that contains both folders one after the other.'
+        - 'Two parts: what to do? (`cd`) Where to? (a path: first `Documents`, then the separator `\`, then `Work`). Don''t use `/`; that is for switches.'
+      answer: 'cd Documents\Work'
+      explain: '`cd` with the path `Documents\Work` goes two levels down at once: first into Documents, then into Work. The `\` sign separates the folder names.'
+  quiz:
+    - kind: mcq
+      q: 'What separates folders in a Windows path?'
+      options: ['\', '/', '-', '|']
+      answer: 0
+      code_options: true
+      explain: 'Windows uses the backslash.'
+    - kind: predict
+      q: 'In this path, which part is the file name?'
+      code: 'C:\Users\Student\Pictures\cat.jpg'
+      options: ['cat.jpg', 'Pictures', 'Student', 'C:']
+      answer: 0
+      code_options: true
+      explain: 'The last part of the path is the file itself.'
+    - kind: mcq
+      q: 'In the path above, which folder is the file `cat.jpg` in?'
+      options: ['Pictures', 'Users', 'Student', 'C:']
+      answer: 0
+      code_options: true
+      explain: 'The part right before the file name is its folder.'
+  recap: 'Path = the address of a file or folder. The parts are separated by `\`. Put a path with spaces inside `" "`.'
+
+- n: 9
+  term: 'Absolute Path'
+  fullForm: 'C:\Users\Student\Pictures'
+  difficulty: 1
+  objective: 'Recognize an absolute path and use it to point anywhere from anywhere.'
+  summary: 'An absolute path is a full address that starts with a drive or the root `\`. It doesn''t matter where you are right now; it always leads to the same place.'
+  meaning: 'If a path starts with a drive letter (like `C:\`) or with `\`, it is absolute.'
+  usage: 'When you don''t know where you are, or the target is far away, an absolute path is the safest way.'
+  syntax: 'cd C:\Folder\Folder'
+  terminal:
+    - {p: 'C:\Windows\System32>', c: 'cd C:\Users\Student\Pictures'}
+    - {p: 'C:\Users\Student\Pictures>', c: ''}
+  tip: '`cd` on its own does not change the drive. If the target is on another drive, use `cd /d` (lesson 14).'
+  daily: 'Give a full postal address to any courier, and they will reach the same house from anywhere in the city.'
+  restaurant: '“Branch C, floor Users, hall Student, table Pictures.” Any waiter who hears this address, from anywhere in the restaurant, gets to the same table.'
+  examples:
+    - c: 'cd C:\Users\Student\Pictures'
+      d: 'Straight to Pictures, from anywhere.'
+    - c: 'dir C:\Windows'
+      d: 'Viewing C:\Windows without going there.'
+  mistakes:
+    - 'Leaving out the drive letter or the leading `\`, which makes the path relative.'
+    - 'Using `cd` to go to another drive without changing the drive.'
+  practice:
+    - id: P9a
+      start: 'C:\Windows\System32'
+      task: 'You are in `C:\Windows\System32` right now. Use an absolute path to go to `C:\Users\Student\Pictures`.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures'}, {type: usedCd, value: absolute}]
+      hints:
+        - 'An absolute path starts with the drive letter and lists every folder, one after the other, up to the target. Give a path like that to `cd`.'
+        - 'Two parts: what to do? (`cd`) Where to? (the full path, in order: `C:\` → `Users` → `Student` → `Pictures`, with `\` between folders).'
+      answer: 'cd C:\Users\Student\Pictures'
+      explain: '`cd` works with the absolute path `C:\Users\Student\Pictures`; since the path starts with `C:\`, it doesn''t matter that you are in System32 right now.'
+    - id: P9b
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'Go to the root of drive C, that is, `C:\`'
+      checks: [{type: cwd, value: 'C:\'}, {type: usedCd, value: absolute}]
+      hints:
+        - 'The root is the top level of a drive. In a path, the root is shown with a single sign: the same one that separates folders.'
+        - 'Two parts: what to do? (`cd`) Where to? (the root: just a single `\`, or the full path `C:\`).'
+      answer: 'cd \'
+      explain: '`\` on its own means the root of the current drive; so `cd \` goes straight to `C:\` from any depth.'
+  quiz:
+    - kind: mcq
+      q: 'Which of these is an absolute path?'
+      options: ['C:\Users\Student\Music', 'Music', '..\Music', 'Student\Music']
+      answer: 0
+      code_options: true
+      explain: 'An absolute path starts with a drive or `\`.'
+    - kind: tf
+      q: 'An absolute path gives the same result from any current directory.'
+      answer: true
+      explain: 'Because it is a full address and does not depend on where you are.'
+    - kind: type
+      q: 'Use an absolute path to go to the folder `C:\Windows`.'
+      show: 'cd C:\Windows'
+      accept: ['cd c:\windows', 'cd \windows', 'chdir c:\windows', 'cd /d c:\windows']
+      explain: '`cd C:\Windows`'
+  recap: 'An absolute path starts with a drive letter and works from anywhere.'
+
+- n: 10
+  term: 'Relative Path'
+  fullForm: 'Documents\Work · ..'
+  difficulty: 1
+  objective: 'Use relative paths and `.` and `..` correctly.'
+  summary: 'A relative path is worked out from the current directory. It does not start with a drive or `\`, and where it leads depends on where you are right now.'
+  meaning: 'If you are in `C:\Users\Student`, `cd Documents` means `C:\Users\Student\Documents`. Two dots, `..`, mean the folder one level up (the parent).'
+  usage: 'It''s the fastest way to move a short distance between nearby folders.'
+  syntax: 'cd Folder\Folder'
+  terminal:
+    - {p: 'C:\Users\Student\Documents>', c: 'cd Work'}
+    - {p: 'C:\Users\Student\Documents\Work>', c: 'cd ..'}
+    - {p: 'C:\Users\Student\Documents>', c: ''}
+  tip: 'If you see the error `The system cannot find the path specified.`, first use `cd` to check where you are.'
+  daily: '“Two doors down from this room.” This address only makes sense if you know which room you are in right now.'
+  restaurant: '“Clean the table next to you.” Which table? It depends on which table the waiter is standing at right now.'
+  examples:
+    - c: 'cd Documents'
+      at: 'C:\Users\Student'
+      d: 'Going into a folder inside the current folder.'
+    - c: 'cd ..'
+      d: 'Going up one folder.'
+    - c: 'dir ..\Pictures'
+      d: 'Viewing a neighboring folder.'
+  mistakes:
+    - 'Using a relative path while you are in the wrong folder.'
+    - 'Typing `cd..` without a space: it works in CMD, but the good habit is `cd ..`.'
+  practice:
+    - id: P10a
+      start: 'C:\Users\Student\Documents'
+      task: 'You are inside Documents. Use a relative path to go into the Work folder.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents\Work'}, {type: usedCd, value: relative}]
+      hints:
+        - 'With a relative path, you work out the address from where you are right now. Work is inside this folder, so its name is enough.'
+        - 'Two parts: what to do? (`cd`) Where to? (just the folder name, without `C:\` and without a leading `\`). Starting with `C:\` would make it absolute.'
+      answer: 'cd Work'
+      explain: '`Work` does not start with a drive or `\`, so it is relative, and CMD adds it to the current directory: `C:\Users\Student\Documents\Work`.'
+    - id: P10b
+      start: 'C:\Users\Student\Documents'
+      task: 'From Documents, use a relative path to go to the Pictures folder and see its contents. (Pictures is next to Documents, not inside it.)'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures'}, {type: usedCd, value: relative}, {type: cmd, value: dir}, {type: ok}]
+      hints:
+        - 'Pictures is next to Documents, not inside it. So first you go up one folder (`..`), and from there into Pictures; then view the contents.'
+        - 'Line 1: `cd` with a two-part path: “one folder up” (`..`), the separator `\`, then the name Pictures. Line 2: the command for viewing contents.'
+      multi: true
+      answer: ['cd ..\Pictures', 'dir']
+      explain: '`..\Pictures` means “one folder up (to Student), then into Pictures”. Then `dir` shows the contents of Pictures.'
+  quiz:
+    - kind: mcq
+      q: 'Which of these is a relative path?'
+      options: ['Documents\Work', 'C:\Users', '\Windows', 'D:\Backup']
+      answer: 0
+      code_options: true
+      explain: 'It does not start with a drive or `\`.'
+    - kind: predict
+      q: 'Current directory: `C:\Users\Student` — where does this command take you?'
+      code: 'cd Music'
+      options: ['C:\Users\Student\Music', 'C:\Music', 'D:\Music', 'It gives an error']
+      answer: 0
+      code_options: true
+      explain: 'A relative path is added to the current directory.'
+    - kind: predict
+      q: 'Current directory: `C:\Users` — what is the result of this command?'
+      code: 'cd Music'
+      options: ['Error: the folder can''t be found', 'C:\Users\Music', 'C:\Users\Student\Music', 'C:\Music']
+      answer: 0
+      explain: 'There is no folder called Music inside `C:\Users`, so CMD shows the message `The system cannot find the path specified.`'
+  recap: 'A relative path is worked out from the current directory. `.` means right here, `..` means one folder up.'

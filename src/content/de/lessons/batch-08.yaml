@@ -1,0 +1,561 @@
+# Lessons 68–77 · Chapter 10: Batch basics
+# Practice tasks with "batch:" open the script editor. "answer" is a working script.
+
+- n: 68
+  term: '.bat'
+  fullForm: 'Batch Script'
+  difficulty: 2
+  objective: 'Du verstehst, was ein Batch-Skript ist und warum es die Arbeit mit CMD automatisiert.'
+  summary: 'Ein Batch-Skript ist eine Textdatei mit der Endung `.bat`, in der mehrere CMD-Befehle stehen. Wenn du die Datei ausführst, laufen die Befehle nacheinander von oben nach unten ab.'
+  meaning: 'Alles, was du in CMD eintippst, kannst du auch in eine Batch-Datei schreiben. Zusätzlich hat Batch Variablen, Bedingungen (`if`), Schleifen (`for`) und Sprünge (`goto`) – es kann also Entscheidungen treffen und Dinge wiederholen.'
+  usage: 'Wiederkehrende Aufgaben: tägliches Backup, Dateien sortieren, mehrere Computer einrichten, Berichte erstellen.'
+  syntax: "file.bat\n(each line = one command)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\first.bat', content: "echo Hello Batch\nver\n"}]
+    cmds: ['type first.bat', 'first.bat']
+  examples:
+    - c: 'first.bat'
+      noTry: true
+      d: 'Führt eine Batch-Datei im aktuellen Ordner aus.'
+    - c: 'first'
+      noTry: true
+      d: 'Funktioniert auch ohne Endung.'
+    - c: 'type first.bat'
+      noTry: true
+      d: 'Zeigt den Inhalt des Skripts.'
+  mistakes:
+    - 'Die Datei in Notepad als `first.bat.txt` speichern; stell im Speichern-Fenster den Dateityp auf „Alle Dateien“ (All Files).'
+  tip: 'In CMD Academy ist der Batch Editor (auf der Übungsseite) ein sicherer Ort, um Skripte zu schreiben und auszuführen.'
+  restaurant: 'Batch ist wie ein Bestellzettel für eine Feier: Statt den Kellner zehnmal zu rufen, schreibst du alle Bestellungen auf einen Zettel, und die Küche bereitet sie der Reihe nach zu.'
+  practice:
+    - id: P68a
+      batch: {file: 'first.bat', starter: "echo Hello Batch\n"}
+      task: 'Dieses Skript hat eine Zeile. Füge eine zweite Zeile hinzu, die die Windows-Version anzeigt (`ver`), und führe es dann aus.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello Batch', 'Microsoft Windows']}]
+      hints: ['Jede Zeile eines Batch-Skripts ist ein Befehl, und die Zeilen laufen der Reihe nach von oben ab. Schreib den Befehl für die Windows-Version in eine neue Zeile unter die `echo`-Zeile.', 'Zeile 1 bleibt `echo Hello Batch`; Zeile 2: der Befehl `ver`. Klick dann auf „Ausführen“, um beide Ausgaben zu sehen.']
+      answer: ['echo Hello Batch', 'ver']
+      explain: 'Das Skript führt zuerst `echo Hello Batch` aus und gibt den Text aus, danach zeigt `ver` die Windows-Version (`Microsoft Windows ...`).'
+    - id: P68b
+      start: 'C:\Users\Student\Desktop'
+      task: 'Erstelle ohne Editor, nur mit CMD, die Datei `hi.bat`, die den Befehl `echo Hi from a file` enthält, und führe sie anschließend aus.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\hi.bat', value: 'echo Hi from a file'}, {type: ranBatch}, {type: outputIncludes, value: 'Hi from a file'}]
+      hints: ['Zwei Schritte: Schreib zuerst mit `echo` und einer Umleitung (`>`) eine Textzeile in die Datei `hi.bat`; dieser Text ist selbst ein Befehl. Führe die Datei dann über ihren Namen aus.', 'Die erste Zeile hat drei Teile: `echo` + der Text, der in die Datei soll (`echo Hi from a file`) + `>` und der Dateiname `hi.bat`. Zweite Zeile: nur der Dateiname `hi.bat`.']
+      answer: ['echo echo Hi from a file > hi.bat', 'hi.bat']
+      explain: 'Das erste `echo` schreibt den Text `echo Hi from a file` mit `>` in `hi.bat`; wenn du `hi.bat` ausführst, läuft genau diese Zeile und `Hi from a file` wird ausgegeben.'
+  quiz:
+    - kind: mcq
+      q: 'In welcher Reihenfolge werden die Befehle eines Batch-Skripts ausgeführt?'
+      options: ['Von oben nach unten, einer nach dem anderen', 'Alle gleichzeitig', 'Von unten nach oben', 'In alphabetischer Reihenfolge']
+      answer: 0
+      explain: 'Außer `goto` oder `call` ändern die Reihenfolge.'
+    - kind: tf
+      q: 'Jeder Befehl, der in CMD funktioniert, funktioniert auch in einer Batch-Datei.'
+      answer: true
+      explain: 'Batch besteht aus denselben CMD-Befehlen, plus Skript-Funktionen.'
+    - kind: type
+      q: 'Führe das Skript `backup.bat` aus, das im aktuellen Ordner liegt.'
+      accept: ['backup.bat', 'backup', 'call backup.bat', '.\backup.bat']
+      explain: 'Schreib einfach den Dateinamen.'
+  recap: 'Batch = eine `.bat`-Datei mit mehreren Befehlen, die der Reihe nach ausgeführt werden. Du startest sie über ihren Dateinamen.'
+
+- n: 69
+  term: '.bat · .cmd'
+  fullForm: 'Batch file types'
+  difficulty: 2
+  objective: 'Du kennst den Unterschied zwischen `.bat` und `.cmd` und kannst beide ausführen.'
+  summary: '`.bat` und `.cmd` sind beides Batch-Dateien und laufen im heutigen Windows fast gleich.'
+  meaning: '`.bat` stammt noch aus MS-DOS-Zeiten, `.cmd` wurde für Windows NT und neuer eingeführt. Kleiner Unterschied: In `.cmd` setzen manche Befehle wie `set` den ERRORLEVEL immer auf null. Zum Lernen reicht `.bat`.'
+  usage: 'Beide Typen erkennen, wenn du Skripte von anderen siehst.'
+  syntax: "script.bat\nscript.cmd"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\tools.cmd', content: "@echo off\necho This is a .cmd script\n"}]
+    cmds: ['tools', 'tools.cmd']
+  examples:
+    - c: 'tools.cmd'
+      noTry: true
+      d: 'Führt eine .cmd-Datei aus.'
+    - c: 'tools'
+      noTry: true
+      d: 'Ohne Endung; CMD findet die .bat- oder .cmd-Datei selbst.'
+  mistakes:
+    - '`tools.bat` und `tools.cmd` gleichzeitig im selben Ordner haben; bei `tools` ist dann unklar, welche ausgeführt wird.'
+  tip: 'Gib einem Skript nie den Namen eines Befehls (wie `dir.bat` oder `ping.bat`); das ist verwirrend und gefährlich.'
+  practice:
+    - id: P69a
+      start: 'C:\Users\Student\Desktop'
+      files: [{path: 'C:\Users\Student\Desktop\tools.cmd', content: "@echo off\necho This is a .cmd script\n"}]
+      task: 'Auf dem Desktop liegt die Datei `tools.cmd`. Führe sie aus, indem du nur ihren Namen ohne Endung eingibst.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'This is a .cmd script'}, {type: not, check: {type: inputIncludes, value: '.cmd'}}]
+      hints: ['Wenn du den Namen eines Skripts ohne Endung eingibst, sucht CMD im aktuellen Ordner selbst nach einer `.bat`- oder `.cmd`-Datei mit diesem Namen.', 'Die Datei heißt `tools.cmd`; schreib nur den Teil vor dem Punkt und drück Enter. `.cmd` nicht mitschreiben.']
+      answer: 'tools'
+      explain: 'Für `tools` probiert CMD ausführbare Endungen wie `.cmd` aus, findet `tools.cmd`, führt sie aus und die Meldung wird ausgegeben.'
+    - id: P69b
+      batch: {file: 'info.cmd', starter: "@echo off\n"}
+      task: 'Schreib ein Skript mit der Endung `.cmd`, das den Benutzernamen mit der Variable `%USERNAME%` ausgibt.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\info.cmd', value: '%username%'}, {type: outputIncludes, value: 'Student'}]
+      hints: ['Der Name des aktuellen Benutzers steht in der fertigen Variable `%USERNAME%`. Mit `echo` kannst du einen Text und diese Variable zusammen ausgeben.', 'Lass die vorhandene erste Zeile unverändert. Zweite Zeile: `echo`, eine Beschriftung wie `User:` und dann `%USERNAME%` (mit `%` auf beiden Seiten).']
+      answer: ['@echo off', 'echo User: %USERNAME%']
+      explain: 'Beim Ausführen von `echo User: %USERNAME%` setzt CMD statt `%USERNAME%` den Benutzernamen (`Student`) ein und gibt dann den ganzen Satz aus.'
+  quiz:
+    - kind: tf
+      q: 'Eine `.cmd`-Datei wird genau wie eine `.bat`-Datei über ihren Namen ausgeführt.'
+      answer: true
+      explain: 'Beides sind Batch-Dateien.'
+    - kind: mcq
+      q: 'Welche Endung ist älter und stammt noch aus MS-DOS?'
+      options: ['.bat', '.cmd', '.ps1', '.exe']
+      answer: 0
+      code_options: true
+      explain: '`.cmd` kam mit Windows NT.'
+    - kind: mcq
+      q: 'Warum sollte ein Skript nicht `ping.bat` heißen?'
+      options: ['Es könnte statt des Befehls ping ausgeführt werden und verwirren', 'Namen mit vier Buchstaben sind verboten', 'Windows löscht es', 'Das macht keinen Unterschied']
+      answer: 0
+      explain: 'CMD sucht zuerst im aktuellen Ordner.'
+  recap: '`.bat` und `.cmd` sind beides Batch-Dateien. Benenne Skripte nicht wie Befehle.'
+
+- n: 70
+  term: 'hello.bat'
+  fullForm: 'Your first batch file'
+  difficulty: 2
+  objective: 'Du schreibst dein erstes echtes Skript, speicherst es und führst es aus.'
+  summary: 'Im echten Windows: Öffne Notepad, schreib die Befehle, speichere mit dem Namen `hello.bat` und dem Dateityp „Alle Dateien“ (All Files) und führe die Datei aus CMD oder per Doppelklick aus.'
+  meaning: 'Wenn du per Doppelklick startest, schließt sich das Fenster sofort nach dem letzten Befehl; deshalb haben Skripte am Ende meist ein `pause` (Lektion 72). Startest du das Skript in CMD, bleibt das Fenster offen.'
+  usage: 'Jedes Skript entsteht mit diesem Kreislauf: schreiben, speichern, ausführen, verbessern.'
+  syntax: "echo ...\ndir ...\n(save as hello.bat)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\hello.bat', content: "echo Hello, World!\necho Today is %DATE%\ndir /b\n"}]
+    cmds: ['hello.bat']
+  examples:
+    - c: 'notepad hello.bat'
+      d: 'Im echten Windows öffnet Notepad die Datei zum Bearbeiten.'
+      noTry: true
+    - c: 'hello'
+      noTry: true
+      d: 'Führt das Skript aus.'
+  mistakes:
+    - 'Als `hello.bat.txt` speichern.'
+    - 'Vergessen, vor dem Ausführen zu speichern (im Batch Editor speichert der Ausführen-Knopf automatisch).'
+  tip: 'In einem Skript funktionieren `%DATE%` und `%USERNAME%` genauso wie in der Befehlszeile.'
+  practice:
+    - id: P70a
+      batch: {file: 'hello.bat', starter: ""}
+      task: 'Schreib das Skript `hello.bat`: Es soll zuerst `Hello, World!` ausgeben und danach die Zeile `Today is` mit dem Datum (`%DATE%`).'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello, World!', 'Today is']}, {type: fileContains, path: 'C:\Users\Student\Desktop\hello.bat', value: '%date%'}]
+      hints: ['Alles, was ausgegeben werden soll, braucht eine eigene `echo`-Zeile. Das heutige Datum steht in der fertigen Variable `%DATE%`.', 'Zeile 1: `echo` + der Text `Hello, World!`. Zeile 2: `echo` + der Text `Today is` + Leerzeichen + `%DATE%`.']
+      answer: ['echo Hello, World!', 'echo Today is %DATE%']
+      explain: 'Die erste Zeile gibt den Begrüßungstext aus, und in der zweiten Zeile setzt CMD statt `%DATE%` das heutige Datum ein – also erscheint `Today is` mit dem Datum.'
+  quiz:
+    - kind: mcq
+      q: 'Warum schließt sich das Fenster so schnell, wenn du ein Skript doppelt anklickst?'
+      options: ['Das Skript ist fertig, und CMD schließt sich ebenfalls', 'Das Skript ist kaputt', 'Windows hat es blockiert', 'Die Endung ist falsch']
+      answer: 0
+      explain: 'Benutze `pause`, um das Ergebnis zu sehen.'
+    - kind: tf
+      q: 'In Notepad musst du den Dateityp auf „Alle Dateien“ (All Files) stellen, damit `.txt` nicht an den Namen angehängt wird.'
+      answer: true
+      explain: 'Sonst wird daraus `hello.bat.txt`.'
+    - kind: order
+      q: 'Bring den Kreislauf zum Erstellen eines Skripts in die richtige Reihenfolge.'
+      items: ['Befehle schreiben', 'Mit der Endung .bat speichern', 'Ausführen', 'Ausgabe lesen und verbessern']
+      explain: 'Schreiben → Speichern → Ausführen → Verbessern.'
+  recap: 'Schreiben → als `.bat` speichern → ausführen. Ein Doppelklick schließt das Fenster; dafür brauchst du `pause`.'
+
+- n: 71
+  term: '@echo off'
+  fullForm: 'echo off · rem · ::'
+  difficulty: 2
+  objective: 'Du schaltest die Anzeige der Befehle selbst aus und schreibst Kommentare in dein Skript.'
+  summary: 'Standardmäßig zeigt Batch jeden Befehl vor dem Ausführen zusammen mit dem Prompt (Eingabeaufforderung) an. `@echo off` in der ersten Zeile schaltet diese Anzeige aus. `rem` und `::` dienen zum Schreiben von Erklärungen (Comment).'
+  meaning: '`echo off` schaltet die Anzeige der Befehle aus, und `@` vor einer Zeile verbirgt nur genau diese Zeile. `@echo off` bedeutet also: „Zeig ab hier keine Befehle mehr an – und auch diese Zeile nicht.“ Ein Kommentar wird nicht ausgeführt, er ist nur für Leser gedacht.'
+  usage: 'Fast alle Skripte beginnen mit `@echo off`. Kommentare helfen dir später zu verstehen, was jeder Abschnitt macht.'
+  syntax: "@echo off\nrem comment\n:: comment"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files:
+      - {path: 'C:\Users\Student\Desktop\noisy.bat', content: "echo Step 1\necho Step 2\n"}
+      - {path: 'C:\Users\Student\Desktop\quiet.bat', content: "@echo off\nrem This line is a comment\necho Step 1\necho Step 2\n"}
+    cmds: ['noisy.bat', 'quiet.bat']
+  examples:
+    - c: '@echo off'
+      d: 'Die erste Zeile fast aller Skripte.'
+      noTry: true
+    - c: 'rem Backup of Documents'
+      d: 'Ein Kommentar.'
+      noTry: true
+    - c: ':: Step 2: copy files'
+      d: 'Eine andere Form des Kommentars.'
+      noTry: true
+  mistakes:
+    - '`echo off` ohne `@` schreiben: Diese Zeile selbst wird dann einmal angezeigt.'
+    - '`::` innerhalb von Klammern `( )` benutzen; dort ist `rem` sicherer.'
+  tip: 'Zur Fehlersuche kannst du `@echo off` vorübergehend in `@echo on` ändern, um zu sehen, welche Zeile gerade läuft.'
+  practice:
+    - id: P71a
+      batch: {file: 'steps.bat', starter: "echo Step 1: check files\ndir /b\necho Step 2: done\n"}
+      task: 'Dieses Skript zeigt beim Ausführen auch die Befehle selbst an. Sorge dafür, dass nur die Ausgaben erscheinen, und füge außerdem eine Kommentarzeile mit `rem` hinzu.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\steps.bat', value: ['@echo off', 'rem']}, {type: outputIncludes, value: 'Step 2: done'}, {type: outputExcludes, value: '>echo'}]
+      hints: ['Du brauchst zwei Dinge: eine Zeile ganz oben, die die Anzeige der Befehle ausschaltet (`echo off` mit `@`), und eine Kommentarzeile, die mit `rem` beginnt und nicht ausgeführt wird.', 'Zeile 1 (ganz oben): `@echo off`. Zeile 2: `rem` und danach eine kurze englische Beschreibung, was das Skript macht. Die übrigen Zeilen bleiben unverändert.']
+      answer: ['@echo off', 'rem List the desktop files', 'echo Step 1: check files', 'dir /b', 'echo Step 2: done']
+      explain: '`@echo off` sorgt dafür, dass die Befehle vor dem Ausführen nicht mit dem Prompt angezeigt werden (und `@` verbirgt diese Zeile selbst); die `rem`-Zeile ist nur ein Kommentar und wird nicht ausgeführt.'
+  quiz:
+    - kind: mcq
+      q: 'Was bewirkt `@` am Anfang einer Batch-Zeile?'
+      options: ['Es schaltet die Anzeige genau dieser Zeile aus', 'Es macht die Zeile zum Kommentar', 'Es führt die Zeile zweimal aus', 'Es führt die Zeile als Administrator aus']
+      answer: 0
+      explain: '`@echo off` = Anzeige ausschalten + diese Zeile selbst verbergen.'
+    - kind: tf
+      q: 'Eine Zeile, die mit `rem` beginnt, wird nicht ausgeführt.'
+      answer: true
+      explain: 'Sie ist ein Kommentar.'
+    - kind: predict
+      q: 'Wie sieht die Ausgabe dieses Skripts (ohne @echo off) aus?'
+      code: "echo Hi"
+      options: ["C:\\...>echo Hi\nHi", 'Hi', 'echo Hi', 'Nichts']
+      answer: 0
+      code_options: true
+      explain: 'Wenn echo eingeschaltet ist, siehst du zuerst den Befehl selbst mit dem Prompt.'
+  recap: '`@echo off` in die erste Zeile. `rem` oder `::` für Kommentare.'
+
+- n: 72
+  term: pause
+  fullForm: 'Pause'
+  difficulty: 2
+  objective: 'Du hältst ein Skript an, damit der Benutzer das Ergebnis sieht oder sich auf den nächsten Schritt vorbereiten kann.'
+  summary: '`pause` zeigt die Meldung `Press any key to continue . . .` an und wartet, bis eine Taste gedrückt wird.'
+  meaning: '`pause >nul` wartet, ohne eine Meldung anzuzeigen; davor kannst du mit `echo` deine eigene Meldung ausgeben.'
+  usage: 'Am Ende von Skripten, die per Doppelklick gestartet werden, oder vor einer wichtigen Aktion („Drück eine Taste, um das Backup zu starten“).'
+  syntax: "pause\necho message & pause >nul"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\wait.bat', content: "@echo off\necho Ready?\npause\necho Go!\n"}]
+    cmds: ['wait.bat']
+  examples:
+    - c: 'pause'
+      d: 'Standardmeldung und Warten.'
+      noTry: true
+    - c: 'echo Press any key to start the backup... & pause >nul'
+      d: 'Deine eigene Meldung, z. B. auf Deutsch.'
+      noTry: true
+  mistakes:
+    - '`pause` in Skripte setzen, die automatisch laufen (z. B. über die Aufgabenplanung/Task Scheduler); das Skript wartet dann ewig.'
+  tip: 'Wenn `pause` im Simulator wartet, drück einfach irgendeine Taste.'
+  practice:
+    - id: P72a
+      batch: {file: 'wait.bat', starter: "@echo off\necho Ready?\necho Go!\n"}
+      task: 'Ändere das Skript so, dass es nach `Ready?` auf einen Tastendruck wartet und erst dann `Go!` ausgibt.'
+      checks: [{type: ranBatch}, {type: outputOrder, value: ['Ready?', 'Press any key to continue', 'Go!']}]
+      hints: ['Du brauchst einen Befehl, der das Skript anhält, bis der Benutzer eine Taste drückt. Die Position ist wichtig: zwischen der Ausgabe von `Ready?` und der Ausgabe von `Go!`.', 'Füge nach `echo Ready?` und vor `echo Go!` eine neue Zeile ein und schreib dort nur den Befehl `pause`.']
+      answer: ['@echo off', 'echo Ready?', 'pause', 'echo Go!']
+      explain: 'Nach `Ready?` zeigt `pause` die Meldung `Press any key to continue . . .` und wartet auf eine Taste; danach läuft das Skript weiter und `Go!` wird ausgegeben.'
+    - id: P72b
+      batch: {file: 'start.bat', starter: "@echo off\n"}
+      task: 'Schreib ein Skript, das die Meldung `Press a key to start...` anzeigt, ohne die Standardmeldung von pause wartet und danach `Started` ausgibt.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Press a key to start', 'Started']}, {type: outputExcludes, value: 'Press any key to continue'}]
+      hints: ['Gib deine eigene Meldung mit `echo` aus und benutze `pause` zum Warten; die Standardmeldung von `pause` versteckst du, indem du ihre Ausgabe nach `nul` umleitest.', 'Nach `@echo off` drei Zeilen: 1) `echo` mit dem Text `Press a key to start...` 2) `pause` mit `>nul` 3) `echo` mit dem Text `Started`.']
+      answer: ['@echo off', 'echo Press a key to start...', 'pause >nul', 'echo Started']
+      explain: '`echo` zeigt die eigene Meldung, `pause >nul` wartet auf eine Taste, schickt seine Standardmeldung aber nach `nul` (ins Nichts), und danach wird `Started` ausgegeben.'
+  quiz:
+    - kind: mcq
+      q: 'Wie lautet die Standardmeldung von `pause`?'
+      options: ['Press any key to continue . . .', 'Paused.', 'Wait...', 'Hit Enter']
+      answer: 0
+      explain: 'Mit `>nul` kannst du sie verstecken.'
+    - kind: tf
+      q: '`pause >nul` wartet nicht.'
+      answer: false
+      explain: 'Es wartet; es zeigt nur keine Meldung an.'
+    - kind: mcq
+      q: 'Wo solltest du kein `pause` einsetzen?'
+      options: ['In einem Skript, das automatisch ohne Benutzer läuft', 'Am Ende eines Doppelklick-Skripts', 'Vor einer wichtigen Aktion', 'Bei der Fehlersuche']
+      answer: 0
+      explain: 'Dort ist niemand, der eine Taste drückt.'
+  recap: '`pause` = auf eine Taste warten. `pause >nul` = warten ohne Meldung.'
+
+- n: 73
+  term: '%var%'
+  fullForm: 'Variables in batch files'
+  difficulty: 2
+  objective: 'Du legst in einem Skript Variablen an und machst es damit lesbarer und leichter änderbar.'
+  summary: 'Auch in Batch legst du mit `set name=value` eine Variable an und liest sie mit `%name%`. Großer Vorteil: Werte wie Pfade definierst du einmal oben im Skript.'
+  meaning: 'Wichtiger Unterschied zur Befehlszeile: Wenn eine Variable nicht existiert, wird `%name%` in einer Batch-Datei zu „nichts“ (nicht zum Text selbst). Für Werte mit Leerzeichen benutze `set "name=value"` und beim Verwenden `"%name%"`.'
+  usage: 'Quell- und Zielpfade, Dateinamen und Einstellungen oben im Skript festlegen.'
+  syntax: "set \"name=value\"\necho %name%\ndir \"%folder%\""
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\vars.bat', content: "@echo off\nset name=Hibo\nset \"city=New York\"\necho %name% lives in %city%.\necho Missing: [%nothing%]\n"}]
+    cmds: ['vars.bat']
+  examples:
+    - c: 'set "folder=%USERPROFILE%\Documents"'
+      d: 'Eine Variable für einen Pfad.'
+      noTry: true
+    - c: 'dir "%folder%" /b'
+      d: 'Verwendung mit Anführungszeichen (Quotes).'
+      noTry: true
+  mistakes:
+    - 'Leerzeichen um das `=`.'
+    - 'Einen Pfad mit Leerzeichen ohne Anführungszeichen benutzen: `dir %folder%`.'
+  tip: 'Gib Variablen sprechende Namen: `source` und `target` sind besser als `a` und `b`.'
+  practice:
+    - id: P73a
+      batch: {file: 'vars.bat', starter: "@echo off\n"}
+      task: 'Leg im Skript zwei Variablen an: `name` mit dem Wert `Hibo` und `city` mit dem Wert `Vienna`, und gib mit diesen Variablen den Satz `Hibo lives in Vienna` aus.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hibo lives in Vienna'}, {type: fileContains, path: 'C:\Users\Student\Desktop\vars.bat', value: ['%name%', '%city%']}]
+      hints: ['Leg mit `set` zwei Variablen an (Name=Wert, ohne Leerzeichen um das `=`). Lies dann im `echo`-Satz die Variablen mit `%...%`, statt Name und Stadt direkt hinzuschreiben.', 'Zeile 2: `set` für `name` mit dem Wert `Hibo`. Zeile 3: `set` für `city` mit dem Wert `Vienna`. Zeile 4: `echo` mit einem Satz, in dem `%name%` und `%city%` stehen, dazwischen `lives in`.']
+      answer: ['@echo off', 'set name=Hibo', 'set city=Vienna', 'echo %name% lives in %city%']
+      explain: 'Die beiden `set`-Zeilen speichern die Werte `Hibo` und `Vienna` in Variablen, und in der `echo`-Zeile werden `%name%` und `%city%` durch genau diese Werte ersetzt.'
+    - id: P73b
+      batch: {file: 'docs.bat', starter: "@echo off\n"}
+      task: 'Leg eine Variable `folder` an, die den Pfad zum Documents-Ordner des Benutzers mit `%USERPROFILE%` speichert, und zeig den Inhalt dieses Ordners mit `dir /b` und dieser Variable an.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'menu.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\docs.bat', value: ['%userprofile%', '%folder%']}]
+      hints: ['`%USERPROFILE%` ist der Pfad zum Benutzerordner; häng `\Documents` hinten an und speichere das Ergebnis mit `set` in der Variable `folder`. Führe dann `dir /b` mit dieser Variable aus.', 'Zeile 2: `set` mit Anführungszeichen um das ganze `folder=%USERPROFILE%\Documents`. Zeile 3: `dir`, dann `"%folder%"` in Anführungszeichen, dann der Switch `/b`.']
+      answer: ['@echo off', 'set "folder=%USERPROFILE%\Documents"', 'dir "%folder%" /b']
+      explain: '`set "folder=..."` speichert den Documents-Pfad des Benutzers in `folder`, und `dir "%folder%" /b` zeigt den Inhalt dieses Ordners nur mit den Dateinamen; die Anführungszeichen schützen den Pfad vor Leerzeichen.'
+  quiz:
+    - kind: predict
+      q: 'Die Variable `x` ist nicht definiert. Was gibt diese Zeile in einer Batch-Datei aus?'
+      code: 'echo [%x%]'
+      options: ['[]', '[%x%]', 'Fehler', '[x]']
+      answer: 0
+      code_options: true
+      explain: 'In Batch wird eine nicht vorhandene Variable zu nichts.'
+    - kind: mcq
+      q: 'Was ist die sicherste Art, eine Variable mit einem Wert mit Leerzeichen anzulegen?'
+      options: ['set "msg=Hello World"', 'set msg = Hello World', 'set msg="Hello World"', 'set "msg"=Hello World']
+      answer: 0
+      code_options: true
+      explain: 'Anführungszeichen um das ganze `name=value`.'
+    - kind: tf
+      q: 'Pfade oben im Skript als Variablen festzulegen, macht spätere Änderungen einfacher.'
+      answer: true
+      explain: 'Du änderst nur eine Zeile.'
+  recap: '`set "name=value"` und `"%name%"`. In Batch ist eine nicht vorhandene Variable = leer.'
+
+- n: 74
+  term: 'set /p'
+  fullForm: 'Read user input'
+  difficulty: 2
+  objective: 'Du holst dir eine Eingabe vom Benutzer und verwendest sie im Skript.'
+  summary: '`set /p name=Frage` zeigt die Frage an, wartet, bis der Benutzer etwas eintippt und Enter drückt, und speichert die Antwort in der Variable `name`.'
+  meaning: 'Nach dem `=` kommt der Fragetext (meist mit einem Leerzeichen am Ende). Drückt der Benutzer nur Enter, bleibt die Variable unverändert. Mit `set /p line=<file.txt` landet die erste Zeile einer Datei in der Variable.'
+  usage: 'Nach einem Namen, einem Pfad, einer Bestätigung (Y/N) oder einer Menüauswahl fragen.'
+  syntax: "set /p name=Your name? \nset /p first=<file.txt"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['Sara']
+    files: [{path: 'C:\Users\Student\Desktop\ask.bat', content: "@echo off\nset /p name=What is your name? \necho Hello %name%!\n"}]
+    cmds: ['ask.bat']
+  examples:
+    - c: 'set /p name=What is your name? '
+      d: 'Fragt nach dem Namen.'
+      noTry: true
+    - c: 'set /p first=<todo.txt'
+      d: 'Die erste Zeile einer Datei.'
+      noTry: true
+  mistakes:
+    - 'Das Leerzeichen am Ende der Frage vergessen; die Antwort klebt dann direkt an der Frage.'
+    - 'Davon ausgehen, dass der Benutzer bestimmt etwas eingibt; prüfe mit `if`, ob die Eingabe leer ist (Lektion 78).'
+  tip: 'Wenn das Skript im Simulator eine Frage stellt, schreib die Antwort ins Terminal und drück Enter.'
+  practice:
+    - id: P74a
+      batch: {file: 'ask.bat', starter: "@echo off\n"}
+      inputs: ['Sara']
+      task: 'Schreib ein Skript, das nach dem Namen des Benutzers fragt und dann `Hello` mit diesem Namen ausgibt. (Führ es aus und gib deinen Namen ein.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\ask.bat', value: ['set /p', '%name%']}, {type: outputIncludes, value: 'Hello'}]
+      hints: ['Für eine Eingabe vom Benutzer benutzt du `set /p`: Es zeigt die Frage an und speichert die Antwort in einer Variable. Gib diese Variable dann mit `echo` aus.', 'Zeile 2: `set /p`, der Variablenname (`name`), `=` und der Fragetext wie `What is your name?` mit einem Leerzeichen am Ende. Zeile 3: `echo Hello` und dann `%name%`.']
+      answer: ['@echo off', 'set /p name=What is your name? ', 'echo Hello %name%']
+      explain: '`set /p name=...` zeigt die Frage an und speichert die Antwort des Benutzers in `name`; `echo Hello %name%` gibt diese Antwort nach `Hello` aus.'
+    - id: P74b
+      batch: {file: 'first.bat', starter: "@echo off\n"}
+      task: 'Schreib ein Skript, das die erste Zeile der Datei `C:\Users\Student\Documents\todo.txt` in eine Variable liest und sie mit dem Text `First task:` ausgibt.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'First task: 1. Learn dir'}]
+      hints: ['`set /p` kann die Eingabe statt von der Tastatur aus einer Datei holen: Gib ihm die Datei mit `<`, dann landet die erste Zeile in der Variable.', 'Zeile 2: `set /p`, eine Variable wie `line`, `=` und direkt danach `<` und der vollständige Pfad `C:\Users\Student\Documents\todo.txt`. Zeile 3: `echo` mit dem Text `First task:` und dann `%line%`.']
+      answer: ['@echo off', 'set /p line=<C:\Users\Student\Documents\todo.txt', 'echo First task: %line%']
+      explain: '`<` gibt den Inhalt von `todo.txt` statt der Tastatur an `set /p` weiter, und nur die erste Zeile landet in `line`; `echo First task: %line%` gibt sie aus.'
+  quiz:
+    - kind: mcq
+      q: 'Wo wird bei `set /p age=How old are you? ` die Antwort des Benutzers gespeichert?'
+      options: ['In der Variable age', 'In der Datei age', 'Im ERRORLEVEL', 'Nirgends']
+      answer: 0
+      explain: 'Im Namen vor dem `=`.'
+    - kind: tf
+      q: 'Mit `set /p x=<a.txt` landen alle Zeilen der Datei in x.'
+      answer: false
+      explain: 'Nur die erste Zeile.'
+    - kind: type
+      q: 'Frag den Benutzer nach seiner Stadt und speichere sie in der Variable `city` (Frage: `City? `).'
+      accept: ['set /p city=city? ', 'set /p city=city?', 'set /p "city=city? "']
+      show: 'set /p city=City? '
+      explain: '`set /p city=City? `'
+  recap: '`set /p name=Frage ` = Eingabe holen. `set /p x=<file` = erste Zeile einer Datei.'
+
+- n: 75
+  term: 'set /a'
+  fullForm: 'Arithmetic'
+  difficulty: 2
+  objective: 'Du rechnest in Batch mit Zahlen und baust einen Zähler.'
+  summary: '`set /a` berechnet einen mathematischen Ausdruck: `set /a total=price*qty`. Nur ganze Zahlen; keine Kommazahlen.'
+  meaning: 'Innerhalb von `set /a` funktionieren Variablennamen auch ohne `%`. Operatoren: `+ - * /` und `%` für den Rest (in einer Batch-Datei musst du `%%` schreiben). `+=` und `-=` zum Erhöhen und Verringern. Bei der Division fällt der Nachkommateil weg: `7/2` ergibt `3`.'
+  usage: 'Zähler in Schleifen, Dateien zählen, einfache Preisberechnungen.'
+  syntax: "set /a x=5+3\nset /a total=price*qty\nset /a count+=1\nset /a r=10%%3"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\math.bat', content: "@echo off\nset price=8\nset qty=3\nset /a total=price*qty\necho Total: %total%\nset /a half=7/2\necho 7/2 = %half%\nset /a rest=7%%2\necho 7 mod 2 = %rest%\n"}]
+    cmds: ['math.bat', 'set /a 10*4+2']
+  examples:
+    - c: 'set /a 10*4+2'
+      d: 'In der Befehlszeile wird das Ergebnis auch gleich ausgegeben.'
+    - c: 'set /a count+=1'
+      d: 'Zählt eins dazu.'
+      noTry: true
+    - c: 'set /a "x=(2+3)*4"'
+      d: 'Klammern; in Anführungszeichen ist es sicherer.'
+  mistakes:
+    - 'Kommazahlen erwarten: `set /a x=5/2` ergibt 2, nicht 2.5.'
+    - 'In einer Batch-Datei ein einzelnes `%` für den Rest schreiben; es muss `%%` sein.'
+  tip: 'Ist der Wert einer Variable keine Zahl, rechnet `set /a` mit null.'
+  practice:
+    - id: P75a
+      batch: {file: 'price.bat', starter: "@echo off\nset price=8\nset qty=3\n"}
+      task: 'Eine Pizza kostet `8`, die Anzahl ist `3`. Berechne mit `set /a` den Gesamtpreis und gib `Total: 24` aus.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Total: 24'}, {type: fileContains, path: 'C:\Users\Student\Desktop\price.bat', value: 'set /a'}]
+      hints: ['Gerechnet wird mit `set /a`: Es speichert das Ergebnis eines Ausdrucks in einer neuen Variable. Innerhalb von `set /a` gehen Variablennamen auch ohne `%`, und Multiplikation ist `*`.', 'Neue Zeile: `set /a`, die Ergebnisvariable (`total`), `=` und `price` mal `qty`. Letzte Zeile: `echo Total:` und dann `%total%`.']
+      answer: ['@echo off', 'set price=8', 'set qty=3', 'set /a total=price*qty', 'echo Total: %total%']
+      explain: '`set /a total=price*qty` multipliziert 8 mit 3 und speichert 24 in `total`; `echo Total: %total%` gibt das Ergebnis aus.'
+    - id: P75b
+      batch: {file: 'count.bat', starter: "@echo off\nset count=0\n"}
+      task: 'Erhöhe den Zähler `count` mit `set /a` dreimal um je eins und gib am Ende `Count: 3` aus.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Count: 3'}, {type: fileContains, path: 'C:\Users\Student\Desktop\count.bat', value: '+='}]
+      hints: ['Um einen Zähler um eins zu erhöhen, hat `set /a` den Operator `+=`. Wiederhole das dreimal und gib dann den Wert aus.', 'Drei gleiche Zeilen: `set /a` + `count` + `+=1`. Dann eine `echo`-Zeile mit dem Text `Count:` und `%count%`.']
+      answer: ['@echo off', 'set count=0', 'set /a count+=1', 'set /a count+=1', 'set /a count+=1', 'echo Count: %count%']
+      explain: 'Jedes `set /a count+=1` zählt eins zu `count` dazu, also geht es von 0 auf 3, und `echo Count: %count%` zeigt die 3 an.'
+  quiz:
+    - kind: predict
+      q: 'Was wird ausgegeben?'
+      code: "set /a x=9/2\necho %x%"
+      options: ['4', '4.5', '5', '9/2']
+      answer: 0
+      code_options: true
+      explain: 'Nur ganze Zahlen; der Nachkommateil fällt weg.'
+    - kind: mcq
+      q: 'Wie berechnest du in einer Batch-Datei den Rest von 10 geteilt durch 3?'
+      options: ['set /a r=10%%3', 'set /a r=10%3', 'set /a r=10 mod 3', 'set r=10%%3']
+      answer: 0
+      code_options: true
+      explain: 'In Batch muss `%` doppelt geschrieben werden.'
+    - kind: type
+      q: 'Zähle eins zur Variable `n` dazu.'
+      accept: ['set /a n+=1', 'set /a n=n+1', 'set /a n=%n%+1', 'set /a "n+=1"']
+      show: 'set /a n+=1'
+      explain: '`+=`'
+  recap: '`set /a` = rechnen mit ganzen Zahlen. `+=` erhöht. Rest in Batch: `%%`.'
+
+- n: 76
+  term: '%1 %2 %*'
+  fullForm: 'Arguments'
+  difficulty: 3
+  objective: 'Du gibst einem Skript Eingaben mit und schreibst Skripte, die du immer wieder verwenden kannst.'
+  summary: 'Alles, was du nach dem Namen des Skripts schreibst, ist ein Argument. `%1` ist das erste, `%2` das zweite, bis `%9`. `%*` sind alle Argumente und `%0` ist der Name des Skripts selbst.'
+  meaning: 'Zum Beispiel `greet.bat Ali Sara` → `%1` = Ali und `%2` = Sara. Ein Argument mit Leerzeichen gibst du in Anführungszeichen an, und mit `%~1` entfernst du die Anführungszeichen. `%~nx1` liefert nur Namen und Endung eines Pfads.'
+  usage: 'Skripte wie `backup.bat Quelle Ziel`, die bei jedem Start andere Eingaben bekommen.'
+  syntax: "script.bat arg1 arg2\necho %1 %2\necho %*"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\greet.bat', content: "@echo off\necho Script: %~nx0\necho Hello %1\necho Second: %2\necho All: %*\n"}]
+    cmds: ['greet.bat Ali Sara Reza']
+  examples:
+    - c: 'greet.bat Ali'
+      d: '`%1` = Ali.'
+      noTry: true
+    - c: 'copyto.bat "my file.txt" E:\'
+      d: 'Argument mit Leerzeichen in Anführungszeichen.'
+      noTry: true
+  mistakes:
+    - '`%10` benutzen; es gibt nur `%0` bis `%9` (für mehr: `shift`, nächste Lektion).'
+    - 'Davon ausgehen, dass der Benutzer ein Argument angegeben hat; prüfe mit `if "%1"==""` (Lektion 78).'
+  tip: 'Im Batch Editor schreibst du die Argumente in das Feld „Arguments“.'
+  practice:
+    - id: P76a
+      batch: {file: 'greet.bat', starter: "@echo off\n", args: 'Ali'}
+      task: 'Schreib ein Skript, das mit dem ersten Argument grüßt. Führe es mit dem Argument `Ali` aus, damit `Hello Ali` ausgegeben wird.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hello Ali'}, {type: fileContains, path: 'C:\Users\Student\Desktop\greet.bat', value: '%1'}]
+      hints: ['Ein Argument ist das, was nach dem Namen des Skripts geschrieben wird. Im Skript liest du das erste Argument mit `%1`; setz es in den `echo`-Satz.', 'Nach `@echo off` eine Zeile: `echo`, das Wort `Hello` und dann `%1`. Im Feld Arguments steht `Ali`; dann ausführen.']
+      answer: ['@echo off', 'echo Hello %1']
+      explain: 'Beim Ausführen mit dem Argument `Ali` setzt CMD statt `%1` das Wort `Ali` ein, und `Hello Ali` wird ausgegeben.'
+    - id: P76b
+      batch: {file: 'copyto.bat', starter: "@echo off\n", args: '..\Documents\todo.txt E:\'}
+      task: 'Schreib ein Skript, das die Datei `%1` an das Ziel `%2` kopiert. Führe es mit den vorgegebenen Argumenten aus (todo.txt → USB).'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'E:\todo.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\copyto.bat', value: ['%1', '%2']}]
+      hints: ['`copy` braucht zwei Argumente: Quelle und Ziel. Gib `copy` hier statt fester Pfade die Argumente des Skripts (`%1` und `%2`).', 'Eine Zeile nach `@echo off`: `copy`, dann `%1` (Quelldatei), dann `%2` (Ziel). Mit den vorgegebenen Argumenten ausführen.']
+      answer: ['@echo off', 'copy %1 %2']
+      explain: 'Mit den Argumenten `..\Documents\todo.txt` und `E:\` wird aus der Zeile `copy %1 %2` genau das Kopieren von `todo.txt` nach `E:\`; so lässt sich das Skript für jede Datei und jedes Ziel verwenden.'
+  quiz:
+    - kind: predict
+      q: '`show.bat red green blue` wurde ausgeführt. Was ist `%2`?'
+      code: 'echo %2'
+      options: ['green', 'red', 'blue', 'show.bat']
+      answer: 0
+      code_options: true
+      explain: '`%1` ist red, `%2` ist green.'
+    - kind: mcq
+      q: 'Was steht in `%*`?'
+      options: ['Alle Argumente', 'Der Name des Skripts', 'Die Anzahl der Argumente', 'Das letzte Argument']
+      answer: 0
+      explain: '`%0` ist der Name des Skripts.'
+    - kind: mcq
+      q: 'Was tust du bei einem Argument, das Leerzeichen enthält?'
+      options: ['Es in Anführungszeichen angeben', 'Die Leerzeichen durch _ ersetzen', '%10 benutzen', 'Das geht nicht']
+      answer: 0
+      explain: 'Und im Skript entfernst du die Anführungszeichen mit `%~1`.'
+  recap: '`%1`…`%9` sind die Argumente, `%*` alle, `%0` der Name des Skripts. Argumente mit Leerzeichen in Anführungszeichen.'
+
+- n: 77
+  term: shift
+  fullForm: 'Shift arguments'
+  difficulty: 3
+  objective: 'Du verschiebst mit `shift` die Argumente um eins nach links, um an alle heranzukommen.'
+  summary: 'Nach `shift` rückt `%2` an die Stelle von `%1`, `%3` an die Stelle von `%2` und so weiter bis zum Ende. Das erste Argument fällt weg.'
+  meaning: 'Mit `shift` kannst du mehr als 9 Argumente verarbeiten oder das erste Argument (z. B. eine Einstellung) abtrennen und den Rest später lesen. Meist wird es zusammen mit einer `goto`-Schleife benutzt (Lektion 82).'
+  usage: 'Skripte, die eine unbekannte Anzahl von Dateien oder Namen bekommen.'
+  syntax: "echo %1\nshift\necho %1"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\colors.bat', content: "@echo off\necho First: %1\nshift\necho Now first: %1\nshift\necho Now first: %1\n"}]
+    cmds: ['colors.bat red green blue']
+  examples:
+    - c: 'shift'
+      d: 'Eine Verschiebung.'
+      noTry: true
+  mistakes:
+    - 'Erwarten, dass sich `%*` nach `shift` ändert; `%*` zeigt immer alle ursprünglichen Argumente.'
+  tip: 'Übliches Muster: `if "%1"=="" goto end`, dann `%1` verarbeiten, dann `shift` und mit `goto` zurück zum Anfang der Schleife.'
+  practice:
+    - id: P77a
+      batch: {file: 'colors.bat', starter: "@echo off\necho First: %1\n", args: 'red green blue'}
+      task: 'Das Skript gibt gerade die erste Farbe aus. Sorge mit `shift` dafür, dass danach auch `Then: green` ausgegeben wird (mit den Argumenten `red green blue`).'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['First: red', 'Then: green']}, {type: fileContains, path: 'C:\Users\Student\Desktop\colors.bat', value: 'shift'}]
+      hints: ['`shift` verschiebt alle Argumente um eins nach links: Danach steht das zweite Argument (`green`) in `%1`. Gib also nach `shift` noch einmal `%1` aus.', 'Füge nach der Zeile `echo First: %1` zwei Zeilen hinzu: 1) den Befehl `shift` 2) `echo` mit dem Text `Then:` und `%1`.']
+      answer: ['@echo off', 'echo First: %1', 'shift', 'echo Then: %1']
+      explain: 'Die erste Zeile gibt `red` aus; `shift` verschiebt die Argumente, sodass `%1` jetzt `green` ist, und `echo Then: %1` gibt `Then: green` aus.'
+  quiz:
+    - kind: predict
+      q: '`s.bat A B C` wurde ausgeführt. Was ist `%1` nach zweimal `shift`?'
+      code: "shift\nshift\necho %1"
+      options: ['C', 'A', 'B', 'Leer']
+      answer: 0
+      code_options: true
+      explain: 'Jedes shift lässt ein Argument wegfallen.'
+    - kind: tf
+      q: 'Nach `shift` ist das erste Argument endgültig aus `%1` verschwunden.'
+      answer: true
+      explain: 'Über `%1` ist es nicht mehr erreichbar.'
+    - kind: mcq
+      q: 'Mit welchem Befehl wird `shift` am häufigsten zusammen benutzt?'
+      options: ['goto (für Schleifen)', 'cls', 'ver', 'pause']
+      answer: 0
+      explain: 'Um alle Argumente in einer Schleife zu verarbeiten.'
+  recap: '`shift` = aus `%2` wird `%1`. Für viele Argumente zusammen mit `goto`.'

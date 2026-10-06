@@ -1,0 +1,350 @@
+# Lessons 62–67 · Chapter 9: exit codes, permissions, admin, services, errors
+
+- n: 62
+  term: '%ERRORLEVEL%'
+  fullForm: 'Exit Code'
+  difficulty: 2
+  objective: 'Du verstehst, dass jeder Befehl nach dem Ausführen eine Ergebniszahl zurückgibt, und lernst, sie abzulesen.'
+  summary: 'Jeder Befehl (Command) liefert nach dem Ende einen Exit Code. `0` heißt erfolgreich, jede andere Zahl heißt: Es gab ein Problem. Der letzte Exit Code steht in der Variable `%ERRORLEVEL%`.'
+  meaning: 'Was die Zahlen bedeuten, hängt vom jeweiligen Befehl ab: `find` gibt 1 zurück, wenn nichts gefunden wird, `ping` gibt 1 zurück, wenn keine Antwort kommt, und bei `robocopy` heißt 1 „Dateien wurden kopiert“. Auch `&&` und `||` (Lektion 31) arbeiten mit genau dieser Zahl.'
+  usage: 'Das Ergebnis von Befehlen in einem Batch-Skript erkennen und danach entscheiden, was passiert (Lektion 81).'
+  syntax: "command\necho %ERRORLEVEL%"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    expectError: true
+    cmds: ['find "Pizza" menu.txt >nul', 'echo %ERRORLEVEL%', 'find "Burger" menu.txt >nul', 'echo %ERRORLEVEL%', 'xyz', 'echo %ERRORLEVEL%']
+  examples:
+    - c: 'echo %ERRORLEVEL%'
+      d: 'Ergebnis des letzten Befehls.'
+    - c: 'find "Burger" menu.txt & echo %ERRORLEVEL%'
+      d: 'Wenn Burger nicht vorkommt: 1.'
+      noTry: true
+    - c: 'ping -n 1 10.0.0.99 >nul || echo Host is down'
+      d: 'Das Ergebnis direkt mit `||` nutzen.'
+  mistakes:
+    - 'Annehmen, dass jeder Befehl bei einem Fehler 1 zurückgibt – ein unbekannter Befehl liefert zum Beispiel 9009.'
+    - 'Vergessen, dass ein nachfolgendes `echo` ERRORLEVEL zwar nicht ändert, andere Befehle aber schon – lies ERRORLEVEL also sofort aus.'
+  tip: 'Bei robocopy bedeuten alle Zahlen unter 8 Erfolg – das ist die bekannte Ausnahme.'
+  practice:
+    - id: P62a
+      start: 'C:\Users\Student\Documents'
+      task: 'Suche in `menu.txt` nach dem Wort `Burger` (es kommt nicht vor) und gib direkt danach den Exit Code aus.'
+      multi: true
+      checks: [{type: anyCmd, value: find, evenIfFailed: true}, {type: inputIncludes, value: '%errorlevel%'}, {type: lastOutputIncludes, value: '1'}]
+      hints: ['Du brauchst zwei Schritte: Suche zuerst mit `find` nach dem Wort und gib dann sofort den Wert der Variable `%ERRORLEVEL%` aus, um den Exit Code genau dieses `find` zu sehen.', 'Zeile 1: `find` + das Wort `"Burger"` in Anführungszeichen + der Dateiname `menu.txt`. Zeile 2: `echo` und danach `%ERRORLEVEL%`. Führe dazwischen keinen anderen Befehl aus.']
+      answer: ['find "Burger" menu.txt', 'echo %ERRORLEVEL%']
+      explain: 'Da `find` das Wort `Burger` nicht findet, gibt es den Exit Code 1 zurück, und `echo %ERRORLEVEL%` zeigt genau diese Zahl sofort an.'
+    - id: P62b
+      start: 'C:\Users\Student'
+      task: 'Pinge den Router (`192.168.1.1`) einmal an und gib danach den Exit Code aus. (Er sollte 0 sein.)'
+      multi: true
+      checks: [{type: anyCmd, value: ping}, {type: inputIncludes, value: '%errorlevel%'}, {type: errorlevel, value: 0}, {type: lastOutputIncludes, value: '0'}]
+      hints: ['Schicke zuerst mit `ping` und dem Switch (Schalter) `-n` nur ein einziges Paket an den Router und gib danach den Wert der Variable `%ERRORLEVEL%` aus.', 'Zeile 1: `ping` + `-n 1` + die IP des Routers, also `192.168.1.1`. Zeile 2: `echo` mit `%ERRORLEVEL%`. Weil der Router antwortet, sollte die Zahl `0` sein.']
+      answer: ['ping -n 1 192.168.1.1', 'echo %ERRORLEVEL%']
+      explain: '`ping -n 1` schickt ein Paket, und weil eine Antwort kommt, ist der Exit Code 0 (Erfolg); `echo %ERRORLEVEL%` zeigt genau diese Zahl.'
+  quiz:
+    - kind: mcq
+      q: 'Was bedeutet ein Exit Code von `0` normalerweise?'
+      options: ['Der Befehl war erfolgreich', 'Der Befehl ist fehlgeschlagen', 'Der Befehl wurde nicht ausgeführt', 'Die Datei ist leer']
+      answer: 0
+      explain: '0 = kein Fehler.'
+    - kind: predict
+      q: 'Was ist die letzte Ausgabe?'
+      code: "notacommand\necho %ERRORLEVEL%"
+      options: ['9009', '0', '1', '%ERRORLEVEL%']
+      answer: 0
+      code_options: true
+      explain: 'Ein unbekannter Befehl hat den Code 9009.'
+    - kind: tf
+      q: 'Nach robocopy bedeutet ERRORLEVEL 1, dass das Kopieren fehlgeschlagen ist.'
+      answer: false
+      explain: 'Bei robocopy heißt das: Die Dateien wurden kopiert.'
+  recap: '`%ERRORLEVEL%` = Ergebnis des letzten Befehls. 0 = Erfolg. Was die anderen Zahlen bedeuten, hängt vom jeweiligen Befehl ab.'
+
+- n: 63
+  term: 'Access is denied.'
+  fullForm: 'Permissions · UAC'
+  difficulty: 2
+  objective: 'Du verstehst, warum der Fehler `Access is denied` auftritt, und kennst die richtigen Wege, ihn zu beheben.'
+  summary: 'Windows legt für jede Datei und jede Aktion fest, wer sie darf. Ein normaler Benutzer kann keine Systemdateien ändern und keine Reparatur-Werkzeuge ausführen.'
+  meaning: 'Selbst wenn du Mitglied der Administrators bist, läuft ein normales CMD nur mit der Stufe Medium (UAC). `whoami /groups` schreibt dann neben Administrators `Group used for deny only`. Weitere Gründe für den Fehler: Die Datei ist Read-only, ein anderes Programm hat die Datei geöffnet, oder der Ordner gehört einem anderen Benutzer.'
+  usage: 'Erkennen, ob das Problem an den Berechtigungen liegt oder an einem Fehler im Befehl.'
+  syntax: "whoami /groups\nattrib file"
+  demo:
+    cmds: ['sfc /scannow', 'whoami /groups']
+  examples:
+    - c: 'whoami /groups'
+      d: 'Aktuelle Berechtigungsstufe.'
+    - c: 'attrib notes.txt'
+      at: 'C:\Users\Student\Desktop'
+      d: 'Ist die Datei Read-only?'
+    - c: 'attrib -r notes.txt'
+      at: 'C:\Users\Student\Desktop'
+      d: 'Read-only entfernen (wenn die Datei dir gehört).'
+  mistakes:
+    - 'Die Berechtigungen von Dateien in `C:\Windows` ändern, um einen Fehler zu lösen – das zerstört die Sicherheit des Systems.'
+    - 'CMD immer als Administrator starten – mach das nur, wenn es nötig ist.'
+  tip: 'Faustregel: Prüfe zuerst, ob die Datei Read-only ist oder gerade benutzt wird. Geht es um eine Systemaufgabe, öffne CMD als Administrator (nächste Lektion).'
+  practice:
+    - id: P63a
+      start: 'C:\Users\Student'
+      task: 'Prüfe, ob dieses CMD mit vollen Administrator-Rechten läuft (sieh dir die Gruppen des Benutzers an).'
+      checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'deny only'}]
+      hints: ['Die Berechtigungsstufe von CMD zeigt `whoami` – aber nur, wenn du auch die Gruppen des Benutzers anzeigst. Dafür hat `whoami` einen eigenen Switch (Schalter).', 'Schreibe nach `whoami` den Switch `/groups`. Suche in der Ausgabe die Zeile Administrators: `Group used for deny only` heißt, du hast keine vollen Rechte.']
+      answer: 'whoami /groups'
+      explain: '`whoami /groups` zeigt die Gruppen des Benutzers. Steht `deny only` neben Administrators, wurde dieses CMD nicht mit Run as administrator geöffnet.'
+    - id: P63b
+      start: 'C:\Users\Student\Desktop'
+      setup: {readonly: ['C:\Users\Student\Desktop\notes.txt']}
+      task: 'Hänge die Zeile `Buy bread` ans Ende von `notes.txt` an. (Wenn du `Access is denied` siehst, finde den Grund und behebe ihn.)'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\notes.txt', value: ['Remember', 'Buy bread']}]
+      hints: ['Das Anhängen von Text liefert den Fehler `Access is denied`, weil die Datei Read-only ist. Entferne diese Eigenschaft zuerst mit `attrib` und hänge danach den Text ans Dateiende an.', 'Schritt 1: `attrib` mit `-r` (Read-only entfernen) auf `notes.txt`. Schritt 2: `echo` mit dem Text `Buy bread`, dann `>>` und der Dateiname (nicht `>`, das löscht den bisherigen Inhalt).']
+      answer: ['attrib -r notes.txt', 'echo Buy bread >> notes.txt']
+      explain: '`attrib -r` entfernt die Eigenschaft Read-only, damit die Datei geändert werden kann, und `>>` hängt die Zeile `Buy bread` ans Ende an, ohne die vorherige Zeile (`Remember`) zu löschen.'
+  quiz:
+    - kind: mcq
+      q: 'Welcher Grund führt NICHT zu `Access is denied`?'
+      options: ['Ein Tippfehler im Befehlsnamen', 'Die Datei ist Read-only', 'Eine Systemaufgabe ohne Administrator', 'Die Datei ist in einem anderen Programm geöffnet']
+      answer: 0
+      explain: 'Ein falscher Befehl liefert den Fehler `is not recognized`.'
+    - kind: tf
+      q: 'Ein Benutzer, der Mitglied der Administrators ist, hat auch im normalen CMD alle Rechte.'
+      answer: false
+      explain: 'UAC gibt erst volle Rechte, wenn du CMD mit Run as administrator öffnest.'
+    - kind: type
+      q: 'Entferne die Eigenschaft Read-only von `report.txt`.'
+      accept: ['attrib -r report.txt']
+      explain: '`attrib -r`'
+  recap: '`Access is denied` = du darfst das nicht: Read-only, Datei wird gerade benutzt, oder Systemaufgabe ohne Administrator.'
+
+- n: 64
+  term: 'Administrator CMD'
+  fullForm: 'Run as administrator'
+  difficulty: 2
+  objective: 'Du öffnest CMD mit Administrator-Rechten und kannst es vom normalen CMD unterscheiden.'
+  summary: 'Für Systemwerkzeuge wie `sfc`, `chkdsk` und `diskpart` musst du CMD mit Run as administrator öffnen. Der Fenstertitel beginnt dann mit `Administrator:`.'
+  meaning: 'Wege: Start → `cmd` tippen → Run as administrator; oder Start → `cmd` tippen → `Ctrl + Shift + Enter`; oder Win + X → Terminal (Admin). Windows zeigt das UAC-Fenster, dort klickst du auf Yes. Ein Admin-CMD öffnet sich meist in `C:\Windows\System32`.'
+  usage: 'System reparieren, Dienste und Datenträger verwalten, Netzwerkeinstellungen ändern.'
+  syntax: "(Start → cmd → Ctrl+Shift+Enter)\nwhoami /groups"
+  warning: 'Im Admin-CMD kann jeder Fehler dem System schaden. Nutze es nur, wenn es nötig ist, und schließe das Fenster, sobald du fertig bist.'
+  demo:
+    admin: true
+    cmds: ['whoami /groups', 'sfc /scannow']
+  examples:
+    - c: 'sfc /scannow'
+      d: 'Funktioniert nur im Admin-CMD.'
+    - c: 'whoami /groups | find "Mandatory Label"'
+      d: 'High heißt Admin, Medium heißt normal.'
+  mistakes:
+    - 'Vergessen, dass sich das Admin-CMD in System32 öffnet – wechsle mit `cd` den Ordner, bevor du mit Dateien arbeitest.'
+  tip: 'Im Simulator wählst du oben auf der Simulator-Seite den Modus „Administrator“.'
+  practice:
+    - id: P64a
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'Dieses CMD wurde als Administrator geöffnet. Beweise mit `whoami`, dass die Berechtigungsstufe High ist.'
+      checks: [{type: switch, value: '/groups', cmd: whoami, anyRun: true}, {type: lastOutputIncludes, value: 'High Mandatory'}]
+      hints: ['Die Berechtigungsstufe (Mandatory Level) steht in der Liste der Benutzergruppen. Führe also `whoami` mit dem Switch (Schalter) für Gruppen aus.', '`whoami` + Switch `/groups`. Sieh dir in der Ausgabe die Zeile `Mandatory Label` an: `High Mandatory Level` heißt Administrator, `Medium` heißt normal.']
+      answer: 'whoami /groups'
+      explain: 'Im Admin-CMD zeigt `whoami /groups` die Zeile `High Mandatory Level` – das beweist, dass volle Administrator-Rechte aktiv sind.'
+    - id: P64b
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'Prüfe die Systemdateien von Windows mit dem Werkzeug System File Checker.'
+      checks: [{type: anyCmd, value: sfc}, {type: lastOutputIncludes, value: 'integrity violations'}]
+      hints: ['Der System File Checker wird mit dem Befehl (Command) `sfc` gestartet und hat einen Switch für „jetzt sofort scannen“. Das Werkzeug funktioniert nur im Admin-CMD.', 'Schreibe nach `sfc` ein Leerzeichen und dann den Switch: `/` + `scan` + `now` (alles zusammengeschrieben).']
+      answer: 'sfc /scannow'
+      explain: '`sfc /scannow` prüft alle Systemdateien von Windows und meldet das Ergebnis mit dem Ausdruck `integrity violations`.'
+  quiz:
+    - kind: mcq
+      q: 'Mit welcher Tastenkombination öffnest du CMD im Startmenü als Administrator?'
+      options: ['Ctrl + Shift + Enter', 'Ctrl + Enter', 'Alt + Enter', 'Shift + Enter']
+      answer: 0
+      explain: 'Nachdem du im Startmenü cmd getippt hast.'
+    - kind: tf
+      q: 'Der Fenstertitel eines Admin-CMD beginnt mit `Administrator:`.'
+      answer: true
+      explain: 'Der schnellste Weg, es zu erkennen.'
+    - kind: mcq
+      q: 'In welchem Ordner öffnet sich ein Admin-CMD normalerweise?'
+      options: ['C:\Windows\System32', 'C:\Users\Student', 'C:\', 'D:\']
+      answer: 0
+      code_options: true
+      explain: 'Deshalb wechselst du mit cd den Ordner, bevor du mit Dateien arbeitest.'
+  recap: 'Run as administrator (Ctrl+Shift+Enter) für Systemwerkzeuge. Titel `Administrator:`. Nur nutzen, wenn es nötig ist.'
+
+- n: 65
+  term: 'sc · net start'
+  fullForm: 'Windows Services'
+  difficulty: 3
+  objective: 'Du zeigst Windows-Dienste an, prüfst ihren Status und kannst sie (als Administrator) stoppen oder starten.'
+  summary: 'Ein Dienst (Service) ist ein Programm, das ohne Fenster im Hintergrund läuft, zum Beispiel Print Spooler (Drucken) oder Windows Update. `sc query` und `net start` zeigen den Status.'
+  meaning: 'Jeder Dienst hat einen kurzen Namen (z. B. `Spooler`) und einen Anzeigenamen (Print Spooler). `net stop` und `net start` bzw. `sc stop` und `sc start` stoppen oder starten ihn – dafür brauchst du Administrator-Rechte.'
+  usage: 'Einen Drucker reparieren, der nicht druckt (Restart des Spooler-Dienstes), oder prüfen, ob ein Dienst läuft.'
+  syntax: "sc query [name]\nnet start\nnet stop name\nnet start name"
+  warning: 'Wenn du Sicherheitsdienste (wie WinDefend) oder Systemdienste stoppst, wird der Computer angreifbar oder instabil.'
+  demo:
+    cmds: ['sc query spooler', 'net start', 'net stop spooler']
+  examples:
+    - c: 'sc query spooler'
+      d: 'Status des Druckdienstes.'
+    - c: 'net start'
+      d: 'Liste der laufenden Dienste.'
+    - c: 'net stop spooler && net start spooler'
+      mode: admin
+      d: 'Restart des Druckdienstes (Administrator).'
+  mistakes:
+    - 'Den Anzeigenamen ohne Anführungszeichen benutzen: `net stop Print Spooler` → `net stop "Print Spooler"` oder `net stop spooler`.'
+  tip: '`sc query` zeigt nur laufende Dienste; für alle Dienste: `sc query state= all` (mit Leerzeichen nach dem `=`).'
+  practice:
+    - id: P65a
+      start: 'C:\Users\Student'
+      task: 'Sieh dir den Status des Dienstes Print Spooler an (kurzer Name: `Spooler`).'
+      checks: [{type: anyCmd, value: sc}, {type: lastOutputIncludes, value: 'RUNNING'}, {type: lastOutputIncludes, value: 'Spooler'}]
+      hints: ['Den Status von Diensten siehst du mit `sc`. Das Wort nach `sc` sagt, was getan werden soll – hier willst du den Status „abfragen“ (query).', 'Drei Teile: `sc`, dann die Aktion `query`, dann der kurze Dienstname `spooler`. Achte in der Ausgabe auf die Zeile `STATE`.']
+      answer: 'sc query spooler'
+      explain: '`sc query` fragt den Status eines Dienstes ab, und mit dem kurzen Namen `spooler` wird nur Print Spooler angezeigt – er ist `RUNNING`.'
+    - id: P65b
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'Der Drucker hängt. Stoppe den Dienst `Spooler` und starte ihn wieder (Restart).'
+      multi: true
+      checks: [{type: serviceState, name: Spooler, value: RUNNING}, {type: any, of: [{type: argIncludes, cmd: net, value: 'stop'}, {type: argIncludes, cmd: sc, value: 'stop'}]}]
+      hints: ['Restart heißt zwei Schritte nacheinander: Erst den Dienst stoppen, dann wieder starten. Der Befehl `net` hat für beides ein Wort: `stop` und `start`.', 'Zeile 1: `net` + `stop` + der kurze Dienstname `spooler`. Zeile 2: dasselbe, aber mit `start`. Da es ein Admin-CMD ist, darfst du das.']
+      answer: ['net stop spooler', 'net start spooler']
+      explain: '`net stop spooler` stoppt den Druckdienst und `net start spooler` startet ihn wieder; dieser Restart löst die hängende Druckwarteschlange.'
+  quiz:
+    - kind: mcq
+      q: 'Was ist ein Dienst?'
+      options: ['Ein Programm, das ohne Fenster im Hintergrund läuft', 'Eine Batch-Datei', 'Ein Windows-Benutzer', 'Ein Laufwerk']
+      answer: 0
+      explain: 'Zum Beispiel Print Spooler oder DNS Client.'
+    - kind: predict
+      q: 'Ein normaler Benutzer führt das aus. Was passiert?'
+      code: 'net stop spooler'
+      options: ['System error 5 has occurred. Access is denied.', 'Der Dienst wird gestoppt', 'The service name is invalid.', 'Nichts']
+      answer: 0
+      explain: 'Dafür braucht man Administrator-Rechte.'
+    - kind: type
+      q: 'Zeige die Liste der laufenden Dienste an.'
+      accept: ['net start', 'sc query']
+      explain: '`net start` oder `sc query`'
+  recap: 'Dienst = Hintergrundprogramm. `sc query` und `net start` = Status. `net stop/start Name` = Steuerung (Administrator).'
+
+- n: 66
+  term: 'Common errors'
+  fullForm: 'Reading CMD error messages'
+  difficulty: 2
+  objective: 'Du liest die häufigsten CMD-Fehlermeldungen und behebst sie schnell.'
+  summary: 'Die meisten CMD-Fehler sind ein paar immer gleiche Meldungen. Wenn du weißt, was jede bedeutet, hast du die halbe Fehlersuche schon erledigt.'
+  meaning: '`is not recognized` → Tippfehler, oder das Programm ist nicht im PATH. `cannot find the path` → der Pfad ist falsch. `cannot find the file` → der Dateiname ist falsch. `syntax ... incorrect` → die Form des Befehls ist falsch (oft fehlen Anführungszeichen). `Access is denied` → du hast keine Berechtigung. `already exists` → existiert schon. `being used by another process` → die Datei oder der Ordner wird gerade benutzt.'
+  usage: 'Die Meldung genau lesen, bevor du den Befehl änderst.'
+  syntax: "command /?\ndir\ncd"
+  demo:
+    start: 'C:\Users\Student'
+    expectError: true
+    cmds: ['dri', 'cd Nowhere', 'type Desktop\shopping list.txt', 'mkdir Documents', 'rd C:\Users\Student']
+  examples:
+    - c: 'dir /?'
+      d: 'Wenn du die richtige Form des Befehls vergessen hast.'
+    - c: 'cd'
+      d: 'Wenn du nicht weißt, wo du bist.'
+    - c: 'dir'
+      d: 'Wenn du den genauen Dateinamen nicht kennst.'
+  mistakes:
+    - 'Denselben Befehl wiederholen, ohne die Fehlermeldung zu lesen.'
+    - 'Raten statt `/?` und `dir` zu benutzen.'
+  tip: 'Drei goldene Fragen: Wo bin ich? (`cd`) Was ist hier? (`dir`) Wie lautet die richtige Form des Befehls? (`/?`)'
+  practice:
+    - id: P66a
+      start: 'C:\Users\Student'
+      task: 'Der Befehl `type Desktop\shopping list.txt` liefert einen Fehler. Korrigiere ihn und führe ihn aus.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'shopping list'}]
+      hints: ['Lies die Fehlermeldung: CMD trennt Argumente am Leerzeichen, also sieht es `shopping` und `list.txt` als zwei getrennte Dinge. Ein Pfad mit Leerzeichen muss in Anführungszeichen stehen.', 'Der Befehl `type` bleibt gleich; setze nur den ganzen Pfad `Desktop\shopping list.txt` von Anfang bis Ende in `" "`.']
+      answer: 'type "Desktop\shopping list.txt"'
+      explain: 'Die Anführungszeichen um den Pfad sagen CMD, dass `Desktop\shopping list.txt` ein Argument ist, nicht zwei; so findet `type` die Datei und zeigt ihren Inhalt.'
+    - id: P66b
+      start: 'C:\Users\Student\Documents'
+      task: 'Du willst alle txt-Dateien nach `D:\Archive` kopieren, aber dieser Ordner existiert nicht. Erledige die Aufgabe richtig.'
+      multi: true
+      checks: [{type: fileExists, path: 'D:\Archive\menu.txt'}, {type: fileExists, path: 'D:\Archive\todo.txt'}]
+      hints: ['In einen Ordner, der nicht existiert, kann man nicht richtig kopieren. Lege zuerst den Zielordner mit `mkdir` an und kopiere dann die Dateien mit `copy` und dem Platzhalter (Wildcard) `*`.', 'Schritt 1: `mkdir` und der Pfad `D:\Archive`. Schritt 2: `copy`, dann das Muster für alle txt-Dateien, also `*.txt`, dann das Ziel `D:\Archive`.']
+      answer: ['mkdir D:\Archive', 'copy *.txt D:\Archive']
+      explain: '`mkdir D:\Archive` legt den Zielordner an, und `copy *.txt D:\Archive` kopiert alle Dateien mit der Endung `.txt` aus dem aktuellen Ordner dorthin.'
+  quiz:
+    - kind: mcq
+      q: 'Was bedeutet `The system cannot find the path specified.` meistens?'
+      options: ['Einer der Ordner im Pfad existiert nicht', 'Der Befehl ist falsch', 'Du hast keine Berechtigung', 'Das Laufwerk ist voll']
+      answer: 0
+      explain: 'Prüfe den Pfad mit `dir`.'
+    - kind: mcq
+      q: 'Jemand hat `ipconfg` geschrieben. Welchen Fehler sieht er?'
+      options: ["'ipconfg' is not recognized as an internal or external command", 'Access is denied.', 'The syntax of the command is incorrect.', 'File Not Found']
+      answer: 0
+      explain: 'Tippfehler im Befehlsnamen.'
+    - kind: fix
+      q: 'Warum kam dieser Fehler?'
+      code: "C:\\Users\\Student\\Work>rd C:\\Users\\Student\\Work\nThe process cannot access the file because it is being used by another process."
+      options: ['Der Benutzer ist gerade in genau diesem Ordner', 'Der Ordner ist Read-only', 'Der Ordner ist nicht leer', 'Man muss `del` schreiben']
+      answer: 0
+      explain: 'Geh zuerst mit `cd ..` aus dem Ordner heraus.'
+  recap: 'Lies die Fehlermeldung: not recognized = Befehlsname, path = Pfad, file = Dateiname, syntax = Form des Befehls, denied = Berechtigung.'
+
+- n: 67
+  term: 'Level 2 Practice'
+  fullForm: 'Real tasks with combined commands'
+  difficulty: 3
+  objective: 'Du kombinierst die Befehle aus Level 2 für echte Aufgaben im technischen Support.'
+  summary: 'In der Praxis musst du meistens Informationen aus mehreren Befehlen sammeln, filtern und in einem Bericht speichern.'
+  meaning: 'Werkzeuge: `>` und `>>` für den Bericht, `|` und `find` zum Filtern, Variablen für Pfade, `&&` für Sicherheit.'
+  usage: 'Statusbericht eines Computers für den Support, schnelles Backup, Dateien finden und einsammeln.'
+  syntax: "hostname > report.txt\nipconfig | find \"IPv4\" >> report.txt"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['hostname > report.txt', 'whoami >> report.txt', 'ipconfig | find "IPv4" >> report.txt', 'type report.txt']
+  examples:
+    - c: 'echo Report %DATE% > report.txt'
+      d: 'Bericht mit dem Datum beginnen.'
+    - c: 'tasklist | find "chrome" >> report.txt'
+      d: 'Die Chrome-Prozesse anhängen.'
+    - c: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+      at: 'C:\Users\Student'
+      d: 'Alle jpg-Dateien einsammeln (mit Ordnerstruktur).'
+  mistakes:
+    - '`>` statt `>>` für die weiteren Zeilen des Berichts benutzen – dadurch werden die vorherigen Zeilen gelöscht.'
+  tip: 'Teste jede Zeile des Berichts zuerst einzeln und hänge sie dann mit `>>` an die Datei an.'
+  practice:
+    - id: P67a
+      start: 'C:\Users\Student\Desktop'
+      task: 'Erstelle eine Datei `report.txt`, die Folgendes enthält: den Computernamen, den Benutzernamen, die IPv4-Zeile und die `chrome`-Prozesse.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\report.txt', value: ['ACADEMY-PC', 'student', '192.168.1.24', 'chrome.exe']}]
+      hints: ['Baue den Bericht Zeile für Zeile auf: Leite die Ausgabe jedes Befehls mit einer Umleitung (Redirect) in `report.txt`. Die erste Zeile mit `>` (neue Datei), alle weiteren mit `>>` (ans Ende anhängen). Für IPv4 und chrome filterst du die Ausgabe mit `|` und `find`.', 'Reihenfolge: 1) `hostname` mit `>` 2) `whoami` mit `>>` 3) `ipconfig` gefiltert mit `find "IPv4"`, dann `>>` 4) `tasklist` gefiltert mit `find "chrome"`, dann `>>`. Ziel ist jedes Mal `report.txt`.']
+      answer: ['hostname > report.txt', 'whoami >> report.txt', 'ipconfig | find "IPv4" >> report.txt', 'tasklist | find "chrome" >> report.txt']
+      explain: '`>` legt die Datei neu an und schreibt den Computernamen hinein, `>>` hängt die übrigen Ausgaben ans Ende an, und `| find` behält nur die IPv4-Zeile und die chrome-Prozesse.'
+    - id: P67b
+      start: 'C:\Users\Student'
+      task: 'Kopiere alle `.jpg`-Bilder aus dem Ordner Pictures und seinen Unterordnern nach `E:\AllPhotos`.'
+      checks: [{type: fileExists, path: 'E:\AllPhotos\beach.jpg'}, {type: any, of: [{type: fileExists, path: 'E:\AllPhotos\Holidays\family.jpg'}, {type: fileExists, path: 'E:\AllPhotos\family.jpg'}]}, {type: fileNotExists, path: 'E:\AllPhotos\logo.png'}]
+      hints: ['Um nur einen Dateityp samt Unterordnern zu kopieren, eignet sich `robocopy`: Quelle, Ziel, Dateimuster und ein Switch für Unterordner.', 'Reihenfolge bei `robocopy`: zuerst der Quellordner `Pictures`, dann das Ziel `E:\AllPhotos`, dann das Muster `*.jpg` und zum Schluss der Switch `/s` (Subdirectories).']
+      answer: 'robocopy Pictures E:\AllPhotos *.jpg /s'
+      explain: '`robocopy` kopiert von `Pictures` nach `E:\AllPhotos` nur die Dateien `*.jpg`, und `/s` übernimmt auch die Unterordner (wie `Holidays`) mit derselben Struktur; `logo.png` wird also nicht kopiert.'
+  quiz:
+    - kind: order
+      q: 'Bringe die Befehle in die richtige Reihenfolge, um einen Bericht „Computername + IP + Spooler-Dienst“ zu erstellen.'
+      items: ['hostname > info.txt', 'ipconfig | find "IPv4" >> info.txt', 'sc query spooler >> info.txt', 'type info.txt']
+      explain: 'Der erste mit `>`, die übrigen mit `>>`, zum Schluss prüfen.'
+    - kind: predict
+      q: 'Was steht nach diesen zwei Zeilen in `r.txt`?'
+      code: "hostname > r.txt\nwhoami > r.txt"
+      options: ['Nur der Benutzername', 'Computername und Benutzername', 'Nur der Computername', 'Nichts (leer)']
+      answer: 0
+      explain: 'Die zweite Zeile hat die Datei mit `>` überschrieben.'
+    - kind: mcq
+      q: 'Welcher Befehl hängt nur die Chrome-Zeilen ans Ende von `log.txt` an?'
+      options: ['tasklist | find "chrome" >> log.txt', 'tasklist >> find "chrome" log.txt', 'find "chrome" tasklist >> log.txt', 'tasklist > log.txt | find "chrome"']
+      answer: 0
+      code_options: true
+      explain: 'Zuerst die Pipe, dann die Umleitung (Redirect).'
+  recap: 'Bericht = `>` für die erste Zeile, `>>` für alle weiteren, `|` und `find` zum Filtern.'

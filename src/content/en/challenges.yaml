@@ -1,0 +1,366 @@
+# Challenges: real-world scenarios, checked by the result in the sandbox.
+# level 1 = beginner, 2 = intermediate, 3 = advanced (Batch).
+# after = the lesson that teaches everything needed.
+
+# ---------------- Level 1 ----------------
+- id: C1
+  level: 1
+  after: 18
+  title: 'First day at the restaurant'
+  story: 'The restaurant manager has asked you to make a place for the restaurant''s files on the office computer.'
+  task: 'In the current folder, create the folder `Restaurant`, and inside it create two folders: `Menu` and `Orders`.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: dirExists, path: 'C:\Users\Student\Restaurant\Menu'}
+    - {type: dirExists, path: 'C:\Users\Student\Restaurant\Orders'}
+  hints: ['`mkdir` can create several levels of folders at once.', '`mkdir Restaurant\Menu Restaurant\Orders`']
+  answer: 'mkdir Restaurant\Menu Restaurant\Orders'
+  tags: ['mkdir', 'folder']
+
+- id: C2
+  level: 1
+  after: 20
+  title: 'Where is the menu?'
+  story: 'The chef asks which dishes are on the menu today. The menu file is in the Documents folder of the user Student, but right now you are in the root of drive C.'
+  task: 'Without changing folders, show the contents of the file `menu.txt`.'
+  start: 'C:\'
+  checks:
+    - {type: lastOutputIncludes, value: 'Restaurant Menu'}
+    - {type: cwd, value: 'C:\'}
+  hints: ['Use an absolute path.', '`type C:\Users\Student\Documents\menu.txt`']
+  answer: 'type C:\Users\Student\Documents\menu.txt'
+  tags: ['type', 'absolute path']
+
+- id: C3
+  level: 1
+  after: 21
+  title: 'Notes on a USB stick'
+  story: 'You want to take your notes home with you. The USB stick is drive `E:`.'
+  task: 'Copy the file `notes.txt` from the Desktop to the root of the USB stick (`E:\`). The original file must stay where it is.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileExists, path: 'E:\notes.txt'}
+    - {type: fileExists, path: 'C:\Users\Student\Desktop\notes.txt'}
+  hints: ['`copy SOURCE DESTINATION`', '`copy Desktop\notes.txt E:\`']
+  answer: 'copy Desktop\notes.txt E:\'
+  tags: ['copy', 'USB stick']
+
+- id: C4
+  level: 1
+  after: 22
+  title: 'The missing invoice'
+  story: 'Last month''s purchase invoice is still in Downloads, and the accountant is looking for it in Documents.'
+  task: 'Move (don''t copy) the file `invoice.pdf` from Downloads to Documents.'
+  start: 'C:\Users\Student\Downloads'
+  checks:
+    - {type: fileExists, path: 'C:\Users\Student\Documents\invoice.pdf'}
+    - {type: fileNotExists, path: 'C:\Users\Student\Downloads\invoice.pdf'}
+  hints: ['To move a file, use `move`.', '`move invoice.pdf ..\Documents`']
+  answer: 'move invoice.pdf ..\Documents'
+  tags: ['move', 'relative path']
+
+- id: C5
+  level: 1
+  after: 26
+  title: 'Cleaning up Downloads'
+  story: 'The Downloads folder is full of temporary files. Only the `.tmp` files should be deleted; the other files are important.'
+  task: 'Delete all `.tmp` files in Downloads with one command.'
+  start: 'C:\Users\Student\Downloads'
+  checks:
+    - {type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\photos.zip'}
+  hints: ['Use the wildcard `*`.', 'First use `dir *.tmp` to see which files are selected, then `del *.tmp`.']
+  answer: 'del *.tmp'
+  tags: ['del', 'wildcard', 'cleanup']
+
+- id: C6
+  level: 1
+  after: 27
+  title: 'Single-digit reports'
+  story: 'In `Documents\Work` there are monthly reports: report1, report2 and report10. The manager wants only the reports for single-digit months in the backup.'
+  task: 'Copy only `report1.txt` and `report2.txt` to `D:\Backup`; `report10.txt` must not be copied. Use one command and a wildcard.'
+  start: 'C:\Users\Student\Documents\Work'
+  checks:
+    - {type: fileExists, path: 'D:\Backup\report1.txt'}
+    - {type: fileExists, path: 'D:\Backup\report2.txt'}
+    - {type: fileNotExists, path: 'D:\Backup\report10.txt'}
+  hints: ['`*` matches any number of characters, so it would select report10 too.', '`?` matches exactly one character: `copy report?.txt D:\Backup`']
+  answer: 'copy report?.txt D:\Backup'
+  tags: ['wildcard', '?', 'copy']
+
+- id: C7
+  level: 1
+  after: 28
+  title: 'A file list for a coworker'
+  story: 'Your coworker wants to know which files are in Documents, but they can''t access your computer.'
+  task: 'Save only the names of the files and folders in Documents (without dates and sizes) to the file `C:\Users\Student\Desktop\files.txt`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\files.txt', value: ['menu.txt', 'guests.txt', 'Work']}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\files.txt', value: '<DIR>'}}
+  hints: ['`dir /b` gives only the names.', '`dir Documents /b > Desktop\files.txt`']
+  answer: 'dir Documents /b > Desktop\files.txt'
+  tags: ['dir', '>', 'redirect']
+
+- id: C8
+  level: 1
+  after: 29
+  title: 'The order book'
+  story: 'Table 4 has ordered: one Pizza and one Pasta. The orders need to be written down in a text file.'
+  task: 'On the Desktop, create the file `orders.txt` with exactly two lines: `Pizza` and then `Pasta`.'
+  start: 'C:\Users\Student\Desktop'
+  multi: true
+  checks:
+    - {type: fileOrder, path: 'C:\Users\Student\Desktop\orders.txt', value: ['Pizza', 'Pasta']}
+    - {type: fileLines, path: 'C:\Users\Student\Desktop\orders.txt', value: 2}
+  hints: ['The first line with `>` and the second line with `>>`.', '`echo Pizza> orders.txt` and then `echo Pasta>> orders.txt`']
+  answer: ['echo Pizza> orders.txt', 'echo Pasta>> orders.txt']
+  tags: ['echo', '>>', 'append']
+
+- id: C9
+  level: 1
+  after: 31
+  title: 'Only if it was created'
+  story: 'You want to create the reports folder and see the message `Ready` only if it was really created.'
+  task: 'In one line: create the folder `Reports` and print `Ready` only if that succeeded.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: dirExists, path: 'C:\Users\Student\Reports'}
+    - {type: usedOp, value: '&&'}
+    - {type: lastOutputIncludes, value: 'Ready'}
+  hints: ['`&&` runs the second command only after the first one succeeds.', '`mkdir Reports && echo Ready`']
+  answer: 'mkdir Reports && echo Ready'
+  tags: ['&&', 'chaining']
+
+# ---------------- Level 2 ----------------
+- id: C10
+  level: 2
+  after: 35
+  title: 'The guest list in order'
+  story: 'For tonight''s party, the guest list needs to be printed in alphabetical order.'
+  task: 'Sort the contents of `Documents\guests.txt` and save the result to `Desktop\guests_sorted.txt`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileOrder, path: 'C:\Users\Student\Desktop\guests_sorted.txt', value: ['Ali', 'David', 'hibo', 'mina', 'Reza', 'Sara']}
+  hints: ['`sort` and then `>`.', '`sort Documents\guests.txt > Desktop\guests_sorted.txt`']
+  answer: 'sort Documents\guests.txt > Desktop\guests_sorted.txt'
+  tags: ['sort', 'redirect']
+
+- id: C11
+  level: 2
+  after: 38
+  title: 'Sales reports'
+  story: 'The accountant asks which txt files in Documents (and its subfolders) contain the word `sales`.'
+  task: 'Find only the names of the files that contain the word sales (ignoring upper/lower case) and save them to `C:\Users\Student\Desktop\sales.txt`.'
+  start: 'C:\Users\Student\Documents'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\sales.txt', value: ['report.txt', 'report1.txt', 'report10.txt']}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\sales.txt', value: 'menu.txt'}}
+  hints: ['`findstr` with `/s` searches subfolders, `/m` shows only file names, and `/i` ignores case.', '`findstr /s /m /i "sales" *.txt > C:\Users\Student\Desktop\sales.txt`']
+  answer: 'findstr /s /m /i "sales" *.txt > C:\Users\Student\Desktop\sales.txt'
+  tags: ['findstr', 'search']
+
+- id: C12
+  level: 2
+  after: 54
+  title: 'An IP for tech support'
+  story: 'Network support only wants your computer''s IPv4 address, not the whole output of `ipconfig`.'
+  task: 'Pick out only the IPv4 line from the output of `ipconfig` and save it to `Desktop\ip.txt`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\ip.txt', value: '192.168.1.24'}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\ip.txt', value: 'Gateway'}}
+  hints: ['Send the output to `find` with `|`.', '`ipconfig | find "IPv4" > Desktop\ip.txt`']
+  answer: 'ipconfig | find "IPv4" > Desktop\ip.txt'
+  tags: ['ipconfig', 'pipe', 'find']
+
+- id: C13
+  level: 2
+  after: 52
+  title: 'The music app froze'
+  story: 'Spotify has frozen and isn''t responding. Chrome is open and must not be closed.'
+  task: 'Close only the frozen program.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: procGone, value: 'Spotify.exe'}
+    - {type: not, check: {type: procGone, value: 'chrome.exe'}}
+  hints: ['Find the name or PID with `tasklist` or `tasklist /fi "status eq not responding"`.', 'A frozen program doesn''t respond to a normal request: `taskkill /im Spotify.exe /f`']
+  answer: ['tasklist /fi "status eq not responding"', 'taskkill /im Spotify.exe /f']
+  tags: ['taskkill', 'tasklist', 'frozen']
+
+- id: C14
+  level: 2
+  after: 56
+  title: 'Is the router answering?'
+  story: 'The internet is slow. First you need to check whether the connection to the router (Default Gateway) is working.'
+  task: 'Find the Default Gateway address and ping it only 2 times.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: outputIncludes, value: 'Reply from 192.168.1.1'}
+    - {type: switch, cmd: ping, value: '-n', anyRun: true}
+  hints: ['Look for the Default Gateway in the output of `ipconfig`.', '`ping -n 2 192.168.1.1`']
+  answer: ['ipconfig', 'ping -n 2 192.168.1.1']
+  tags: ['ping', 'gateway', 'network']
+
+- id: C15
+  level: 2
+  after: 65
+  title: 'The printer is stuck'
+  story: 'The print queue is stuck and nothing prints. The usual fix: stop the Print Spooler service once and start it again.'
+  task: 'Restart the `Spooler` service (stop it and start it again). CMD is open with administrator rights.'
+  admin: true
+  multi: true
+  checks:
+    - {type: serviceState, name: Spooler, value: RUNNING}
+    - {type: any, of: [{type: outputIncludes, value: 'stopped successfully'}, {type: outputIncludes, value: 'STOP_PENDING'}]}
+  hints: ['`net stop` and `net start` with the service name.', '`net stop spooler && net start spooler`']
+  answer: 'net stop spooler && net start spooler'
+  tags: ['service', 'net', 'sc', 'printer']
+
+- id: C16
+  level: 2
+  after: 43
+  title: 'Full backup of Documents'
+  story: 'Before installing a fresh Windows, you need to back up all of Documents (with all its subfolders).'
+  task: 'Copy Documents with all its subfolders to `D:\Backup\Docs`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileExists, path: 'D:\Backup\Docs\menu.txt'}
+    - {type: fileExists, path: 'D:\Backup\Docs\Work\report.txt'}
+  hints: ['`copy` doesn''t copy folders; use `xcopy` or `robocopy`.', '`xcopy Documents D:\Backup\Docs /e /i`']
+  answer: 'xcopy Documents D:\Backup\Docs /e /i'
+  tags: ['xcopy', 'robocopy', 'backup']
+
+- id: C17
+  level: 2
+  after: 41
+  title: 'The hidden file'
+  story: 'You''ve heard there is a hidden file in Documents that a normal `dir` doesn''t show.'
+  task: 'Find the hidden file in Documents, remove its Hidden attribute, and read its contents.'
+  start: 'C:\Users\Student\Documents'
+  multi: true
+  checks:
+    - {type: fileAttr, path: 'C:\Users\Student\Documents\secret.txt', attr: h, value: false}
+    - {type: outputIncludes, value: 'You found the hidden file'}
+  hints: ['`dir /a:h` shows hidden files.', '`attrib -h secret.txt` and then `type secret.txt`']
+  answer: ['dir /a:h', 'attrib -h secret.txt', 'type secret.txt']
+  tags: ['attrib', 'hidden']
+
+# ---------------- Level 3 (Batch) ----------------
+- id: C18
+  level: 3
+  after: 74
+  title: 'Welcoming a guest'
+  story: 'The restaurant wants a script that asks for the guest''s name and welcomes them.'
+  task: 'In `greet.bat`, ask for the guest''s name with `set /p`, then print `Welcome, NAME`. Run the script, and when it asks for the name, enter `Sara`.'
+  batch: {file: 'greet.bat', starter: "@echo off\n"}
+  inputs: ['Sara']
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: 'Welcome, Sara'}
+  hints: ['`set /p name=Your name: `', 'Then: `echo Welcome, %name%`']
+  answer: ['@echo off', 'set /p name=Your name: ', 'echo Welcome, %name%']
+  tags: ['batch', 'set /p', 'input']
+
+- id: C19
+  level: 3
+  after: 83
+  title: 'Table numbers'
+  story: 'To print labels for the tables, you need a list from `Table 1` to `Table 8`.'
+  task: 'In `tables.bat`, use a `for /l` loop to print the lines `Table 1` to `Table 8`.'
+  batch: {file: 'tables.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: outputOrder, value: ['Table 1', 'Table 2', 'Table 8']}
+    - {type: outputExcludes, value: 'Table 9'}
+    - {type: usedOp, value: 'for'}
+  hints: ['`for /l %%i in (start,step,end) do ...`', '`for /l %%i in (1,1,8) do echo Table %%i`']
+  answer: ['@echo off', 'for /l %%i in (1,1,8) do echo Table %%i']
+  tags: ['for /l', 'loop']
+
+- id: C20
+  level: 3
+  after: 84
+  title: 'Seasonal archive'
+  story: 'For the archive, `D:\Archive` needs one folder for each season: Spring, Summer, Autumn and Winter.'
+  task: 'In `seasons.bat`, use a `for` loop to create these four folders inside `D:\Archive`.'
+  batch: {file: 'seasons.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: dirExists, path: 'D:\Archive\Spring'}
+    - {type: dirExists, path: 'D:\Archive\Summer'}
+    - {type: dirExists, path: 'D:\Archive\Autumn'}
+    - {type: dirExists, path: 'D:\Archive\Winter'}
+    - {type: usedOp, value: 'for'}
+  hints: ['`for %%s in (Spring Summer Autumn Winter) do ...`', '`for %%s in (Spring Summer Autumn Winter) do mkdir "D:\Archive\%%s"`']
+  answer: ['@echo off', 'for %%s in (Spring Summer Autumn Winter) do mkdir "D:\Archive\%%s"']
+  tags: ['for', 'mkdir']
+
+- id: C21
+  level: 3
+  after: 76
+  title: 'Showing a file with a parameter'
+  story: 'You want a script that takes any file name and shows its contents if it exists, or says `Missing` if it doesn''t.'
+  task: 'In `show.bat`: if the file given in `%1` exists, `type` it; otherwise print `Missing`. (The test runs with the argument `C:\Users\Student\Documents\menu.txt`.)'
+  batch: {file: 'show.bat', starter: "@echo off\n", args: 'C:\Users\Student\Documents\menu.txt'}
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: 'Restaurant Menu'}
+    - {type: outputExcludes, value: 'Missing'}
+  hints: ['`if exist "%~1" (...) else (...)`', '`if exist "%~1" (type "%~1") else (echo Missing)`']
+  answer: ['@echo off', 'if exist "%~1" (type "%~1") else (echo Missing)']
+  tags: ['%1', 'if exist', 'parameter']
+
+- id: C22
+  level: 3
+  after: 87
+  title: 'A help desk menu'
+  story: 'Build a menu for non-technical coworkers: 1 = show IP, 2 = show computer name.'
+  task: 'In `helpdesk.bat`, ask with `choice /c 12` and run the chosen option with `if errorlevel` or `%errorlevel%`. Option 1 must show the IP address (the output of `ipconfig`) and option 2 the output of `hostname`. Run the script, and when the menu appears, press the `1` key.'
+  batch: {file: 'helpdesk.bat', starter: "@echo off\necho 1. IP address\necho 2. Computer name\n"}
+  inputs: ['1']
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: '192.168.1.24'}
+    - {type: outputExcludes, value: 'ACADEMY-PC'}
+  hints: ['`choice /c 12 /m "Choose"` and then `if errorlevel 2 goto name`.', 'Check errorlevel from the largest value to the smallest; put `goto :eof` after each section.']
+  answer: ['@echo off', 'echo 1. IP address', 'echo 2. Computer name', 'choice /c 12 /m "Choose"', 'if errorlevel 2 goto name', 'ipconfig', 'goto :eof', ':name', 'hostname']
+  tags: ['choice', 'menu', 'goto', 'errorlevel']
+
+- id: C23
+  level: 3
+  after: 89
+  title: 'Backup with a report'
+  story: 'The nightly backup must write its result to a log, so that in the morning you know whether it worked.'
+  task: 'In `nightly.bat`, copy the txt files in Documents to `D:\Backup\Texts` (create the folder if needed). If it succeeds, append `OK` to the end of `D:\Backup\log.txt`; if not, append `FAILED`.'
+  batch: {file: 'nightly.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: fileExists, path: 'D:\Backup\Texts\menu.txt'}
+    - {type: fileContains, path: 'D:\Backup\log.txt', value: 'OK'}
+    - {type: not, check: {type: fileContains, path: 'D:\Backup\log.txt', value: 'FAILED'}}
+  hints: ['`if not exist D:\Backup\Texts mkdir D:\Backup\Texts`', '`copy ... >nul && echo OK>> D:\Backup\log.txt || echo FAILED>> D:\Backup\log.txt`']
+  answer: ['@echo off', 'if not exist D:\Backup\Texts mkdir D:\Backup\Texts', 'copy "%USERPROFILE%\Documents\*.txt" D:\Backup\Texts >nul && echo OK>> D:\Backup\log.txt || echo FAILED>> D:\Backup\log.txt']
+  tags: ['backup', 'log', '&&', '||']
+
+- id: C24
+  level: 3
+  after: 92
+  title: 'Smart cleanup'
+  story: 'The weekly maintenance script must delete the `.tmp` files from Downloads and the user''s Temp folder, but leave every other file alone.'
+  task: 'In `cleanup.bat`, quietly delete all `.tmp` files from `%USERPROFILE%\Downloads` and `%TEMP%`, and print `Cleanup done` at the end.'
+  batch: {file: 'cleanup.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}
+    - {type: countFiles, path: 'C:\Users\Student\AppData\Local\Temp\*.tmp', value: 0}
+    - {type: fileExists, path: 'C:\Users\Student\AppData\Local\Temp\setup_log.txt'}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}
+    - {type: outputIncludes, value: 'Cleanup done'}
+  hints: ['`del /q "%TEMP%\*.tmp"`', 'Do the same for both folders, then `echo Cleanup done`.']
+  answer: ['@echo off', 'del /q "%USERPROFILE%\Downloads\*.tmp" 2>nul', 'del /q "%TEMP%\*.tmp" 2>nul', 'echo Cleanup done']
+  tags: ['del', 'temp', 'maintenance']

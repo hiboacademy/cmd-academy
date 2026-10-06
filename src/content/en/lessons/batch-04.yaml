@@ -1,0 +1,1097 @@
+# Lessons 33–44 · Chapter 6: pipes, text, search and copying folders
+
+- n: 33
+  term: '|'
+  fullForm: Pipe
+  difficulty: 2
+  objective: Send the output of one command straight into the input of another command.
+  summary: '`|` sends the output of the command on the left into the input of the command on the right, instead of to the screen. It is like a pipe that connects two commands.'
+  meaning: In `type menu.txt | find "Pizza"`, `type` first outputs all the lines; these lines don't appear on the screen but go into `find`, and `find` shows only the line that contains Pizza. Why does this work? Because when `find` gets no file name, it reads its input from the pipe.
+  usage: 'Filtering long output: finding the IP in `ipconfig`, finding a program in `tasklist`, sorting lists.'
+  syntax: command1 | command2
+  demo:
+    start: C:\Users\Student\Documents
+    cmds:
+    - type menu.txt | find "Pizza"
+    - ipconfig | find "IPv4"
+    - dir /b | sort /r
+  examples:
+  - c: type menu.txt | find "Pizza"
+    d: Only the Pizza line from the menu.
+  - c: dir | find ".txt"
+    d: Only the lines of the dir output that contain `.txt`.
+  - c: ipconfig | find "IPv4"
+    d: Only the IPv4 address.
+  - c: tasklist | find "chrome"
+    d: Only the Chrome processes.
+  mistakes:
+  - Confusing `|` with `||` (lesson 31).
+  - Putting a command that doesn't read input (like `dir`) on the right side of the pipe.
+  tip: 'You can chain several pipes in a row: `type guests.txt | sort | more`'
+  restaurant: The waiter hands the order straight to the cook, and the cook hands the food straight to the person who garnishes it. Nobody puts the order down on a table.
+  practice:
+  - id: P33a
+    start: C:\Users\Student\Documents
+    task: Using `type` and a pipe, show only the line of `menu.txt` that contains `Pasta`.
+    checks:
+    - type: usedOp
+      value: '|'
+    - type: lastOutputIncludes
+      value: Pasta
+    - type: lastOutputExcludes
+      value: Pizza
+    hints:
+    - With a pipe (`|`), the output of one command goes straight into the next command. `type` outputs all the lines of the menu; pass them to `find` so only the line you want is left.
+    - 'Three parts: the command on the left (`type` + `menu.txt`), the pipe symbol (`|`), the command on the right (`find` + the word Pasta in quotes).'
+    answer: type menu.txt | find "Pasta"
+    explain: '`type menu.txt` produces all the lines, and `|` passes them to `find "Pasta"` instead of the screen; `find` shows only the line that contains Pasta.'
+  - id: P33b
+    start: C:\Users\Student
+    task: From the output of `ipconfig`, show only the `IPv4` line.
+    checks:
+    - type: usedOp
+      value: '|'
+    - type: lastOutputIncludes
+      value: 192.168.1.24
+    - type: lastOutputExcludes
+      value: Subnet
+    hints:
+    - '`ipconfig` prints a lot of information. Pipe its output to `find` so only the line containing the word IPv4 is left.'
+    - 'Three parts: the first command (`ipconfig`), the `|` symbol, the second command (`find` + the text IPv4 inside `" "`). Write IPv4 with the correct upper and lower case.'
+    answer: ipconfig | find "IPv4"
+    explain: '`ipconfig` gives all the network settings, and `|` sends them to `find "IPv4"`, which keeps only the line with the IPv4 address.'
+  quiz:
+  - kind: mcq
+    q: In `A | B`, where does the input of command B come from?
+    options:
+    - From the output of A
+    - From the keyboard
+    - From a file
+    - From the previous command in History
+    answer: 0
+    explain: A pipe connects the output of A to the input of B.
+  - kind: predict
+    q: menu.txt contains Pizza, Pasta and Salad. What is the output?
+    code: type menu.txt | find "Sa"
+    options:
+    - Only the Salad line
+    - Pasta and Salad
+    - All lines
+    - Nothing
+    answer: 0
+    explain: '`find` is case-sensitive; “Pasta” does not contain “Sa” with a capital S.'
+  - kind: type
+    q: From the output of `tasklist`, show only the `notepad` lines.
+    accept:
+    - tasklist | find "notepad"
+    - tasklist | find /i "notepad"
+    - tasklist | findstr notepad
+    - tasklist | findstr /i notepad
+    - tasklist | find "notepad.exe"
+    show: tasklist | find "notepad"
+    explain: Pipe the output of tasklist to find.
+  - kind: sim
+    q: From the list of processes, show only the `notepad` lines.
+    start: C:\Users\Student
+    checks:
+    - type: usedOp
+      value: '|'
+    - type: lastOutputIncludes
+      value: notepad.exe
+    - type: lastOutputExcludes
+      value: chrome.exe
+    answer: tasklist | find /i "notepad"
+    explain: The output of `tasklist` is passed to `find` with `|`.
+  recap: '`A | B` = the output of A becomes the input of B. Used to filter long output.'
+- n: 34
+  term: more
+  fullForm: More (page by page)
+  difficulty: 2
+  objective: Read long output one page at a time.
+  summary: '`more` shows the output one page at a time and waits. Space shows the next page, Enter the next line, Q quits.'
+  meaning: '`more` takes its input either from a file (`more file.txt`) or from a pipe (`help | more`). At the bottom of the screen you see `-- More --` and the percentage read so far.'
+  usage: Reading long help texts, logs and the output of commands like `systeminfo`.
+  syntax: 'more file
+
+    command | more'
+  examples:
+  - c: help | more
+    d: The list of commands, page by page.
+  - c: more C:\Windows\win.ini
+    d: Showing a file with more.
+  - c: systeminfo | more
+    d: Reading the system information at your own pace.
+  mistakes:
+  - Thinking CMD has frozen; `-- More --` is waiting for you to press a key.
+  tip: In the simulator too, when `-- More --` appears, press Space or Enter; press Q to quit.
+  practice:
+  - id: P34a
+    start: C:\Users\Student
+    task: Show the list of commands from `help` page by page. (Continue with Space or quit with Q.)
+    checks:
+    - type: anyCmd
+      value: more
+    - type: usedOp
+      value: '|'
+    - type: argIncludes
+      cmd: help
+      value: ''
+    inputs:
+    - ' '
+    - q
+    hints:
+    - The output of `help` is long. Pipe it to `more` so it is shown page by page and waits for you to press a key.
+    - 'Three parts: a command with long output (`help`), the `|` symbol, the paging command (`more`). Then see the next page with Space and quit with `Q`.'
+    answer: help | more
+    explain: '`help` gives the list of commands, and `|` sends it to `more`; `more` shows one page at a time and continues when you press Space.'
+  quiz:
+  - kind: mcq
+    q: At `-- More --`, which key moves forward one full page?
+    options:
+    - Space
+    - Enter
+    - Q
+    - Esc
+    answer: 0
+    explain: Space = next page, Enter = just one line, Q = quit.
+  - kind: type
+    q: Show the file `log.txt` page by page.
+    accept:
+    - more log.txt
+    - type log.txt | more
+    - more < log.txt
+    show: more log.txt
+    explain: '`more log.txt` or `type log.txt | more`'
+  - kind: tf
+    q: '`more` changes the contents of the file.'
+    answer: false
+    explain: It only displays it.
+  recap: '`more` = page by page. Space = page, Enter = line, Q = quit.'
+- n: 35
+  term: sort
+  fullForm: Sort
+  difficulty: 2
+  objective: Sort the lines of a file or the output of a command alphabetically.
+  summary: '`sort` sorts lines from A to Z. With `/r` in reverse (Z to A).'
+  meaning: '`sort` is not case-sensitive and does not change the original file; it only shows the sorted output. To save it, use `>` or `/o`.'
+  usage: Sorting a list of names, the output of `dir /b`, or data coming from another command.
+  syntax: 'sort [/r] [file] [/o outfile]
+
+    command | sort'
+  demo:
+    start: C:\Users\Student\Documents
+    cmds:
+    - type guests.txt
+    - sort guests.txt
+    - sort /r guests.txt
+  examples:
+  - c: sort guests.txt
+    d: Sorted display.
+  - c: type guests.txt | sort
+    d: The same thing with a pipe.
+  - c: sort guests.txt > sorted.txt
+    d: Saving the result in a new file.
+  - c: dir /b | sort /r
+    d: The list of files in reverse order.
+  mistakes:
+  - 'Writing `sort guests.txt > guests.txt`: the file is emptied before it is read! Always write to a new file.'
+  tip: 'Numbers are sorted as text: `10` comes before `9`.'
+  practice:
+  - id: P35a
+    start: C:\Users\Student\Documents
+    task: Show the names in `guests.txt` sorted (A to Z).
+    checks:
+    - type: anyCmd
+      value: sort
+    - type: outputOrder
+      value:
+      - Ali
+      - David
+      - hibo
+      - mina
+      - Reza
+      - Sara
+    hints:
+    - Use `sort` to sort the lines of a file, and give it the file name as the argument.
+    - 'Two parts: what to do? (`sort`) on which file? (`guests.txt`). `sort` ignores upper and lower case, so `hibo` comes between David and mina.'
+    answer: sort guests.txt
+    explain: '`sort guests.txt` shows the lines of the file in alphabetical order (A to Z); the file itself does not change.'
+  - id: P35b
+    start: C:\Users\Student\Documents
+    task: Save a sorted copy of `guests.txt` in a new file called `sorted.txt`.
+    checks:
+    - type: fileOrder
+      path: C:\Users\Student\Documents\sorted.txt
+      value:
+      - Ali
+      - David
+      - hibo
+      - mina
+      - Reza
+      - Sara
+    hints:
+    - '`sort` only displays the result. To save it, send the output to a new file with a redirect (`>`).'
+    - 'Three parts: the sort command (`sort` + `guests.txt`), the `>` symbol, the name of the new file (`sorted.txt`).'
+    answer: sort guests.txt > sorted.txt
+    explain: '`sort guests.txt` sorts the names, and `>` writes this output to `sorted.txt`; the original `guests.txt` is left untouched.'
+  quiz:
+  - kind: mcq
+    q: Which switch reverses the order?
+    options:
+    - /r
+    - /o
+    - /b
+    - /s
+    answer: 0
+    code_options: true
+    explain: '`/r` = Reverse.'
+  - kind: predict
+    q: What is the output of this command with the inputs `b`, `C`, `a`?
+    code: sort names.txt
+    options:
+    - 'a
+
+      b
+
+      C'
+    - 'C
+
+      a
+
+      b'
+    - 'b
+
+      C
+
+      a'
+    - 'a
+
+      C
+
+      b'
+    answer: 0
+    code_options: true
+    explain: sort is not case-sensitive.
+  - kind: tf
+    q: '`sort guests.txt` saves guests.txt in sorted order.'
+    answer: false
+    explain: It only displays it; use `>` to save.
+  recap: '`sort file` or `... | sort`. `/r` = reverse. The original file does not change.'
+- n: 36
+  term: <
+  fullForm: Input redirection
+  difficulty: 2
+  objective: Feed a command its input from a file.
+  summary: '`<` sends the contents of a file into the input of a command instead of the keyboard. It is the opposite of `>`, which sends output to a file.'
+  meaning: '`sort < guests.txt` means “feed guests.txt into the input of sort”. The result is similar to `type guests.txt | sort`, but without running a second command.'
+  usage: Feeding files to commands that read from input (sort, find, more), and in batch files for reading the first line of a file with `set /p` (lesson 74).
+  syntax: 'command < file
+
+    command < input.txt > output.txt'
+  demo:
+    start: C:\Users\Student\Documents
+    cmds:
+    - sort < guests.txt
+    - find "Soup" < menu.txt
+  examples:
+  - c: sort < guests.txt
+    d: Sorting the contents of a file.
+  - c: find "Pizza" < menu.txt
+    d: Searching in input coming from a file.
+  - c: sort < guests.txt > sorted.txt
+    d: Input from one file, output to another file.
+  mistakes:
+  - 'Getting the direction backwards: `sort > guests.txt` wipes the file!'
+  tip: 'Look at the direction of the arrow: `<` points to the command (input), `>` points to the file (output).'
+  daily: '`>` is like pouring water from a glass into a bottle; `<` is like pouring water from a bottle into a glass.'
+  practice:
+  - id: P36a
+    start: C:\Users\Student\Documents
+    task: Use `<` to feed the contents of `guests.txt` to `sort` so the names are shown sorted.
+    checks:
+    - type: usedOp
+      value: <
+    - type: outputOrder
+      value:
+      - Ali
+      - David
+      - Sara
+    hints:
+    - The `<` symbol sends the contents of a file into a command's input (the opposite of `>`). This time, don't give the file name directly to `sort`; send it through `<`.
+    - 'Three parts: the command (`sort`), the input symbol (`<`, which points toward the command), the source file (`guests.txt`).'
+    answer: sort < guests.txt
+    explain: '`<` gives the contents of `guests.txt` to `sort` as if you had typed them, and `sort` shows them sorted.'
+  - id: P36b
+    start: C:\Users\Student\Documents
+    task: Use `find` and `<` to find the `Soup` line in `menu.txt`.
+    checks:
+    - type: usedOp
+      value: <
+    - type: anyCmd
+      value: find
+    - type: lastOutputIncludes
+      value: Soup
+    hints:
+    - '`find` takes the search text in quotes. Instead of giving the file name as an argument, send the file''s contents into the input of `find` with `<`.'
+    - 'Three parts: the command with the search text (`find` + Soup inside `" "`), the `<` symbol, the source file (`menu.txt`).'
+    answer: find "Soup" < menu.txt
+    explain: '`find "Soup"` looks for the word Soup, and `< menu.txt` sends the contents of the menu into its input; so the Soup line is shown.'
+  quiz:
+  - kind: mcq
+    q: In `sort < a.txt > b.txt`, which file is read?
+    options:
+    - a.txt
+    - b.txt
+    - Both
+    - Neither
+    answer: 0
+    explain: '`<` is input and `>` is output.'
+  - kind: fix
+    q: The user wanted to see the file sorted, but the file was emptied. Why?
+    code: sort > guests.txt
+    options:
+    - The arrow points the wrong way; it should have been `<`
+    - '`sort` deletes the file'
+    - '`/r` should have been added'
+    - '`type` should have been written first'
+    answer: 0
+    explain: '`>` opens the file for writing and empties it.'
+  - kind: type
+    q: Feed the contents of `names.txt` to `sort` with `<`.
+    accept:
+    - sort < names.txt
+    - sort <names.txt
+    show: sort < names.txt
+    explain: '`sort < names.txt`'
+  recap: '`command < file` = input from a file. `<` = input, `>` = output, `|` = connects two commands.'
+- n: 37
+  term: find
+  fullForm: Find text
+  difficulty: 2
+  objective: Find the lines that contain some text in files or in the output of commands.
+  summary: '`find "text" file` shows all lines that contain that text. The search text must always be in quotes.'
+  meaning: 'Important switches: `/i` ignores upper/lower case, `/c` shows only the number of lines, `/n` shows line numbers, `/v` shows the lines that do NOT contain the text.'
+  usage: Searching logs and text files, and filtering command output with a pipe.
+  syntax: find [/i] [/c] [/n] [/v] "text" [file...]
+  demo:
+    start: C:\Users\Student\Documents
+    cmds:
+    - find "Pizza" menu.txt
+    - find /c /i "a" guests.txt
+    - find /n "S" guests.txt
+  examples:
+  - c: find "Pizza" menu.txt
+    d: Lines that contain Pizza.
+  - c: find /i "pizza" menu.txt
+    d: Ignoring upper and lower case.
+  - c: find /c "a" guests.txt
+    d: Only the number of lines that contain “a”.
+  - c: find /v "a" menu.txt
+    d: Lines that do not contain “a”.
+  mistakes:
+  - 'Leaving out the quotes: `find Pizza menu.txt` gives the error `Parameter format not correct`.'
+  - Forgetting `/i` and not finding “pizza” with a lowercase p.
+  tip: 'Exit code: `0` if something is found, otherwise `1`. So `find ... && echo found` works (lesson 62).'
+  practice:
+  - id: P37a
+    start: C:\Users\Student\Documents
+    task: Count how many lines in `guests.txt` contain the letter `a`, ignoring upper and lower case.
+    checks:
+    - type: anyCmd
+      value: find
+    - type: switch
+      value: /c
+      cmd: find
+      anyRun: true
+    - type: switch
+      value: /i
+      cmd: find
+      anyRun: true
+    - type: lastOutputMatches
+      value: '(^|: )5\s*$'
+    hints:
+    - Use `find`, but instead of showing the lines, ask only for how many there are. You need one switch for counting and one switch for ignoring upper and lower case.
+    - 'In order: the command (`find`), the count switch (`/c` for Count), the case switch (`/i` for Ignore case), the search text (`a` inside `" "`), and the file (`guests.txt`).'
+    answer: find /c /i "a" guests.txt
+    explain: '`/c` gives only the number of lines instead of the lines themselves, and `/i` makes `a` and `A` count as the same; `"a"` is the search text and `guests.txt` is the target file.'
+  - id: P37b
+    start: C:\Users\Student\Documents
+    task: Show the lines of `menu.txt` that do not contain the letter `a`.
+    checks:
+    - type: switch
+      value: /v
+      cmd: find
+      anyRun: true
+    - type: lastOutputIncludes
+      value: Soup
+    - type: lastOutputExcludes
+      value: Pizza
+    hints:
+    - This time you want the lines that do NOT contain the text. `find` has a “reverse” switch that inverts the result.
+    - 'In order: the command (`find`), the reverse switch (`/v`), the search text (`a` inside `" "`), the file (`menu.txt`).'
+    answer: find /v "a" menu.txt
+    explain: '`find` normally shows the lines that contain the text; `/v` reverses this, so only the lines of `menu.txt` without `a` appear, like Soup.'
+  quiz:
+  - kind: fix
+    q: Why does this command give an error?
+    code: 'find Pizza menu.txt
+
+      FIND: Parameter format not correct'
+    options:
+    - The search text has no quotes
+    - menu.txt does not exist
+    - You need to add `/i`
+    - '`find` doesn''t work on files'
+    answer: 0
+    explain: 'Correct: `find "Pizza" menu.txt`'
+  - kind: mcq
+    q: Which switch shows only the number of lines found?
+    options:
+    - /c
+    - /n
+    - /v
+    - /i
+    answer: 0
+    code_options: true
+    explain: '`/c` = Count.'
+  - kind: type
+    q: In `log.txt`, find the lines that contain `error`, ignoring upper and lower case.
+    accept:
+    - find /i "error" log.txt
+    - find "error" /i log.txt
+    - findstr /i error log.txt
+    - findstr /i "error" log.txt
+    show: find /i "error" log.txt
+    explain: '`/i` ignores upper and lower case.'
+  - kind: sim
+    q: Count the number of lines in `guests.txt` (in Documents).
+    start: C:\Users\Student\Documents
+    checks:
+    - type: cmd
+      value: find
+    - type: switch
+      value: /c
+    - type: lastOutputIncludes
+      value: ': 6'
+    answer: find /c /v "" guests.txt
+    explain: '`/v ""` selects all lines and `/c` counts them.'
+  recap: '`find "text" file`. `/i` = case, `/c` = count, `/n` = line numbers, `/v` = reverse. Quotes are required.'
+- n: 38
+  term: findstr
+  fullForm: Find String
+  difficulty: 2
+  objective: Use `findstr` to search for several words at once, in several files and even in subfolders.
+  summary: '`findstr` is a more powerful version of `find`: it searches for several words at once, looks in subfolders and understands simple patterns (regular expressions).'
+  meaning: '`findstr "Pizza Coffee" menu.txt` means Pizza **or** Coffee. For a complete phrase with spaces, use `/c:"..."`. `/s` means include subfolders. `^` means start of line and `$` means end of line.'
+  usage: Searching a whole project, finding files that contain a word, more precise filters.
+  syntax: findstr [/i] [/s] [/n] [/m] [/c:"phrase"] "words" files
+  demo:
+    start: C:\Users\Student\Documents
+    cmds:
+    - findstr "Pizza Coffee" menu.txt
+    - findstr /s /i "sales" *.txt
+    - findstr /m /s "Report" *.txt
+  examples:
+  - c: findstr "Pizza Coffee" menu.txt
+    d: Lines that contain Pizza or Coffee.
+  - c: findstr /c:"Restaurant Menu" menu.txt
+    d: Exactly this phrase.
+  - c: findstr /s /i "sales" *.txt
+    d: Searching all txt files in this folder and its subfolders.
+  - c: findstr /m /s "Report" *.txt
+    d: Only the names of files that contain Report.
+  - c: findstr "^S" guests.txt
+    d: Lines that start with S.
+  mistakes:
+  - Thinking `"a b"` means the phrase “a b”; in findstr it means a or b. For a phrase, use `/c:`.
+  tip: In findstr, `.` means “any character”. To search for an actual dot, write `\.`
+  practice:
+  - id: P38a
+    start: C:\Users\Student\Documents
+    task: With one command, show the lines of `menu.txt` that contain `Pizza` or `Coffee`.
+    checks:
+    - type: anyCmd
+      value: findstr
+    - type: lastOutputIncludes
+      value: Pizza
+    - type: lastOutputIncludes
+      value: Coffee
+    - type: lastOutputExcludes
+      value: Pasta
+    hints:
+    - '`findstr` can search for several words at once: if you write several words separated by spaces inside one pair of quotes, it means “this **or** that”.'
+    - 'Three parts: the command (`findstr`), the search words (Pizza and Coffee separated by a space, both inside one pair of `" "`), the file (`menu.txt`).'
+    answer: findstr "Pizza Coffee" menu.txt
+    explain: In `findstr`, `"Pizza Coffee"` means Pizza or Coffee; so every line of `menu.txt` that contains either of these words is shown.
+  - id: P38b
+    start: C:\Users\Student\Documents
+    task: Search all `.txt` files in this folder and its subfolders for the word `sales`, ignoring upper and lower case.
+    checks:
+    - type: switch
+      value: /s
+      cmd: findstr
+      anyRun: true
+    - type: switch
+      value: /i
+      cmd: findstr
+      anyRun: true
+    - type: lastOutputIncludes
+      value: report1.txt
+    hints:
+    - Use `findstr` with the wildcard `*` to search all text files. You need one switch that also searches subfolders and one that ignores upper and lower case.
+    - 'In order: the command (`findstr`), the subfolder switch (`/s`), the case switch (`/i`), the search word (sales inside `" "`), the file pattern (`*` and `.txt`).'
+    answer: findstr /s /i "sales" *.txt
+    explain: '`/s` extends the search to subfolders like Work, `/i` treats upper and lower case as the same, and `*.txt` means all text files.'
+  quiz:
+  - kind: mcq
+    q: What does `findstr "red blue" colors.txt` find?
+    options:
+    - Lines that contain red or blue
+    - Only the phrase “red blue”
+    - Lines that contain both
+    - It gives an error
+    answer: 0
+    explain: In findstr, a space means “or”.
+  - kind: mcq
+    q: Which switch shows only the file names?
+    options:
+    - /m
+    - /n
+    - /s
+    - /c
+    answer: 0
+    code_options: true
+    explain: '`/m` = file names only.'
+  - kind: type
+    q: 'Find exactly the phrase `Status: OK` in `report.txt`.'
+    accept:
+    - 'findstr /c:"Status: OK" report.txt'
+    - 'find "Status: OK" report.txt'
+    - 'findstr /i /c:"status: ok" report.txt'
+    - 'findstr /i /c:"Status: OK" report.txt'
+    - 'find /i "status: ok" report.txt'
+    - 'find /i "Status: OK" report.txt'
+    quotedCase: true
+    show: 'findstr /c:"Status: OK" report.txt'
+    explain: For a phrase with spaces, use `/c:`.
+  recap: '`findstr` = several words (or), `/c:` = exact phrase, `/s` = subfolders, `/m` = file names, `^` and `$` = start and end of line.'
+- n: 39
+  term: tree
+  fullForm: Tree
+  difficulty: 2
+  objective: See the structure of folders as a tree.
+  summary: '`tree` shows all folders and subfolders as a tree. With `/f`, files are shown too.'
+  meaning: The `├───` and `└───` lines show which folder each folder is inside. `/a` uses simple ASCII characters instead of these lines (for saving to a file).
+  usage: Understanding the structure of a project, before `rd /s` or a backup, and documenting folders.
+  syntax: tree [path] [/f] [/a]
+  demo:
+    start: C:\Users\Student
+    cmds:
+    - tree Pictures /f
+  examples:
+  - c: tree
+    d: Tree of the current folder.
+  - c: tree Documents /f
+    d: With files.
+  - c: tree /a > structure.txt
+    d: Saving the tree to a file with simple characters.
+  mistakes:
+  - 'Running `tree` in `C:\` on a real computer: the output is thousands of lines. Try a small folder first.'
+  tip: Hidden files and folders (like AppData) are not shown in `tree`.
+  practice:
+  - id: P39a
+    start: C:\Users\Student
+    task: Show the structure of the Documents folder as a tree, including the file names.
+    checks:
+    - type: anyCmd
+      value: tree
+    - type: switch
+      value: /f
+      cmd: tree
+      anyRun: true
+    - type: lastOutputIncludes
+      value: menu.txt
+    - type: lastOutputIncludes
+      value: Work
+    hints:
+    - '`tree` shows the folder structure as a tree, but by default only the folders. You need a switch so the file names appear too.'
+    - 'Three parts: what to do? (`tree`) on which folder? (Documents) how? (a switch: the first letter of File with `/`).'
+    answer: tree Documents /f
+    explain: '`tree Documents` draws the tree of the Documents folder, and `/f` (Files) also shows the names of the files in each folder.'
+  quiz:
+  - kind: mcq
+    q: Which switch also shows files in the tree?
+    options:
+    - /f
+    - /a
+    - /s
+    - /b
+    answer: 0
+    code_options: true
+    explain: '`/f` = Files.'
+  - kind: tf
+    q: '`tree` moves files around.'
+    answer: false
+    explain: It only displays it.
+  - kind: type
+    q: Save the tree of the current folder with simple characters to the file `tree.txt`.
+    accept:
+    - tree /a > tree.txt
+    - tree /a >tree.txt
+    - tree /f /a > tree.txt
+    - tree /a /f > tree.txt
+    show: tree /a > tree.txt
+    explain: '`/a` is better suited for files.'
+  recap: '`tree` = folder tree. `/f` = files, `/a` = simple characters.'
+- n: 40
+  term: where
+  fullForm: Where (locate files)
+  difficulty: 2
+  objective: Find where a program is located and search for files in subfolders.
+  summary: '`where` tells you where a program is installed. With `/r`, it finds files in a folder and all its subfolders.'
+  meaning: Without `/r`, `where` searches the current directory and the folders in PATH (lesson 48); the same places CMD looks when running a program. It also accepts wildcards.
+  usage: Finding out where `ping` or `notepad` runs from, finding all pictures or all files of one type.
+  syntax: 'where name
+
+    where /r folder pattern'
+  demo:
+    start: C:\Users\Student
+    cmds:
+    - where notepad
+    - where /r C:\Users\Student *.jpg
+    - where nothing
+  examples:
+  - c: where ping
+    d: Location of the file ping.exe.
+  - c: where /r C:\Users\Student *.jpg
+    d: All jpg files in the user folder and its subfolders.
+  - c: dir /s /b *.jpg
+    d: 'Another way: dir with `/s` (subfolders) and `/b`.'
+  mistakes:
+  - Forgetting `/r` when searching subfolders.
+  tip: 'If nothing is found, the message `INFO: Could not find files...` appears and the exit code is 1.'
+  practice:
+  - id: P40a
+    start: C:\Users\Student
+    task: Find out where the program `ping` is installed.
+    checks:
+    - type: anyCmd
+      value: where
+    - type: lastOutputIncludes
+      value: C:\Windows\System32\ping.exe
+    hints:
+    - You want to know where the program file is on the disk. This lesson's command is simply the English word “where”.
+    - 'Two parts: what to do? (`where`) which program? (the name `ping`; you don''t need to write `.exe`).'
+    answer: where ping
+    explain: '`where ping` searches the current directory and the folders where CMD looks for programs, and shows the full path of `ping.exe`.'
+  - id: P40b
+    start: C:\Users\Student
+    task: Find all `.jpg` files in `C:\Users\Student` and all its subfolders.
+    checks:
+    - type: lastOutputIncludes
+      value: family.jpg
+    - type: lastOutputIncludes
+      value: sea.jpg
+    - type: lastOutputIncludes
+      value: cat.jpg
+    hints:
+    - Use `where`. To search a folder and all its subfolders you need the switch `/r` (Recursive), followed by the start folder and the file pattern.
+    - 'In order: the command (`where`), the switch (`/r`), the start folder (the absolute path `C:\Users\Student`), the file pattern (`*` and `.jpg`).'
+    answer: where /r C:\Users\Student *.jpg
+    explain: '`where /r` starts at the given folder (`C:\Users\Student`) and finds, in all subfolders, the files that match `*.jpg`.'
+  quiz:
+  - kind: mcq
+    q: What does the `/r` switch do in `where`?
+    options:
+    - Searches the folder and all subfolders
+    - Deletes the files it finds
+    - Shows the file size
+    - Searches only in PATH
+    answer: 0
+    explain: '`/r` = Recursive.'
+  - kind: type
+    q: Find the location of the program `notepad`.
+    accept:
+    - where notepad
+    - where notepad.exe
+    explain: '`where notepad`'
+  - kind: tf
+    q: '`dir /s /b *.jpg` can also find the jpg files in subfolders.'
+    answer: true
+    explain: In dir, `/s` means subfolders.
+  recap: '`where program` = location of a program. `where /r folder pattern` = search in subfolders.'
+- n: 41
+  term: attrib
+  fullForm: Attributes
+  difficulty: 2
+  objective: See and change file attributes like hidden and read-only.
+  summary: 'Every file has several attributes: `H` hidden, `R` read-only, `S` system file and `A` ready for backup (archive). `attrib` shows them and changes them with `+` and `-`.'
+  meaning: A hidden file is not visible in a normal `dir`; `dir /a` shows all files. A read-only file cannot be changed or deleted with a normal `del`.
+  usage: Finding hidden files, protecting an important file with `+r`, and problems like viruses that hide the files on a USB stick.
+  syntax: attrib [+r|-r] [+h|-h] [+s|-s] [file]
+  demo:
+    start: C:\Users\Student\Documents
+    cmds:
+    - dir /b
+    - dir /a /b
+    - attrib secret.txt
+  examples:
+  - c: dir /a
+    d: Show all files, including hidden ones.
+  - c: attrib
+    d: Show the attributes of the files in the current directory.
+  - c: attrib +r guests.txt
+    d: Make a file read-only.
+  - c: attrib -h secret.txt
+    d: Unhide a file.
+  mistakes:
+  - Thinking a hidden file is safe; anyone can see it with `dir /a`.
+  - Changing the attributes of system files (`S`) in `C:\Windows`.
+  tip: If a USB stick looks empty after a virus, run `dir /a` first; maybe the files are just hidden.
+  practice:
+  - id: P41a
+    start: C:\Users\Student\Documents
+    task: There is a hidden file in this folder. Show all files, including hidden ones.
+    checks:
+    - type: anyCmd
+      value: dir
+    - type: lastOutputIncludes
+      value: secret.txt
+    hints:
+    - A hidden file (attribute `H`) is not visible in a normal `dir`. `dir` has a switch that shows all files, whatever their attributes.
+    - 'Two parts: what to do? (`dir`) how? (a switch: the first letter of Attribute with `/`). No argument is needed; it shows the current folder.'
+    answer: dir /a
+    explain: '`dir /a` lists all files regardless of their attributes; so the hidden file `secret.txt` is visible too.'
+  - id: P41b
+    start: C:\Users\Student\Documents
+    task: Make the file `guests.txt` read-only.
+    checks:
+    - type: fileAttr
+      path: C:\Users\Student\Documents\guests.txt
+      attr: r
+    hints:
+    - Use `attrib` to change attributes. The `+` sign adds an attribute and `-` removes it. Find the letter for read-only.
+    - 'Three parts: what to do? (`attrib`) what change? (`+` attached to the first letter of Read-only, i.e. `r`) on which file? (`guests.txt`).'
+    answer: attrib +r guests.txt
+    explain: '`attrib` changes attributes, and `+r` adds the read-only attribute to `guests.txt`, so it can no longer be changed.'
+  quiz:
+  - kind: mcq
+    q: What does the attribute `H` mean?
+    options:
+    - Hidden
+    - Home
+    - Hard disk
+    - Help
+    answer: 0
+    explain: H = Hidden.
+  - kind: predict
+    q: The file `a.txt` is read-only. What is the result of this command?
+    code: del a.txt
+    options:
+    - Access is denied.
+    - The file is deleted
+    - Could Not Find
+    - Are you sure (Y/N)?
+    answer: 0
+    explain: A read-only file cannot be deleted with a normal `del` (only with `/f`).
+  - kind: type
+    q: Unhide the file `notes.txt`.
+    accept:
+    - attrib -h notes.txt
+    explain: '`-` removes an attribute.'
+  recap: '`attrib` = see and change attributes. `+` = add, `-` = remove. `dir /a` shows hidden files.'
+- n: 42
+  term: fc
+  fullForm: File Compare
+  difficulty: 2
+  objective: Compare two files and find the differences.
+  summary: '`fc` compares two files line by line and shows the places where they differ.'
+  meaning: 'If the files are the same, the message `FC: no differences encountered` appears. Otherwise, the differing part of each file is shown between `*****` lines. `/c` ignores upper and lower case and `/n` shows line numbers.'
+  usage: Finding out what changed in a settings file, or whether a backup matches the original.
+  syntax: fc [/c] [/n] file1 file2
+  demo:
+    start: C:\Users\Student\Desktop
+    files:
+    - path: C:\Users\Student\Desktop\menu_old.txt
+      content: 'Pizza 8.00
+
+        Pasta 7.00
+
+        Salad 5.50
+
+        '
+    - path: C:\Users\Student\Desktop\menu_new.txt
+      content: 'Pizza 8.50
+
+        Pasta 7.00
+
+        Salad 5.50
+
+        '
+    cmds:
+    - fc menu_old.txt menu_new.txt
+    - fc menu_new.txt menu_new.txt
+  examples:
+  - c: fc menu_old.txt menu_new.txt
+    noTry: true
+    d: Show the lines that differ.
+  - c: fc /n a.txt b.txt
+    noTry: true
+    d: With line numbers.
+  - c: fc /c a.txt b.txt
+    noTry: true
+    d: Ignoring upper and lower case.
+  mistakes:
+  - Comparing non-text files and expecting readable output.
+  tip: 'Exit code of `fc`: zero means identical, 1 means different. Useful in batch files for checking a backup.'
+  practice:
+  - id: P42a
+    start: C:\Users\Student\Desktop
+    files:
+    - path: C:\Users\Student\Desktop\menu_old.txt
+      content: 'Pizza 8.00
+
+        Pasta 7.00
+
+        Salad 5.50
+
+        '
+    - path: C:\Users\Student\Desktop\menu_new.txt
+      content: 'Pizza 8.50
+
+        Pasta 7.00
+
+        Salad 5.50
+
+        '
+    task: Compare the two files `menu_old.txt` and `menu_new.txt` and see which dish has a new price.
+    checks:
+    - type: anyCmd
+      value: fc
+      evenIfFailed: true
+    - type: lastOutputIncludes
+      value: '8.50'
+    - type: lastOutputIncludes
+      value: '*****'
+    hints:
+    - Use `fc` (File Compare) to compare two files, and give it both file names one after the other.
+    - 'Three parts: what to do? (`fc`) first file? (`menu_old.txt`) second file? (`menu_new.txt`). In the output, the differing lines are shown between `*****`.'
+    answer: fc menu_old.txt menu_new.txt
+    explain: '`fc` compares the two files line by line and shows only the lines that differ; here the price of Pizza changed from 8.00 to 8.50.'
+  - id: P42b
+    start: C:\Users\Student\Desktop
+    files:
+    - path: C:\Users\Student\Desktop\a.txt
+      content: 'Hello CMD
+
+        '
+    - path: C:\Users\Student\Desktop\b.txt
+      content: 'HELLO cmd
+
+        '
+    task: Compare `a.txt` and `b.txt` ignoring upper and lower case. (They should be reported as identical.)
+    checks:
+    - type: switch
+      value: /c
+      cmd: fc
+      anyRun: true
+    - type: lastOutputIncludes
+      value: no differences
+    hints:
+    - '`fc` again, but this time you have to say that upper and lower case don''t matter. `fc` has a switch for this.'
+    - 'In order: the command (`fc`), the ignore-case switch (`/c` for Case), the first file (`a.txt`), the second file (`b.txt`).'
+    answer: fc /c a.txt b.txt
+    explain: '`/c` tells `fc` to treat `Hello` and `HELLO` as the same; so the two files are reported as identical and the message `no differences` appears.'
+  quiz:
+  - kind: mcq
+    q: If two files are identical, what does `fc` say?
+    options:
+    - 'FC: no differences encountered'
+    - Files are equal
+    - '*****'
+    - Nothing
+    answer: 0
+    explain: The standard fc message.
+  - kind: mcq
+    q: Which switch shows line numbers?
+    options:
+    - /n
+    - /c
+    - /l
+    - /b
+    answer: 0
+    code_options: true
+    explain: '`/n` = Number.'
+  - kind: tf
+    q: An exit code of 0 after `fc` means the files are identical.
+    answer: true
+    explain: 0 = identical, 1 = different.
+  recap: '`fc file1 file2` = compare. `/c` = case, `/n` = line numbers. Exit code 0 means identical.'
+- n: 43
+  term: xcopy
+  fullForm: Extended Copy
+  difficulty: 2
+  objective: Copy a folder together with its subfolders.
+  summary: '`xcopy` is like `copy`, but it also copies folders and subfolders. The most important switches: `/s`, `/e`, `/i` and `/y`.'
+  meaning: '`/s` copies non-empty subfolders and `/e` copies even empty ones. `/i` says: if the destination doesn''t exist, assume it is a folder (otherwise xcopy asks “File or Directory?”). `/y` overwrites without asking.'
+  usage: Backing up a whole folder, copying a project to a USB stick.
+  syntax: xcopy source destination [/s] [/e] [/i] [/y] [/h]
+  demo:
+    start: C:\Users\Student
+    cmds:
+    - xcopy Documents D:\DocsBackup /e /i
+    - tree D:\DocsBackup /f
+  examples:
+  - c: xcopy Documents D:\DocsBackup /e /i
+    d: Full copy of Documents with subfolders.
+  - c: xcopy *.txt E:\Texts /i
+    at: C:\Users\Student\Documents
+    d: Copy all txt files to a new folder on the USB stick.
+  - c: xcopy Documents D:\DocsBackup /s /y
+    d: Update a backup without being asked.
+  - c: xcopy Documents E:\Docs /e /i /l
+    d: '`/l` only shows the list; nothing is copied.'
+  mistakes:
+  - 'Forgetting `/s` or `/e`: subfolders are not copied.'
+  - 'Being surprised by the question `F = file, D = directory`: solved with `/i` or by answering `D`.'
+  tip: Hidden files are not copied unless you use `/h`.
+  practice:
+  - id: P43a
+    start: C:\Users\Student
+    task: Copy the whole Documents folder including subfolders to `D:\DocsBackup`.
+    inputs:
+    - d
+    checks:
+    - type: fileExists
+      path: D:\DocsBackup\menu.txt
+    - type: fileExists
+      path: D:\DocsBackup\Work\report.txt
+    hints:
+    - '`copy` doesn''t copy subfolders; use `xcopy`. You need one switch to copy all subfolders (even empty ones) and one switch so the destination is assumed to be a folder.'
+    - 'In order: the command (`xcopy`), the source (the Documents folder), the destination (`D:\DocsBackup`), the subfolder switch (`/e`), the “destination is a folder” switch (`/i`).'
+    answer: xcopy Documents D:\DocsBackup /e /i
+    explain: '`xcopy` copies the Documents folder to `D:\DocsBackup`; `/e` also takes all subfolders, even empty ones, and `/i` stops it from asking whether the destination is a file or a directory.'
+  quiz:
+  - kind: mcq
+    q: What is the difference between `/s` and `/e` in xcopy?
+    options:
+    - '`/e` also copies empty folders'
+    - '`/s` is faster'
+    - '`/e` copies only files'
+    - There is no difference
+    answer: 0
+    explain: '`/s` skips empty folders.'
+  - kind: predict
+    q: The destination `D:\New` doesn't exist. What does xcopy do without `/i`?
+    code: xcopy Documents D:\New /s
+    options:
+    - It asks whether the destination is a file or a folder
+    - It gives an error and stops
+    - It silently creates a folder
+    - It puts everything into one file
+    answer: 0
+    explain: It asks the question `(F = file, D = directory)?`.
+  - kind: type
+    q: Copy the `Pictures` folder with all its subfolders to `E:\Pics`, without being asked about file or folder.
+    accept:
+    - xcopy pictures e:\pics /e /i
+    - xcopy pictures e:\pics /s /i
+    - xcopy pictures e:\pics /e /i /y
+    - xcopy pictures e:\pics /i /e
+    - xcopy pictures e:\pics /i /s
+    show: xcopy Pictures E:\Pics /e /i
+    explain: '`/e` = subfolders, `/i` = the destination is a folder.'
+  recap: '`xcopy` = copy folders. `/s` or `/e` = subfolders, `/i` = destination is a folder, `/y` = no questions, `/h` = hidden files.'
+- n: 44
+  term: robocopy
+  fullForm: Robust File Copy
+  difficulty: 3
+  objective: Copy folders safely and smartly with robocopy, and know the danger of `/mir`.
+  summary: '`robocopy` is a professional folder-copying tool: it copies only new or changed files, gives a full report and resumes if interrupted.'
+  meaning: 'Its syntax is different: first the source folder, then the destination folder, then (optionally) the file pattern. `/e` = subfolders, `/mir` makes the destination a mirror of the source, `/l` only shows the list.'
+  usage: Regular backups, syncing folders, moving large amounts of files.
+  syntax: robocopy source destination [files] [/e] [/mir] [/l]
+  warning: '`/mir` deletes every file from the destination that isn''t in the source. If you swap source and destination, your backup can be wiped.'
+  demo:
+    start: C:\Users\Student
+    cmds:
+    - robocopy Documents D:\Sync /e
+  examples:
+  - c: robocopy Documents D:\Sync /e
+    d: Copy a folder with subfolders.
+  - c: robocopy Documents D:\Sync *.txt
+    d: Only txt files.
+  - c: robocopy Documents D:\Sync /e /l
+    d: Just show what would be copied.
+  - c: robocopy Documents D:\Mirror /mir
+    d: Full mirror (dangerous).
+    noTry: true
+  mistakes:
+  - Giving a file name as the source; robocopy always takes a folder.
+  - Thinking exit code 1 means an error; in robocopy it means “files were copied”.
+  tip: Running the same command again skips files that haven't changed; great for daily backups.
+  practice:
+  - id: P44a
+    start: C:\Users\Student
+    task: Use robocopy to copy the whole Pictures folder including subfolders to `E:\PicBackup`.
+    checks:
+    - type: fileExists
+      path: E:\PicBackup\beach.jpg
+    - type: fileExists
+      path: E:\PicBackup\Holidays\family.jpg
+    hints:
+    - '`robocopy` takes the source folder first, then the destination folder, and the switches last. You also need a switch to copy subfolders.'
+    - 'In order: the command (`robocopy`), the source (the Pictures folder), the destination (`E:\PicBackup`), the subfolder switch (`/e`).'
+    answer: robocopy Pictures E:\PicBackup /e
+    explain: '`robocopy` copies the contents of `Pictures` to `E:\PicBackup`, and `/e` makes sure subfolders like Holidays are copied too.'
+  - id: P44b
+    start: C:\Users\Student
+    task: Just see which files robocopy would copy from Documents to `D:\Test`, without actually copying them.
+    checks:
+    - type: anyCmd
+      value: robocopy
+      evenIfFailed: true
+    - type: switch
+      value: /l
+      cmd: robocopy
+      anyRun: true
+    - type: fileNotExists
+      path: D:\Test\menu.txt
+    - type: lastOutputIncludes
+      value: menu.txt
+    hints:
+    - The same `robocopy` structure (source, destination, switch), but with a switch that only lists what would be done and doesn't actually copy any file.
+    - 'In order: the command (`robocopy`), the source (Documents), the destination (`D:\Test`), the “list only” switch (`/l` for List).'
+    answer: robocopy Documents D:\Test /l
+    explain: '`/l` tells `robocopy` to only report which files it would copy from Documents to `D:\Test`; no files are copied.'
+  quiz:
+  - kind: mcq
+    q: What does an exit code of 1 after robocopy mean?
+    options:
+    - Files were copied successfully
+    - An error occurred
+    - There were no files
+    - Access was denied
+    answer: 0
+    explain: In robocopy, codes 0 to 7 mean success; 8 and above mean an error.
+  - kind: mcq
+    q: Which switch makes the destination exactly like the source and deletes the extra files?
+    options:
+    - /mir
+    - /e
+    - /l
+    - /s
+    answer: 0
+    code_options: true
+    explain: '`/mir` = Mirror; use with care.'
+  - kind: fix
+    q: This command doesn't work. Why?
+    code: robocopy menu.txt D:\Backup
+    options:
+    - The source must be a folder, and the file name comes after the destination
+    - You need to add `/mir`
+    - D:\Backup must not exist
+    - robocopy doesn't copy txt files
+    answer: 0
+    explain: 'Correct: `robocopy . D:\Backup menu.txt`'
+  recap: '`robocopy source destination [files]`. `/e` = subfolders, `/l` = test run, `/mir` = mirror (dangerous). Exit code below 8 = success.'

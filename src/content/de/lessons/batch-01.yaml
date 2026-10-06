@@ -1,0 +1,611 @@
+# Lessons 1–10 (Batch 1)
+# Fields: n, term, fullForm, summary, meaning, usage, syntax, terminal,
+#         tip, daily, restaurant, warning, practice[], quiz[]
+# Inline `code` is shown LTR in monospace.
+# Practice checks run against the sandbox (see engine/checker.js).
+
+- n: 1
+  term: CMD
+  fullForm: 'Command Prompt (cmd.exe)'
+  difficulty: 1
+  objective: 'Du verstehst, was CMD ist, und führst deinen ersten Befehl (Command) aus.'
+  summary: 'CMD ist ein Programm in Windows. Statt zu klicken, arbeitest du mit dem Computer, indem du Befehle eintippst.'
+  meaning: 'Die Kommandozeile von Windows: ein Fenster, das einen Befehl (Command) entgegennimmt, ausführt und das Ergebnis anzeigt.'
+  usage: 'Schnell mit Dateien arbeiten, Infos über System und Netzwerk ansehen, Probleme finden und wiederkehrende Aufgaben automatisieren.'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'ver'}
+    - {o: ''}
+    - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
+  tip: 'CMD unterscheidet nicht zwischen Groß- und Kleinbuchstaben: `DIR` und `dir` sind dasselbe.'
+  daily: 'Klicken ist wie ein Gericht auf einem Foto in der Speisekarte auszuwählen. CMD ist, als würdest du genau sagen, was du willst: schneller und genauer, wenn du die Sprache kennst.'
+  restaurant: 'CMD ist wie ein Kellner: Du sagst deine Bestellung (Command), er bringt sie in die Küche (Windows) und bringt dir das Ergebnis zurück.'
+  examples:
+    - c: 'ver'
+      d: 'Zeigt die Windows-Version an.'
+    - c: 'VER'
+      d: 'Gleiches Ergebnis: Groß- und Kleinschreibung ist egal.'
+  mistakes:
+    - 'Den Befehl im File Explorer oder im Browser eintippen statt im CMD-Fenster.'
+    - 'Angst, das System kaputt zu machen: Befehle, die nur etwas anzeigen, wie `ver`, ändern gar nichts.'
+  practice:
+    - id: P1a
+      start: 'C:\Users\Student'
+      task: 'Schreib den ersten Befehl deines Lebens: Zeig die Windows-Version an.'
+      checks: [{type: cmd, value: ver}, {type: ok}]
+      hints:
+        - 'Windows soll dir seine Version sagen. Der Befehl dafür ist eine Abkürzung genau dieses englischen Wortes: Version.'
+        - 'Du brauchst nur ein Wort: die ersten drei Buchstaben von Version. Tipp es ein und drück Enter, damit CMD es ausführt.'
+      answer: 'ver'
+      explain: '`ver` ist die Abkürzung für Version. Dieser Befehl braucht nichts weiter und gibt einfach die Windows-Version aus.'
+  quiz:
+    - kind: mcq
+      q: 'Wofür ist CMD in Windows da?'
+      options: ['Mit dem Computer arbeiten, indem man Befehle eintippt', 'Fotos bearbeiten', 'Im Internet surfen', 'Musik abspielen']
+      answer: 0
+      explain: 'In CMD tippst du Befehle, statt zu klicken.'
+    - kind: tf
+      q: 'In CMD ist der Befehl `DIR` etwas anderes als `dir`.'
+      answer: false
+      explain: 'CMD unterscheidet nicht zwischen Groß- und Kleinbuchstaben.'
+    - kind: type
+      q: 'Schreib einen Befehl, der die Windows-Version anzeigt.'
+      accept: ['ver']
+      explain: '`ver` ist die Abkürzung für Version.'
+  recap: 'CMD = mit Windows arbeiten, indem du Befehle tippst. Befehl eintippen, Enter drücken.'
+
+- n: 2
+  term: 'Terminal · Shell'
+  fullForm: 'Command Line Interface (CLI)'
+  difficulty: 1
+  objective: 'Du kennst den Unterschied zwischen Terminal, Shell und Command Line.'
+  summary: 'Command Line heißt: arbeiten, indem du Befehle tippst. Das Terminal ist das Fenster, in dem du tippst. Die Shell ist das Programm, das den Befehl versteht und ausführt.'
+  meaning: 'Terminal = das Fenster. Shell = das Gehirn, das den Befehl ausführt. In Windows sind `CMD` und `PowerShell` zwei Shells, und Windows Terminal ist ein Fenster, das beide anzeigen kann.'
+  usage: 'Wenn du weißt, welcher Teil was macht, verstehst du leichter, warum ein Befehl in CMD funktioniert, aber nicht in PowerShell oder Linux.'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'echo Hello'}
+    - {o: 'Hello'}
+  tip: 'In Windows 11 öffnet sich CMD meist in Windows Terminal. Es sieht anders aus, aber die Befehle sind dieselben.'
+  restaurant: 'Das Terminal ist der Tisch mit der Speisekarte: Hier bestellst du. Die Shell ist der Kellner, der die Bestellung versteht. Windows ist die Küche, die die eigentliche Arbeit macht.'
+  examples:
+    - c: 'echo Hello'
+      d: 'Die Shell gibt den Text Hello aus.'
+    - c: 'echo CMD Academy'
+      d: 'Jeder Text nach `echo` wird angezeigt.'
+  mistakes:
+    - 'CMD und PowerShell für dasselbe halten: Beide sind Shells, aber nicht alle ihre Befehle sind gleich.'
+    - 'Linux-Befehle wie `ls` in CMD ausführen.'
+  practice:
+    - id: P2a
+      start: 'C:\Users\Student'
+      task: 'Sag der Shell, dass sie das Wort Hello ausgeben soll. Um Text auszugeben, benutzt du den Befehl `echo`.'
+      checks: [{type: cmd, value: echo}, {type: argIncludes, value: hello}]
+      hints:
+        - 'Damit die Shell einen Text auf dem Bildschirm ausgibt, benutzt du `echo`. Den Text, der erscheinen soll, schreibst du dahinter.'
+        - 'Zwei Teile: Was tun? (`echo`, also „gib aus“) Was genau? (das Wort Hello). Die beiden trennst du mit einem Leerzeichen (Space).'
+      answer: 'echo Hello'
+      explain: '`echo` sagt der Shell „gib aus“, und alles, was danach kommt, hier `Hello`, wird genau so auf dem Bildschirm angezeigt.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Antwort ist eine Shell?'
+      options: ['CMD', 'Monitor', 'Keyboard', 'File Explorer']
+      answer: 0
+      explain: 'CMD versteht Befehle und führt sie aus, also ist es eine Shell.'
+    - kind: mcq
+      q: 'Was ist ein Terminal?'
+      options: ['Ein Fenster, in das du Befehle tippst', 'Eine Art Datei', 'Ein Laufwerk', 'Ein Virus']
+      answer: 0
+      explain: 'Das Terminal ist die Anzeige-Oberfläche; die Shell arbeitet darin.'
+    - kind: tf
+      q: 'PowerShell ist auch eine Shell.'
+      answer: true
+      explain: 'PowerShell ist eine weitere Shell in Windows, zu der wir später in CMD Academy kommen.'
+  recap: 'Terminal = das Fenster. Shell = führt den Befehl aus. CMD ist eine Shell in Windows.'
+
+- n: 3
+  term: 'Win + R'
+  fullForm: 'Run → cmd → Enter'
+  difficulty: 1
+  objective: 'Du öffnest CMD und verstehst, was der Prompt ist.'
+  summary: 'Der einfachste Weg, CMD zu öffnen, hat drei Schritte. Wenn CMD offen ist, siehst du eine Zeile wie `C:\Users\Student>`. Diese Zeile heißt Prompt (Eingabeaufforderung) und bedeutet: CMD ist bereit für deinen Befehl.'
+  steps:
+    - 'Drück die Tasten `Win` und `R` gleichzeitig. Ein kleines Fenster namens Run (Ausführen) öffnet sich.'
+    - 'Schreib in das Run-Fenster: `cmd`'
+    - 'Drück die Taste `Enter`.'
+    - 'Das Fenster Command Prompt öffnet sich und du siehst den Prompt: `C:\Users\Student>`'
+  meaning: 'Der Prompt sagt dir zwei Dinge: 1) CMD ist bereit und wartet auf deinen Befehl. 2) In welchem Ordner (Folder) du gerade bist, hier im Ordner `C:\Users\Student`. Das Zeichen `>` am Ende des Prompts heißt „ab hier schreiben“.'
+  usage: 'Weitere Wege, CMD zu öffnen: Öffne das Startmenü, tippe `cmd` und drück Enter. Oder schreib `cmd` in die Adressleiste des File Explorers, dann öffnet sich CMD direkt in diesem Ordner.'
+  terminal:
+    - {o: 'Microsoft Windows [Version 10.0.22631.4317]'}
+    - {o: '(c) Microsoft Corporation. All rights reserved.'}
+    - {o: ''}
+    - {p: 'C:\Users\Student>', c: ''}
+  tip: 'Der Prompt gehört nicht zum Befehl und du tippst ihn nicht ein; CMD zeigt ihn selbst an. Du schreibst nur nach dem Zeichen `>`.'
+  daily: 'Der Prompt ist wie die „Bereit“-Anzeige am Kartenlesegerät: Wenn sie leuchtet, wartet das Gerät auf dich.'
+  restaurant: 'CMD öffnen ist wie sich im Restaurant an den Tisch setzen. Der Prompt ist der Kellner, der am Tisch steht und fragt: „Was darf ich Ihnen bringen?“'
+  examples:
+    - c: 'ver'
+      d: 'Schreib nach dem Prompt einen Befehl, zum Beispiel `ver` aus Lektion 1, und drück Enter. CMD gibt die Antwort aus und zeigt danach wieder den Prompt.'
+  mistakes:
+    - 'Den Prompt selbst vor dem Befehl eintippen, zum Beispiel `C:\Users\Student>ver`. Schreib nur `ver`.'
+    - '`cmd` in die Suchleiste des Browsers schreiben statt in das Run-Fenster.'
+  practice:
+    - id: P3a
+      start: 'C:\Users\Student'
+      task: 'CMD ist offen und der Prompt (`C:\Users\Student>`) ist bereit. Schreib nach dem Prompt den Befehl `ver`, den du in Lektion 1 gesehen hast, und drück Enter. Tipp den Prompt selbst nicht ein.'
+      checks: [{type: cmd, value: ver}, {type: ok}]
+      hints:
+        - 'Den Prompt zeigt CMD selbst an. Du schreibst nur den Befehl nach dem Zeichen `>`.'
+        - 'Tipp nur die drei Buchstaben des Befehls, der die Windows-Version anzeigt (Abkürzung von Version), ohne `C:\Users\Student>`, und drück dann Enter.'
+      answer: 'ver'
+      explain: 'CMD hat auf einen Befehl gewartet (der Prompt war bereit). Du hast nur den Befehl `ver` geschrieben, und CMD hat die Windows-Version angezeigt.'
+  quiz:
+    - kind: mcq
+      q: 'Welches Tastenkürzel öffnet das Run-Fenster?'
+      options: ['Win + R', 'Ctrl + C', 'Alt + F4', 'Win + D']
+      answer: 0
+      explain: 'Win + R öffnet das Run-Fenster; dann schreibst du `cmd` und drückst Enter.'
+    - kind: tf
+      q: 'Du musst `C:\Users\Student>` auch selbst eintippen.'
+      answer: false
+      explain: 'Das ist der Prompt, und CMD zeigt ihn selbst an. Du schreibst nur nach dem `>`.'
+    - kind: mcq
+      q: 'Was schreibst du in das Run-Fenster, damit CMD sich öffnet?'
+      options: ['cmd', 'run', 'open', 'start']
+      answer: 0
+      code_options: true
+      explain: 'Das Programm heißt `cmd`.'
+    - kind: order
+      q: 'Bring die Schritte zum Öffnen von CMD in die richtige Reihenfolge.'
+      items: ['Win + R', 'cmd', 'Enter']
+      explain: 'Zuerst das Run-Fenster mit Win + R, dann `cmd` schreiben, zum Schluss Enter.'
+    - kind: mcq
+      q: 'Was bedeutet der Prompt (zum Beispiel `C:\Users\Student>`)?'
+      options: ['CMD ist bereit für einen Befehl', 'Eine Fehlermeldung', 'Ein Befehl, den du eintippen musst', 'Der Name einer geöffneten Datei']
+      answer: 0
+      explain: 'Der Prompt bedeutet, dass CMD auf deinen Befehl wartet, und zeigt, in welchem Ordner du bist.'
+  recap: '① Win + R ② `cmd` ③ Enter. Der Prompt heißt: CMD ist bereit; du schreibst nur nach dem `>`.'
+
+- n: 4
+  term: 'dir Pictures /w'
+  fullForm: 'Command · Argument · Switch'
+  difficulty: 1
+  objective: 'Du kennst die drei Teile eines Befehls: Command, Argument und Switch.'
+  summary: 'Die meisten CMD-Befehle bestehen aus mehreren Teilen, getrennt durch Leerzeichen (Space): Command (was tun?), Argument oder Ziel (Target: womit?) und Switch (Schalter: wie?). Nicht jeder Befehl hat alle Teile.'
+  anatomy:
+    cmd: 'dir Pictures /w'
+    parts:
+      - {t: 'dir', role: command, d: 'Command: die Aufgabe, die CMD erledigen soll. `dir` heißt „liste den Inhalt des Ordners auf“.'}
+      - {t: 'Pictures', role: argument, d: 'Argument / Target: das, womit der Befehl arbeitet. Hier der Ordner Pictures.'}
+      - {t: '/w', role: switch, d: 'Switch: eine Option, die ändert, wie der Befehl arbeitet oder das Ergebnis anzeigt. `/w` heißt kompakte Liste in mehreren Spalten (Wide).'}
+  meaning: 'Ein Switch ist eine Option, die die Arbeitsweise eines Befehls ändert. Der Befehl macht dieselbe Aufgabe, nur auf andere Art oder mit anderer Anzeige. Die meisten Switches in CMD beginnen mit `/` (wie `/w` oder `/?`), aber manche Befehle schreiben Switches mit `-`, zum Beispiel `ping -n 2`.'
+  usage: 'Wenn du den Aufbau kennst, kannst du jeden neuen Befehl leicht lesen und verstehst auch die Windows-Hilfe (`/?`).'
+  syntax: 'command [argument] [/switch]'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'dir Pictures /w'}
+  tip: 'Zwischen den Teilen brauchst du ein Leerzeichen. `dirPictures` ist ein unbekanntes Wort. Mit `/?` nach einem Befehl siehst du seine Hilfe.'
+  restaurant: '„Bring einen Kaffee, ohne Zucker.“ „Bring“ ist der Command (was tun?), „Kaffee“ das Argument (womit?) und „ohne Zucker“ der Switch (wie?).'
+  examples:
+    - c: 'dir'
+      d: 'Nur Command: Inhalt des aktuellen Ordners.'
+    - c: 'dir Documents'
+      d: 'Command + Argument: Inhalt des Ordners Documents.'
+    - c: 'dir /w'
+      d: 'Command + Switch: Inhalt des aktuellen Ordners, kompakt.'
+    - c: 'dir Documents /w'
+      d: 'Command + Argument + Switch: Inhalt von Documents, kompakt.'
+  mistakes:
+    - 'Argument ohne Leerzeichen an den Command hängen, zum Beispiel `dirDocuments`.'
+    - '`\` statt `/` für einen Switch benutzen, zum Beispiel `dir \w`.'
+  practice:
+    - id: P4a
+      start: 'C:\Users\Student'
+      task: 'Sieh dir den Inhalt des Ordners Documents in kompakter Form (Wide) an.'
+      checks: [{type: cmd, value: dir}, {type: argIncludes, value: documents}, {type: switch, value: '/w'}, {type: ok}]
+      hints:
+        - 'Um den Inhalt eines Ordners zu sehen, benutzt du `dir`. Dann schreibst du den Ordnernamen und am Ende den Switch, der die Anzeige kompakt (Wide) macht.'
+        - 'Drei Fragen, drei Teile: Was tun? (`dir`) Womit? (Ordnername) Wie anzeigen? (Switch: erster Buchstabe von Wide mit `/`). Dazwischen jeweils ein Leerzeichen.'
+      answer: 'dir Documents /w'
+      explain: '`dir` legt die Aufgabe fest (Inhalt auflisten), `Documents` sagt, welcher Ordner, und `/w` zeigt das Ergebnis kompakt in mehreren Spalten.'
+    - id: P4b
+      start: 'C:\Users\Student'
+      task: 'Sieh dir die Hilfe zum Befehl `cd` an. Der Hilfe-Switch in CMD ist `/?`.'
+      checks: [{type: cmd, value: cd}, {type: switch, value: '/?'}]
+      hints:
+        - 'Auch die Hilfe ist ein Switch: Schreib den Command und häng den Hilfe-Switch dahinter.'
+        - 'Der Command ist hier `cd`, und der Switch besteht aus `/` und einem Fragezeichen. Dazwischen ein Leerzeichen.'
+      answer: 'cd /?'
+      explain: '`cd` ist der Command und `/?` ein Switch, der statt den Befehl auszuführen seine Hilfe anzeigt.'
+  quiz:
+    - kind: predict
+      q: 'Welcher Teil dieses Befehls ist der Switch?'
+      code: 'dir Pictures /w'
+      options: ['/w', 'dir', 'Pictures', 'Keiner']
+      answer: 0
+      code_options: true
+      explain: '`/w` ist eine Option, die die Anzeige ändert, also ein Switch. `dir` ist der Command und `Pictures` das Argument.'
+    - kind: fix
+      q: 'Was ist an diesem Befehl falsch?'
+      code: 'dirPictures'
+      options: ['Zwischen Command und Argument fehlt das Leerzeichen', 'Pictures muss großgeschrieben werden', 'Es fehlt ein Switch', 'Nichts, er ist richtig']
+      answer: 0
+      explain: 'CMD sieht `dirPictures` als einen einzigen, unbekannten Befehlsnamen.'
+    - kind: tf
+      q: 'In CMD beginnen Switches meistens mit `/`.'
+      answer: true
+      explain: 'Die meisten Switches wie `/w` oder `/?` beginnen mit `/`, aber nicht immer; `ping` benutzt zum Beispiel `-n`.'
+    - kind: mcq
+      q: 'Welche Rolle hat `Pictures` in `dir Pictures /w`?'
+      options: ['Argument (womit?)', 'Command (was tun?)', 'Switch (wie?)', 'Prompt']
+      answer: 0
+      explain: '`Pictures` ist das, womit `dir` arbeitet: das Argument oder Ziel (Target).'
+  recap: 'Command = was tun, Argument = womit, Switch = wie. Beispiel: `dir` + `Pictures` + `/w`.'
+
+- n: 5
+  term: 'File · Folder'
+  fullForm: 'File · Folder (Directory)'
+  difficulty: 1
+  objective: 'Du kennst den Unterschied zwischen Datei (File) und Ordner (Folder) und weißt, wofür die Extension da ist.'
+  summary: 'Eine Datei (File) ist ein Dokument, ein Bild oder ein Programm. Ein Ordner (Folder) ist eine Kiste, die Dateien und weitere Ordner enthält.'
+  meaning: 'Ein Dateiname hat meist zwei Teile: den Namen und die Extension (Dateiendung), zum Beispiel `report.txt`. In der Ausgabe von `dir` sind Ordner mit `<DIR>` markiert.'
+  usage: 'Fast alles in CMD dreht sich um Dateien und Ordner: ansehen, erstellen, kopieren, verschieben und löschen.'
+  terminal:
+    - {p: 'C:\Users\Student\Documents>', c: 'dir'}
+    - {o: '09/28/2026  10:15 AM    <DIR>          Work'}
+    - {o: '10/01/2026  06:40 PM                80 menu.txt'}
+    - {o: '10/01/2026  06:40 PM                55 todo.txt'}
+  tip: 'Die Extension zeigt die Art der Datei: `.txt` Text, `.jpg` Bild, `.mp3` Audio, `.exe` Programm.'
+  daily: 'Ein Kleiderschrank: Jede Schublade ist ein Ordner und jedes Kleidungsstück eine Datei. Eine Schublade kann auch eine kleinere Schublade enthalten.'
+  restaurant: 'In der Küche sind die Regale die Ordner und die Vorratsdosen die Dateien. Das Etikett auf der Dose (Zucker, Salz) ist wie die Extension: Es sagt, was für eine Art Inhalt darin ist.'
+  examples:
+    - c: 'dir'
+      d: 'Ordner werden mit `<DIR>` angezeigt, Dateien mit ihrer Größe.'
+    - c: 'dir *.txt'
+      d: 'Nur Dateien mit der Text-Extension.'
+  mistakes:
+    - 'Die Extension im Dateinamen vergessen, zum Beispiel `type notes` statt `type notes.txt`.'
+    - 'Glauben, dass das Ändern der Extension die echte Art der Datei ändert.'
+  practice:
+    - id: P5a
+      start: 'C:\Users\Student\Documents'
+      task: 'Du bist in Documents. Sieh nach, welche Dateien und Ordner hier sind.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: cwd, value: 'C:\Users\Student\Documents'}]
+      hints:
+        - 'Du willst den Inhalt genau des Ordners sehen, in dem du gerade bist (Documents). Derselbe Befehl, der in Lektion 4 den Inhalt eines Ordners aufgelistet hat, funktioniert auch hier.'
+        - 'Du brauchst nur einen Teil: Was tun? (Befehl mit drei Buchstaben, vom Wort Directory). Kein Argument nötig: Ohne Ordnernamen zeigt der Befehl den Inhalt des aktuellen Ordners.'
+      answer: 'dir'
+      explain: '`dir` ohne Argument listet den Inhalt des Ordners auf, in dem du gerade bist: Ordner mit `<DIR>`, Dateien mit ihrer Größe.'
+    - id: P5b
+      start: 'C:\Users\Student\Documents'
+      task: 'Zeig den Inhalt der Datei `todo.txt` an. (Der Befehl `type` zeigt den Inhalt einer Textdatei.)'
+      checks: [{type: cmd, value: type}, {type: argIncludes, value: todo.txt}, {type: ok}]
+      hints:
+        - 'Um den Text in einer Datei zu sehen, benutzt du `type`. Danach musst du sagen, welche Datei: den vollen Namen samt Extension.'
+        - 'Zwei Teile: Was tun? (`type`) Womit? (Dateiname + Extension `.txt`). Wenn du die Extension vergisst, findet CMD die Datei nicht.'
+      answer: 'type todo.txt'
+      explain: '`type` ist der Befehl zum Anzeigen einer Textdatei und `todo.txt` sein Argument, also die Datei, die gelesen werden soll.'
+  quiz:
+    - kind: mcq
+      q: 'Was bedeutet `<DIR>` in der Ausgabe von `dir`?'
+      options: ['Dieser Eintrag ist ein Ordner', 'Die Datei ist beschädigt', 'Die Datei ist versteckt', 'Das ist ein Laufwerk']
+      answer: 0
+      explain: '`<DIR>` steht für Directory, also einen Ordner.'
+    - kind: mcq
+      q: 'Welche Extension hat die Datei `song.mp3`?'
+      options: ['.mp3', 'song', 'song.mp3', 'mp']
+      answer: 0
+      code_options: true
+      explain: 'Der Teil nach dem letzten Punkt ist die Extension.'
+    - kind: predict
+      q: 'Wie viele Ordner sind in dieser Ausgabe?'
+      code: "<DIR>          Work\n<DIR>          Photos\n          80 menu.txt"
+      options: ['2', '1', '3', '0']
+      answer: 0
+      explain: 'Zwei Zeilen haben `<DIR>`: Work und Photos.'
+  recap: 'Datei (File) = Inhalt mit Extension. Ordner (Folder) = Behälter für Dateien, in `dir` an `<DIR>` zu erkennen.'
+
+- n: 6
+  term: 'C:  D:  E:'
+  fullForm: 'Drive letter'
+  difficulty: 1
+  objective: 'Du kennst Laufwerke (Drives) und wechselst zwischen ihnen.'
+  summary: 'Ein Laufwerk (Drive) ist ein Speicherort, zum Beispiel eine Festplatte oder ein USB-Stick. Jedes Laufwerk hat einen Buchstaben. Um dorthin zu wechseln, schreibst du den Buchstaben und einen Doppelpunkt.'
+  meaning: '`C:` ist meist das Laufwerk, auf dem Windows installiert ist. `D:` kann eine zweite Festplatte oder Partition sein, und `E:` ist oft ein USB-Stick.'
+  usage: 'Um mit Dateien auf einem USB-Stick oder einer anderen Festplatte zu arbeiten, musst du zuerst zu diesem Laufwerk wechseln.'
+  syntax: 'D:'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'D:'}
+    - {p: 'D:\>', c: ''}
+  tip: 'Der Doppelpunkt ist nötig. Wenn du nur `D` schreibst, hält CMD das für einen unbekannten Befehl.'
+  restaurant: 'Eine Restaurantkette hat mehrere Filialen. Jedes Laufwerk ist eine Filiale mit eigenem Buchstaben. Mit `D:` gehst du in die Filiale D.'
+  examples:
+    - c: 'D:'
+      d: 'Zum Laufwerk D wechseln.'
+    - c: 'C:'
+      d: 'Zurück zum Laufwerk C.'
+    - c: 'vol'
+      d: 'Name und Seriennummer des aktuellen Laufwerks.'
+  mistakes:
+    - '`cd D:` schreiben, um zu einem anderen Laufwerk zu wechseln; nur `D:` reicht.'
+    - 'Den Doppelpunkt vergessen: `D` allein ist ein unbekannter Befehl.'
+  practice:
+    - id: P6a
+      start: 'C:\Users\Student'
+      task: 'Wechsle zum Laufwerk D.'
+      checks: [{type: drive, value: D}]
+      hints:
+        - 'Um zu einem anderen Laufwerk zu wechseln, brauchst du keinen besonderen Befehl. Du schreibst nur den Buchstaben des Laufwerks und dahinter ein bestimmtes Zeichen.'
+        - 'Zwei Teile, ohne Leerzeichen: der Laufwerksbuchstabe (`D`) und direkt danach ein Doppelpunkt. Ohne Doppelpunkt hält CMD es für einen unbekannten Befehl.'
+      answer: 'D:'
+      explain: '`D:` heißt „wechsle zum Laufwerk D“. Der Doppelpunkt sagt CMD, dass dieser Buchstabe der Name eines Laufwerks ist und kein Befehl.'
+    - id: P6b
+      start: 'C:\Users\Student'
+      task: 'Der virtuelle USB-Stick ist Laufwerk E. Wechsle dorthin und sieh dir seinen Inhalt an.'
+      checks: [{type: drive, value: E}, {type: cmd, value: dir}, {type: ok}]
+      hints:
+        - 'Diese Übung hat zwei Schritte: Zuerst wechselst du zum Laufwerk E, dann siehst du dir mit dem Befehl aus den letzten Lektionen den Inhalt an.'
+        - 'Schritt 1: Laufwerksbuchstabe und Doppelpunkt, dann Enter. Schritt 2: der Befehl mit drei Buchstaben zum Anzeigen des Inhalts, dann Enter. Führe jeden Befehl einzeln aus.'
+      multi: true
+      answer: ['E:', 'dir']
+      explain: '`E:` bringt dich zum Laufwerk E (USB-Stick), und danach listet `dir` den Inhalt dort auf, denn der Prompt steht jetzt auf `E:\`.'
+  quiz:
+    - kind: mcq
+      q: 'Auf welchem Laufwerk ist Windows meistens installiert?'
+      options: ['C:', 'A:', 'E:', 'Z:']
+      answer: 0
+      code_options: true
+      explain: 'Normalerweise ist Windows auf `C:`.'
+    - kind: type
+      q: 'Schreib einen Befehl, der zum Laufwerk D wechselt.'
+      accept: ['d:']
+      show: 'D:'
+      explain: 'Laufwerksbuchstabe und Doppelpunkt: `D:`'
+    - kind: fix
+      q: 'Warum funktioniert dieser Befehl nicht?'
+      code: 'D'
+      options: ['Der Doppelpunkt nach dem Laufwerksbuchstaben fehlt', 'Er muss kleingeschrieben werden', 'Laufwerk D gibt es nicht', 'Man muss zuerst cd schreiben']
+      answer: 0
+      explain: 'Um das Laufwerk zu wechseln, musst du `D:` schreiben.'
+  recap: 'Jedes Laufwerk hat einen Buchstaben. Mit Buchstabe und `:` wechselst du zu diesem Laufwerk.'
+
+- n: 7
+  term: 'Current Directory'
+  fullForm: 'Directory = Folder'
+  difficulty: 1
+  objective: 'Du weißt, in welchem Ordner du gerade bist und was der Prompt dir sagt.'
+  summary: 'Directory ist dasselbe wie Folder (Ordner). Der aktuelle Ordner (Current Directory) ist der Ordner, in dem du gerade bist; er steht im Prompt.'
+  meaning: 'Bei `C:\Users\Student\Music>` ist der aktuelle Ordner `Music`. Befehle arbeiten standardmäßig in genau diesem Ordner.'
+  usage: 'Der Befehl `cd` ohne Argument gibt den aktuellen Ordner (Current Directory) aus.'
+  syntax: 'cd'
+  terminal:
+    - {p: 'C:\Users\Student\Music>', c: 'cd'}
+    - {o: 'C:\Users\Student\Music'}
+  tip: 'Jedes Laufwerk merkt sich seinen eigenen aktuellen Ordner. Wenn du zu D wechselst und zurückkommst, bist du auf C wieder an derselben Stelle wie vorher.'
+  daily: 'Wenn du in der Küche bist und jemand sagt „Mach das Licht an“, machst du das Licht in dem Raum an, in dem du gerade bist.'
+  restaurant: 'Der Kellner nimmt nur am Tisch Bestellungen auf, an dem er gerade steht. Der aktuelle Ordner ist der Tisch, an dem du gerade bist.'
+  examples:
+    - c: 'cd'
+      d: 'Gibt den Pfad des aktuellen Ordners aus.'
+    - c: 'dir'
+      d: 'Inhalt genau dieses aktuellen Ordners.'
+  mistakes:
+    - 'Einen Befehl für eine Datei ausführen, die nicht im aktuellen Ordner liegt, und sich über die Meldung File Not Found wundern.'
+    - 'Den Prompt nicht beachten: Schau vor jedem Befehl, wo du gerade bist.'
+  practice:
+    - id: P7a
+      start: 'C:\Users\Student\Music'
+      task: 'Gib den aktuellen Ordner (Current Directory) aus, ohne den Ordner zu wechseln.'
+      checks: [{type: cmd, value: cd}, {type: noArgs}, {type: cwd, value: 'C:\Users\Student\Music'}]
+      hints:
+        - 'Der Befehl, mit dem man Ordner wechselt (`cd`), sagt dir nur, wo du gerade bist, wenn du nichts dahinter schreibst.'
+        - 'Nur ein Teil: Was tun? (`cd`). Ohne Argument und ohne Switch. Wenn du einen Ordnernamen dazuschreibst, wechselst du den Ordner, statt den Pfad auszugeben.'
+      answer: 'cd'
+      explain: '`cd` ohne Argument ändert nichts und gibt nur den Pfad des aktuellen Ordners aus, also `C:\Users\Student\Music`.'
+  quiz:
+    - kind: mcq
+      q: 'Welcher ist im folgenden Prompt der aktuelle Ordner (Current Directory)?'
+      code: 'C:\Users\Student\Music>'
+      options: ['C:\Users\Student\Music', 'C:\', 'C:\Users', 'Student']
+      answer: 0
+      code_options: true
+      explain: 'Alles vor dem `>` ist der aktuelle Ordner.'
+    - kind: tf
+      q: 'Directory und Folder bedeuten dasselbe.'
+      answer: true
+      explain: 'Directory ist der etwas technischere Name für Folder (Ordner).'
+    - kind: type
+      q: 'Schreib einen Befehl, der den aktuellen Ordner (Current Directory) anzeigt.'
+      accept: ['cd', 'chdir']
+      explain: '`cd` ohne Argument.'
+  recap: 'Aktueller Ordner (Current Directory) = wo du gerade bist. Der Prompt und `cd` allein zeigen ihn an.'
+
+- n: 8
+  term: 'Path'
+  fullForm: 'C:\Users\Student\Documents\todo.txt'
+  difficulty: 1
+  objective: 'Du verstehst den Aufbau eines Pfads (Path) und die Rolle von `\`.'
+  summary: 'Ein Pfad (Path) ist die Adresse einer Datei oder eines Ordners. Die Ordnernamen werden mit `\` (Backslash) getrennt.'
+  meaning: 'Lies den Pfad von links nach rechts: Laufwerk `C:` → Ordner `Users` → `Student` → `Documents` → Datei `todo.txt`.'
+  usage: 'Jedes Mal, wenn du CMD sagst, mit welcher Datei oder welchem Ordner es arbeiten soll, gibst du eigentlich einen Pfad an.'
+  syntax: 'Drive:\Folder\Folder\File'
+  terminal:
+    - {p: 'C:\Users\Student>', c: 'cd Documents\Work'}
+    - {p: 'C:\Users\Student\Documents\Work>', c: ''}
+  tip: 'Windows benutzt für Pfade `\`. Das Zeichen `/` ist in CMD für Switches da.'
+  daily: 'Ein Pfad ist wie eine Postadresse: Stadt, Straße, Hausnummer, Wohnung. Jeder Teil bringt dich einen Schritt näher ans Ziel.'
+  examples:
+    - c: 'dir C:\Users\Student\Documents'
+      d: 'Inhalt eines Ordners mit vollständigem Pfad.'
+    - c: 'type C:\Users\Student\Desktop\notes.txt'
+      d: 'Eine Datei mit vollständigem Pfad lesen.'
+  mistakes:
+    - '`/` statt `\` im Pfad benutzen.'
+    - 'Die Anführungszeichen bei einem Pfad mit Leerzeichen vergessen, zum Beispiel `"shopping list.txt"`.'
+  practice:
+    - id: P8a
+      start: 'C:\Users\Student'
+      task: 'Wechsle in den Ordner Documents.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents'}]
+      hints:
+        - 'Um in einen Ordner hineinzugehen, benutzt du `cd` (Change Directory) und sagst ihm, welcher Ordner das Ziel ist.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (Name des Zielordners; Documents liegt direkt in diesem Ordner, also reicht der Name). Danach ändert sich der Prompt.'
+      answer: 'cd Documents'
+      explain: '`cd` heißt „wechsle den Ordner“ und `Documents` ist das Ziel. Weil Documents direkt in `C:\Users\Student` liegt, reicht sein Name.'
+    - id: P8b
+      start: 'C:\Users\Student'
+      task: 'Wechsle mit einem einzigen Befehl direkt in den Ordner Work, der in Documents liegt.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents\Work'}, {type: cmd, value: cd}]
+      hints:
+        - 'Work liegt in Documents. Statt zweimal `cd` kannst du einen Pfad angeben, der beide Ordner hintereinander enthält.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (ein Pfad: zuerst `Documents`, dann das Trennzeichen `\`, dann `Work`). Benutze nicht `/`, das ist für Switches.'
+      answer: 'cd Documents\Work'
+      explain: '`cd` mit dem Pfad `Documents\Work` geht in einem Schritt zwei Ebenen tiefer: zuerst in Documents, dann in Work. Das Zeichen `\` trennt die Ordnernamen.'
+  quiz:
+    - kind: mcq
+      q: 'Welches Zeichen trennt in einem Windows-Pfad die Ordner?'
+      options: ['\', '/', '-', '|']
+      answer: 0
+      code_options: true
+      explain: 'Windows benutzt den Backslash.'
+    - kind: predict
+      q: 'Wie heißt die Datei in diesem Pfad?'
+      code: 'C:\Users\Student\Pictures\cat.jpg'
+      options: ['cat.jpg', 'Pictures', 'Student', 'C:']
+      answer: 0
+      code_options: true
+      explain: 'Der letzte Teil des Pfads ist die Datei selbst.'
+    - kind: mcq
+      q: 'In welchem Ordner liegt die Datei `cat.jpg` im Pfad oben?'
+      options: ['Pictures', 'Users', 'Student', 'C:']
+      answer: 0
+      code_options: true
+      explain: 'Der Teil direkt vor dem Dateinamen ist ihr Ordner.'
+  recap: 'Pfad (Path) = Adresse einer Datei oder eines Ordners. Die Teile werden mit `\` getrennt. Pfade mit Leerzeichen kommen in `" "`.'
+
+- n: 9
+  term: 'Absolute Path'
+  fullForm: 'C:\Users\Student\Pictures'
+  difficulty: 1
+  objective: 'Du kennst den absoluten Pfad (Absolute Path) und kommst damit von überall überallhin.'
+  summary: 'Ein absoluter Pfad (Absolute Path) ist die vollständige Adresse. Er beginnt mit dem Laufwerk oder mit dem Stammordner `\`. Egal, wo du gerade bist: Er führt immer zum selben Ziel.'
+  meaning: 'Wenn ein Pfad mit einem Laufwerksbuchstaben (wie `C:\`) oder mit `\` beginnt, ist er absolut.'
+  usage: 'Wenn du nicht weißt, wo du gerade bist, oder das Ziel weit weg ist, ist der absolute Pfad der sicherste Weg.'
+  syntax: 'cd C:\Folder\Folder'
+  terminal:
+    - {p: 'C:\Windows\System32>', c: 'cd C:\Users\Student\Pictures'}
+    - {p: 'C:\Users\Student\Pictures>', c: ''}
+  tip: '`cd` allein wechselt nicht das Laufwerk. Wenn das Ziel auf einem anderen Laufwerk liegt, benutze `cd /d` (Lektion 14).'
+  daily: 'Wenn du einem Kurier die vollständige Postadresse gibst, kommt er von jedem Ort der Stadt zum selben Haus.'
+  restaurant: '„Filiale C, Etage Users, Saal Student, Tisch Pictures.“ Jeder Kellner, der diese Adresse hört, findet von überall im Restaurant genau diesen Tisch.'
+  examples:
+    - c: 'cd C:\Users\Student\Pictures'
+      d: 'Von überall direkt nach Pictures.'
+    - c: 'dir C:\Windows'
+      d: 'C:\Windows ansehen, ohne dorthin zu wechseln.'
+  mistakes:
+    - 'Den Laufwerksbuchstaben oder das `\` am Anfang vergessen; dann wird der Pfad relativ (Relative).'
+    - 'Mit `cd` zu einem anderen Laufwerk wollen, ohne das Laufwerk zu wechseln.'
+  practice:
+    - id: P9a
+      start: 'C:\Windows\System32'
+      task: 'Du bist gerade in `C:\Windows\System32`. Wechsle mit einem absoluten Pfad nach `C:\Users\Student\Pictures`.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures'}, {type: usedCd, value: absolute}]
+      hints:
+        - 'Ein absoluter Pfad beginnt mit dem Laufwerksbuchstaben und enthält alle Ordner bis zum Ziel hintereinander. Gib so einen Pfad an `cd`.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (der vollständige Pfad der Reihe nach: `C:\` → `Users` → `Student` → `Pictures`, mit `\` zwischen den Ordnern).'
+      answer: 'cd C:\Users\Student\Pictures'
+      explain: '`cd` arbeitet mit dem absoluten Pfad `C:\Users\Student\Pictures`. Weil der Pfad mit `C:\` beginnt, ist es egal, dass du gerade in System32 bist.'
+    - id: P9b
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'Wechsle zum Stammordner (Root) von Laufwerk C, also nach `C:\`'
+      checks: [{type: cwd, value: 'C:\'}, {type: usedCd, value: absolute}]
+      hints:
+        - 'Der Stammordner ist die oberste Stelle eines Laufwerks. In einem Pfad schreibt man ihn als einzelnes Zeichen: das Trennzeichen zwischen Ordnern.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (zum Stammordner, also nur ein `\` oder der vollständige Pfad `C:\`).'
+      answer: 'cd \'
+      explain: '`\` allein bedeutet der Stammordner des aktuellen Laufwerks. Also bringt dich `cd \` aus jeder Tiefe direkt nach `C:\`.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Antwort ist ein absoluter Pfad (Absolute Path)?'
+      options: ['C:\Users\Student\Music', 'Music', '..\Music', 'Student\Music']
+      answer: 0
+      code_options: true
+      explain: 'Ein absoluter Pfad beginnt mit einem Laufwerk oder mit `\`.'
+    - kind: tf
+      q: 'Ein absoluter Pfad führt von jedem aktuellen Ordner aus zum selben Ergebnis.'
+      answer: true
+      explain: 'Denn er ist die vollständige Adresse und hängt nicht davon ab, wo du gerade bist.'
+    - kind: type
+      q: 'Wechsle mit einem absoluten Pfad in den Ordner `C:\Windows`.'
+      show: 'cd C:\Windows'
+      accept: ['cd c:\windows', 'cd \windows', 'chdir c:\windows', 'cd /d c:\windows']
+      explain: '`cd C:\Windows`'
+  recap: 'Ein absoluter Pfad beginnt mit dem Laufwerksbuchstaben und funktioniert von überall.'
+
+- n: 10
+  term: 'Relative Path'
+  fullForm: 'Documents\Work · ..'
+  difficulty: 1
+  objective: 'Du benutzt den relativen Pfad (Relative Path) sowie `.` und `..` richtig.'
+  summary: 'Ein relativer Pfad (Relative Path) wird vom aktuellen Ordner aus berechnet. Er beginnt nicht mit einem Laufwerk oder `\`, und sein Ergebnis hängt davon ab, wo du gerade bist.'
+  meaning: 'Wenn du in `C:\Users\Student` bist, bedeutet `cd Documents` dasselbe wie `C:\Users\Student\Documents`. Die zwei Punkte `..` bedeuten den übergeordneten Ordner (Parent).'
+  usage: 'Für kurze Wechsel zwischen nahe beieinander liegenden Ordnern ist das der schnellste Weg.'
+  syntax: 'cd Folder\Folder'
+  terminal:
+    - {p: 'C:\Users\Student\Documents>', c: 'cd Work'}
+    - {p: 'C:\Users\Student\Documents\Work>', c: 'cd ..'}
+    - {p: 'C:\Users\Student\Documents>', c: ''}
+  tip: 'Wenn du den Fehler `The system cannot find the path specified.` siehst, prüf zuerst mit `cd`, wo du bist.'
+  daily: '„Zwei Türen weiter von diesem Zimmer.“ Diese Adresse ergibt nur Sinn, wenn du weißt, in welchem Zimmer du gerade bist.'
+  restaurant: '„Wisch den Nachbartisch ab.“ Welchen Tisch? Das hängt davon ab, an welchem Tisch der Kellner gerade steht.'
+  examples:
+    - c: 'cd Documents'
+      at: 'C:\Users\Student'
+      d: 'In einen Ordner innerhalb des aktuellen Ordners wechseln.'
+    - c: 'cd ..'
+      d: 'In den übergeordneten Ordner wechseln.'
+    - c: 'dir ..\Pictures'
+      d: 'Den Nachbarordner ansehen.'
+  mistakes:
+    - 'Einen relativen Pfad benutzen, während du im falschen Ordner bist.'
+    - '`cd..` ohne Leerzeichen schreiben: Das funktioniert in CMD, aber die richtige Gewohnheit ist `cd ..`.'
+  practice:
+    - id: P10a
+      start: 'C:\Users\Student\Documents'
+      task: 'Du bist in Documents. Wechsle mit einem relativen Pfad in den Ordner Work.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Documents\Work'}, {type: usedCd, value: relative}]
+      hints:
+        - 'Bei einem relativen Pfad rechnest du die Adresse von dort aus, wo du gerade bist. Work liegt direkt in diesem Ordner, also reicht sein Name.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (nur der Ordnername, ohne `C:\` und ohne `\` am Anfang). Wenn du mit `C:\` beginnst, wird der Pfad absolut.'
+      answer: 'cd Work'
+      explain: '`Work` beginnt weder mit einem Laufwerk noch mit `\`, ist also relativ. CMD hängt es an den aktuellen Ordner an: `C:\Users\Student\Documents\Work`.'
+    - id: P10b
+      start: 'C:\Users\Student\Documents'
+      task: 'Wechsle von Documents mit einem relativen Pfad in den Ordner Pictures und sieh dir seinen Inhalt an. (Pictures liegt neben Documents, nicht darin.)'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures'}, {type: usedCd, value: relative}, {type: cmd, value: dir}, {type: ok}]
+      hints:
+        - 'Pictures liegt neben Documents, nicht darin. Du musst also zuerst einen Ordner nach oben gehen (`..`) und von dort in Pictures wechseln; danach siehst du dir den Inhalt an.'
+        - 'Zeile 1: `cd` mit einem zweiteiligen Pfad: „einen Ordner höher“ (`..`), das Trennzeichen `\`, dann der Name Pictures. Zeile 2: der Befehl zum Anzeigen des Inhalts.'
+      multi: true
+      answer: ['cd ..\Pictures', 'dir']
+      explain: '`..\Pictures` heißt „einen Ordner nach oben (zu Student) und dann in Pictures hinein“. Danach zeigt `dir` den Inhalt von Pictures.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Antwort ist ein relativer Pfad (Relative Path)?'
+      options: ['Documents\Work', 'C:\Users', '\Windows', 'D:\Backup']
+      answer: 0
+      code_options: true
+      explain: 'Er beginnt weder mit einem Laufwerk noch mit `\`.'
+    - kind: predict
+      q: 'Aktueller Ordner: `C:\Users\Student`. Wohin bringt dich dieser Befehl?'
+      code: 'cd Music'
+      options: ['C:\Users\Student\Music', 'C:\Music', 'D:\Music', 'Er gibt einen Fehler aus']
+      answer: 0
+      code_options: true
+      explain: 'Ein relativer Pfad wird an den aktuellen Ordner angehängt.'
+    - kind: predict
+      q: 'Aktueller Ordner: `C:\Users`. Was ist das Ergebnis dieses Befehls?'
+      code: 'cd Music'
+      options: ['Fehler: Ordner wird nicht gefunden', 'C:\Users\Music', 'C:\Users\Student\Music', 'C:\Music']
+      answer: 0
+      explain: 'In `C:\Users` gibt es keinen Ordner namens Music, also meldet CMD `The system cannot find the path specified.`'
+  recap: 'Ein relativer Pfad wird vom aktuellen Ordner aus berechnet. `.` = genau hier, `..` = einen Ordner höher.'

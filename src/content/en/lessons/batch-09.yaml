@@ -1,0 +1,602 @@
+# Lessons 78–87 · Chapter 11: logic, loops and menus
+
+- n: 78
+  term: if
+  fullForm: 'if (compare text)'
+  difficulty: 3
+  objective: 'Make decisions in a script by comparing two pieces of text.'
+  summary: '`if "A"=="B" command` runs the command only when both sides are the same. `/i` ignores upper and lower case, and `not` reverses the condition.'
+  meaning: 'The quotes around both sides matter: if the variable is empty, `if %x%==yes` turns into `if ==yes` and causes an error; but `if "%x%"=="yes"` turns into `if ""=="yes"`, which works fine.'
+  usage: 'Checking the user''s answer, checking whether an argument was given, running different parts of a script.'
+  syntax: "if \"%x%\"==\"text\" command\nif /i \"%x%\"==\"y\" command\nif not \"%1\"==\"\" command"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['Y']
+    files: [{path: 'C:\Users\Student\Desktop\like.bat', content: "@echo off\nset /p answer=Do you like CMD? (y/n) \nif /i \"%answer%\"==\"y\" echo Great!\nif /i not \"%answer%\"==\"y\" echo Maybe later.\n"}]
+    cmds: ['like.bat']
+  examples:
+    - c: 'if "%1"=="" echo No name given'
+      d: 'Checks whether the argument is empty.'
+      noTry: true
+    - c: 'if /i "%answer%"=="yes" echo OK'
+      d: 'Accepts both yes and YES.'
+      noTry: true
+  mistakes:
+    - 'Leaving out the quotes and getting the error `was unexpected at this time.` when the variable is empty.'
+    - 'Using a single `=`; for comparing you need `==`.'
+  tip: 'If you need several commands after the condition, put them inside parentheses `( )` (next lesson).'
+  practice:
+    - id: P78a
+      batch: {file: 'like.bat', starter: "@echo off\nset /p answer=Do you like CMD? (y/n) \n"}
+      inputs: ['Y']
+      task: 'The script asks the user whether they like CMD. If the answer is `y` or `Y`, print `Great!`. (Run it and type `y`.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\like.bat', value: ['if', '/i']}, {type: outputIncludes, value: 'Great!'}]
+      hints: ['You need to compare the user''s answer, stored in the variable `answer`, with `y`; use `if` for that. Because a capital `Y` must also be accepted, you need the `/i` switch.', 'Add one line at the end of the script with these parts: `if /i` → both sides of the comparison in quotes, i.e. `"%answer%"` and `"y"`, with `==` between them → finally the command to run: `echo` with the text `Great!`.']
+      answer: ['@echo off', 'set /p answer=Do you like CMD? (y/n) ', 'if /i "%answer%"=="y" echo Great!']
+      explain: '`if /i "%answer%"=="y"` compares the user''s answer with `y`, ignoring upper and lower case, and if they match, `echo Great!` runs. The quotes also prevent an error when the answer is empty.'
+    - id: P78b
+      batch: {file: 'hello.bat', starter: "@echo off\n", args: ''}
+      task: 'Write a script that shows the message `Please give a name` when it is run without an argument. (Run it without an argument.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\hello.bat', value: ['if', '%1']}, {type: outputIncludes, value: 'Please give a name'}]
+      hints: ['The first argument is in `%1`. If the script runs without an argument, `%1` is empty; so use `if` to check whether `%1` equals “nothing”.', 'Parts of the line: `if` → left side `"%1"` → `==` → right side an empty pair of quotes `""` → then `echo` with the message `Please give a name`.']
+      answer: ['@echo off', 'if "%1"=="" echo Please give a name']
+      explain: 'When no argument is given, `"%1"` becomes `""` and equals `""`, so `echo` shows the message. The quotes make the line work without an error even when `%1` is empty.'
+  quiz:
+    - kind: fix
+      q: 'This line causes an error when `%x%` is empty. What is the correct fix?'
+      code: 'if %x%==yes echo OK'
+      options: ['if "%x%"=="yes" echo OK', 'if %x%=yes echo OK', 'if (%x%)==yes echo OK', 'if x==yes echo OK']
+      answer: 0
+      code_options: true
+      explain: 'Quotes around both sides.'
+    - kind: mcq
+      q: 'What does `/i` do in `if`?'
+      options: ['Ignores upper and lower case', 'Reverses the condition', 'Compares numbers', 'Reads input']
+      answer: 0
+      explain: 'Ignore case.'
+    - kind: predict
+      q: '`answer` is `NO`. What is the output?'
+      code: "if \"%answer%\"==\"no\" echo A\nif /i \"%answer%\"==\"no\" echo B"
+      options: ['B', 'A', 'A and B', 'Nothing']
+      answer: 0
+      explain: 'Only with `/i` are upper and lower case treated as the same.'
+  recap: '`if "%x%"=="text" command`. Always use quotes. `/i` for case, `not` to reverse.'
+
+- n: 79
+  term: 'if ... else'
+  fullForm: 'else · number comparisons'
+  difficulty: 3
+  objective: 'Build two paths with `else` and compare numbers.'
+  summary: '`if condition ( ... ) else ( ... )` runs the first part if the condition is true, otherwise the second part. For numbers, use `equ neq lss leq gtr geq`.'
+  meaning: '`) else (` must be on one line. Operators: `equ` equal, `neq` not equal, `lss` less than, `leq` less than or equal, `gtr` greater than, `geq` greater than or equal. If both sides are numbers, the comparison is numeric.'
+  usage: 'Decisions based on age, number of files, size, or the result of a calculation.'
+  syntax: "if %n% geq 18 (\n  echo Adult\n) else (\n  echo Child\n)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['20']
+    files: [{path: 'C:\Users\Student\Desktop\age.bat', content: "@echo off\nset /p age=How old are you? \nif %age% geq 18 (\n  echo You are an adult.\n) else (\n  echo You are under 18.\n)\n"}]
+    cmds: ['age.bat']
+  examples:
+    - c: 'if %count% gtr 10 (echo Many) else (echo Few)'
+      d: 'Everything on one line.'
+      noTry: true
+    - c: 'if %errorlevel% neq 0 echo Something failed'
+      d: 'Checking for an error (lesson 81).'
+      noTry: true
+  mistakes:
+    - 'Writing `else` on the next line; `) else (` must be on one line.'
+    - 'Using `>` to compare: `if %a% > 5` creates a file named 5! Use `gtr`.'
+  tip: 'Write the commands inside the parentheses with indentation so the script stays readable.'
+  practice:
+    - id: P79a
+      batch: {file: 'age.bat', starter: "@echo off\nset /p age=How old are you? \n"}
+      inputs: ['20']
+      task: 'If the age entered is `18` or more, print `Adult`, otherwise print `Child`. (Try it with `20`.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\age.bat', value: ['geq', 'else']}, {type: outputIncludes, value: 'Adult'}, {type: outputExcludes, value: 'Child'}]
+      hints: ['You need two paths: one for `18` or more and one for everything else. Use `if ... else` and the number operator “greater than or equal”, which is `geq`.', 'Structure: the condition `if %age% geq 18` and an opening parenthesis with `echo Adult` inside → then `) else (` on one line → inside the else part the command `echo Child` → and finally close the parenthesis with `)`.']
+      answer: ['@echo off', 'set /p age=How old are you? ', 'if %age% geq 18 (', '  echo Adult', ') else (', '  echo Child', ')']
+      explain: '`geq` means “greater than or equal”, so with `20` the condition is true and the first part (`echo Adult`) runs. The part after `else` only runs when the age is less than `18`.'
+    - id: P79b
+      batch: {file: 'stock.bat', starter: "@echo off\nset /a pizzas=5\n"}
+      task: 'If the number of pizzas (`pizzas`) is greater than `3`, print `Enough pizza`, otherwise print `Order more`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\stock.bat', value: ['gtr', 'else']}, {type: outputIncludes, value: 'Enough pizza'}]
+      hints: ['Compare the value of `pizzas` with the number `3` and use `if ... else` to print one of the two messages. The “greater than” operator is `gtr` (not `>`).', 'Parts on one line: `if` → `%pizzas%` → `gtr 3` → first parenthesis with `echo Enough pizza` → `else` → second parenthesis with `echo Order more`.']
+      answer: ['@echo off', 'set /a pizzas=5', 'if %pizzas% gtr 3 (echo Enough pizza) else (echo Order more)']
+      explain: '`%pizzas%` is `5` and `5 gtr 3` is true, so the first parenthesis runs and `Enough pizza` is printed. If the number were `3` or less, the `else` part, `Order more`, would run.'
+  quiz:
+    - kind: mcq
+      q: 'Which operator means “less than”?'
+      options: ['lss', 'leq', 'gtr', 'neq']
+      answer: 0
+      code_options: true
+      explain: 'less.'
+    - kind: fix
+      q: 'This script causes an error. Why?'
+      code: "if %n% equ 1 (\n  echo one\n)\nelse (\n  echo other\n)"
+      options: ['`else` must be on the same line as `)`', '`equ` is wrong', 'The parentheses are unnecessary', 'n is not defined']
+      answer: 0
+      explain: 'Correct: `) else (`'
+    - kind: predict
+      q: 'Output?'
+      code: "set a=9\nif %a% lss 10 (echo small) else (echo big)"
+      options: ['small', 'big', 'small big', 'Error']
+      answer: 0
+      explain: '9 is less than 10.'
+  recap: '`if ... ( ) else ( )` with `) else (` on one line. Numbers: `equ neq lss leq gtr geq`.'
+
+- n: 80
+  term: 'if exist'
+  fullForm: 'if exist · if defined'
+  difficulty: 3
+  objective: 'Check whether a file or folder exists before working with it.'
+  summary: '`if exist path command` runs the command only if the file or folder exists. `if not exist` does the opposite. `if defined name` checks whether a variable is defined.'
+  meaning: 'A very common pattern: `if not exist "%dest%" mkdir "%dest%"` means “if the folder isn''t there, create it”. This prevents the `already exists` error and makes the script safe.'
+  usage: 'Creating a folder only when needed, copying only if the file is there, friendly error messages.'
+  syntax: "if exist file command\nif not exist folder mkdir folder\nif defined name command"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\check.bat', content: "@echo off\nif exist \"%USERPROFILE%\\Documents\\menu.txt\" (echo Menu found) else (echo No menu)\nif not exist Reports mkdir Reports\nif exist Reports echo Reports folder is ready\nif defined USERNAME echo USERNAME is defined\n"}]
+    cmds: ['check.bat', 'check.bat']
+  examples:
+    - c: 'if exist menu.txt type menu.txt'
+      d: 'Shows the file only if it exists.'
+      noTry: true
+    - c: 'if not exist "D:\Backup" mkdir "D:\Backup"'
+      d: 'Creates the folder only when needed.'
+      noTry: true
+    - c: 'if exist *.tmp del *.tmp'
+      d: 'Works with wildcards too.'
+      noTry: true
+  mistakes:
+    - 'Leaving out the quotes for a path with spaces.'
+    - 'Writing `%` in `if defined`: the correct form is `if defined name`, not `if defined %name%`.'
+  tip: 'Running a good script a second time should not cause an error; `if not exist` makes sure of that.'
+  practice:
+    - id: P80a
+      batch: {file: 'prepare.bat', starter: "@echo off\n"}
+      task: 'Write a script that creates the folder `Reports` on the Desktop only if it doesn''t exist, and then prints `Ready`. (Run it twice; the second run must not cause an error either.)'
+      checks: [{type: ranBatch}, {type: dirExists, path: 'C:\Users\Student\Desktop\Reports'}, {type: fileContains, path: 'C:\Users\Student\Desktop\prepare.bat', value: 'if not exist'}, {type: outputIncludes, value: 'Ready'}, {type: outputExcludes, value: 'already exists'}]
+      hints: ['You want the folder to be created only when it doesn''t exist; that''s the job of `if not exist`, and to create the folder use `mkdir`. Then print the message.', 'Write two lines: line one = `if not exist` + the folder name `Reports` + the command that creates that folder with `mkdir`. Line two = `echo` with the text `Ready`.']
+      answer: ['@echo off', 'if not exist Reports mkdir Reports', 'echo Ready']
+      explain: '`if not exist Reports mkdir Reports` creates the folder only when it isn''t there, so the second run does not give the `already exists` error. Then `echo Ready` shows the message in both runs.'
+    - id: P80b
+      batch: {file: 'menu.bat', starter: "@echo off\n"}
+      task: 'If the file `%USERPROFILE%\Documents\menu.txt` exists, print `Menu found`, otherwise print `No menu`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\menu.bat', value: 'if exist'}, {type: outputIncludes, value: 'Menu found'}]
+      hints: ['Check whether a file exists with `if exist`, and because you need two different messages, use `else` too. Write the path in quotes.', 'Parts: `if exist` → the path `"%USERPROFILE%\Documents\menu.txt"` → first parenthesis with `echo Menu found` → `else` → second parenthesis with `echo No menu`.']
+      answer: ['@echo off', 'if exist "%USERPROFILE%\Documents\menu.txt" (echo Menu found) else (echo No menu)']
+      explain: '`if exist` checks whether the file `menu.txt` is in Documents; since it is, the first part, `Menu found`, is printed. If the file weren''t there, the `else` part would show the message `No menu`.'
+  quiz:
+    - kind: mcq
+      q: 'Which line creates the Backup folder only if it doesn''t exist?'
+      options: ['if not exist Backup mkdir Backup', 'if exist Backup mkdir Backup', 'mkdir Backup if not exist', 'if Backup==none mkdir Backup']
+      answer: 0
+      code_options: true
+      explain: '`if not exist`'
+    - kind: fix
+      q: 'Which is correct for checking whether the variable `name` is defined?'
+      code: 'if defined %name% echo yes'
+      options: ['if defined name echo yes', 'if exist name echo yes', 'if "%name%" defined echo yes', 'if name echo yes']
+      answer: 0
+      code_options: true
+      explain: 'The variable name without `%`.'
+    - kind: tf
+      q: '`if exist` works on folders too.'
+      answer: true
+      explain: 'File or folder.'
+  recap: '`if exist` / `if not exist` for files and folders. `if defined name` for variables.'
+
+- n: 81
+  term: 'if errorlevel'
+  fullForm: 'Decisions from exit codes'
+  difficulty: 3
+  objective: 'Make decisions in a script based on whether the previous command succeeded or failed.'
+  summary: 'Two ways: `if %errorlevel% neq 0` (exact comparison) and `if errorlevel 1` (meaning 1 **or more**). `&&` and `||` are short ways to do the same thing.'
+  meaning: 'Important: `if errorlevel 1` is true for any code that is 1 or greater. That''s why in menus (lesson 87) the conditions are written from largest to smallest.'
+  usage: 'Checking whether a copy succeeded, whether text was found, whether a server answered, and reporting errors.'
+  syntax: "command\nif %errorlevel% neq 0 (echo failed)\nif errorlevel 1 (echo code 1 or more)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\check.bat', content: "@echo off\nfind \"Pizza\" \"%USERPROFILE%\\Documents\\menu.txt\" >nul\nif errorlevel 1 (echo No pizza today) else (echo We have pizza)\nping -n 1 10.0.0.99 >nul\nif %errorlevel% neq 0 echo Server 10.0.0.99 is down\n"}]
+    cmds: ['check.bat']
+  examples:
+    - c: 'if errorlevel 1 goto failed'
+      d: 'Jumps to the error section.'
+      noTry: true
+    - c: 'xcopy a b /s /y >nul || echo Copy failed'
+      d: 'The short form with `||`.'
+      noTry: true
+  mistakes:
+    - 'Thinking that `if errorlevel 1` means exactly 1.'
+    - 'Running another command between the main command and the ERRORLEVEL check.'
+  tip: 'For clean output, hide the command''s output with `>nul` and show only your own message.'
+  practice:
+    - id: P81a
+      batch: {file: 'pizza.bat', starter: "@echo off\nfind \"Pizza\" \"%USERPROFILE%\\Documents\\menu.txt\" >nul\n"}
+      task: 'After `find`, print `No pizza` if Pizza was not found and `We have pizza` if it was found (using ERRORLEVEL).'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\pizza.bat', value: 'errorlevel'}, {type: outputIncludes, value: 'We have pizza'}, {type: outputExcludes, value: 'No pizza'}]
+      hints: ['If `find` finds the text, it sets ERRORLEVEL to `0`; if not, to `1`. Use `if errorlevel` and `else` to print one of the two messages based on this code.', 'Parts: `if errorlevel 1` (meaning not found) → first parenthesis with `echo No pizza` → `else` → second parenthesis with `echo We have pizza`.']
+      answer: ['@echo off', 'find "Pizza" "%USERPROFILE%\Documents\menu.txt" >nul', 'if errorlevel 1 (echo No pizza) else (echo We have pizza)']
+      explain: '`if errorlevel 1` means “code 1 or more”, which for `find` means the text was not found. Since Pizza is on the menu, the code is `0` and the `else` part, `We have pizza`, runs.'
+    - id: P81b
+      batch: {file: 'server.bat', starter: "@echo off\nping -n 1 10.0.0.99 >nul\n"}
+      task: 'If the ping was not successful (`%errorlevel%` was not zero), show the message `Server is down`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\server.bat', value: '%errorlevel%'}, {type: outputIncludes, value: 'Server is down'}]
+      hints: ['After `ping`, the result code is in `%errorlevel%`: `0` means success. Use `if` to check whether this number is “not equal” to zero; the not-equal operator is `neq`.', 'Parts of the line: `if` → `%errorlevel%` → `neq 0` → then `echo` with the message `Server is down`.']
+      answer: ['@echo off', 'ping -n 1 10.0.0.99 >nul', 'if %errorlevel% neq 0 echo Server is down']
+      explain: 'If `ping` gets no reply, `%errorlevel%` is not zero and the condition `neq 0` is true, so the message `Server is down` is printed. `neq 0` is an exact comparison and catches any error code.'
+  quiz:
+    - kind: predict
+      q: 'ERRORLEVEL is 3. Which lines run?'
+      code: "if errorlevel 1 echo A\nif errorlevel 3 echo B\nif errorlevel 5 echo C"
+      options: ['A and B', 'Only B', 'A, B and C', 'Only A']
+      answer: 0
+      explain: '`if errorlevel n` means n or more.'
+    - kind: mcq
+      q: 'Which is better for checking “not exactly zero”?'
+      options: ['if %errorlevel% neq 0', 'if errorlevel 0', 'if errorlevel==0', 'if not errorlevel']
+      answer: 0
+      code_options: true
+      explain: '`if errorlevel 0` is always true!'
+    - kind: tf
+      q: '`command || echo failed` does the same job as an ERRORLEVEL check, in a short form.'
+      answer: true
+      explain: '`||` runs when the command fails.'
+  recap: '`if %errorlevel% neq 0` is exact. `if errorlevel n` = n or more. `&&` and `||` are short.'
+
+- n: 82
+  term: goto
+  fullForm: 'goto · :labels'
+  difficulty: 3
+  objective: 'Jump around in a script and build loops with labels and `goto`.'
+  summary: 'A label is a line that starts with `:`, like `:start`. `goto start` moves execution to that line. `goto :eof` goes to the end of the script.'
+  meaning: 'With `goto` upwards you build a loop, so you always need an exit condition (`if ... goto end`), otherwise the loop never ends. `goto` downwards is for skipping a section.'
+  usage: 'Menus, repeating until you get a result, skipping sections when an error happens.'
+  syntax: ":loop\n...\nif condition goto end\ngoto loop\n:end"
+  warning: 'A `goto` loop without an exit condition runs forever. In the simulator, stop it with `Ctrl+C`.'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\countdown.bat', content: "@echo off\nset /a n=3\n:loop\necho %n%...\nset /a n-=1\nif %n% gtr 0 goto loop\necho Liftoff!\n"}]
+    cmds: ['countdown.bat']
+  examples:
+    - c: 'goto end'
+      d: 'Jumps to `:end`.'
+      noTry: true
+    - c: 'goto :eof'
+      d: 'End of the script (a built-in label).'
+      noTry: true
+  mistakes:
+    - 'Forgetting the exit condition.'
+    - 'Writing `:` in `goto loop` is not needed, but in the label itself it is required.'
+    - 'Two labels with the same name: `goto` searches downwards from the line after itself and picks the first label with that name it sees (if it finds none before the end of the file, it continues from the start of the file). The result is confusing; keep your label names unique.'
+  tip: 'Give labels meaningful names: `:menu`, `:error`, `:end`.'
+  practice:
+    - id: P82a
+      batch: {file: 'countdown.bat', starter: "@echo off\nset /a n=3\n"}
+      task: 'Use a label and `goto` to print the countdown `3`, `2`, `1`, and finally `Liftoff!`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\countdown.bat', value: ['goto', ':']}, {type: outputOrder, value: ['3', '2', '1', 'Liftoff!']}]
+      hints: ['To repeat, put a label above the part to repeat and jump back to it with `goto`. Each time, print `%n%` and subtract one; don''t forget the exit condition so the loop doesn''t run forever.', 'Order of the lines after `set /a n=3`: the label `:loop` → print `%n%` with `echo` → subtract with `set /a n-=1` → if `%n%` is still `gtr 0`, `goto loop` → after the loop, `echo Liftoff!`.']
+      answer: ['@echo off', 'set /a n=3', ':loop', 'echo %n%', 'set /a n-=1', 'if %n% gtr 0 goto loop', 'echo Liftoff!']
+      explain: 'The label `:loop` is the start of the loop: each round, `echo %n%` prints the number and `set /a n-=1` subtracts one. `if %n% gtr 0 goto loop` jumps back as long as `n` is greater than zero, and then execution reaches `echo Liftoff!`.'
+    - id: P82b
+      batch: {file: 'skip.bat', starter: "@echo off\necho Start\necho This line must be skipped\necho End\n"}
+      task: 'Use `goto` and a label so that the line `This line must be skipped` does not run, but `Start` and `End` are printed.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Start', 'End']}, {type: outputExcludes, value: 'must be skipped'}]
+      hints: ['With `goto` you can jump over a few lines to a label further down. A line between `goto` and the label does not run.', 'Add two lines: after `echo Start`, a `goto` with any name you like (for example `finish`), and right before `echo End`, that same name as a label with `:` at the start of the line.']
+      answer: ['@echo off', 'echo Start', 'goto finish', 'echo This line must be skipped', ':finish', 'echo End']
+      explain: '`goto finish` sends execution straight to the line `:finish`, so `echo This line must be skipped`, which is between them, does not run. `Start` is printed before the jump and `End` after the label.'
+  quiz:
+    - kind: predict
+      q: 'Output?'
+      code: "@echo off\ngoto b\n:a\necho A\n:b\necho B"
+      options: ['B', 'A B', 'A', 'Nothing']
+      answer: 0
+      explain: 'It jumps to `:b`, so A does not run.'
+    - kind: mcq
+      q: 'What does `goto :eof` do?'
+      options: ['Goes to the end of the script and finishes', 'Goes back to the start of the script', 'Causes an error', 'Closes CMD']
+      answer: 0
+      explain: 'End Of File.'
+    - kind: tf
+      q: 'A goto loop without an exit condition may run forever.'
+      answer: true
+      explain: 'Always add an exit condition.'
+  recap: '`:label` and `goto label`. Loop = goto upwards + exit condition. `goto :eof` = end.'
+
+- n: 83
+  term: 'for'
+  fullForm: 'for %%f in (files) do'
+  difficulty: 3
+  objective: 'Use `for` to repeat a command for all files matching a pattern or all items in a list.'
+  summary: '`for %%f in (*.txt) do echo %%f` runs the command once for each txt file and puts the file name in `%%f`.'
+  meaning: 'In a batch file, the loop variable is written with two `%%`; at the command line with one (`%f`). Inside the parentheses you can give a pattern (`*.jpg`) or a simple list (`red green blue`). `%%~nf` is just the name without extension, `%%~xf` the extension, and `%%~nxf` the full file name.'
+  usage: 'Working on all files: copying, renaming, counting, reporting.'
+  syntax: "for %%f in (*.txt) do command %%f\nfor %%c in (red green blue) do echo %%c"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\photos.bat', content: "@echo off\nfor %%f in (\"%USERPROFILE%\\Pictures\\*.jpg\") do echo Photo: %%~nxf\nfor %%c in (red green blue) do echo Color: %%c\n"}]
+    cmds: ['photos.bat', 'for %i in (a b c) do @echo %i']
+  examples:
+    - c: 'for %i in (*.txt) do @echo %i'
+      d: 'At the command line (one `%`).'
+    - c: 'for %%f in (*.jpg) do copy "%%f" E:\Photos'
+      d: 'In a batch file: copies all jpg files.'
+      noTry: true
+    - c: 'for %%f in (*.txt) do echo %%~nf'
+      d: 'Just the name without extension.'
+      noTry: true
+  mistakes:
+    - 'Writing one `%` in a batch file, or two `%%` at the command line.'
+    - 'The loop variable is case-sensitive: `%%f` and `%%F` are two different variables.'
+    - 'Leaving out the quotes around `%%f` when file names contain spaces.'
+  tip: 'At the command line, `@` before the command after `do` stops each command from being echoed.'
+  practice:
+    - id: P83a
+      batch: {file: 'photos.bat', starter: "@echo off\n"}
+      task: 'For every `.jpg` file in the user''s Pictures folder, print `Photo:` followed by the file name.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\photos.bat', value: ['for', '%%']}, {type: outputIncludes, value: ['beach.jpg', 'cat.jpg']}, {type: outputExcludes, value: 'logo.png'}]
+      hints: ['With `for` you can run a command for every file that matches a pattern. The pattern is all `*.jpg` files in the user''s Pictures folder, and in a batch file the loop variable is written `%%f`.', 'Parts: `for %%f in` → inside the parentheses the pattern in quotes: `"%USERPROFILE%\Pictures\*.jpg"` → `do echo Photo:` → finally the file name with `%%~nxf` (name and extension, no path).']
+      answer: ['@echo off', 'for %%f in ("%USERPROFILE%\Pictures\*.jpg") do echo Photo: %%~nxf']
+      explain: '`for` runs once for each jpg file and puts its path in `%%f`. `%%~nxf` gives only the file''s name and extension (like `beach.jpg`), and `logo.png` is not printed because it doesn''t match `*.jpg`.'
+    - id: P83b
+      batch: {file: 'totext.bat', starter: "@echo off\nif not exist E:\\Texts mkdir E:\\Texts\n"}
+      task: 'Use a `for` loop to copy all `.txt` files from the Documents folder, one by one, to `E:\Texts`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\totext.bat', value: 'for'}, {type: fileExists, path: 'E:\Texts\menu.txt'}, {type: fileExists, path: 'E:\Texts\guests.txt'}]
+      hints: ['Build a `for` loop over all `*.txt` files in the Documents folder, and inside it send each file to `E:\Texts` with `copy`.', 'Parts: `for %%f in` → the pattern inside the parentheses in quotes: `"%USERPROFILE%\Documents\*.txt"` → `do copy` → the current file `"%%f"` → the destination `E:\Texts` → (optional) `>nul` to hide the messages.']
+      answer: ['@echo off', 'if not exist E:\Texts mkdir E:\Texts', 'for %%f in ("%USERPROFILE%\Documents\*.txt") do copy "%%f" E:\Texts >nul']
+      explain: 'The loop puts each txt file, one by one, into `%%f`, and `copy "%%f" E:\Texts` copies it to the destination. The quotes around `%%f` are for names with spaces, and `>nul` is for clean output.'
+  quiz:
+    - kind: mcq
+      q: 'How is the `for` loop variable written in a batch file?'
+      options: ['%%f', '%f', '%f%', '!f!']
+      answer: 0
+      code_options: true
+      explain: 'At the command line, `%f`.'
+    - kind: predict
+      q: 'Output?'
+      code: 'for %%x in (1 2 3) do echo N%%x'
+      options: ["N1\nN2\nN3", 'N123', 'N%%x', 'N1']
+      answer: 0
+      code_options: true
+      explain: 'Once for each item.'
+    - kind: mcq
+      q: 'What does `%%~nf` give for the file `report.txt`?'
+      options: ['report', 'report.txt', '.txt', 'C:\...\report.txt']
+      answer: 0
+      code_options: true
+      explain: '`~n` = name without extension.'
+  recap: '`for %%f in (pattern) do command`. One `%` at the command line. `%%~nf` name, `%%~xf` extension, `%%~nxf` both.'
+
+- n: 84
+  term: 'for /l · for /f'
+  fullForm: 'Counting loops and reading files'
+  difficulty: 3
+  objective: 'Count with `for /l`, and read a file or a command''s output line by line with `for /f`.'
+  summary: '`for /l %%i in (start,step,end)` is a counter. `for /f %%a in (file.txt)` reads each line of a file and can split the line into several parts (tokens).'
+  meaning: 'In `for /f` the options go inside quotes: `tokens=1,2` means the first part goes in `%%a` and the second in `%%b`, `delims=,` means the separator is a comma (default is space), `skip=2` means skip the first two lines. With `(''command'')` you read the output of a command.'
+  usage: 'Repeating a set number of times, reading lists and CSV files, processing the output of commands.'
+  syntax: "for /l %%i in (1,1,5) do echo %%i\nfor /f \"tokens=1,2\" %%a in (file.txt) do echo %%a %%b\nfor /f \"delims=\" %%L in ('dir /b') do echo %%L"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\loops.bat', content: "@echo off\nfor /l %%i in (1,1,3) do echo Round %%i\nfor /f \"skip=2 tokens=1,2\" %%a in (%USERPROFILE%\\Documents\\menu.txt) do echo %%a costs %%b\n"}]
+    cmds: ['loops.bat']
+  examples:
+    - c: 'for /l %i in (10,-2,0) do @echo %i'
+      d: 'Counting down with a negative step.'
+    - c: 'for /f "delims=" %%L in (guests.txt) do echo Guest: %%L'
+      d: 'Reads each whole line (no splitting).'
+      noTry: true
+    - c: 'for /f "tokens=2 delims=:" %%a in (''ipconfig ^| find "IPv4"'') do echo IP:%%a'
+      d: 'Reads the output of a command; `^|` inside the single quotes.'
+      noTry: true
+  mistakes:
+    - 'The order of numbers in `/l`: (start, step, end), not (start, end, step).'
+    - 'Forgetting `delims=` when reading a whole line that contains spaces.'
+  tip: 'With `tokens=1,2` the second variable is automatically the next letter: `%%a` and `%%b`.'
+  practice:
+    - id: P84a
+      batch: {file: 'numbers.bat', starter: "@echo off\n"}
+      task: 'Use `for /l` to print the numbers 1 to 5 as `Number 1` to `Number 5`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\numbers.bat', value: 'for /l'}, {type: outputOrder, value: ['Number 1', 'Number 3', 'Number 5']}, {type: outputExcludes, value: 'Number 6'}]
+      hints: ['For counting, use `for /l`; three numbers go inside the parentheses: start, step and end. In each round, print the current number together with the text `Number`.', 'Parts: `for /l %%i in` → parentheses `(1,1,5)`, meaning from 1 in steps of 1 up to 5 → `do echo Number` → finally the loop variable `%%i`.']
+      answer: ['@echo off', 'for /l %%i in (1,1,5) do echo Number %%i']
+      explain: '`for /l %%i in (1,1,5)` is a counter that increases `%%i` one by one from 1 to 5. In each round, `echo Number %%i` prints a line like `Number 3`.'
+    - id: P84b
+      batch: {file: 'prices.bat', starter: "@echo off\n"}
+      task: 'Read the file `%USERPROFILE%\Documents\menu.txt` with `for /f` (the first two lines are headings) and for each dish write: `Pizza costs 8.50`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\prices.bat', value: ['for /f', 'skip=2']}, {type: outputIncludes, value: ['Pizza costs 8.50', 'Coffee costs 2.50']}, {type: outputExcludes, value: 'Restaurant costs'}]
+      hints: ['To read a file line by line, use `for /f`. Skip the first two lines with the `skip` option, and use `tokens` to get the dish name and the price separately.', 'Parts: `for /f` → options in quotes: `"skip=2 tokens=1,2"` → the variable `%%a` (the second part automatically goes into `%%b`) → `in` and the file path inside parentheses → `do echo` with `%%a`, the word `costs` and `%%b`.']
+      answer: ['@echo off', 'for /f "skip=2 tokens=1,2" %%a in (%USERPROFILE%\Documents\menu.txt) do echo %%a costs %%b']
+      explain: '`skip=2` skips the two heading lines, and `tokens=1,2` puts the first part of each line (the dish name) in `%%a` and the second part (the price) in `%%b`. Then `echo %%a costs %%b` builds a sentence like `Pizza costs 8.50`.'
+  quiz:
+    - kind: predict
+      q: 'How many times does this loop run?'
+      code: 'for /l %%i in (0,5,20) do echo %%i'
+      options: ['5 (0, 5, 10, 15, 20)', '20', '4', '21']
+      answer: 0
+      explain: 'From 0 in steps of 5 up to 20.'
+    - kind: mcq
+      q: 'In `for /f "tokens=1,2 delims=," %%a in (data.csv)`, which variable holds the second part of each line?'
+      options: ['%%b', '%%a', '%%2', '%%c']
+      answer: 0
+      code_options: true
+      explain: 'Second token = next letter.'
+    - kind: tf
+      q: '`for /f` can also read the output of a command.'
+      answer: true
+      explain: 'With single quotes: `(''dir /b'')`.'
+  recap: '`for /l (start,step,end)` counts. `for /f "tokens= delims= skip="` reads a file or output line by line.'
+
+- n: 85
+  term: '!var!'
+  fullForm: 'Delayed Expansion'
+  difficulty: 3
+  objective: 'Understand the famous problem with variables inside loops and parentheses, and solve it with delayed expansion.'
+  summary: 'CMD replaces all `%var%` in a parenthesized block (like the body of a `for` or `if`) **once**, **before it runs**. So a change to a variable inside the loop isn''t visible with `%var%`. The solution: `setlocal enabledelayedexpansion` and writing `!var!`.'
+  meaning: '`!var!` reads the current value every time it runs. `setlocal` also keeps variable changes local until `endlocal` (or the end of the script), so they don''t clutter the CMD environment.'
+  usage: 'A counter in a loop, building text step by step, any variable that changes inside `( )`.'
+  syntax: "setlocal enabledelayedexpansion\nset count=0\nfor %%f in (*.txt) do (\n  set /a count+=1\n  echo !count!. %%f\n)\nendlocal"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files:
+      - {path: 'C:\Users\Student\Desktop\wrong.bat', content: "@echo off\nset count=0\nfor %%f in (a b c) do (\n  set /a count+=1\n  echo %%f: count is %count%\n)\n"}
+      - {path: 'C:\Users\Student\Desktop\right.bat', content: "@echo off\nsetlocal enabledelayedexpansion\nset count=0\nfor %%f in (a b c) do (\n  set /a count+=1\n  echo %%f: count is !count!\n)\nendlocal\n"}
+    cmds: ['wrong.bat', 'right.bat']
+  examples:
+    - c: 'setlocal enabledelayedexpansion'
+      d: 'Turns on delayed expansion (usually the second line of the script).'
+      noTry: true
+    - c: 'echo !count!'
+      d: 'Reads the current value.'
+      noTry: true
+  mistakes:
+    - 'Writing `!var!` without `setlocal enabledelayedexpansion`; the text `!var!` itself gets printed.'
+    - 'Being surprised that `%count%` inside the loop is always zero.'
+  tip: 'Outside the loop, after it has finished, `%count%` correctly shows the final value.'
+  practice:
+    - id: P85a
+      batch: {file: 'list.bat', starter: "@echo off\nset count=0\nfor %%f in (\"%USERPROFILE%\\Documents\\*.txt\") do (\n  set /a count+=1\n  echo %count%. %%~nxf\n)\n"}
+      task: 'This script should print a numbered list of files (`1. guests.txt` ...), but all the numbers are `0`. Fix it with delayed expansion.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\list.bat', value: ['enabledelayedexpansion', '!count!']}, {type: outputIncludes, value: ['1. guests.txt', '3. todo.txt']}]
+      hints: ['The problem is that `%count%` inside the loop''s parentheses is read only once, before it runs. You need to turn on delayed expansion and read the current value with `!`.', 'Two changes are needed: 1) right after `@echo off`, the line that turns on delayed expansion: `setlocal enabledelayedexpansion`. 2) inside the loop, change `%count%` to `!count!`. (You can also add `endlocal` at the end.)']
+      answer: ['@echo off', 'setlocal enabledelayedexpansion', 'set count=0', 'for %%f in ("%USERPROFILE%\Documents\*.txt") do (', '  set /a count+=1', '  echo !count!. %%~nxf', ')', 'endlocal']
+      explain: '`setlocal enabledelayedexpansion` lets `!count!` read the variable''s current value each time, so after every `set /a count+=1` the correct number (1, 2, 3) is printed. `endlocal` at the end keeps the variable changes local.'
+  quiz:
+    - kind: predict
+      q: 'Without delayed expansion, what does the second line print?'
+      code: "set x=1\n(set x=2\n echo %x%)"
+      options: ['1', '2', '%x%', 'Error']
+      answer: 0
+      explain: 'The whole parenthesized block was filled in with x=1 before it ran.'
+    - kind: mcq
+      q: 'Which line is needed to use `!var!`?'
+      options: ['setlocal enabledelayedexpansion', 'set /a', 'echo on', 'call']
+      answer: 0
+      code_options: true
+      explain: 'Without it, `!` has no special meaning.'
+    - kind: tf
+      q: 'The delayed expansion problem only happens inside parenthesized blocks.'
+      answer: true
+      explain: 'Separate lines are each filled in on their own.'
+  recap: 'Inside `( )`, `%var%` is replaced once. `setlocal enabledelayedexpansion` + `!var!` = the current value.'
+
+- n: 86
+  term: call
+  fullForm: 'call :label · call script.bat'
+  difficulty: 3
+  objective: 'Use `call` to build reusable parts (functions), and to run another script and come back.'
+  summary: '`call :name args` goes to a label, runs it like a function, and when it reaches `goto :eof` or `exit /b` it returns to the line after `call`. `call other.bat` runs another script and then continues.'
+  meaning: 'Inside the function, the arguments given to `call` itself are read with `%1`, `%2`. Without `call`, running `other.bat` ends the main script and never comes back. `exit /b 1` can return an error code.'
+  usage: 'Avoiding repeated code, splitting a big script into small parts, helper scripts.'
+  syntax: "call :greet Ali\ngoto :eof\n:greet\necho Hi %1\nexit /b"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\func.bat', content: "@echo off\ncall :greet Ali\ncall :greet Mina\necho Done.\ngoto :eof\n\n:greet\necho Hi %1, welcome to the restaurant!\nexit /b\n"}]
+    cmds: ['func.bat']
+  examples:
+    - c: 'call :log "Backup started"'
+      d: 'A function that writes a message to a log.'
+      noTry: true
+    - c: 'call helper.bat hello'
+      d: 'Runs another script and comes back.'
+      noTry: true
+  mistakes:
+    - 'Forgetting `goto :eof` before the functions; after the main work, the script falls into the functions and runs them for no reason.'
+    - 'Running another script without `call` and being surprised that the rest of the script didn''t run.'
+  tip: 'Write the functions at the end of the script and put `goto :eof` right before them.'
+  practice:
+    - id: P86a
+      batch: {file: 'func.bat', starter: "@echo off\n"}
+      task: 'Write a function `:greet` that prints `Hi` and its own first argument. Call it once for `Ali` and once for `Mina`, and finally print `Done`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\func.bat', value: ['call :greet', ':greet']}, {type: outputOrder, value: ['Hi Ali', 'Hi Mina', 'Done']}]
+      hints: ['A function is a label at the bottom of the script that is called with `call :name` and returns with `exit /b`; inside the function the first argument is in `%1`. Put `goto :eof` before the function so the script doesn''t fall into it.', 'Order of the lines: two `call :greet` lines (one with `Ali`, one with `Mina`) → `echo Done` → `goto :eof` → the label `:greet` → `echo Hi` together with `%1` → `exit /b`.']
+      answer: ['@echo off', 'call :greet Ali', 'call :greet Mina', 'echo Done', 'goto :eof', ':greet', 'echo Hi %1', 'exit /b']
+      explain: 'Each `call :greet` goes to the label `:greet`, `echo Hi %1` prints the given name, and `exit /b` returns to the line after `call`. `goto :eof` after `echo Done` makes sure the script doesn''t fall into the function after the main work.'
+    - id: P86b
+      batch: {file: 'main.bat', starter: "@echo off\n"}
+      files: [{path: 'C:\Users\Student\Desktop\helper.bat', content: "@echo off\necho Helper says %1\n"}]
+      task: 'There is a file `helper.bat` on the Desktop. From `main.bat`, call it with the argument `hello`, and then print `Back in main`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\main.bat', value: 'call'}, {type: outputOrder, value: ['Helper says hello', 'Back in main']}]
+      hints: ['To run another script and come back to the current one, you must use `call`; without it, `main.bat` doesn''t continue after `helper.bat`.', 'Two lines: first `call` + the file name `helper.bat` + the argument `hello`. Second `echo` with the text `Back in main`.']
+      answer: ['@echo off', 'call helper.bat hello', 'echo Back in main']
+      explain: '`call helper.bat hello` runs the helper file with the argument `hello` (so `%1` in it is `hello`), and then control returns to `main.bat`. That''s why `echo Back in main` runs after it.'
+  quiz:
+    - kind: predict
+      q: 'Output? (main.bat)'
+      code: "@echo off\nother.bat\necho After"
+      options: ['Only the output of other.bat; After is not printed', 'The output of other.bat, then After', 'Only After', 'Error']
+      answer: 0
+      explain: 'Without `call`, control doesn''t come back.'
+    - kind: mcq
+      q: 'Why do we put `goto :eof` before the functions?'
+      options: ['So the script doesn''t fall into the functions after the main work', 'To make the functions faster', 'It is required for call', 'To clear the screen']
+      answer: 0
+      explain: 'Otherwise the functions run one extra time.'
+    - kind: tf
+      q: 'Inside a function, `%1` is the first argument of the `call` itself, not of the script.'
+      answer: true
+      explain: 'Each call has its own arguments.'
+  recap: '`call :label args` = function, returns with `exit /b`. `call file.bat` = run another script and come back.'
+
+- n: 87
+  term: choice
+  fullForm: 'choice · timeout · menus'
+  difficulty: 3
+  objective: 'Build a simple menu where the user chooses with a single key, and pause a script for a few seconds.'
+  summary: '`choice /c 123 /m "Choose"` waits for one of the keys 1, 2 or 3 and puts the option number in ERRORLEVEL (first = 1, second = 2 ...). `timeout /t 5` waits five seconds.'
+  meaning: 'Because `if errorlevel n` means “n or more”, write the conditions from the largest option to the smallest, or use `if %errorlevel% equ n`. `timeout /t 5 /nobreak` can''t be interrupted by pressing a key.'
+  usage: 'Tool menus, asking for Y/N confirmation, waiting before repeating a task.'
+  syntax: "choice /c YN /m \"Continue?\"\nif errorlevel 2 goto no\ntimeout /t 5"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['1', '2', '3']
+    files: [{path: 'C:\Users\Student\Desktop\menu.bat', content: "@echo off\n:menu\necho.\necho 1. Show date\necho 2. Show user\necho 3. Quit\nchoice /c 123 /m \"Choose\"\nif errorlevel 3 goto end\nif errorlevel 2 goto user\necho Today is %DATE%\ngoto menu\n:user\necho You are %USERNAME%\ngoto menu\n:end\necho Bye!\n"}]
+    cmds: ['menu.bat']
+  examples:
+    - c: 'choice /c YN /m "Delete old logs?"'
+      d: 'A yes/no question.'
+      noTry: true
+    - c: 'choice /c ABC /t 10 /d A'
+      d: 'If no key is pressed within 10 seconds, A is chosen.'
+      noTry: true
+    - c: 'timeout /t 3'
+      d: 'Waits three seconds.'
+  mistakes:
+    - 'Writing the conditions from smallest to largest with `if errorlevel`: option 1 always wins.'
+    - 'Using `timeout` in a script whose input is redirected.'
+  tip: 'For a menu: show the options with echo → `choice` → jump with `if errorlevel` → go back with `goto menu`.'
+  practice:
+    - id: P87a
+      batch: {file: 'confirm.bat', starter: "@echo off\n"}
+      inputs: ['N']
+      task: 'Use `choice` to ask `Continue?` (Y/N). If the user presses `N`, print `Stopped`; if they press `Y`, print `Continuing`. (Try it with `N`.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\confirm.bat', value: ['choice', 'errorlevel']}, {type: outputIncludes, value: 'Stopped'}, {type: outputExcludes, value: 'Continuing'}]
+      hints: ['Give `choice` the allowed keys (`Y` and `N`) with the `/c` switch, and the question text with `/m`. The number of the key pressed goes into ERRORLEVEL: `Y` = 1 and `N` = 2.', 'Two lines: 1) `choice /c YN` + `/m` with the text `"Continue?"`. 2) `if errorlevel 2` (meaning N) → parenthesis with `echo Stopped` → `else` → parenthesis with `echo Continuing`.']
+      answer: ['@echo off', 'choice /c YN /m "Continue?"', 'if errorlevel 2 (echo Stopped) else (echo Continuing)']
+      explain: '`choice /c YN` waits for `Y` or `N`, and for `N` (the second option) it sets ERRORLEVEL to 2. `if errorlevel 2` is true for 2 or more, so `Stopped` is printed; with `Y`, the `else` part, `Continuing`, would run.'
+    - id: P87b
+      batch: {file: 'wait.bat', starter: "@echo off\necho Starting soon...\n"}
+      task: 'Before printing `Done`, wait three seconds with `timeout`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\wait.bat', value: 'timeout'}, {type: outputOrder, value: ['Starting soon', 'Waiting for', 'Done']}]
+      hints: ['To wait a few seconds in a script, use `timeout`; the `/t` switch takes the number of seconds. This command must come before printing `Done`.', 'After `echo Starting soon...`, add two lines: first `timeout` with `/t` and the number `3`, then `echo Done`.']
+      answer: ['@echo off', 'echo Starting soon...', 'timeout /t 3', 'echo Done']
+      explain: '`timeout /t 3` waits three seconds and shows the message `Waiting for ...`. Because it comes before `echo Done`, `Done` is printed after the wait is over.'
+  quiz:
+    - kind: predict
+      q: 'In this choice, the user presses the key `C`. What is ERRORLEVEL?'
+      code: 'choice /c ABC'
+      options: ['3', '1', '0', 'C']
+      answer: 0
+      explain: 'The third option.'
+    - kind: fix
+      q: 'In this menu, whatever key you press, “One” is printed. Why?'
+      code: "choice /c 123\nif errorlevel 1 goto one\nif errorlevel 2 goto two\nif errorlevel 3 goto three"
+      options: ['The conditions must be written from 3 down to 1', 'choice is wrong', 'The labels are wrong', 'You must write %errorlevel%']
+      answer: 0
+      explain: '`if errorlevel 1` is true for 1, 2 and 3.'
+    - kind: mcq
+      q: 'What does `timeout /t 10 /nobreak` do?'
+      options: ['Waits 10 seconds and can''t be interrupted by a key', 'Waits 10 minutes', 'Waits until a key is pressed', 'Shuts down the computer']
+      answer: 0
+      explain: '`/nobreak` = ignore key presses.'
+  recap: '`choice /c options /m "message"` → ERRORLEVEL = option number. Conditions from largest to smallest. `timeout /t n` waits.'

@@ -1,0 +1,786 @@
+# Lessons 21–32 · file management, wildcards, redirection, chaining
+
+- n: 21
+  term: copy
+  fullForm: 'Copy'
+  difficulty: 1
+  objective: 'Make a copy of a file, copy it to another folder or drive, and understand the messages copy shows.'
+  summary: '`copy` copies one or more files from one place to another. The original file stays where it is.'
+  meaning: 'The first argument is the source and the second is the destination. The destination can be a folder (the file is copied with the same name) or a new name.'
+  usage: 'Making a backup, putting a file on a USB stick, creating a second copy before you edit something.'
+  syntax: 'copy source [destination] [/y]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['copy todo.txt todo_backup.txt', 'copy menu.txt E:\', 'dir E:\ /b']
+  examples:
+    - c: 'copy todo.txt todo_backup.txt'
+      d: 'A second copy with a new name in the same folder.'
+    - c: 'copy menu.txt D:\Backup'
+      d: 'Copy to a folder on another drive; the file name stays the same.'
+    - c: 'copy menu.txt E:\menu_old.txt'
+      d: 'Copy to the USB stick with a new name.'
+    - c: 'copy /y todo.txt D:\Backup'
+      d: '`/y` means: if the file already exists at the destination, replace it without asking.'
+  mistakes:
+    - 'Copying a file onto itself: `copy todo.txt .` gives the error `The file cannot be copied onto itself.`'
+    - 'A destination that does not exist: if the destination folder is missing, copy does not create it.'
+    - 'Expecting it to copy a whole folder with its subfolders; for that you need `xcopy` or `robocopy` (lessons 43 and 44).'
+  tip: 'If the file already exists at the destination, CMD asks `Overwrite ...? (Yes/No/All)`. `Y` means yes, `N` means no, `A` means yes to all.'
+  restaurant: 'You send a photocopy of the original recipe to another branch; the original stays in your own office.'
+  practice:
+    - id: P21a
+      start: 'C:\Users\Student\Documents'
+      task: 'Make a copy of `todo.txt` called `todo_backup.txt` in this same folder.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\todo_backup.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\todo.txt'}]
+      hints:
+        - 'To make a second copy of a file, use `copy`. `copy` takes two arguments: first the source file (what?), then the destination name (where to, or with what name?).'
+        - 'Three parts: What to do? (`copy`) Source? (the original file `todo.txt`) Destination? (the name of the new copy `todo_backup.txt`). The order matters: source first, then destination.'
+      answer: 'copy todo.txt todo_backup.txt'
+      explain: '`copy` reads the first file (`todo.txt`) and creates a copy with the second name (`todo_backup.txt`) in the same folder; the original file is not touched.'
+    - id: P21b
+      start: 'C:\Users\Student\Documents'
+      task: 'Copy the file `menu.txt` to the root of the USB stick (drive E).'
+      checks: [{type: fileExists, path: 'E:\menu.txt'}]
+      hints:
+        - 'Again `copy` with a source and a destination. This time the destination is not a file name but the root of another drive; the file name stays the same.'
+        - 'Three parts: What to do? (`copy`) Source? (`menu.txt`) Destination? (the root of drive E: the drive letter, a colon and a `\`).'
+      answer: 'copy menu.txt E:\'
+      explain: '`copy` takes the file `menu.txt`, and because the destination `E:\` is a folder (the root of the USB stick), it creates a copy with the same name there.'
+  quiz:
+    - kind: mcq
+      q: 'After `copy a.txt D:\Backup`, what happens to the original `a.txt`?'
+      options: ['It stays where it is', 'It is deleted', 'Its name changes', 'It becomes empty']
+      answer: 0
+      explain: '`copy` makes a copy; to move a file you need `move`.'
+    - kind: predict
+      q: 'The folder `D:\Old` does not exist. What is the result of this command?'
+      code: 'copy menu.txt D:\Old\menu.txt'
+      options: ['The system cannot find the path specified.', 'The Old folder is created and the file is copied', '1 file(s) copied.', 'Access is denied.']
+      answer: 0
+      explain: '`copy` does not create the destination folder; create it first with `mkdir`.'
+    - kind: type
+      q: 'Copy the file `todo.txt` to the folder `D:\Backup`.'
+      accept: ['copy todo.txt d:\backup', 'copy todo.txt d:\backup\', 'copy todo.txt d:\backup\todo.txt']
+      show: 'copy todo.txt D:\Backup'
+      explain: 'Source, space, destination.'
+    - kind: sim
+      q: 'Copy the file `menu.txt` from Documents to `D:\Backup`.'
+      start: 'C:\Users\Student'
+      checks: [{type: fileExists, path: 'D:\Backup\menu.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\menu.txt'}]
+      answer: 'copy Documents\menu.txt D:\Backup'
+      explain: '`copy source destination`; the original file stays where it is.'
+  recap: '`copy source destination`. The original stays. The destination folder must exist. `/y` = without asking.'
+
+- n: 22
+  term: move
+  fullForm: 'Move'
+  difficulty: 1
+  objective: 'Move a file or folder to another place.'
+  summary: '`move` takes a file or folder from where it is now and puts it at the destination. After that, it is no longer in the old place.'
+  meaning: 'If the destination is a folder, the file goes inside it. If the destination is a new name, the file is moved with that name.'
+  usage: 'Tidying up files, moving downloads to the right folder, moving folders around.'
+  syntax: 'move [/y] source destination'
+  demo:
+    start: 'C:\Users\Student\Downloads'
+    cmds: ['move invoice.pdf ..\Documents', 'dir /b', 'dir ..\Documents /b']
+  examples:
+    - c: 'move invoice.pdf ..\Documents'
+      d: 'Move the file to the Documents folder.'
+    - c: 'move todo.txt Work\tasks.txt'
+      at: 'C:\Users\Student\Documents'
+      d: 'Move into the Work folder with a new name.'
+    - c: 'move Work Office'
+      at: 'C:\Users\Student\Documents'
+      d: 'If Office does not exist, the Work folder is renamed.'
+  mistakes:
+    - 'Thinking that `move` makes a copy; the file is removed from its old place.'
+    - 'Moving a folder you are currently inside.'
+  tip: 'If a file with the same name already exists at the destination, CMD asks before replacing it.'
+  daily: '`copy` is like photocopying a sheet of paper; `move` is like taking the sheet itself out of one drawer and putting it in another.'
+  practice:
+    - id: P22a
+      start: 'C:\Users\Student\Documents'
+      task: 'Move the file `todo.txt` into the `Work` folder.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\Work\todo.txt'}, {type: fileNotExists, path: 'C:\Users\Student\Documents\todo.txt'}]
+      hints:
+        - '`move` takes a source and a destination just like `copy`, except the file is taken away from its first place. Here the destination is a folder.'
+        - 'Three parts: What to do? (`move`) Which file? (`todo.txt`) Where to? (the name of the Work folder, which is inside this Documents folder).'
+      answer: 'move todo.txt Work'
+      explain: '`move` puts the file `todo.txt` into the `Work` folder; unlike `copy`, no copy of it stays in Documents.'
+    - id: P22b
+      start: 'C:\Users\Student'
+      task: 'Without going into the folders, move the file `invoice.pdf` from Downloads to Documents.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\invoice.pdf'}, {type: fileNotExists, path: 'C:\Users\Student\Downloads\invoice.pdf'}]
+      hints:
+        - 'Use `move`, but since you are in `C:\Users\Student`, write both the source and the destination as a relative path (starting from here).'
+        - 'Three parts: What to do? (`move`) Source? (the path of the file: the `Downloads` folder, `\`, then `invoice.pdf`) Destination? (the name of the Documents folder).'
+      answer: 'move Downloads\invoice.pdf Documents'
+      explain: '`move` takes the file from `Downloads\invoice.pdf` and puts it in the `Documents` folder. Both paths are relative to `C:\Users\Student`.'
+  quiz:
+    - kind: tf
+      q: 'After `move`, the file also stays in its original place.'
+      answer: false
+      explain: '`move` moves; it does not make a copy.'
+    - kind: mcq
+      q: 'Which command moves the file `a.txt` into the `Archive` folder?'
+      options: ['move a.txt Archive', 'copy a.txt Archive', 'ren a.txt Archive', 'cd a.txt Archive']
+      answer: 0
+      code_options: true
+      explain: '`move` takes the source away and puts it at the destination.'
+    - kind: predict
+      q: 'The current folder contains only the file `old.txt`. What do you have after this command?'
+      code: 'move old.txt new.txt'
+      options: ['Only new.txt', 'old.txt and new.txt', 'Only old.txt', 'An error']
+      answer: 0
+      explain: 'Moving to a new name in the same folder means renaming.'
+  recap: '`move source destination` = move. The file does not stay in its old place.'
+
+- n: 23
+  term: ren
+  fullForm: 'Rename'
+  difficulty: 1
+  objective: 'Change the name of a file or folder and know the limits of `ren`.'
+  summary: '`ren` (or `rename`) only changes the name; the file stays in the same folder.'
+  meaning: 'The first argument is the current file (with a path if needed). The second argument is only the new name, without a path.'
+  usage: 'Fixing a name, adding a date to a name, changing the extension.'
+  syntax: 'ren [drive:][path]oldname newname'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['ren notes.txt ideas.txt', 'dir /b']
+  examples:
+    - c: 'ren notes.txt ideas.txt'
+      d: 'Rename a file.'
+    - c: 'ren Work Office'
+      at: 'C:\Users\Student\Documents'
+      d: 'Rename a folder.'
+    - c: 'ren Documents\menu.txt menu_2026.txt'
+      at: 'C:\Users\Student'
+      d: 'A path is only allowed in the first name.'
+  mistakes:
+    - 'Putting a path in the new name: `ren a.txt D:\b.txt` gives an error. To move a file somewhere else, use `move`.'
+    - 'A new name that already exists: `A duplicate file name exists...`'
+    - 'Forgetting the extension: `ren notes.txt ideas` creates a file without `.txt`.'
+  tip: 'In lesson 26 you will see that `ren *.txt *.bak` changes all the extensions at once.'
+  practice:
+    - id: P23a
+      start: 'C:\Users\Student\Desktop'
+      task: 'Rename the file `notes.txt` to `ideas.txt`.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Desktop\ideas.txt'}, {type: fileNotExists, path: 'C:\Users\Student\Desktop\notes.txt'}]
+      hints:
+        - 'To rename, use `ren` (Rename). First give the current name of the file, then its new name.'
+        - 'Three parts: What to do? (`ren`) Current name? (`notes.txt`) New name? (`ideas.txt`). Write the extension in both names.'
+      answer: 'ren notes.txt ideas.txt'
+      explain: '`ren` changes the name of the first file (`notes.txt`) to the second name (`ideas.txt`); the content of the file and its location stay the same.'
+    - id: P23b
+      start: 'C:\Users\Student\Documents'
+      task: 'Rename the folder `Work` to `Office`.'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Office'}, {type: dirNotExists, path: 'C:\Users\Student\Documents\Work'}]
+      hints:
+        - '`ren` is not only for files; it works on folders too. Same order again: current name, then new name.'
+        - 'Three parts: What to do? (`ren`) Current folder name? (Work) New name? (Office). A folder has no extension.'
+      answer: 'ren Work Office'
+      explain: '`ren` changes the name of the folder `Work` to `Office`, and all the files inside it stay where they are.'
+  quiz:
+    - kind: fix
+      q: 'This command gives the error `The syntax of the command is incorrect.` Why?'
+      code: 'ren report.txt D:\report.txt'
+      options: ['The new name must not contain a path', 'You have to write `rename`', 'The file does not exist', 'Drive D is full']
+      answer: 0
+      explain: '`ren` only changes the name. To move a file: `move`.'
+    - kind: tf
+      q: '`rename` and `ren` are the same command.'
+      answer: true
+      explain: '`ren` is the short form of `rename`.'
+    - kind: type
+      q: 'Rename `draft.txt` to `final.txt`.'
+      accept: ['ren draft.txt final.txt', 'rename draft.txt final.txt']
+      explain: '`ren old new`'
+  recap: '`ren old new` only changes the name. The new name has no path.'
+
+- n: 24
+  term: del
+  fullForm: 'Delete'
+  difficulty: 1
+  objective: 'Delete a file with `del` and understand why it is risky.'
+  summary: '`del` (or `erase`) deletes a file. The file does not go to the Recycle Bin, and getting it back is very hard.'
+  meaning: '`del` only deletes files, not folders. If you give it the name of a folder, it deletes the files inside it, and asks you first.'
+  usage: 'Cleaning up temporary files, old output and files you no longer need.'
+  syntax: 'del [/p] [/q] [/f] [/s] names'
+  warning: 'A file deleted with `del` does not go to the Recycle Bin. Before you press Enter, read the name and path again. On a real computer, first look at the same pattern with `dir`.'
+  demo:
+    start: 'C:\Users\Student\Downloads'
+    cmds: ['del temp1.tmp', 'dir /b', 'del nothing.txt']
+  examples:
+    - c: 'del temp1.tmp'
+      d: 'Delete one file.'
+    - c: 'del /p photos.zip'
+      d: '`/p` asks before deleting each file.'
+    - c: 'del Old'
+      d: 'If Old is a folder: the files inside it are deleted (after a question).'
+      noTry: true
+  mistakes:
+    - 'Thinking the file is in the Recycle Bin.'
+    - 'Deleting in the wrong folder; always look at the prompt.'
+    - 'Expecting `del` to delete a folder; folders are deleted with `rd` (next lesson).'
+  tip: 'If the file is not found, `del` says `Could Not Find ...` and nothing is deleted.'
+  practice:
+    - id: P24a
+      start: 'C:\Users\Student\Downloads'
+      task: 'Delete the file `temp1.tmp`.'
+      checks: [{type: fileNotExists, path: 'C:\Users\Student\Downloads\temp1.tmp'}, {type: fileExists, path: 'C:\Users\Student\Downloads\temp2.tmp'}]
+      hints:
+        - 'To delete a file, use `del` (Delete) and give exactly the name of the file that should be removed; the other files must stay.'
+        - 'Two parts: What to do? (`del`) Which file? (the full name `temp1.tmp` with its extension). Be careful not to type `temp2.tmp`.'
+      answer: 'del temp1.tmp'
+      explain: '`del` deletes only the file whose name you gave (`temp1.tmp`). A file deleted with `del` does not go to the Recycle Bin.'
+    - id: P24b
+      start: 'C:\Users\Student'
+      task: 'Without going into Downloads, delete the file `photos.zip` inside it.'
+      checks: [{type: fileNotExists, path: 'C:\Users\Student\Downloads\photos.zip'}, {type: cwd, value: 'C:\Users\Student'}]
+      hints:
+        - 'Again `del`, but the file is inside the Downloads folder and you are in `C:\Users\Student`. Give `del` a relative path.'
+        - 'Two parts: What to do? (`del`) Which file? (the path: the `Downloads` folder, the separator `\`, then `photos.zip`).'
+      answer: 'del Downloads\photos.zip'
+      explain: '`del` deletes the file at `Downloads\photos.zip`; the path is counted from the current directory, so you do not need to move.'
+  quiz:
+    - kind: tf
+      q: 'A file deleted with `del` goes to the Recycle Bin.'
+      answer: false
+      explain: 'It is deleted directly.'
+    - kind: mcq
+      q: 'Which switch asks a question before deleting each file?'
+      options: ['/p', '/q', '/s', '/f']
+      answer: 0
+      code_options: true
+      explain: '`/p` = Prompt. `/q` is the opposite: it deletes quietly.'
+    - kind: predict
+      q: 'The file `x.txt` does not exist. What is the output?'
+      code: 'del x.txt'
+      options: ['Could Not Find C:\...\x.txt', 'File deleted.', 'Access is denied.', 'Nothing']
+      answer: 0
+      explain: '`del` says it could not find the file.'
+    - kind: sim
+      q: 'Delete the file `draft.tmp` from `Documents\Work`; the reports must stay.'
+      start: 'C:\Users\Student\Documents'
+      checks: [{type: fileNotExists, path: 'C:\Users\Student\Documents\Work\draft.tmp'}, {type: fileExists, path: 'C:\Users\Student\Documents\Work\report.txt'}]
+      answer: 'del Work\draft.tmp'
+      explain: 'The relative path from Documents: `Work\draft.tmp`.'
+  recap: '`del file` = delete without the Recycle Bin. `/p` asks, `/q` does not ask. It does not delete folders.'
+
+- n: 25
+  term: rmdir
+  fullForm: 'Remove Directory (rd)'
+  difficulty: 1
+  objective: 'Delete an empty folder and a full folder, and know the difference between `/s` and `/q`.'
+  summary: '`rmdir` (or `rd`) deletes a folder. Without a switch, only an empty folder is deleted.'
+  meaning: '`/s` deletes the folder together with all its files and subfolders, and asks first. `/q` means: do not ask.'
+  usage: 'Cleaning up old or temporary folders, or finished projects.'
+  syntax: 'rd [/s] [/q] path'
+  warning: '`rd /s /q` deletes a whole folder with all its contents without asking anything. Never run it on a folder you are not sure about.'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['mkdir Empty', 'rd Empty', 'rd Pictures']
+  examples:
+    - c: 'rd Empty'
+      noTry: true
+      d: 'Delete an empty folder.'
+    - c: 'rd /s OldProject'
+      d: 'Delete a folder with all its contents; it asks `Are you sure (Y/N)?` first.'
+      noTry: true
+    - c: 'rd /s /q Temp'
+      d: 'Delete without asking. Dangerous!'
+      noTry: true
+  mistakes:
+    - 'Deleting a folder you are currently inside: first get out with `cd ..`.'
+    - 'Using `del` to delete a folder.'
+  tip: 'Before `rd /s`, use `dir` or `tree` to see what is inside the folder.'
+  practice:
+    - id: P25a
+      start: 'C:\Users\Student'
+      setup: {mkdir: ['C:\Users\Student\Empty']}
+      task: 'There is an empty folder called `Empty` here. Delete it.'
+      checks: [{type: dirNotExists, path: 'C:\Users\Student\Empty'}]
+      hints:
+        - 'To delete a folder, use `rd` (or `rmdir`). Since the folder is empty, no switch is needed.'
+        - 'Two parts: What to do? (`rd`) Which folder? (the folder name: Empty). `del` does not work here; it is for files.'
+      answer: 'rd Empty'
+      explain: '`rd` (Remove Directory) deletes the empty folder `Empty`. If the folder were not empty, it would give an error without a switch.'
+    - id: P25b
+      start: 'C:\Users\Student'
+      task: 'Delete the folder `Pictures\Holidays` together with the file inside it. (If it asks a question, answer it.)'
+      checks: [{type: dirNotExists, path: 'C:\Users\Student\Pictures\Holidays'}, {type: dirExists, path: 'C:\Users\Student\Pictures'}]
+      inputs: ['y']
+      hints:
+        - 'The Holidays folder is not empty, so `rd` alone will not delete it. You need a switch that deletes the folder with all its contents.'
+        - 'Three parts: What to do? (`rd`) How? (the switch letter `s` with `/`) Which folder? (the path `Pictures\Holidays`). When it asks `Are you sure (Y/N)?`, answer `Y`.'
+      answer: 'rd /s Pictures\Holidays'
+      explain: '`rd` deletes a folder, `/s` means together with all files and subfolders, and `Pictures\Holidays` is the target folder. Answering `Y` confirms the deletion, and Pictures itself stays safe.'
+  quiz:
+    - kind: predict
+      q: 'The `Work` folder has two files. What is the output of this command?'
+      code: 'rd Work'
+      options: ['The directory is not empty.', 'The folder and the files are deleted', 'Only the files are deleted', 'Are you sure (Y/N)?']
+      answer: 0
+      explain: 'Without `/s`, only an empty folder is deleted.'
+    - kind: mcq
+      q: 'Which command deletes a folder with all its contents without asking?'
+      options: ['rd /s /q Temp', 'rd Temp', 'rd /s Temp', 'del Temp']
+      answer: 0
+      code_options: true
+      explain: '`/s` all contents, `/q` without asking.'
+    - kind: tf
+      q: '`rd` and `rmdir` are the same command.'
+      answer: true
+      explain: '`rd` is the short form.'
+  recap: '`rd folder` = delete an empty folder. `/s` = with contents. `/q` = without asking. Look first, then delete.'
+
+- n: 26
+  term: '*'
+  fullForm: 'Wildcard: any characters'
+  difficulty: 2
+  objective: 'Use `*` to select a group of files at once.'
+  summary: '`*` means “any number of characters, even none”. `*.jpg` means all files that end with `.jpg`.'
+  meaning: 'You can use wildcards with `dir`, `copy`, `move`, `del` and `ren`. `report*` means anything that starts with report. `*.*` means all files.'
+  usage: 'Working with several files of the same type in one command: copying all photos, deleting all temporary files.'
+  syntax: "dir *.jpg\ncopy *.txt D:\\Backup\ndel *.tmp"
+  warning: '`del *.*` deletes all the files in the folder. Always test the same pattern with `dir` first.'
+  demo:
+    start: 'C:\Users\Student\Pictures'
+    cmds: ['dir *.jpg /b', 'dir *.* /b']
+  examples:
+    - c: 'dir *.jpg'
+      d: 'Only the jpg files.'
+    - c: 'copy *.txt E:\'
+      at: 'C:\Users\Student\Documents'
+      d: 'Copy all text files to the USB stick.'
+    - c: 'del *.tmp'
+      d: 'Delete all temporary files.'
+      noTry: true
+    - c: 'ren *.txt *.bak'
+      d: 'Change the extension of all txt files.'
+      noTry: true
+  mistakes:
+    - 'Running `del` with a wildcard without testing it with `dir` first.'
+    - 'Forgetting the dot: `*jpg` also matches a file like `myjpg`.'
+  tip: 'Golden rule: first `dir pattern`; if only the right files show up, then `del pattern`.'
+  restaurant: '“Bring all the drinks” is like `*.drink`; you do not have to name each one.'
+  practice:
+    - id: P26a
+      start: 'C:\Users\Student\Pictures'
+      task: 'Show only the `.jpg` files in this folder.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: outputIncludes, value: ['beach.jpg', 'cat.jpg']}, {type: outputExcludes, value: 'logo.png'}]
+      hints:
+        - 'With the wildcard `*` you can say “any name”. Give `dir` a pattern that accepts any name but only the extension `.jpg`.'
+        - 'Two parts: What to do? (`dir`) Which pattern? (`*` instead of the file name, then a dot and `jpg`). `.png` files do not match this pattern.'
+      answer: 'dir *.jpg'
+      explain: '`dir` only shows the files that match the pattern `*.jpg`: `*` accepts any name and `.jpg` keeps only the JPG pictures.'
+    - id: P26b
+      start: 'C:\Users\Student\Downloads'
+      task: 'Delete all `.tmp` files in this folder with one command (the other files must stay).'
+      checks: [{type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}, {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}]
+      hints:
+        - 'With `del` and the wildcard `*` you can delete several files in one command. Before deleting, it is a good idea to use `dir` with the same pattern to see which files are selected.'
+        - 'Two parts: What to do? (`del`) Which files? (the pattern: `*` for any name, then a dot and `tmp`). If you leave out the extension, all files will be deleted!'
+      answer: 'del *.tmp'
+      explain: '`del` deletes all files that match the pattern `*.tmp`; files like `setup.exe` do not match this pattern, so they stay.'
+  quiz:
+    - kind: mcq
+      q: 'Which file matches the pattern `r*.txt`?'
+      options: ['report.txt', 'menu.txt', 'report.doc', 'art.txt']
+      answer: 0
+      code_options: true
+      explain: 'It must start with r and end with .txt.'
+    - kind: predict
+      q: 'The folder contains: `a.txt`, `b.txt`, `c.jpg`. How many files are deleted?'
+      code: 'del *.txt'
+      options: ['2', '3', '1', '0']
+      answer: 0
+      explain: 'Only two files end with `.txt`.'
+    - kind: type
+      q: 'Copy all `.txt` files to `E:\`.'
+      accept: ['copy *.txt e:\', 'copy *.txt e:', 'xcopy *.txt e:\']
+      show: 'copy *.txt E:\'
+      explain: 'The wildcard goes in the source.'
+    - kind: sim
+      q: 'Copy all `.jpg` files in Pictures (only the folder itself) to `E:\Photos`.'
+      start: 'C:\Users\Student\Pictures'
+      checks: [{type: fileExists, path: 'E:\Photos\beach.jpg'}, {type: fileExists, path: 'E:\Photos\cat.jpg'}, {type: fileNotExists, path: 'E:\Photos\logo.png'}]
+      answer: 'copy *.jpg E:\Photos'
+      explain: '`*.jpg` selects all jpg files in this folder.'
+  recap: '`*` = any number of characters. `*.jpg` = all jpg files. Test with `dir` first, then `del`.'
+
+- n: 27
+  term: '?'
+  fullForm: 'Wildcard: one character'
+  difficulty: 2
+  objective: 'Use `?` to select files that differ in only one character.'
+  summary: '`?` means “one character”. `report?.txt` matches the files `report1.txt` and `report2.txt`, but not `report10.txt`.'
+  meaning: 'Each `?` stands for one character; `??` means two characters. A CMD detail: a `?` right before the dot or at the end of the name can also match nothing, so `report?.txt` also matches `report.txt` itself.'
+  usage: 'Numbered files like `photo1.jpg`, `photo2.jpg`, or months and years.'
+  syntax: 'dir name?.ext'
+  demo:
+    start: 'C:\Users\Student\Documents\Work'
+    cmds: ['dir report?.txt /b', 'dir report??.txt /b']
+  examples:
+    - c: 'dir report?.txt'
+      d: 'report1 and report2 (and report), but not report10.'
+    - c: 'dir report??.txt'
+      d: 'Up to two characters after report; report10 shows up too.'
+    - c: 'copy report?.txt D:\Backup'
+      d: 'Copy only the single-digit reports.'
+  mistakes:
+    - 'Using `?` instead of `*` when you do not know how many characters there are.'
+  tip: 'You can use `*` and `?` together: `photo?.*` means photo + one character, with any extension.'
+  practice:
+    - id: P27a
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'Copy only the single-digit reports (`report1.txt` and `report2.txt`) to `D:\Backup`; `report10.txt` must not be copied.'
+      checks: [{type: fileExists, path: 'D:\Backup\report1.txt'}, {type: fileExists, path: 'D:\Backup\report2.txt'}, {type: fileNotExists, path: 'D:\Backup\report10.txt'}]
+      hints:
+        - 'In a wildcard, `?` means “exactly one character”. With `copy` and a pattern that accepts only one character after report, `report10.txt` is left out.'
+        - 'Three parts: What to do? (`copy`) Which files? (the pattern: `report`, one `?`, then `.txt`) Where to? (the absolute path of the folder `D:\Backup`).'
+      answer: 'copy report?.txt D:\Backup'
+      explain: 'In `report?.txt`, the `?` stands for just one character; so `report1` and `report2` match, but `report10` (two digits) does not. `copy` copies them to `D:\Backup`.'
+  quiz:
+    - kind: mcq
+      q: 'Which file does NOT match `photo?.jpg`?'
+      options: ['photo12.jpg', 'photo1.jpg', 'photoA.jpg', 'photo9.jpg']
+      answer: 0
+      code_options: true
+      explain: '`?` is only one character; `12` is two characters.'
+    - kind: tf
+      q: '`??` means two characters.'
+      answer: true
+      explain: 'Each `?` is one character.'
+    - kind: mcq
+      q: 'What is the best pattern to select `jan.txt`, `feb.txt` and `mar.txt` (three letters)?'
+      options: ['???.txt', '?.txt', '*.*', 'j*.txt']
+      answer: 0
+      code_options: true
+      explain: 'Three question marks for three letters.'
+  recap: '`?` = one character. `*` = any number. They also work together.'
+
+- n: 28
+  term: '>'
+  fullForm: 'Redirect output (overwrite)'
+  difficulty: 2
+  objective: 'Write the output of a command to a file instead of the screen.'
+  summary: '`>` writes the output of a command to a file. If the file does not exist, it is created; if it exists, its old content is erased and replaced.'
+  meaning: 'Every command has two kinds of output: normal output (stdout) and error messages (stderr). `>` only sends the normal output to the file.'
+  usage: 'Saving a list of files, creating a text file with `echo`, saving a report of system information.'
+  syntax: 'command > file'
+  warning: '`>` completely erases the old content of the file. To add to the end of a file, use `>>` (next lesson).'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['echo Hello CMD > hello.txt', 'type hello.txt', 'dir ..\Documents /b > list.txt', 'type list.txt']
+  examples:
+    - c: 'echo Hello > hello.txt'
+      d: 'Create a file with one line of text.'
+    - c: 'dir /b > files.txt'
+      d: 'Save a list of files.'
+    - c: 'ipconfig > network.txt'
+      d: 'Save network information for later.'
+  mistakes:
+    - 'Using `>` on an important file: its content is erased.'
+    - 'Expecting to see the output on the screen: with `>`, nothing is shown.'
+  tip: 'Throw the output away with `>nul`: `copy a.txt b.txt >nul` does not show the “copied” message.'
+  restaurant: 'Instead of the cook calling out the order loudly, they write it on a slip of paper and put it in the box.'
+  practice:
+    - id: P28a
+      start: 'C:\Users\Student\Desktop'
+      task: 'Create a file called `hello.txt` that contains `Hello CMD`.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\hello.txt', value: 'Hello CMD'}]
+      hints:
+        - '`echo` prints text. With the `>` sign you can send the output to a file instead of the screen; if the file does not exist, it is created.'
+        - 'Three parts, in order: a command that produces output (`echo` + the text Hello CMD), the redirect sign (`>`), and the name of the target file (`hello.txt`).'
+      answer: 'echo Hello CMD > hello.txt'
+      explain: '`echo Hello CMD` produces the text, and `>` writes it to the file `hello.txt` instead of the screen; the file is created if it does not exist.'
+    - id: P28b
+      start: 'C:\Users\Student'
+      task: 'Save the list of files in Documents to a file called `list.txt` (in this folder).'
+      checks: [{type: fileContains, path: 'C:\Users\Student\list.txt', value: 'menu.txt'}, {type: usedOp, value: '>'}]
+      hints:
+        - 'You can save the output of any command to a file with `>`. First write the command that lists Documents, then send its output to a file.'
+        - 'Three parts: the list command (`dir` + the folder name Documents), the `>` sign, the name of the target file (`list.txt`). You will not see anything on the screen; it all goes into the file.'
+      answer: 'dir Documents > list.txt'
+      explain: '`dir Documents` creates the folder listing, and `>` saves it in `list.txt` (in the current directory) instead of showing it on the screen.'
+  quiz:
+    - kind: predict
+      q: 'After these two commands, what does `a.txt` contain?'
+      code: "echo One > a.txt\necho Two > a.txt"
+      options: ['Only Two', 'One and Two', 'Only One', 'It is empty']
+      answer: 0
+      explain: '`>` erases the old content every time.'
+    - kind: type
+      q: 'Write the output of `ipconfig` to the file `net.txt`.'
+      accept: ['ipconfig > net.txt', 'ipconfig >net.txt', 'ipconfig 1> net.txt']
+      show: 'ipconfig > net.txt'
+      explain: 'Command, `>`, file name.'
+    - kind: tf
+      q: 'With `>`, the output of the command is also shown on the screen.'
+      answer: false
+      explain: 'The output only goes to the file.'
+    - kind: sim
+      q: 'Save the output of `ver` to the file `version.txt` in this folder.'
+      start: 'C:\Users\Student\Desktop'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\version.txt', value: 'Microsoft Windows'}]
+      answer: 'ver > version.txt'
+      explain: '`>` writes the output to a file instead of the screen.'
+  recap: '`command > file` = write the output to a file (replacing it). `>nul` = throw the output away.'
+
+- n: 29
+  term: '>>'
+  fullForm: 'Redirect output (append)'
+  difficulty: 2
+  objective: 'Add to the end of a file without erasing its old content.'
+  summary: '`>>` adds the output of a command to the end of a file. If the file does not exist, it is created.'
+  meaning: 'The main difference: `>` = overwrite (replace), `>>` = append (add).'
+  usage: 'Creating a log, writing several lines to one file, collecting the reports of several commands.'
+  syntax: 'command >> file'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['echo Day 1: learned dir > log.txt', 'echo Day 2: learned copy >> log.txt', 'echo Day 3: learned >> >> log.txt', 'type log.txt']
+  examples:
+    - c: 'echo Ali >> guests.txt'
+      d: 'Add a name to the end of the list.'
+    - c: 'echo %date% %time% >> log.txt'
+      d: 'Record the time in a log (variables come in lesson 46).'
+    - c: 'dir D:\Backup >> report.txt'
+      d: 'Add the listing of another folder to the report.'
+  mistakes:
+    - 'Using `>` in the second command and losing the first line.'
+    - 'A space between the two signs: `> >` is wrong; it must be `>>`.'
+  tip: 'A common pattern: the first line with `>` (a fresh file), the rest with `>>`.'
+  daily: '`>` is like writing on a fresh sheet of paper; `>>` is like writing below the earlier lines on the same sheet.'
+  practice:
+    - id: P29a
+      start: 'C:\Users\Student\Desktop'
+      files: [{path: 'C:\Users\Student\Desktop\log.txt', content: "Day 1\n"}]
+      task: 'The file `log.txt` has one line (`Day 1`). Add the line `Day 2` to the end without erasing the first line.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\log.txt', value: ['Day 1', 'Day 2']}]
+      hints:
+        - '`>` rewrites the file from scratch and the old line is erased. To add to the end of the file, use its double-sign version (`>>`).'
+        - 'Three parts: the output command (`echo` + the text Day 2), the append sign (two `>` in a row), the file name (`log.txt`).'
+      answer: 'echo Day 2 >> log.txt'
+      explain: '`echo Day 2` produces the text and `>>` adds it to the end of `log.txt`; unlike `>`, the line `Day 1` is not erased.'
+    - id: P29b
+      start: 'C:\Users\Student\Desktop'
+      task: 'Create a file called `names.txt` with two lines: `Ali` on the first line and `Sara` on the second.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\names.txt', value: ['Ali', 'Sara']}, {type: fileLines, path: 'C:\Users\Student\Desktop\names.txt', value: 2}]
+      hints:
+        - 'You need two `echo` commands. The first must create the file (with `>`) and the second must add a line to its end (with `>>`).'
+        - 'Line 1: `echo` + Ali, then `>`, then `names.txt`. Line 2: `echo` + Sara, then `>>`, then the same `names.txt`. If the second line also uses `>`, Ali is erased.'
+      answer: ['echo Ali > names.txt', 'echo Sara >> names.txt']
+      explain: 'The first line creates the file `names.txt` with `Ali` using `>`, and the second line adds `Sara` on the next line using `>>`; so the file has two lines.'
+  quiz:
+    - kind: predict
+      q: 'After these commands, how many lines does `a.txt` have?'
+      code: "echo 1 > a.txt\necho 2 >> a.txt\necho 3 >> a.txt"
+      options: ['3', '1', '2', '0']
+      answer: 0
+      explain: 'The first line created the file and the next two lines were added.'
+    - kind: mcq
+      q: 'Which sign keeps the old content of the file?'
+      options: ['>>', '>', '<', '|']
+      answer: 0
+      code_options: true
+      explain: '`>>` = Append.'
+    - kind: order
+      q: 'Put the commands in order to create the file `todo.txt` with the lines “Buy milk” and “Call Ali”.'
+      items: ['echo Buy milk > todo.txt', 'echo Call Ali >> todo.txt', 'type todo.txt']
+      explain: 'First create it with `>`, then add with `>>`, and finally look at it.'
+  recap: '`>` replaces, `>>` adds.'
+
+- n: 30
+  term: '2>'
+  fullForm: 'stdout (1) · stderr (2)'
+  difficulty: 2
+  objective: 'Save or hide error messages separately from the normal output.'
+  summary: 'CMD has two output streams: number 1 is the normal output (stdout) and number 2 is the error messages (stderr). `2>` sends only the error messages to a file.'
+  meaning: '`>` is the same as `1>`. `2>nul` hides errors. `2>&1` means “send the errors to the same place as the normal output”.'
+  usage: 'Logging errors to a separate file, hiding an unimportant error message, saving everything in one file.'
+  syntax: "command 2> errors.txt\ncommand > all.txt 2>&1\ncommand 2>nul"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['type missing.txt', 'type missing.txt 2> error.txt', 'type error.txt', 'type missing.txt 2>nul']
+  examples:
+    - c: 'type missing.txt 2> error.txt'
+      d: 'The error message goes to a file instead of the screen.'
+    - c: 'dir C:\nothing 2>nul'
+      d: 'Hide the error.'
+    - c: 'dir Documents nothing > all.txt 2>&1'
+      d: 'Both the output and the error in one file.'
+    - c: 'type menu.txt > out.txt 2> err.txt'
+      d: 'Normal output and errors in two separate files.'
+  mistakes:
+    - 'A space between 2 and `>`: `2 >` means the argument “2” followed by `>`; it must be `2>`.'
+    - 'Writing `2>&1` before `>`: the order matters; first `> file`, then `2>&1`.'
+  tip: '`>nul 2>&1` means “show nothing at all”; it is very common in batch files.'
+  practice:
+    - id: P30a
+      start: 'C:\Users\Student\Desktop'
+      task: 'The command `type missing.txt` gives an error. Run it so that the error message is saved in the file `error.txt`.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\error.txt', value: 'cannot find'}, {type: usedOp, value: '2>'}]
+      hints:
+        - 'The error message comes out of stream number 2 (stderr), not the normal stream. A plain `>` only catches stream 1, so write the number 2 before `>`.'
+        - 'Three parts: the command that gives the error (`type missing.txt`), the error redirect sign (`2` stuck to `>`), and the target file (`error.txt`).'
+      answer: 'type missing.txt 2> error.txt'
+      explain: '`type missing.txt` gives a “file not found” error, and `2>` saves exactly that error message (stream 2) in `error.txt` instead of on the screen.'
+    - id: P30b
+      start: 'C:\Users\Student'
+      task: 'Run the command `dir Documents\nothing` and save both the normal output and the error in the file `all.txt`.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\all.txt', value: ['Volume', 'File Not Found']}, {type: usedOp, value: '2>&1'}]
+      hints:
+        - 'You have to send both streams to one file: first send the normal output to the file with `>`, then say that the error stream (2) should go to the same place as stream 1.'
+        - 'In order: the command (`dir Documents\nothing`), then `>` and the file name `all.txt`, and finally the part “send errors to stream 1”: `2>` and then `&1`.'
+      answer: 'dir Documents\nothing > all.txt 2>&1'
+      explain: '`> all.txt` sends the normal output to the file, and `2>&1` means “send stream 2 (errors) to the same place as stream 1”; so both are saved in `all.txt`.'
+  quiz:
+    - kind: mcq
+      q: 'What is the stream number for error messages in CMD?'
+      options: ['2', '1', '0', '3']
+      answer: 0
+      explain: '0 is input, 1 is normal output, 2 is errors.'
+    - kind: predict
+      q: 'The file `x.txt` does not exist. What do you see on the screen?'
+      code: 'type x.txt 2>nul'
+      options: ['Nothing at all', 'The system cannot find the file specified.', 'x.txt', 'nul']
+      answer: 0
+      explain: 'The error message went to `nul`.'
+    - kind: fix
+      q: 'The user wants both the output and the errors to go to `log.txt`. What is wrong?'
+      code: 'dir C:\nothing 2>&1 > log.txt'
+      options: ['`2>&1` must come after `> log.txt`', 'You have to write `>>`', '`2>&1` does not exist', 'You have to write `1>&2`']
+      answer: 0
+      explain: 'Correct: `dir C:\nothing > log.txt 2>&1`'
+  recap: '1 = output, 2 = errors. `2>` sends errors to a file, `2>nul` hides them, `> file 2>&1` puts everything in one file.'
+
+- n: 31
+  term: '&   &&   ||'
+  fullForm: 'Command chaining'
+  difficulty: 2
+  objective: 'Run several commands on one line and make the second command depend on whether the first one succeeded or failed.'
+  summary: '`&` always runs the second command. `&&` runs it only if the first one succeeded. `||` runs it only if the first one failed.'
+  meaning: 'Every command has an exit code after it runs: zero means success. `&&` and `||` check exactly that (lesson 62).'
+  usage: '`mkdir X && cd X` (if it was created, go into it), `type file || echo not found` (a friendly message instead of an error).'
+  syntax: "cmd1 & cmd2\ncmd1 && cmd2\ncmd1 || cmd2"
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['mkdir Shop && cd Shop', 'type nofile.txt || echo File not found', 'echo One & echo Two']
+  examples:
+    - c: 'mkdir Shop && cd Shop'
+      d: 'Go into the folder only if creating it worked.'
+    - c: 'type a.txt || echo a.txt is missing'
+      expectError: true
+      d: 'If the file is missing, show your own message.'
+    - c: 'cd Documents & dir /b'
+      d: 'Two commands in a row, with no condition.'
+    - c: 'copy a.txt E:\ && echo OK || echo FAILED'
+      expectError: true
+      d: 'Report the result of the job in one word.'
+  mistakes:
+    - 'Confusing `|` (pipe, lesson 33) with `||`.'
+    - 'Using `&` when the second command depends on the first: if `cd` fails, `del *.*` runs in the wrong folder! `&&` is safer here.'
+  tip: 'Safety rule: before dangerous commands, use `&&` so they only run if the previous step succeeded.'
+  restaurant: '`&` means “bring the starter and then the main course”. `&&` means “if you have pizza, bring a soda too”. `||` means “if you have no pizza, bring pasta”.'
+  practice:
+    - id: P31a
+      start: 'C:\Users\Student'
+      task: 'On one line, create the folder `Shop` and go into it only if it was created.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Shop'}, {type: usedOp, value: '&&'}]
+      hints:
+        - 'You can join two commands on one line. You need a sign that runs the second command only if the first one succeeded.'
+        - 'Three parts: the first command (`mkdir` + the name Shop), the “only if it succeeded” sign (two `&`), the second command (`cd` + the name Shop).'
+      answer: 'mkdir Shop && cd Shop'
+      explain: '`mkdir Shop` creates the folder, and `&&` runs `cd Shop` only if that worked; if creating it had failed, you would not go into the folder.'
+    - id: P31b
+      start: 'C:\Users\Student'
+      task: 'On one line, show the file `nofile.txt`, and if that fails, print the message `File not found`.'
+      checks: [{type: lastOutputIncludes, value: 'File not found'}, {type: usedOp, value: '||'}]
+      hints:
+        - 'This time the second command should run only if the first one failed. Its sign is two vertical bars (`||`).'
+        - 'Three parts: the first command (`type` + the file name nofile.txt), the “only if it failed” sign (`||`), the second command (`echo` + the message File not found).'
+      answer: 'type nofile.txt || echo File not found'
+      explain: '`type nofile.txt` fails because the file does not exist, and in that case `||` runs `echo File not found` so your own message is printed.'
+  quiz:
+    - kind: predict
+      q: 'The file `a.txt` does not exist. What is printed?'
+      code: 'type a.txt && echo YES || echo NO'
+      options: ['An error message and then NO', 'YES', 'YES and NO', 'Only an error message']
+      answer: 0
+      explain: '`type` failed, so `echo YES` did not run and `|| echo NO` did.'
+    - kind: mcq
+      q: 'Which sign always runs the second command?'
+      options: ['&', '&&', '||', '|']
+      answer: 0
+      code_options: true
+      explain: '`&` has no condition.'
+    - kind: tf
+      q: 'In `mkdir X && cd X`, if the folder X already exists, `cd X` does not run.'
+      answer: true
+      explain: '`mkdir` gave an error (already exists), so `&&` did not run the second command.'
+  recap: '`&` always, `&&` if it succeeded, `||` if it failed. Use `&&` before dangerous jobs.'
+
+- n: 32
+  term: 'Level 1 Practice'
+  fullForm: 'Combining what you learned'
+  difficulty: 2
+  objective: 'Combine the Level 1 commands to do a real task.'
+  summary: 'In this lesson you use paths, folders, copying, wildcards and redirects together to complete a whole task.'
+  meaning: 'A real task usually has several steps: going to the right place, looking at the contents, creating the destination, doing the job and checking the result.'
+  usage: 'The general pattern: `cd` → `dir` → `mkdir` → `copy`/`move` → `dir` to make sure.'
+  syntax: "cd folder\nmkdir target\ncopy *.ext target\ndir target"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['mkdir Archive', 'copy *.txt Archive', 'dir Archive /b']
+  examples:
+    - c: 'mkdir Archive && copy *.txt Archive'
+      d: 'Create a folder and copy all text files into it, on one line.'
+    - c: 'copy ..\Pictures\*.jpg E:\Photos'
+      d: 'Copy all jpg files to the USB stick.'
+    - c: 'dir E:\Photos /b > E:\photos.txt'
+      d: 'Save the listing for later.'
+  mistakes:
+    - 'Starting without looking at the prompt; always know which folder you are in.'
+    - 'Not checking the result with `dir`.'
+  tip: 'Break every big job into small steps, and look at the result after each step.'
+  practice:
+    - id: P32a
+      start: 'C:\Users\Student\Documents'
+      task: 'In Documents, create a folder called `Archive`, copy all `.txt` files into it, and finally look at the contents of Archive.'
+      multi: true
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\Archive\menu.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\Archive\todo.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\Archive\guests.txt'}, {type: argIncludes, cmd: dir, value: archive}]
+      hints:
+        - 'Three steps in a row: first create the Archive folder, then copy all `.txt` files into it using the wildcard `*`, and finally look at its contents.'
+        - 'Line 1: `mkdir` + the folder name. Line 2: `copy` + the pattern for all txt files (`*` and `.txt`) + the destination folder. Line 3: `dir` + the name of that same folder.'
+      answer: ['mkdir Archive', 'copy *.txt Archive', 'dir Archive']
+      explain: '`mkdir Archive` creates the folder, `copy *.txt Archive` copies all text files into it, and `dir Archive` shows that the copies have arrived.'
+    - id: P32b
+      start: 'C:\Users\Student\Pictures'
+      task: 'Copy all `.jpg` pictures in this folder to `E:\Photos` and save the list of files in that folder to `E:\photos.txt`.'
+      multi: true
+      checks: [{type: fileExists, path: 'E:\Photos\beach.jpg'}, {type: fileExists, path: 'E:\Photos\cat.jpg'}, {type: fileContains, path: 'E:\photos.txt', value: 'beach.jpg'}]
+      hints:
+        - 'Two steps: first send all `.jpg` pictures to the folder on the USB stick with `copy` and a wildcard, then save the listing of that folder to a file with `dir` and `>`.'
+        - 'Line 1: `copy` + the pattern for jpg files + the destination `E:\Photos`. Line 2: `dir` + the same `E:\Photos` + the `>` sign + the target file `E:\photos.txt`.'
+      answer: ['copy *.jpg E:\Photos', 'dir E:\Photos > E:\photos.txt']
+      explain: '`copy *.jpg E:\Photos` copies all jpg files to the USB stick. Then `dir E:\Photos` creates the listing of that folder and `>` writes it to `E:\photos.txt`.'
+  quiz:
+    - kind: order
+      q: 'Put the commands in order to move all `.pdf` files from Downloads to a new folder `Docs`. (You start in `C:\Users\Student`.)'
+      items: ['cd Downloads', 'mkdir Docs', 'move *.pdf Docs', 'dir Docs']
+      explain: 'First go there, create the destination, move the files, check the result.'
+    - kind: predict
+      q: 'Current directory: `C:\Users\Student`. What is the result of this line?'
+      code: 'cd Nothing && del *.*'
+      options: ['cd gives an error and del does not run', 'All files in Student are deleted', 'The folder Nothing is created', 'del runs in C:\']
+      answer: 0
+      explain: 'This is why `&&` matters: with `&`, the files in the wrong folder would have been deleted.'
+    - kind: mcq
+      q: 'Which command adds the list of files on E:\ to the end of `report.txt`?'
+      options: ['dir E:\ >> report.txt', 'dir E:\ > report.txt', 'type E:\ >> report.txt', 'copy E:\ report.txt']
+      answer: 0
+      code_options: true
+      explain: '`>>` adds.'
+  recap: 'A real task = small steps: go, look, create, do the job, check. `&&` prevents dangerous mistakes.'

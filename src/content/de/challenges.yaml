@@ -1,0 +1,366 @@
+# Challenges (German): real-world scenarios, checked by the result in the sandbox.
+# level 1 = beginner, 2 = intermediate, 3 = advanced (Batch).
+# after = the lesson that teaches everything needed.
+
+# ---------------- Level 1 ----------------
+- id: C1
+  level: 1
+  after: 18
+  title: 'Erster Tag im Restaurant'
+  story: 'Die Restaurantleitung bittet dich, auf dem Bürocomputer einen Platz für die Dateien des Restaurants anzulegen.'
+  task: 'Erstelle im aktuellen Ordner den Ordner `Restaurant` und darin die zwei Ordner `Menu` und `Orders`.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: dirExists, path: 'C:\Users\Student\Restaurant\Menu'}
+    - {type: dirExists, path: 'C:\Users\Student\Restaurant\Orders'}
+  hints: ['`mkdir` kann mehrere Ordnerebenen auf einmal erstellen.', '`mkdir Restaurant\Menu Restaurant\Orders`']
+  answer: 'mkdir Restaurant\Menu Restaurant\Orders'
+  tags: ['mkdir', 'Ordner']
+
+- id: C2
+  level: 1
+  after: 20
+  title: 'Wo ist die Speisekarte?'
+  story: 'Der Koch fragt, welche Gerichte heute auf der Karte stehen. Die Menüdatei liegt in Documents des Benutzers Student, aber du bist gerade im Stammordner von Laufwerk C.'
+  task: 'Zeig den Inhalt der Datei `menu.txt` an, ohne den Ordner zu wechseln.'
+  start: 'C:\'
+  checks:
+    - {type: lastOutputIncludes, value: 'Restaurant Menu'}
+    - {type: cwd, value: 'C:\'}
+  hints: ['Nutze einen absoluten Pfad (Absolute Path).', '`type C:\Users\Student\Documents\menu.txt`']
+  answer: 'type C:\Users\Student\Documents\menu.txt'
+  tags: ['type', 'absolute path']
+
+- id: C3
+  level: 1
+  after: 21
+  title: 'Notizen auf den USB-Stick'
+  story: 'Du willst deine Notizen mit nach Hause nehmen. Der USB-Stick ist Laufwerk `E:`.'
+  task: 'Kopiere die Datei `notes.txt` vom Desktop in den Stammordner des USB-Sticks (`E:\`). Die Originaldatei muss an ihrem Platz bleiben.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileExists, path: 'E:\notes.txt'}
+    - {type: fileExists, path: 'C:\Users\Student\Desktop\notes.txt'}
+  hints: ['`copy Quelle Ziel`', '`copy Desktop\notes.txt E:\`']
+  answer: 'copy Desktop\notes.txt E:\'
+  tags: ['copy', 'USB-Stick']
+
+- id: C4
+  level: 1
+  after: 22
+  title: 'Die verlorene Rechnung'
+  story: 'Die Einkaufsrechnung vom letzten Monat liegt noch in Downloads, aber die Buchhaltung sucht sie in Documents.'
+  task: 'Verschiebe die Datei `invoice.pdf` von Downloads nach Documents (nicht kopieren).'
+  start: 'C:\Users\Student\Downloads'
+  checks:
+    - {type: fileExists, path: 'C:\Users\Student\Documents\invoice.pdf'}
+    - {type: fileNotExists, path: 'C:\Users\Student\Downloads\invoice.pdf'}
+  hints: ['Zum Verschieben nutzt du `move`.', '`move invoice.pdf ..\Documents`']
+  answer: 'move invoice.pdf ..\Documents'
+  tags: ['move', 'relative path']
+
+- id: C5
+  level: 1
+  after: 26
+  title: 'Downloads aufräumen'
+  story: 'Der Ordner Downloads ist voller temporärer Dateien. Nur die `.tmp`-Dateien sollen weg; alle anderen Dateien sind wichtig.'
+  task: 'Lösche alle `.tmp`-Dateien in Downloads mit einem einzigen Befehl.'
+  start: 'C:\Users\Student\Downloads'
+  checks:
+    - {type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\photos.zip'}
+  hints: ['Nutze den Platzhalter (Wildcard) `*`.', 'Schau zuerst mit `dir *.tmp`, welche Dateien erfasst werden, dann `del *.tmp`.']
+  answer: 'del *.tmp'
+  tags: ['del', 'wildcard', 'aufräumen']
+
+- id: C6
+  level: 1
+  after: 27
+  title: 'Einstellige Berichte'
+  story: 'In `Documents\Work` liegen Monatsberichte: report1, report2 und report10. Die Chefin will nur die Berichte der einstelligen Monate im Backup haben.'
+  task: 'Kopiere nur `report1.txt` und `report2.txt` nach `D:\Backup`; `report10.txt` darf nicht mitkopiert werden. Mit einem einzigen Befehl und einem Platzhalter (Wildcard).'
+  start: 'C:\Users\Student\Documents\Work'
+  checks:
+    - {type: fileExists, path: 'D:\Backup\report1.txt'}
+    - {type: fileExists, path: 'D:\Backup\report2.txt'}
+    - {type: fileNotExists, path: 'D:\Backup\report10.txt'}
+  hints: ['`*` steht für beliebig viele Zeichen, erfasst also auch report10.', '`?` steht für genau ein Zeichen: `copy report?.txt D:\Backup`']
+  answer: 'copy report?.txt D:\Backup'
+  tags: ['wildcard', '?', 'copy']
+
+- id: C7
+  level: 1
+  after: 28
+  title: 'Dateiliste für eine Kollegin'
+  story: 'Deine Kollegin möchte wissen, welche Dateien in Documents liegen, hat aber keinen Zugriff auf deinen Computer.'
+  task: 'Speichere nur die Namen der Dateien und Ordner in Documents (ohne Datum und Größe) in der Datei `C:\Users\Student\Desktop\files.txt`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\files.txt', value: ['menu.txt', 'guests.txt', 'Work']}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\files.txt', value: '<DIR>'}}
+  hints: ['`dir /b` gibt nur die Namen aus.', '`dir Documents /b > Desktop\files.txt`']
+  answer: 'dir Documents /b > Desktop\files.txt'
+  tags: ['dir', '>', 'redirect']
+
+- id: C8
+  level: 1
+  after: 29
+  title: 'Das Bestellbuch'
+  story: 'Tisch 4 hat bestellt: eine Pizza und eine Pasta. Die Bestellungen sollen in einer Textdatei festgehalten werden.'
+  task: 'Erstelle auf dem Desktop die Datei `orders.txt` mit genau zwei Zeilen: `Pizza` und danach `Pasta`.'
+  start: 'C:\Users\Student\Desktop'
+  multi: true
+  checks:
+    - {type: fileOrder, path: 'C:\Users\Student\Desktop\orders.txt', value: ['Pizza', 'Pasta']}
+    - {type: fileLines, path: 'C:\Users\Student\Desktop\orders.txt', value: 2}
+  hints: ['Die erste Zeile mit `>`, die zweite mit `>>`.', '`echo Pizza> orders.txt` und danach `echo Pasta>> orders.txt`']
+  answer: ['echo Pizza> orders.txt', 'echo Pasta>> orders.txt']
+  tags: ['echo', '>>', 'append']
+
+- id: C9
+  level: 1
+  after: 31
+  title: 'Nur wenn es geklappt hat'
+  story: 'Du willst den Ordner für die Berichte erstellen und die Meldung `Ready` nur sehen, wenn er wirklich erstellt wurde.'
+  task: 'In einer Zeile: Erstelle den Ordner `Reports` und gib nur bei Erfolg `Ready` aus.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: dirExists, path: 'C:\Users\Student\Reports'}
+    - {type: usedOp, value: '&&'}
+    - {type: lastOutputIncludes, value: 'Ready'}
+  hints: ['`&&` führt den zweiten Befehl nur aus, wenn der erste erfolgreich war.', '`mkdir Reports && echo Ready`']
+  answer: 'mkdir Reports && echo Ready'
+  tags: ['&&', 'chaining']
+
+# ---------------- Level 2 ----------------
+- id: C10
+  level: 2
+  after: 35
+  title: 'Gästeliste sortiert'
+  story: 'Für die Feier heute Abend soll die Gästeliste alphabetisch sortiert ausgedruckt werden.'
+  task: 'Sortiere den Inhalt von `Documents\guests.txt` und speichere das Ergebnis in `Desktop\guests_sorted.txt`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileOrder, path: 'C:\Users\Student\Desktop\guests_sorted.txt', value: ['Ali', 'David', 'hibo', 'mina', 'Reza', 'Sara']}
+  hints: ['`sort` und danach `>`.', '`sort Documents\guests.txt > Desktop\guests_sorted.txt`']
+  answer: 'sort Documents\guests.txt > Desktop\guests_sorted.txt'
+  tags: ['sort', 'redirect']
+
+- id: C11
+  level: 2
+  after: 38
+  title: 'Verkaufsberichte'
+  story: 'Die Buchhaltung fragt, welche txt-Dateien in Documents (und seinen Unterordnern) das Wort `sales` enthalten.'
+  task: 'Finde nur die Namen der Dateien, die das Wort sales enthalten (Groß-/Kleinschreibung egal), und speichere sie in `C:\Users\Student\Desktop\sales.txt`.'
+  start: 'C:\Users\Student\Documents'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\sales.txt', value: ['report.txt', 'report1.txt', 'report10.txt']}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\sales.txt', value: 'menu.txt'}}
+  hints: ['`findstr` mit `/s` für Unterordner, `/m` nur für Dateinamen und `/i` ohne Beachtung der Groß-/Kleinschreibung.', '`findstr /s /m /i "sales" *.txt > C:\Users\Student\Desktop\sales.txt`']
+  answer: 'findstr /s /m /i "sales" *.txt > C:\Users\Student\Desktop\sales.txt'
+  tags: ['findstr', 'suchen']
+
+- id: C12
+  level: 2
+  after: 54
+  title: 'IP für den Support'
+  story: 'Der Netzwerk-Support braucht nur die IPv4-Adresse deines Computers, nicht die ganze Ausgabe von `ipconfig`.'
+  task: 'Filtere nur die IPv4-Zeile aus der Ausgabe von `ipconfig` heraus und speichere sie in `Desktop\ip.txt`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileContains, path: 'C:\Users\Student\Desktop\ip.txt', value: '192.168.1.24'}
+    - {type: not, check: {type: fileContains, path: 'C:\Users\Student\Desktop\ip.txt', value: 'Gateway'}}
+  hints: ['Gib die Ausgabe mit `|` an `find` weiter.', '`ipconfig | find "IPv4" > Desktop\ip.txt`']
+  answer: 'ipconfig | find "IPv4" > Desktop\ip.txt'
+  tags: ['ipconfig', 'pipe', 'find']
+
+- id: C13
+  level: 2
+  after: 52
+  title: 'Die Musik hängt'
+  story: 'Spotify hängt und reagiert nicht. Chrome ist offen und darf nicht geschlossen werden.'
+  task: 'Beende nur das hängende Programm.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: procGone, value: 'Spotify.exe'}
+    - {type: not, check: {type: procGone, value: 'chrome.exe'}}
+  hints: ['Finde mit `tasklist` oder `tasklist /fi "status eq not responding"` den Namen oder die PID.', 'Ein hängendes Programm reagiert nicht auf eine normale Anfrage: `taskkill /im Spotify.exe /f`']
+  answer: ['tasklist /fi "status eq not responding"', 'taskkill /im Spotify.exe /f']
+  tags: ['taskkill', 'tasklist', 'hängt']
+
+- id: C14
+  level: 2
+  after: 56
+  title: 'Antwortet der Router?'
+  story: 'Das Internet ist langsam. Zuerst musst du prüfen, ob die Verbindung zum Router (Default Gateway) in Ordnung ist.'
+  task: 'Finde die Adresse des Default Gateway und ping sie genau 2 Mal.'
+  start: 'C:\Users\Student'
+  multi: true
+  checks:
+    - {type: outputIncludes, value: 'Reply from 192.168.1.1'}
+    - {type: switch, cmd: ping, value: '-n', anyRun: true}
+  hints: ['Das Default Gateway findest du in der Ausgabe von `ipconfig`.', '`ping -n 2 192.168.1.1`']
+  answer: ['ipconfig', 'ping -n 2 192.168.1.1']
+  tags: ['ping', 'gateway', 'Netzwerk']
+
+- id: C15
+  level: 2
+  after: 65
+  title: 'Der Drucker hängt'
+  story: 'Die Druckwarteschlange hängt, und nichts wird gedruckt. Die übliche Lösung: den Dienst Print Spooler einmal stoppen und wieder starten.'
+  task: 'Starte den Dienst `Spooler` neu (Restart: stoppen und wieder starten). CMD ist mit Administrator-Rechten geöffnet.'
+  admin: true
+  multi: true
+  checks:
+    - {type: serviceState, name: Spooler, value: RUNNING}
+    - {type: any, of: [{type: outputIncludes, value: 'stopped successfully'}, {type: outputIncludes, value: 'STOP_PENDING'}]}
+  hints: ['`net stop` und `net start` mit dem Dienstnamen.', '`net stop spooler && net start spooler`']
+  answer: 'net stop spooler && net start spooler'
+  tags: ['service', 'net', 'sc', 'Drucker']
+
+- id: C16
+  level: 2
+  after: 43
+  title: 'Komplettes Backup von Documents'
+  story: 'Bevor ein neues Windows installiert wird, musst du ein Backup von ganz Documents (mit allen Unterordnern) machen.'
+  task: 'Kopiere Documents mit allen Unterordnern nach `D:\Backup\Docs`.'
+  start: 'C:\Users\Student'
+  checks:
+    - {type: fileExists, path: 'D:\Backup\Docs\menu.txt'}
+    - {type: fileExists, path: 'D:\Backup\Docs\Work\report.txt'}
+  hints: ['`copy` kopiert keine Ordner; nutze `xcopy` oder `robocopy`.', '`xcopy Documents D:\Backup\Docs /e /i`']
+  answer: 'xcopy Documents D:\Backup\Docs /e /i'
+  tags: ['xcopy', 'robocopy', 'backup']
+
+- id: C17
+  level: 2
+  after: 41
+  title: 'Die versteckte Datei'
+  story: 'Du hast gehört, dass es in Documents eine versteckte Datei gibt, die ein normales `dir` nicht anzeigt.'
+  task: 'Finde die versteckte Datei in Documents, nimm ihr das Attribut Hidden weg und lies ihren Inhalt.'
+  start: 'C:\Users\Student\Documents'
+  multi: true
+  checks:
+    - {type: fileAttr, path: 'C:\Users\Student\Documents\secret.txt', attr: h, value: false}
+    - {type: outputIncludes, value: 'You found the hidden file'}
+  hints: ['`dir /a:h` zeigt versteckte (Hidden) Dateien an.', '`attrib -h secret.txt` und danach `type secret.txt`']
+  answer: ['dir /a:h', 'attrib -h secret.txt', 'type secret.txt']
+  tags: ['attrib', 'hidden']
+
+# ---------------- Level 3 (Batch) ----------------
+- id: C18
+  level: 3
+  after: 74
+  title: 'Gäste begrüßen'
+  story: 'Das Restaurant möchte ein Skript, das nach dem Namen des Gastes fragt und ihn begrüßt.'
+  task: 'Frag in `greet.bat` mit `set /p` nach dem Namen des Gastes und gib dann `Welcome, NAME` aus. Führ das Skript aus und gib `Sara` ein, wenn nach dem Namen gefragt wird.'
+  batch: {file: 'greet.bat', starter: "@echo off\n"}
+  inputs: ['Sara']
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: 'Welcome, Sara'}
+  hints: ['`set /p name=Your name: `', 'Danach: `echo Welcome, %name%`']
+  answer: ['@echo off', 'set /p name=Your name: ', 'echo Welcome, %name%']
+  tags: ['batch', 'set /p', 'Eingabe']
+
+- id: C19
+  level: 3
+  after: 83
+  title: 'Tischnummern'
+  story: 'Für die Tischschilder brauchst du eine Liste von `Table 1` bis `Table 8`.'
+  task: 'Gib in `tables.bat` mit einer `for /l`-Schleife die Zeilen `Table 1` bis `Table 8` aus.'
+  batch: {file: 'tables.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: outputOrder, value: ['Table 1', 'Table 2', 'Table 8']}
+    - {type: outputExcludes, value: 'Table 9'}
+    - {type: usedOp, value: 'for'}
+  hints: ['`for /l %%i in (start,step,end) do ...`', '`for /l %%i in (1,1,8) do echo Table %%i`']
+  answer: ['@echo off', 'for /l %%i in (1,1,8) do echo Table %%i']
+  tags: ['for /l', 'Schleife']
+
+- id: C20
+  level: 3
+  after: 84
+  title: 'Archiv nach Jahreszeiten'
+  story: 'Für das Archiv braucht `D:\Archive` einen Ordner pro Jahreszeit: Spring, Summer, Autumn und Winter.'
+  task: 'Erstelle in `seasons.bat` mit einer `for`-Schleife diese vier Ordner in `D:\Archive`.'
+  batch: {file: 'seasons.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: dirExists, path: 'D:\Archive\Spring'}
+    - {type: dirExists, path: 'D:\Archive\Summer'}
+    - {type: dirExists, path: 'D:\Archive\Autumn'}
+    - {type: dirExists, path: 'D:\Archive\Winter'}
+    - {type: usedOp, value: 'for'}
+  hints: ['`for %%s in (Spring Summer Autumn Winter) do ...`', '`for %%s in (Spring Summer Autumn Winter) do mkdir "D:\Archive\%%s"`']
+  answer: ['@echo off', 'for %%s in (Spring Summer Autumn Winter) do mkdir "D:\Archive\%%s"']
+  tags: ['for', 'mkdir']
+
+- id: C21
+  level: 3
+  after: 76
+  title: 'Datei per Parameter anzeigen'
+  story: 'Du willst ein Skript, das einen beliebigen Dateinamen bekommt und den Inhalt anzeigt, wenn die Datei existiert – sonst soll es `Missing` sagen.'
+  task: 'In `show.bat`: Wenn die Datei aus `%1` existiert, zeig sie mit `type` an, sonst gib `Missing` aus. (Getestet wird mit dem Argument `C:\Users\Student\Documents\menu.txt`.)'
+  batch: {file: 'show.bat', starter: "@echo off\n", args: 'C:\Users\Student\Documents\menu.txt'}
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: 'Restaurant Menu'}
+    - {type: outputExcludes, value: 'Missing'}
+  hints: ['`if exist "%~1" (...) else (...)`', '`if exist "%~1" (type "%~1") else (echo Missing)`']
+  answer: ['@echo off', 'if exist "%~1" (type "%~1") else (echo Missing)']
+  tags: ['%1', 'if exist', 'parameter']
+
+- id: C22
+  level: 3
+  after: 87
+  title: 'Helpdesk-Menü'
+  story: 'Bau für Kollegen ohne Technikwissen ein Menü: 1 = IP anzeigen, 2 = Computernamen anzeigen.'
+  task: 'Frag in `helpdesk.bat` mit `choice /c 12` nach der Auswahl und führ sie mit `if errorlevel` oder `%errorlevel%` aus. Option 1 soll die IP-Adresse (Ausgabe von `ipconfig`) zeigen, Option 2 die Ausgabe von `hostname`. Führ das Skript aus und drück die Taste `1`, wenn das Menü erscheint.'
+  batch: {file: 'helpdesk.bat', starter: "@echo off\necho 1. IP address\necho 2. Computer name\n"}
+  inputs: ['1']
+  checks:
+    - {type: ranBatch}
+    - {type: outputIncludes, value: '192.168.1.24'}
+    - {type: outputExcludes, value: 'ACADEMY-PC'}
+  hints: ['`choice /c 12 /m "Choose"` und danach `if errorlevel 2 goto name`.', 'errorlevel wird von groß nach klein geprüft; nach jedem Abschnitt kommt `goto :eof`.']
+  answer: ['@echo off', 'echo 1. IP address', 'echo 2. Computer name', 'choice /c 12 /m "Choose"', 'if errorlevel 2 goto name', 'ipconfig', 'goto :eof', ':name', 'hostname']
+  tags: ['choice', 'menu', 'goto', 'errorlevel']
+
+- id: C23
+  level: 3
+  after: 89
+  title: 'Backup mit Protokoll'
+  story: 'Das nächtliche Backup soll sein Ergebnis in ein Log schreiben, damit man morgens sieht, ob es geklappt hat.'
+  task: 'Kopiere in `nightly.bat` die txt-Dateien aus Documents nach `D:\Backup\Texts` (erstelle den Ordner, falls nötig). Häng bei Erfolg `OK` und sonst `FAILED` an das Ende von `D:\Backup\log.txt` an.'
+  batch: {file: 'nightly.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: fileExists, path: 'D:\Backup\Texts\menu.txt'}
+    - {type: fileContains, path: 'D:\Backup\log.txt', value: 'OK'}
+    - {type: not, check: {type: fileContains, path: 'D:\Backup\log.txt', value: 'FAILED'}}
+  hints: ['`if not exist D:\Backup\Texts mkdir D:\Backup\Texts`', '`copy ... >nul && echo OK>> D:\Backup\log.txt || echo FAILED>> D:\Backup\log.txt`']
+  answer: ['@echo off', 'if not exist D:\Backup\Texts mkdir D:\Backup\Texts', 'copy "%USERPROFILE%\Documents\*.txt" D:\Backup\Texts >nul && echo OK>> D:\Backup\log.txt || echo FAILED>> D:\Backup\log.txt']
+  tags: ['backup', 'log', '&&', '||']
+
+- id: C24
+  level: 3
+  after: 92
+  title: 'Clever aufräumen'
+  story: 'Das wöchentliche Wartungsskript soll die `.tmp`-Dateien aus Downloads und dem Temp-Ordner des Benutzers löschen, aber keine andere Datei anrühren.'
+  task: 'Lösche in `cleanup.bat` alle `.tmp`-Dateien aus `%USERPROFILE%\Downloads` und `%TEMP%` ohne Rückfrage und gib am Ende `Cleanup done` aus.'
+  batch: {file: 'cleanup.bat', starter: "@echo off\n"}
+  checks:
+    - {type: ranBatch}
+    - {type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}
+    - {type: countFiles, path: 'C:\Users\Student\AppData\Local\Temp\*.tmp', value: 0}
+    - {type: fileExists, path: 'C:\Users\Student\AppData\Local\Temp\setup_log.txt'}
+    - {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}
+    - {type: outputIncludes, value: 'Cleanup done'}
+  hints: ['`del /q "%TEMP%\*.tmp"`', 'Mach das für beide Ordner und danach `echo Cleanup done`.']
+  answer: ['@echo off', 'del /q "%USERPROFILE%\Downloads\*.tmp" 2>nul', 'del /q "%TEMP%\*.tmp" 2>nul', 'echo Cleanup done']
+  tags: ['del', 'temp', 'Wartung']

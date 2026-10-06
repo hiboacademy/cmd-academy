@@ -1,0 +1,506 @@
+# Lessons 45–52 · Chapter 7: variables and system information
+
+- n: 45
+  term: set
+  fullForm: 'Variables'
+  difficulty: 2
+  objective: 'Create a variable, read its value, and change or delete it.'
+  summary: 'A variable is a name that holds a value. You create it with `set name=value` and use it with `%name%`.'
+  meaning: 'Before running each line, CMD replaces `%name%` with the variable''s value. `set` without an argument shows all variables. `set name=` (with no value) deletes the variable.'
+  usage: 'Storing paths and values you need several times, and the foundation for working with batch scripts.'
+  syntax: "set name=value\necho %name%\nset name=\nset [prefix]"
+  demo:
+    cmds: ['set city=Vienna', 'echo I live in %city%', 'set ci', 'set city=', 'echo %city%']
+  examples:
+    - c: 'set city=Vienna'
+      d: 'Create a variable.'
+    - c: 'echo %city%'
+      d: 'Use its value.'
+    - c: 'set c'
+      d: 'All variables whose names start with c.'
+    - c: 'set "msg=Hello World"'
+      d: 'Quotes around the whole expression; the safest way for a value with spaces.'
+  mistakes:
+    - 'A space before `=`: `set city =Vienna` creates a variable named “city ” (with a space), and `%city%` does not work.'
+    - 'A space after `=`: `set city= Vienna` makes the value “ Vienna” with a leading space.'
+    - 'Forgetting the `%` signs: `echo city` just prints the word city.'
+  tip: 'Variables you create in a CMD window only last until that window is closed.'
+  restaurant: 'A variable is like a label on a container: “Today''s sauce = mushroom”. Whenever someone says “today''s sauce”, everyone knows they mean mushroom.'
+  practice:
+    - id: P45a
+      start: 'C:\Users\Student'
+      task: 'Create a variable named `city` with the value `Vienna`, then print its value with `echo`.'
+      multi: true
+      checks: [{type: envEquals, name: city, value: Vienna}, {type: inputIncludes, value: '%city%'}, {type: lastOutputIncludes, value: 'Vienna'}]
+      hints:
+        - 'Two steps: first create a variable with `set` (name, the `=` sign, value), then print its value with `echo`. To use the value, put the variable name between two `%` signs.'
+        - 'Line 1: `set`, a space, then the name city, `=` and Vienna, all joined together (no spaces around `=`). Line 2: `echo` and the name city between two `%` signs.'
+      answer: ['set city=Vienna', 'echo %city%']
+      explain: '`set city=Vienna` creates the variable `city` with the value Vienna. On the second line, CMD replaces `%city%` with Vienna before running it, and `echo` prints it.'
+    - id: P45b
+      start: 'C:\Users\Student'
+      task: 'Show all variables whose names start with `user`.'
+      checks: [{type: anyCmd, value: set}, {type: lastOutputIncludes, value: 'USERNAME='}, {type: lastOutputIncludes, value: 'USERPROFILE='}]
+      hints:
+        - 'If you give `set` just the beginning of a name, it shows all variables whose names start with those letters.'
+        - 'Two parts: what to do? (`set`) which prefix? (the letters user). You don''t need `=` or `%`; you''re not creating anything here, just looking.'
+      answer: 'set user'
+      explain: '`set user` shows all variables whose names start with `user`, such as `USERNAME` and `USERPROFILE`, along with their values.'
+  quiz:
+    - kind: fix
+      q: 'Why does `echo %food%` print nothing but `%food%`?'
+      code: "set food =Pizza\necho %food%"
+      options: ['The space before `=` became part of the variable name', 'You have to write `set /a`', 'The variable must be in uppercase', 'Pizza is a reserved word']
+      answer: 0
+      explain: 'The variable name became “food ”. Correct: `set food=Pizza`'
+    - kind: predict
+      q: 'What is the output?'
+      code: "set x=5\nset x=7\necho %x%"
+      options: ['7', '5', '57', '%x%']
+      answer: 0
+      explain: 'The second value replaces the first.'
+    - kind: type
+      q: 'Delete the variable `color`.'
+      accept: ['set color=', 'set "color="']
+      show: 'set color='
+      explain: '`set name=` with no value.'
+    - kind: sim
+      q: 'Create the variable `table` with the value `12`.'
+      start: 'C:\Users\Student'
+      checks: [{type: envEquals, name: table, value: '12'}]
+      answer: 'set table=12'
+      explain: 'No spaces around `=`.'
+  recap: '`set name=value` with no spaces around `=`. `%name%` = the value. `set name=` = delete. `set` = list.'
+
+- n: 46
+  term: '%VAR%'
+  fullForm: 'Environment Variables'
+  difficulty: 2
+  objective: 'Get to know the built-in Windows variables and use them in commands.'
+  summary: 'Windows comes with dozens of built-in variables that hold system information, such as `%COMPUTERNAME%`, `%OS%`, `%windir%` and `%DATE%`.'
+  meaning: 'These are environment variables. Some, like `%DATE%`, `%TIME%`, `%RANDOM%`, `%CD%` and `%ERRORLEVEL%`, are dynamic and have a new value every time. Variable names are not case-sensitive.'
+  usage: 'Writing commands that work on any computer, without typing paths or names by hand.'
+  syntax: "echo %COMPUTERNAME%\ncd %windir%\necho %DATE% %TIME%"
+  demo:
+    cmds: ['echo %COMPUTERNAME%', 'echo %OS%', 'echo %windir%', 'echo %CD%', 'echo %RANDOM%']
+  examples:
+    - c: 'echo %COMPUTERNAME%'
+      d: 'The computer name.'
+    - c: 'cd %windir%'
+      d: 'Go to the Windows folder, wherever it is installed.'
+    - c: 'echo %DATE% %TIME%'
+      d: 'The current date and time.'
+    - c: 'echo %RANDOM%'
+      d: 'A random number between 0 and 32767.'
+  mistakes:
+    - 'Writing `$COMPUTERNAME` (PowerShell or Linux style). In CMD: `%COMPUTERNAME%`'
+    - 'Leaving out the closing `%`.'
+  tip: 'If a variable doesn''t exist, CMD prints the text `%NAME%` unchanged.'
+  practice:
+    - id: P46a
+      start: 'C:\Users\Student'
+      task: 'Print the computer name using an environment variable.'
+      checks: [{type: inputIncludes, value: '%computername%'}, {type: lastOutputIncludes, value: 'ACADEMY-PC'}]
+      hints:
+        - 'Windows keeps the computer name ready in an environment variable. Print its value with `echo`; the variable name is COMPUTERNAME.'
+        - 'Two parts: what to do? (`echo`) what? (the variable name COMPUTERNAME between two `%` signs). Without `%`, the word COMPUTERNAME itself is printed.'
+      answer: 'echo %COMPUTERNAME%'
+      explain: 'Before running, CMD replaces `%COMPUTERNAME%` with the real computer name (`ACADEMY-PC`), and `echo` displays it.'
+    - id: P46b
+      start: 'C:\Users\Student'
+      task: 'Go to the Windows folder using the `%windir%` variable.'
+      checks: [{type: cwd, value: 'C:\Windows'}, {type: inputIncludes, value: '%windir%'}]
+      hints:
+        - 'The `%windir%` variable contains the path of the Windows folder. You can give it to `cd` instead of a path.'
+        - 'Two parts: what to do? (`cd`) where to? (instead of typing the path, the variable windir between two `%` signs).'
+      answer: 'cd %windir%'
+      explain: 'CMD first replaces `%windir%` with `C:\Windows`, and then `cd` takes you to that folder.'
+  quiz:
+    - kind: mcq
+      q: 'Which variable gives a different number every time?'
+      options: ['%RANDOM%', '%OS%', '%COMPUTERNAME%', '%windir%']
+      answer: 0
+      code_options: true
+      explain: '`%RANDOM%` is a random number.'
+    - kind: tf
+      q: '`%windir%` and `%WINDIR%` are the same variable.'
+      answer: true
+      explain: 'Variable names are not case-sensitive.'
+    - kind: predict
+      q: 'The variable `ABC` does not exist. What is the output?'
+      code: 'echo %ABC%'
+      options: ['%ABC%', 'An empty line', 'ABC', 'An error']
+      answer: 0
+      code_options: true
+      explain: 'At the command line, a variable that doesn''t exist is printed unchanged.'
+  recap: 'Windows has built-in variables: `%COMPUTERNAME%` `%OS%` `%windir%` `%DATE%` `%TIME%` `%RANDOM%` `%CD%`.'
+
+- n: 47
+  term: '%USERPROFILE%'
+  fullForm: '%USERNAME% · %USERPROFILE% · %TEMP%'
+  difficulty: 2
+  objective: 'Reach your personal folders and the Temp folder using user variables.'
+  summary: '`%USERNAME%` is the current user''s name, `%USERPROFILE%` is their personal folder (like `C:\Users\Student`), and `%TEMP%` is the folder for temporary files.'
+  meaning: 'Because these paths are different on every computer, professional scripts always use variables instead of fixed paths.'
+  usage: 'Quickly going to the user folder, cleaning up temporary files, writing a backup script that works for any user.'
+  syntax: "cd %USERPROFILE%\ndir %TEMP%\necho Hello %USERNAME%"
+  demo:
+    start: 'C:\'
+    cmds: ['echo Hello %USERNAME%', 'cd %USERPROFILE%', 'dir %TEMP% /b']
+  examples:
+    - c: 'cd %USERPROFILE%\Documents'
+      d: 'Go to the current user''s Documents.'
+    - c: 'dir %TEMP%'
+      d: 'See the temporary files.'
+    - c: 'copy notes.txt %USERPROFILE%\Desktop'
+      noTry: true
+      d: 'Copy to the Desktop of any user.'
+  mistakes:
+    - 'Writing a fixed path like `C:\Users\Ali` in a script; it won''t work on another computer.'
+  tip: 'If the path contains spaces, put the whole thing, variable included, in quotes: `cd "%USERPROFILE%\My Files"`'
+  practice:
+    - id: P47a
+      start: 'C:\'
+      task: 'From `C:\`, go to the user''s personal folder using the `%USERPROFILE%` variable.'
+      checks: [{type: cwd, value: 'C:\Users\Student'}, {type: inputIncludes, value: '%userprofile%'}]
+      hints:
+        - 'The `%USERPROFILE%` variable holds the path of the current user''s personal folder. Give it to `cd` as the destination.'
+        - 'Two parts: what to do? (`cd`) where to? (the variable USERPROFILE between two `%` signs). You don''t need to know the user name.'
+      answer: 'cd %USERPROFILE%'
+      explain: '`%USERPROFILE%` turns into `C:\Users\Student`, and `cd` takes you from `C:\` to that personal folder.'
+    - id: P47b
+      start: 'C:\Users\Student'
+      task: 'Show the contents of the temporary files folder using the `%TEMP%` variable.'
+      checks: [{type: inputIncludes, value: '%temp%'}, {type: lastOutputIncludes, value: 'log1.tmp'}]
+      hints:
+        - 'The `%TEMP%` variable holds the path of the temporary files folder. Instead of typing that long path, give the variable to `dir`.'
+        - 'Two parts: what to do? (`dir`) on which folder? (the variable TEMP between two `%` signs).'
+      answer: 'dir %TEMP%'
+      explain: 'CMD replaces `%TEMP%` with the path of the temp folder, and `dir` lists its contents, such as `log1.tmp`.'
+  quiz:
+    - kind: mcq
+      q: 'On a computer whose user is Sara, what is `%USERPROFILE%` usually?'
+      options: ['C:\Users\Sara', 'C:\Sara', 'C:\Windows\Sara', 'Sara']
+      answer: 0
+      code_options: true
+      explain: 'Each user''s personal folder is inside `C:\Users`.'
+    - kind: type
+      q: 'Go to the current user''s Desktop (using a variable).'
+      accept: ['cd %userprofile%\desktop', 'cd "%userprofile%\desktop"', 'cd /d %userprofile%\desktop', 'cd /d "%userprofile%\desktop"']
+      show: 'cd %USERPROFILE%\Desktop'
+      explain: 'The variable + `\Desktop`'
+    - kind: tf
+      q: 'Using `%USERPROFILE%` in a script is better than writing `C:\Users\Student`.'
+      answer: true
+      explain: 'The script then works on any computer and for any user.'
+  recap: '`%USERNAME%` = user name, `%USERPROFILE%` = user folder, `%TEMP%` = temp folder.'
+
+- n: 48
+  term: '%PATH%'
+  fullForm: 'PATH'
+  difficulty: 2
+  objective: 'Understand where CMD finds programs and how to add a folder to PATH.'
+  summary: 'PATH is a list of folders separated by `;`. When you type a command, CMD first looks for its program in the current folder and then in these folders.'
+  meaning: 'That''s why you can run `ping` from any folder: `ping.exe` is in `C:\Windows\System32`, and that folder is in PATH. `set PATH=%PATH%;C:\Tools` adds a folder (only for this window).'
+  usage: 'Running your own tools and scripts from anywhere, and understanding the `is not recognized` error.'
+  syntax: "echo %PATH%\npath\nset PATH=%PATH%;C:\\Tools"
+  demo:
+    cmds: ['path', 'where ping']
+  examples:
+    - c: 'echo %PATH%'
+      d: 'Show PATH.'
+    - c: 'path'
+      d: 'The same thing, in short form.'
+    - c: 'set PATH=%PATH%;C:\Tools'
+      d: 'Add C:\Tools for this window.'
+  mistakes:
+    - '`set PATH=C:\Tools` without `%PATH%;`: all previous paths are wiped out, and most commands can no longer be found.'
+  tip: 'To change PATH permanently, you use the Windows settings or the `setx` command; be careful.'
+  daily: 'PATH is like the list of shelves a shop assistant checks to find an item. If the item isn''t on any of them, they say “we don''t have it”.'
+  practice:
+    - id: P48a
+      start: 'C:\Users\Student'
+      task: 'Show the value of PATH.'
+      checks: [{type: lastOutputIncludes, value: 'C:\Windows\system32'}]
+      hints:
+        - 'PATH is also an environment variable. You can print its value with `echo` like any other variable (or with the short command `path`).'
+        - 'Two parts: what to do? (`echo`) what? (the variable name PATH between two `%` signs). The output is a list of folders separated by `;`.'
+      answer: 'echo %PATH%'
+      explain: '`%PATH%` is replaced with the list of folders CMD searches, and `echo` prints it; the folders are separated by `;`.'
+    - id: P48b
+      start: 'C:\Users\Student'
+      files: [{path: 'C:\Tools\hello.bat', content: "@echo off\necho Hello from Tools\n"}]
+      task: 'There is a script named `hello.bat` in `C:\Tools`. Add the folder `C:\Tools` to PATH (without wiping out the previous paths), then run it from right here just by typing `hello`.'
+      multi: true
+      checks: [{type: envIncludes, name: PATH, value: 'C:\Tools'}, {type: envIncludes, name: PATH, value: 'System32'}, {type: lastOutputIncludes, value: 'Hello from Tools'}]
+      hints:
+        - 'The new PATH value must be “current PATH + `;` + new folder”, otherwise the previous paths are wiped out. After the change, run the `hello` program by its name alone.'
+        - 'Line 1: `set`, then `PATH=`, then the current value (`%PATH%`), then `;` and `C:\Tools`. Line 2: just the script name, without a path and without `.bat`.'
+      answer: ['set PATH=%PATH%;C:\Tools', 'hello']
+      explain: 'On the first line, `%PATH%` keeps the old value and `;C:\Tools` adds the new folder to the end. Now CMD also searches `C:\Tools`, so it finds and runs `hello`.'
+  quiz:
+    - kind: mcq
+      q: 'Which character separates the folders in PATH?'
+      options: [';', ',', '|', '\']
+      answer: 0
+      code_options: true
+      explain: 'The semicolon.'
+    - kind: fix
+      q: 'After this command, `ping` doesn''t work. Why?'
+      code: 'set PATH=C:\Tools'
+      options: ['All previous PATH entries were wiped out', 'C:\Tools doesn''t exist', 'ping was deleted', 'You need to restart']
+      answer: 0
+      explain: 'Correct: `set PATH=%PATH%;C:\Tools`'
+    - kind: tf
+      q: 'CMD looks for a program in the current folder before looking in PATH.'
+      answer: true
+      explain: 'First the current folder, then the PATH folders.'
+  recap: 'PATH = the folders where CMD looks for programs. To add one: `set PATH=%PATH%;folder`'
+
+- n: 49
+  term: whoami
+  fullForm: 'whoami · hostname'
+  difficulty: 2
+  objective: 'Find out which user you are working as and on which computer.'
+  summary: '`whoami` shows the user name in the form `computer\user`. `hostname` shows only the computer name.'
+  meaning: '`whoami /groups` shows which groups the user belongs to, for example Administrators. This matters when troubleshooting the `Access is denied` error (lesson 63).'
+  usage: 'Troubleshooting access, reporting to tech support, making sure you are working on the right computer.'
+  syntax: "whoami [/user] [/groups]\nhostname"
+  demo:
+    cmds: ['whoami', 'hostname', 'whoami /user']
+  examples:
+    - c: 'whoami'
+      d: 'The current user.'
+    - c: 'hostname'
+      d: 'The computer name.'
+    - c: 'whoami /groups'
+      d: 'The user''s groups.'
+  mistakes:
+    - 'Thinking that `hostname NEWNAME` changes the computer name. It doesn''t; it only shows it.'
+  tip: '`whoami` and `%USERNAME%` usually show the same name, but `whoami` also includes the computer or domain name.'
+  practice:
+    - id: P49a
+      start: 'C:\Users\Student'
+      task: 'Show the current user name with its dedicated command.'
+      checks: [{type: anyCmd, value: whoami}, {type: lastOutputIncludes, value: 'student'}]
+      hints:
+        - 'There is a dedicated command that answers just one question: “Who am I?”. Its name is exactly that English sentence, written as one word.'
+        - 'One word, no argument: who, am and i, with no spaces between them.'
+      answer: 'whoami'
+      explain: '`whoami` (Who am I) shows the current user name, usually in the form “computer name\user name”.'
+    - id: P49b
+      start: 'C:\Users\Student'
+      task: 'Save the computer name to the file `pcname.txt`.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\pcname.txt', value: 'ACADEMY-PC'}]
+      hints:
+        - 'The `hostname` command prints the computer name. To save it, send the output to a file with a redirect (`>`).'
+        - 'Three parts: the command that gives the computer name (`hostname`), the `>` sign, and the target file name (`pcname.txt`).'
+      answer: 'hostname > pcname.txt'
+      explain: '`hostname` produces the computer name (`ACADEMY-PC`), and `>` writes it to `pcname.txt` instead of the screen.'
+  quiz:
+    - kind: predict
+      q: 'What does `whoami` output on this computer?'
+      code: 'whoami'
+      options: ['academy-pc\student', 'Student', 'ACADEMY-PC', 'C:\Users\Student']
+      answer: 0
+      code_options: true
+      explain: 'The form `computer\user`.'
+    - kind: mcq
+      q: 'Which command shows whether the user is a member of the Administrators group?'
+      options: ['whoami /groups', 'hostname', 'whoami /user', 'echo %USERNAME%']
+      answer: 0
+      code_options: true
+      explain: '`/groups` shows the groups.'
+    - kind: type
+      q: 'Show the computer name.'
+      accept: ['hostname', 'echo %computername%']
+      explain: '`hostname`'
+  recap: '`whoami` = user, `whoami /groups` = groups, `hostname` = computer name.'
+
+- n: 50
+  term: systeminfo
+  fullForm: 'ver · systeminfo'
+  difficulty: 2
+  objective: 'See the Windows version and full system details, and pick out just the part you need.'
+  summary: '`ver` shows the Windows version number. `systeminfo` gives a full system report: version, install date, memory, network and hotfixes.'
+  meaning: 'The output of `systeminfo` is long; it is usually filtered with `find` or `findstr`.'
+  usage: 'Reports for tech support, checking memory and version before installing a program, finding out when the computer last restarted.'
+  syntax: "ver\nsysteminfo\nsysteminfo | find \"Memory\""
+  demo:
+    cmds: ['ver', 'systeminfo | find "OS Name"', 'systeminfo | findstr /c:"Total Physical Memory"']
+  examples:
+    - c: 'ver'
+      d: 'The version number.'
+    - c: 'systeminfo'
+      d: 'The full report.'
+    - c: 'systeminfo | find "Boot Time"'
+      d: 'When was the computer turned on?'
+    - c: 'systeminfo > info.txt'
+      d: 'Save the report.'
+  mistakes:
+    - 'Reading the whole output instead of filtering it.'
+  tip: '`systeminfo | more` is also good for reading page by page.'
+  practice:
+    - id: P50a
+      start: 'C:\Users\Student'
+      task: 'From the output of `systeminfo`, show only the operating system name line (`OS Name`).'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'Windows 11'}, {type: lastOutputExcludes, value: 'Host Name'}]
+      hints:
+        - 'The output of `systeminfo` is very long. Pipe it to `find` so that only the line containing the text OS Name is left.'
+        - 'Three parts: the system information command (`systeminfo`), the `|` sign, and the filter command (`find` + the text OS Name inside `" "`). Because the text has a space, quotes are needed.'
+      answer: 'systeminfo | find "OS Name"'
+      explain: '`systeminfo` gives all the system information, and `|` sends it to `find "OS Name"`, which keeps only the operating system name line.'
+    - id: P50b
+      start: 'C:\Users\Student'
+      task: 'Show the Windows version with the shortest command.'
+      checks: [{type: anyCmd, value: ver}]
+      hints:
+        - '`systeminfo` gives a lot of information, but to see just the Windows version there is a much shorter command; the one you saw in lesson 1.'
+        - 'One word, no argument: the first three letters of Version.'
+      answer: 'ver'
+      explain: '`ver` is short for Version and shows just one line: the Windows version.'
+  quiz:
+    - kind: mcq
+      q: 'Which command shows when the computer was last turned on?'
+      options: ['systeminfo | find "Boot Time"', 'ver', 'hostname', 'time /t']
+      answer: 0
+      code_options: true
+      explain: '`System Boot Time` in systeminfo.'
+    - kind: type
+      q: 'Save the full systeminfo report to the file `info.txt`.'
+      accept: ['systeminfo > info.txt', 'systeminfo >info.txt']
+      show: 'systeminfo > info.txt'
+      explain: 'Redirect with `>`.'
+    - kind: tf
+      q: '`ver` shows information about RAM memory.'
+      answer: false
+      explain: 'Only the version; memory is in systeminfo.'
+  recap: '`ver` = version. `systeminfo` = everything; filter it with `find`.'
+
+- n: 51
+  term: tasklist
+  fullForm: 'Task List'
+  difficulty: 2
+  objective: 'See the running programs and find a program''s PID.'
+  summary: '`tasklist` shows all processes (running programs) with their name, PID and memory usage.'
+  meaning: 'The PID (Process ID) is the unique number of each process. A program like Chrome can have several processes. `/fi` filters, for example `"imagename eq notepad.exe"` or `"memusage gt 100000"`.'
+  usage: 'Finding the program that is slowing down the computer, finding the PID for `taskkill`.'
+  syntax: "tasklist\ntasklist /fi \"imagename eq name.exe\"\ntasklist | find \"name\""
+  demo:
+    cmds: ['tasklist /fi "imagename eq notepad.exe"', 'tasklist | find "chrome"']
+  examples:
+    - c: 'tasklist'
+      d: 'All processes.'
+    - c: 'tasklist /fi "imagename eq chrome.exe"'
+      d: 'Only Chrome.'
+    - c: 'tasklist /fi "memusage gt 100000"'
+      d: 'Processes using more than 100 MB of memory.'
+    - c: 'tasklist /fi "status eq not responding"'
+      d: 'Programs that are not responding.'
+  mistakes:
+    - 'Forgetting the quotes around the filter.'
+    - 'Writing the name without `.exe` in an `imagename eq` filter.'
+  tip: '`eq` means equal, `ne` not equal, `gt` greater than and `lt` less than.'
+  practice:
+    - id: P51a
+      start: 'C:\Users\Student'
+      task: 'Find the PID of Notepad (`notepad.exe`).'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: '7344'}, {type: lastOutputExcludes, value: 'chrome'}]
+      hints:
+        - '`tasklist` shows all processes. With the `/fi` (filter) switch you can keep only the process whose file name (imagename) equals (`eq`) `notepad.exe`.'
+        - 'In order: the command (`tasklist`), the filter switch (`/fi`), and the condition inside `" "`: the word imagename, then `eq`, then `notepad.exe`. The PID is in the second column of the output.'
+      answer: 'tasklist /fi "imagename eq notepad.exe"'
+      explain: '`/fi` filters the output of `tasklist`, and the condition `"imagename eq notepad.exe"` means “only the process named notepad.exe”, so you can see its PID (7344).'
+    - id: P51b
+      start: 'C:\Users\Student'
+      task: 'Show only the processes that use more than `100000` kilobytes of memory.'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: 'MsMpEng.exe'}, {type: lastOutputExcludes, value: 'notepad.exe'}]
+      hints:
+        - 'Again `tasklist` with the `/fi` switch, but this time the filter is on memory (memusage), and you need the “greater than” condition (`gt`).'
+        - 'In order: the command (`tasklist`), the switch (`/fi`), and the condition inside `" "`: memusage, then `gt`, then the number 100000 (no KB and no commas).'
+      answer: 'tasklist /fi "memusage gt 100000"'
+      explain: 'The condition `"memusage gt 100000"` means “memory usage greater than 100000 kilobytes”, so only memory-hungry processes like `MsMpEng.exe` remain.'
+  quiz:
+    - kind: mcq
+      q: 'What is a PID?'
+      options: ['The unique number of each process', 'The program''s password', 'The program''s size', 'The program''s install path']
+      answer: 0
+      explain: 'Process ID.'
+    - kind: tf
+      q: 'One program can have several processes with different PIDs.'
+      answer: true
+      explain: 'Like Chrome, which has a process for each tab.'
+    - kind: type
+      q: 'Show only the `explorer.exe` processes using a filter.'
+      accept: ['tasklist /fi "imagename eq explorer.exe"', 'tasklist /fi "imagename eq explorer.exe" /v']
+      show: 'tasklist /fi "imagename eq explorer.exe"'
+      explain: 'The filter `imagename eq`.'
+  recap: '`tasklist` = running programs. The PID is the number of each process. `/fi "..."` = filter.'
+
+- n: 52
+  term: taskkill
+  fullForm: 'Task Kill'
+  difficulty: 2
+  objective: 'Close a program by name or PID, and know which processes you must not close.'
+  summary: '`taskkill` closes a process: by name with `/im` or by number with `/pid`. `/f` closes the program forcibly.'
+  meaning: 'Without `/f`, the program is sent a “please close” message (a chance to save). A program that is not responding (Not Responding) can only be closed with `/f`. Critical Windows processes cannot be closed at all.'
+  usage: 'Closing a frozen program, closing all windows of a program with one command.'
+  syntax: "taskkill /im name.exe [/f]\ntaskkill /pid number [/f]"
+  warning: 'With `/f`, any unsaved work in that program is lost. On a real computer, never close system processes like `csrss.exe`, `winlogon.exe` or `svchost.exe`.'
+  demo:
+    cmds: ['taskkill /im notepad.exe', 'taskkill /pid 7810', 'taskkill /pid 7810 /f', 'taskkill /im csrss.exe']
+  examples:
+    - c: 'taskkill /im notepad.exe'
+      d: 'Close Notepad.'
+    - c: 'taskkill /pid 7810 /f'
+      d: 'Forcibly close a process by PID.'
+    - c: 'taskkill /im chrome.exe /f'
+      d: 'Close all Chrome processes.'
+  mistakes:
+    - 'Writing the name without `.exe`: `taskkill /im notepad` won''t find it.'
+    - 'Using `/f` before trying a normal close.'
+  tip: 'First find the PID with `tasklist`, then close it with `taskkill /pid`. This prevents closing the wrong thing.'
+  practice:
+    - id: P52a
+      start: 'C:\Users\Student'
+      task: 'Close Notepad (`notepad.exe`) by its name.'
+      checks: [{type: procGone, value: 'notepad.exe'}]
+      hints:
+        - 'To close a process, use `taskkill`. With the `/im` (image name) switch you tell it which program to close by its name.'
+        - 'Three parts: what to do? (`taskkill`) how to identify it? (the `/im` switch) which program? (the file name `notepad.exe`).'
+      answer: 'taskkill /im notepad.exe'
+      explain: '`taskkill` closes a process, and `/im notepad.exe` tells it to close the process named notepad.exe.'
+    - id: P52b
+      start: 'C:\Users\Student'
+      task: 'Spotify has frozen (Not Responding). First find its PID, then forcibly close it using the PID.'
+      multi: true
+      checks: [{type: procGone, value: 'Spotify.exe'}, {type: anyCmd, value: tasklist}, {type: switch, value: '/f', cmd: taskkill, anyRun: true}, {type: argIncludes, cmd: taskkill, value: '7810'}]
+      hints:
+        - 'Two steps: first use `tasklist` with a pipe to `find` to get the Spotify line and its PID. Then close it with `taskkill` and the `/pid` switch; a frozen program only closes with the force switch `/f`.'
+        - 'Line 1: `tasklist`, the `|` sign, then `find` + Spotify inside `" "`. Line 2: `taskkill`, the `/pid` switch + the number you saw in line 1, and `/f` at the end.'
+      answer: ['tasklist | find "Spotify"', 'taskkill /pid 7810 /f']
+      explain: '`tasklist | find "Spotify"` shows the Spotify line with its PID (7810). Then `taskkill /pid 7810 /f` finds that process by its number, and `/f` closes it forcibly.'
+  quiz:
+    - kind: predict
+      q: 'Program X is not responding. What is the result of this command?'
+      code: 'taskkill /im X.exe'
+      options: ['Error: it can only be closed with /F', 'It closes', 'It restarts', 'The computer shuts down']
+      answer: 0
+      explain: 'A program that is Not Responding doesn''t react to the normal close message.'
+    - kind: mcq
+      q: 'Which command forcibly closes the process with PID 4321?'
+      options: ['taskkill /pid 4321 /f', 'taskkill /im 4321', 'tasklist /pid 4321', 'taskkill 4321']
+      answer: 0
+      code_options: true
+      explain: '`/pid` for the number, `/f` to force.'
+    - kind: tf
+      q: 'You can close `csrss.exe` with `taskkill /f` to make the computer faster.'
+      answer: false
+      explain: 'Critical processes can''t be closed, and trying to do so is dangerous.'
+    - kind: sim
+      q: 'Close Notepad; all other programs must stay open.'
+      start: 'C:\Users\Student'
+      checks: [{type: procGone, value: 'notepad.exe'}, {type: not, check: {type: procGone, value: 'chrome.exe'}}]
+      answer: 'taskkill /im notepad.exe'
+      explain: '`/im` with the program name.'
+  recap: '`taskkill /im name.exe` or `/pid number`. `/f` = force. Don''t close system processes.'

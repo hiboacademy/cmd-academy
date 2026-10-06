@@ -1,0 +1,1289 @@
+# Command Library
+# Every example runs in a fresh Simulator at C:\Users\Student unless it has
+# `at:` (start folder), `mode:` (admin | winre) or `noTry: true`.
+# danger: caution = may change or overwrite data, danger = can destroy data or stop the system.
+# engine: false = not a command (operators); no "open /? in sim" button.
+
+categories:
+  - {id: navigation, title: 'Navigating and viewing'}
+  - {id: files, title: 'Files and folders'}
+  - {id: text, title: 'Text and search'}
+  - {id: console, title: 'The CMD environment'}
+  - {id: system, title: 'System and services'}
+  - {id: processes, title: 'Programs and processes'}
+  - {id: network, title: 'Network'}
+  - {id: disk, title: 'Disk and repair'}
+  - {id: batch, title: 'Batch Script'}
+  - {id: operators, title: 'Operators'}
+
+commands:
+# ---------------- navigation ----------------
+  - name: dir
+    category: navigation
+    level: 1
+    full: 'Directory listing'
+    summary: 'Shows the list of files and folders in a folder.'
+    details: 'Without an argument, it shows the contents of the current directory. Folders are marked with `<DIR>`, and files are shown with their size in bytes. With a wildcard you can see just some of the files.'
+    syntax: 'dir [path] [/w] [/b] [/s] [/a[:attr]] [/o[:order]]'
+    switches:
+      - {s: '/w', d: 'Compact view in several columns.'}
+      - {s: '/b', d: 'Names only (bare), handy for `>` and `for`.'}
+      - {s: '/s', d: 'Searches all subfolders too.'}
+      - {s: '/a', d: 'Shows everything, even hidden files. `/a:d` shows only folders, `/a:h` only hidden items.'}
+      - {s: '/o', d: 'Sorting: `/o:n` by name, `/o:s` by size, `/o:d` by date, `/o:-s` largest first.'}
+    examples:
+      - {c: 'dir', d: 'Contents of the current folder.'}
+      - {c: 'dir Documents /b', d: 'Just the names inside Documents.'}
+      - {c: 'dir *.txt /s', d: 'All txt files in this folder and its subfolders.'}
+      - {c: 'dir Documents /a:h', d: 'Hidden files inside Documents.'}
+      - {c: 'dir Downloads /o:-s', d: 'Files in Downloads, largest first.'}
+    related: [cd, tree, where, attrib]
+    keywords: ['list', 'listing', 'ls', 'contents', 'folder', 'show files']
+
+  - name: cd
+    aliases: [chdir]
+    category: navigation
+    level: 1
+    full: 'Change Directory'
+    summary: 'Moves to another folder or shows the current path.'
+    details: '`cd` on its own prints the current path. `..` means the folder one level up, and `\` means the root of the drive. To switch to another drive and folder at the same time, use `/d`.'
+    syntax: 'cd [/d] [drive:][path]'
+    switches:
+      - {s: '/d', d: 'Changes the drive too, like `cd /d D:\Projects`.'}
+      - {s: '..', d: 'One folder up.'}
+      - {s: '\', d: 'The root of the current drive.'}
+    examples:
+      - {c: 'cd Documents', d: 'Go to Documents (relative path).'}
+      - {c: 'cd ..', d: 'Go up one folder.'}
+      - {c: 'cd \', d: 'Go to the root of the drive.'}
+      - {c: 'cd /d D:\Projects', d: 'Go to drive D and the Projects folder with one command.'}
+      - {c: 'cd "Pictures\Summer 2026"', d: 'A path with a space goes inside quotes.'}
+    related: [dir, pushd, popd, tree]
+    keywords: ['change folder', 'go to folder', 'folder up', 'current path', 'navigate']
+
+  - name: pushd
+    category: navigation
+    level: 2
+    full: 'Push Directory'
+    summary: 'Remembers the current path and moves to a new folder.'
+    details: 'With `popd` you return to exactly where you were before, even if the drive changed. Very useful in batch scripts for working briefly in another folder.'
+    syntax: 'pushd [path]'
+    examples:
+      - {c: 'pushd D:\Backup', d: 'Go to D:\Backup and remember the previous path.'}
+      - {c: 'pushd Documents & dir /b & popd', d: 'Take a quick look at Documents and come back.'}
+    related: [popd, cd]
+    lessons: [14]
+    keywords: ['go back', 'remember path', 'stack']
+
+  - name: popd
+    category: navigation
+    level: 2
+    full: 'Pop Directory'
+    summary: 'Returns to the path that `pushd` remembered.'
+    syntax: 'popd'
+    examples:
+      - {c: 'pushd E:\ & popd', d: 'Go to E: and return to the previous folder.'}
+    related: [pushd, cd]
+    lessons: [14]
+    keywords: ['go back', 'return']
+
+  - name: tree
+    category: navigation
+    level: 1
+    full: 'Folder tree'
+    summary: 'Shows the folder structure as a tree.'
+    syntax: 'tree [path] [/f] [/a]'
+    switches:
+      - {s: '/f', d: 'Shows the files too.'}
+      - {s: '/a', d: 'Uses ASCII instead of graphic lines; good for saving to a file.'}
+    examples:
+      - {c: 'tree Documents', d: 'Folder tree of Documents.'}
+      - {c: 'tree D:\Projects /f', d: 'Tree including files.'}
+      - {c: 'tree Documents /f /a > tree.txt', d: 'Save the tree to a text file.'}
+    related: [dir, cd]
+    keywords: ['tree', 'structure', 'folder structure']
+
+  - name: where
+    category: navigation
+    level: 2
+    full: 'Locate files'
+    summary: 'Finds where a program or file is located.'
+    details: 'Without a switch, it searches the current folder and the folders in PATH. With `/r` it searches a folder and all of its subfolders.'
+    syntax: 'where [/r dir] pattern'
+    switches:
+      - {s: '/r dir', d: 'Searches a folder and its subfolders.'}
+    examples:
+      - {c: 'where notepad', d: 'Where is notepad.exe?'}
+      - {c: 'where /r C:\Users\Student *.jpg', d: 'All jpg pictures in the user folder.'}
+    related: [dir, path]
+    keywords: ['find', 'locate', 'program location', 'which']
+
+# ---------------- files ----------------
+  - name: type
+    category: files
+    level: 1
+    full: 'Display file content'
+    summary: 'Shows the contents of a text file.'
+    details: 'For binary files (exe, jpg, zip) the output is meaningless. For long files, send it to `more`.'
+    syntax: 'type file [file2 ...]'
+    examples:
+      - {c: 'type Documents\menu.txt', d: 'Show the restaurant menu.'}
+      - {c: 'type Documents\*.txt', d: 'Show all txt files one after another.'}
+      - {c: 'type "Desktop\shopping list.txt"', d: 'A name with a space goes inside quotes.'}
+    related: [more, find, echo, copy]
+    keywords: ['read file', 'cat', 'show contents', 'view file']
+
+  - name: mkdir
+    aliases: [md]
+    category: files
+    level: 1
+    full: 'Make Directory'
+    summary: 'Creates a new folder, even several levels at once.'
+    syntax: 'mkdir path [path2 ...]'
+    examples:
+      - {c: 'mkdir Reports', d: 'Create the Reports folder.'}
+      - {c: 'md Projects\2026\April', d: 'Create several folder levels with one command.'}
+      - {c: 'mkdir "New Folder"', d: 'A name with a space.'}
+      - {c: 'mkdir A B C', d: 'Three folders with one command.'}
+    related: [rmdir, cd, tree]
+    keywords: ['create folder', 'new folder', 'make folder']
+
+  - name: rmdir
+    aliases: [rd]
+    category: files
+    level: 1
+    danger: danger
+    full: 'Remove Directory'
+    summary: 'Deletes a folder. With `/s` it deletes all of its contents too.'
+    details: 'Without `/s`, only an empty folder can be deleted. Anything deleted with `rd` does not go to the Recycle Bin.'
+    syntax: 'rmdir [/s] [/q] path'
+    switches:
+      - {s: '/s', d: 'Deletes the folder along with all its files and subfolders.'}
+      - {s: '/q', d: 'No confirmation prompt; very dangerous.'}
+    examples:
+      - {c: 'mkdir Empty & rd Empty', d: 'Create and delete an empty folder.'}
+      - {c: 'rd Documents', d: 'Gives an error because Documents is not empty.', expectError: true}
+      - {c: 'rd /s D:\Backup', d: 'Delete a folder and its contents; asks for confirmation first.'}
+    warning: '`rd /s /q` wipes everything without asking, and there is no undo. Before using it, check where you are with `dir`.'
+    related: [mkdir, del, dir]
+    keywords: ['delete folder', 'remove folder']
+
+  - name: copy
+    category: files
+    level: 1
+    danger: caution
+    full: 'Copy files'
+    summary: 'Copies one or more files.'
+    details: 'If the destination is a folder, the file is copied with the same name. If a file with the same name already exists, CMD asks whether to overwrite it. `copy` does not copy folders; for folders use `xcopy` or `robocopy`.'
+    syntax: 'copy [/y] source [destination]'
+    switches:
+      - {s: '/y', d: 'Overwrites an existing file without asking.'}
+      - {s: '/-y', d: 'Always asks before overwriting.'}
+      - {s: 'a+b', d: 'Joins several files together: `copy a.txt+b.txt all.txt`.'}
+    examples:
+      - {c: 'copy Desktop\notes.txt D:\Backup', d: 'Copy a file to another folder.'}
+      - {c: 'copy Documents\*.txt E:\', d: 'Copy all txt files to the USB stick.'}
+      - {c: 'copy Documents\menu.txt Documents\menu_backup.txt', d: 'Copy with a new name.'}
+      - {c: 'copy Documents\menu.txt+Documents\guests.txt all.txt', d: 'Join two files into one file.'}
+    warning: 'With `/y` the destination file is replaced without asking.'
+    related: [xcopy, robocopy, move]
+    keywords: ['copy', 'duplicate', 'cp']
+
+  - name: move
+    category: files
+    level: 1
+    danger: caution
+    full: 'Move files'
+    summary: 'Moves a file or folder, or renames it.'
+    syntax: 'move [/y] source destination'
+    switches:
+      - {s: '/y', d: 'Overwrites an existing file without asking.'}
+    examples:
+      - {c: 'move Downloads\invoice.pdf Documents', d: 'Move the invoice to Documents.'}
+      - {c: 'move Downloads\*.tmp D:\Backup', d: 'Move all tmp files.'}
+      - {c: 'move Documents\Work Documents\Office', d: 'Rename a folder with move.'}
+    related: [copy, ren]
+    keywords: ['move', 'transfer', 'mv']
+
+  - name: ren
+    aliases: [rename]
+    category: files
+    level: 1
+    danger: caution
+    full: 'Rename'
+    summary: 'Changes the name of a file or folder (in the same folder).'
+    details: 'The new name is only a name, not a path. With a wildcard you can change the extension of several files at once.'
+    syntax: 'ren oldname newname'
+    examples:
+      - {c: 'ren Documents\menu.txt menu_2026.txt', d: 'Rename a file.'}
+      - {c: 'ren Documents\Work Office', d: 'Rename a folder.'}
+      - {c: 'ren *.tmp *.bak', d: 'Change the extension of all tmp files.', at: 'C:\Users\Student\Downloads'}
+    related: [move, copy]
+    keywords: ['rename', 'new name', 'change name']
+
+  - name: del
+    aliases: [erase]
+    category: files
+    level: 1
+    danger: danger
+    full: 'Delete files'
+    summary: 'Deletes files, without using the Recycle Bin.'
+    details: '`del` deletes only files, not folders. With a wildcard, several files are deleted. When you delete all files in a folder (`*.*`), CMD asks for confirmation.'
+    syntax: 'del [/p] [/q] [/s] [/f] files'
+    switches:
+      - {s: '/p', d: 'Asks before deleting each file.'}
+      - {s: '/q', d: 'Without asking.'}
+      - {s: '/s', d: 'Deletes in subfolders too.'}
+      - {s: '/f', d: 'Deletes read-only files too.'}
+    examples:
+      - {c: 'del Documents\Work\draft.tmp', d: 'Delete one file.'}
+      - {c: 'del Downloads\*.tmp', d: 'Delete all temporary files in Downloads.'}
+      - {c: 'del /p Downloads\*.tmp', d: 'Delete, asking for each file.'}
+      - {c: 'dir *.tmp /s /b', d: 'Before `del /s`, first see what would be deleted.'}
+    warning: 'A file deleted with `del` does not go to the Recycle Bin. Always check first with `dir` and the same pattern which files are selected.'
+    related: [rmdir, dir, attrib]
+    keywords: ['delete', 'remove', 'erase', 'rm']
+
+  - name: xcopy
+    category: files
+    level: 2
+    danger: caution
+    full: 'Extended copy'
+    summary: 'Copies files and folders, including subfolders.'
+    syntax: 'xcopy source [destination] [/s] [/e] [/i] [/y] [/h] [/l]'
+    switches:
+      - {s: '/s', d: 'Copies subfolders too (except empty ones).'}
+      - {s: '/e', d: 'All subfolders, even empty ones.'}
+      - {s: '/i', d: 'If the destination does not exist, assume it is a folder (do not ask F/D).'}
+      - {s: '/y', d: 'Overwrite without asking.'}
+      - {s: '/h', d: 'Copy hidden and system files too.'}
+      - {s: '/l', d: 'Only show what would be copied; nothing is actually copied.'}
+    examples:
+      - {c: 'xcopy Documents D:\Backup\Docs /e /i', d: 'Full copy of Documents.'}
+      - {c: 'xcopy Pictures E:\Pictures /s /i /l', d: 'Preview the copy without doing it.'}
+      - {c: 'xcopy Documents\*.txt E:\Texts /i', d: 'Copy txt files to a new folder.'}
+    related: [copy, robocopy]
+    keywords: ['copy folder', 'backup', 'copy subfolders']
+
+  - name: robocopy
+    category: files
+    level: 2
+    danger: danger
+    full: 'Robust File Copy'
+    summary: 'Professional copying and syncing of folders, with a full report.'
+    details: 'Unlike other commands, exit codes 0 to 7 mean success (for example, 1 means files were copied). A code of 8 or higher means an error. `/mir` makes the destination an exact copy of the source and deletes extra files in the destination.'
+    syntax: 'robocopy source destination [files] [/e] [/s] [/mir] [/mov] [/l]'
+    switches:
+      - {s: '/e', d: 'All subfolders, even empty ones.'}
+      - {s: '/s', d: 'Subfolders, except empty ones.'}
+      - {s: '/mir', d: 'Mirror: destination = source. Files that are not in the source are deleted from the destination.'}
+      - {s: '/mov', d: 'Moves files (copies, then deletes from the source).'}
+      - {s: '/l', d: 'Report only; no changes are made.'}
+    examples:
+      - {c: 'robocopy Documents D:\Backup\Docs /e', d: 'Full backup of Documents.'}
+      - {c: 'robocopy Pictures E:\AllPhotos *.jpg /s', d: 'Only jpg pictures, from all subfolders.'}
+      - {c: 'robocopy Documents D:\Backup\Docs /mir /l', d: 'See what `/mir` would do, without changing anything.'}
+    warning: 'If you mix up source and destination, `/mir` wipes your original folder. Test with `/l` first.'
+    related: [xcopy, copy]
+    keywords: ['backup', 'sync', 'synchronize', 'mirror']
+
+  - name: attrib
+    category: files
+    level: 2
+    danger: caution
+    full: 'File attributes'
+    summary: 'Shows or changes file attributes (Read-only, Hidden, System, Archive).'
+    syntax: 'attrib [+r|-r] [+h|-h] [+s|-s] [+a|-a] [file] [/s] [/d]'
+    switches:
+      - {s: '+r / -r', d: 'Turns read-only on or off.'}
+      - {s: '+h / -h', d: 'Hides or unhides.'}
+      - {s: '+s / -s', d: 'System file.'}
+      - {s: '/s', d: 'In subfolders too.'}
+    examples:
+      - {c: 'attrib Documents\*.*', d: 'See the attributes of the files in Documents.'}
+      - {c: 'attrib +r Desktop\notes.txt', d: 'Make notes.txt read-only.'}
+      - {c: 'attrib -h Documents\secret.txt', d: 'Unhide a hidden file.'}
+    related: [dir, del]
+    keywords: ['hide', 'unhide', 'attributes', 'hidden', 'read-only']
+
+  - name: fc
+    category: files
+    level: 2
+    full: 'File Compare'
+    summary: 'Compares two files and shows the differences.'
+    syntax: 'fc [/n] [/c] file1 file2'
+    switches:
+      - {s: '/n', d: 'Shows line numbers.'}
+      - {s: '/c', d: 'Ignores upper and lower case.'}
+    examples:
+      - {c: 'copy Documents\menu.txt m2.txt & fc Documents\menu.txt m2.txt', d: 'Two identical files: no differences encountered.'}
+      - {c: 'fc /n Documents\menu.txt Documents\guests.txt', d: 'Two different files, with line numbers.'}
+    related: [find, type]
+    keywords: ['compare', 'difference', 'diff']
+
+# ---------------- text ----------------
+  - name: echo
+    category: text
+    level: 1
+    full: 'Display text'
+    summary: 'Shows text or writes it to a file.'
+    details: 'With `>` the text is written to a file, and with `>>` it is added to the end of the file. `echo.` prints an empty line. In batch scripts, `@echo off` stops the commands themselves from being shown.'
+    syntax: 'echo [text] | echo on | echo off | echo.'
+    examples:
+      - {c: 'echo Hello CMD', d: 'Print text.'}
+      - {c: 'echo Pizza > order.txt', d: 'Create a file with one line.'}
+      - {c: 'echo Salad >> order.txt', d: 'Add a line to the end of the file.'}
+      - {c: 'echo %USERNAME%', d: 'Show the value of a variable.'}
+      - {c: 'echo.', d: 'An empty line.'}
+    related: [type, set, '>', '>>']
+    keywords: ['print', 'show text', 'write to file', 'output']
+
+  - name: find
+    category: text
+    level: 2
+    full: 'Find text'
+    summary: 'Finds the lines that contain a specific text.'
+    details: 'The search text must always be inside double quotes. It is usually used after `|` to filter the output of another command.'
+    syntax: 'find [/i] [/v] [/c] [/n] "text" [file]'
+    switches:
+      - {s: '/i', d: 'Upper and lower case do not matter.'}
+      - {s: '/v', d: 'Lines that do NOT contain the text.'}
+      - {s: '/c', d: 'Only the number of lines.'}
+      - {s: '/n', d: 'With line numbers.'}
+    examples:
+      - {c: 'find "Pizza" Documents\menu.txt', d: 'Search in a file.'}
+      - {c: 'type Documents\menu.txt | find /i "pizza"', d: 'Filter output, ignoring case.'}
+      - {c: 'find /c /v "" Documents\guests.txt', d: 'Count all lines in a file.'}
+      - {c: 'ipconfig | find "IPv4"', d: 'Only the IP address line.'}
+    related: [findstr, sort, more, '|']
+    keywords: ['search', 'grep', 'filter', 'find text']
+
+  - name: findstr
+    category: text
+    level: 2
+    full: 'Find strings'
+    summary: 'Advanced text search: several words, regex, in subfolders.'
+    details: 'Unlike `find`, it treats words separated by a space as “or”: `findstr "pizza pasta"` returns lines containing either one. For an exact phrase, use `/c:`.'
+    syntax: 'findstr [/i] [/s] [/n] [/m] [/r] [/c:"text"] strings [files]'
+    switches:
+      - {s: '/i', d: 'Ignores case.'}
+      - {s: '/s', d: 'Searches in subfolders.'}
+      - {s: '/n', d: 'With line numbers.'}
+      - {s: '/m', d: 'Only the names of files that contain the text.'}
+      - {s: '/c:"..."', d: 'Exact phrase, including spaces.'}
+      - {s: '/b /e', d: 'Start or end of the line.'}
+      - {s: '/r', d: 'Regex: `.` any character, `*` repeat, `^` start, `$` end, `[0-9]` range.'}
+    examples:
+      - {c: 'findstr /i "pizza pasta" Documents\menu.txt', d: 'Lines containing pizza or pasta.'}
+      - {c: 'findstr /s /m /i "report" *.txt', d: 'Which files contain the word report?'}
+      - {c: 'findstr /n /c:"Restaurant Menu" Documents\menu.txt', d: 'Exact phrase with line numbers.'}
+      - {c: 'findstr /r "^[0-9]" Documents\todo.txt', d: 'Lines that start with a digit.'}
+    related: [find, sort]
+    keywords: ['regex', 'advanced search', 'grep', 'search files']
+
+  - name: sort
+    category: text
+    level: 2
+    full: 'Sort lines'
+    summary: 'Sorts lines in alphabetical order.'
+    syntax: 'sort [/r] [/o outfile] [file]'
+    switches:
+      - {s: '/r', d: 'Reverse order (Z to A).'}
+      - {s: '/o file', d: 'Saves the result to a file.'}
+    examples:
+      - {c: 'sort Documents\guests.txt', d: 'Sort the guest list.'}
+      - {c: 'sort /r Documents\guests.txt', d: 'In reverse.'}
+      - {c: 'dir /b Documents | sort', d: 'Sort the output of another command.'}
+    related: [find, more, '|']
+    keywords: ['sort', 'alphabetical order', 'order']
+
+  - name: more
+    category: text
+    level: 2
+    full: 'Page output'
+    summary: 'Shows long output one page at a time.'
+    details: 'Space means next page, Enter means one more line, and `q` means quit.'
+    syntax: 'command | more  ·  more file'
+    examples:
+      - {c: 'help | more', d: 'See the list of commands page by page.'}
+      - {c: 'more Documents\menu.txt', d: 'Show a file page by page.'}
+    related: [type, find, '|']
+    keywords: ['page by page', 'paging', 'less']
+
+  - name: clip
+    category: text
+    level: 2
+    full: 'Copy to clipboard'
+    summary: 'Copies the output of a command to the clipboard so you can paste it somewhere else.'
+    syntax: 'command | clip'
+    examples:
+      - {c: 'ipconfig | clip', d: 'Copy network info to send to support.'}
+      - {c: 'dir /b Documents | clip', d: 'Copy the list of file names.'}
+    related: ['|', echo]
+    keywords: ['clipboard', 'copy output', 'paste']
+
+# ---------------- console ----------------
+  - name: cls
+    category: console
+    level: 1
+    full: 'Clear Screen'
+    summary: 'Clears the CMD screen; files and history are not touched.'
+    syntax: 'cls'
+    examples:
+      - {c: 'cls', d: 'Clear the screen.'}
+    related: [echo]
+    lessons: [3]
+    keywords: ['clear screen', 'clear']
+
+  - name: help
+    category: console
+    level: 1
+    full: 'Help'
+    summary: 'Shows the list of commands or the help for one command.'
+    details: 'If you type any command with `/?`, you see its help: `copy /?`.'
+    syntax: 'help [command]  ·  command /?'
+    examples:
+      - {c: 'help', d: 'List of all commands.'}
+      - {c: 'help copy', d: 'Help for copy.'}
+      - {c: 'dir /?', d: 'Help for dir with `/?`.'}
+    related: [more]
+    keywords: ['help', 'manual', 'usage', '/?']
+
+  - name: ver
+    category: console
+    level: 1
+    full: 'Version'
+    summary: 'Shows the Windows version.'
+    syntax: 'ver'
+    examples:
+      - {c: 'ver', d: 'Windows version.'}
+    related: [systeminfo]
+    lessons: [1]
+    keywords: ['version', 'windows version']
+
+  - name: title
+    category: console
+    level: 2
+    full: 'Window title'
+    summary: 'Changes the title of the CMD window.'
+    syntax: 'title text'
+    examples:
+      - {c: 'title Backup Tool', d: 'Sets the window title to Backup Tool.'}
+    related: [color, prompt]
+    lessons: [100]
+    keywords: ['window title', 'title']
+
+  - name: color
+    category: console
+    level: 2
+    full: 'Console colors'
+    summary: 'Changes the background and text color of CMD.'
+    details: 'Two hex digits: the first is the background, the second is the text. `0` black, `a` light green, `e` yellow, `c` light red, `f` white. `color` on its own restores the default colors.'
+    syntax: 'color [bg][fg]'
+    examples:
+      - {c: 'color 0a', d: 'Green text on black.'}
+      - {c: 'color', d: 'Back to the default colors.'}
+    related: [title, prompt]
+    keywords: ['color', 'colour', 'text color']
+
+  - name: prompt
+    category: console
+    level: 2
+    full: 'Change prompt'
+    summary: 'Changes how the prompt looks.'
+    details: '`$P` is the current path, `$G` is the `>` sign, `$T` is the time and `$D` is the date. `prompt` on its own restores the default prompt.'
+    syntax: 'prompt [text]'
+    examples:
+      - {c: 'prompt $T $P$G', d: 'Time before the path.'}
+      - {c: 'prompt', d: 'Back to normal.'}
+    related: [title, set]
+    keywords: ['prompt', 'customize prompt']
+
+  - name: set
+    category: console
+    level: 2
+    full: 'Environment variables'
+    summary: 'Creates, changes or shows variables.'
+    details: 'Do not put spaces around `=`: `set name=Ali`. You read a variable''s value with `%name%`. `/a` does arithmetic and `/p` gets input from the user.'
+    syntax: 'set [name[=value]]  ·  set /a expr  ·  set /p name=prompt'
+    switches:
+      - {s: '/a', d: 'Arithmetic: `set /a total=5*3`.'}
+      - {s: '/p', d: 'Ask the user: `set /p name=Your name: `'}
+    examples:
+      - {c: 'set', d: 'All variables.'}
+      - {c: 'set user', d: 'Variables that start with user.'}
+      - {c: 'set "city=Tehran" & set city', d: 'Create a variable and see its value. The quotes prevent an extra space at the end of the value. On the next line, read it with `echo %city%`.'}
+      - {c: 'set /a 12*4+2', d: 'Arithmetic.'}
+    related: [echo, path, setlocal, if]
+    keywords: ['variable', 'environment', 'env', 'set variable']
+
+  - name: path
+    category: console
+    level: 2
+    full: 'Search path'
+    summary: 'The list of folders CMD searches to find programs.'
+    details: 'When you type the name of a program, CMD searches the current folder first and then the folders in PATH. Changing PATH in CMD only applies to that window.'
+    syntax: 'path [dir;dir...]  ·  path %PATH%;newdir'
+    examples:
+      - {c: 'path', d: 'Show PATH.'}
+      - {c: 'echo %PATH%', d: 'The same value, with echo.'}
+      - {c: 'path %PATH%;D:\Projects', d: 'Add a folder to PATH (this window only).'}
+    related: [where, set]
+    lessons: [48]
+    keywords: ['program folders', 'search path', 'environment']
+
+  - name: date
+    category: console
+    level: 1
+    full: 'Date'
+    summary: 'Shows the system date.'
+    syntax: 'date /t'
+    examples:
+      - {c: 'date /t', d: 'Just show the date.'}
+      - {c: 'echo %DATE%', d: 'The date from the DATE variable.'}
+    related: [time]
+    keywords: ['date', 'today']
+
+  - name: time
+    category: console
+    level: 1
+    full: 'Time'
+    summary: 'Shows the system time.'
+    syntax: 'time /t'
+    examples:
+      - {c: 'time /t', d: 'Just show the time.'}
+      - {c: 'echo %TIME%', d: 'The exact time from the TIME variable.'}
+    related: [date]
+    keywords: ['time', 'clock']
+
+  - name: doskey
+    category: console
+    level: 2
+    full: 'Command history'
+    summary: 'Shows the history of commands in this window.'
+    details: 'The ↑ key brings back the previous command. `doskey /history` shows all of them at once.'
+    syntax: 'doskey /history'
+    examples:
+      - {c: 'echo one & doskey /history', d: 'See the history.'}
+    related: [cls]
+    keywords: ['history', 'previous commands']
+
+  - name: start
+    category: console
+    level: 2
+    full: 'Start a program'
+    summary: 'Opens a program, a file or a new CMD window.'
+    syntax: 'start [program | file | "title" command]'
+    examples:
+      - {c: 'start notepad', d: 'Open Notepad (in the simulator, only a message is shown).'}
+      - {c: 'start Documents', d: 'Open the folder in File Explorer.'}
+    related: [cmd, tasklist]
+    keywords: ['open program', 'run', 'launch']
+
+  - name: cmd
+    category: console
+    level: 3
+    full: 'Command interpreter'
+    summary: 'Runs a new CMD; with `/c` it runs one command and exits.'
+    syntax: 'cmd [/c command] [/k command]'
+    switches:
+      - {s: '/c', d: 'Run the command, then close.'}
+      - {s: '/k', d: 'Run the command and stay open.'}
+    examples:
+      - {c: 'cmd /c echo hi', d: 'Run a command in a new CMD.'}
+    related: [start, exit]
+    keywords: ['cmd.exe']
+
+  - name: exit
+    category: console
+    level: 2
+    full: 'Exit'
+    summary: 'Closes the CMD window or batch script. With `/b` only the script ends.'
+    syntax: 'exit [/b] [code]'
+    switches:
+      - {s: '/b', d: 'Ends only the current script or function, not the whole CMD.'}
+      - {s: 'code', d: 'The ErrorLevel number to return, like `exit /b 1`.'}
+    examples:
+      - {c: 'exit /?', d: 'Help (in the simulator, `exit` does not close the window).'}
+    related: [goto, call, if]
+    lessons: [86]
+    keywords: ['exit', 'quit', 'close']
+
+# ---------------- system ----------------
+  - name: hostname
+    category: system
+    level: 1
+    full: 'Computer name'
+    summary: 'Shows the name of the computer.'
+    syntax: 'hostname'
+    examples:
+      - {c: 'hostname', d: 'The name of this computer.'}
+      - {c: 'echo %COMPUTERNAME%', d: 'The same name, from a variable.'}
+    related: [whoami, systeminfo, ipconfig]
+    keywords: ['computer name', 'pc name']
+
+  - name: whoami
+    category: system
+    level: 1
+    full: 'Who am I'
+    summary: 'Shows the current user name and its groups and privileges.'
+    syntax: 'whoami [/user] [/groups] [/priv]'
+    switches:
+      - {s: '/user', d: 'User name and SID.'}
+      - {s: '/groups', d: 'Groups; this tells you whether you are an admin.'}
+      - {s: '/priv', d: 'Special privileges.'}
+    examples:
+      - {c: 'whoami', d: 'Current user.'}
+      - {c: 'whoami /groups | find "Administrators"', d: 'Am I a member of Administrators?'}
+    related: [hostname, net]
+    keywords: ['user', 'admin', 'permissions', 'current user']
+
+  - name: systeminfo
+    category: system
+    level: 2
+    full: 'System information'
+    summary: 'Full system information: Windows, RAM, CPU, boot time and more.'
+    syntax: 'systeminfo'
+    examples:
+      - {c: 'systeminfo', d: 'All the information.'}
+      - {c: 'systeminfo | find "Memory"', d: 'Only the lines about RAM.'}
+      - {c: 'systeminfo | findstr /c:"OS Name" /c:"Boot Time"', d: 'Windows name and boot time.'}
+    related: [ver, hostname, tasklist]
+    keywords: ['system information', 'ram', 'specs', 'hardware']
+
+  - name: sc
+    category: system
+    level: 3
+    danger: caution
+    full: 'Service Control'
+    summary: 'Checks the status of Windows services and starts or stops them.'
+    details: 'Viewing the status does not need admin rights, but start and stop do. Note: in `sc` you must put a space after `=`.'
+    syntax: 'sc query [name]  ·  sc qc name  ·  sc start|stop name'
+    examples:
+      - {c: 'sc query spooler', d: 'Status of the print service.'}
+      - {c: 'sc qc spooler', d: 'Service settings (start type).'}
+      - {c: 'sc stop spooler', d: 'Stop the print service.', mode: admin}
+    warning: 'Stopping security or system services (like WinDefend) makes the system unsafe or unstable.'
+    related: [net, tasklist]
+    keywords: ['service', 'services', 'start service', 'stop service']
+
+  - name: net
+    category: system
+    level: 3
+    danger: caution
+    full: 'Network services and users'
+    summary: 'Works with services, users, shares and network drives.'
+    syntax: 'net start|stop service  ·  net user [name]  ·  net use  ·  net share'
+    examples:
+      - {c: 'net user', d: 'List of users.'}
+      - {c: 'net start', d: 'Running services.'}
+      - {c: 'net stop spooler && net start spooler', d: 'Restart the print service.', mode: admin}
+      - {c: 'net use', d: 'Connected network drives.'}
+    related: [sc, whoami]
+    keywords: ['user', 'service', 'share', 'network drive']
+
+  - name: shutdown
+    category: system
+    level: 2
+    danger: danger
+    full: 'Shutdown'
+    summary: 'Shuts down or restarts the computer (in the simulator it is only simulated).'
+    syntax: 'shutdown /s|/r [/t sec] [/c "msg"]  ·  shutdown /a'
+    switches:
+      - {s: '/s', d: 'Shut down.'}
+      - {s: '/r', d: 'Restart.'}
+      - {s: '/t sec', d: 'Delay in seconds.'}
+      - {s: '/a', d: 'Cancel a scheduled shutdown.'}
+    examples:
+      - {c: 'shutdown /s /t 600', d: 'Shut down in 10 minutes.'}
+      - {c: 'shutdown /r /t 60 & shutdown /a', d: 'Schedule a restart and cancel it.'}
+    warning: 'On a real computer, unsaved work is lost.'
+    related: [taskkill]
+    keywords: ['shut down', 'turn off', 'reboot', 'restart']
+
+# ---------------- processes ----------------
+  - name: tasklist
+    category: processes
+    level: 2
+    full: 'Task list'
+    summary: 'Shows running programs and processes with their PID and memory usage.'
+    syntax: 'tasklist [/fi "filter"] [/svc] [/v] [/fo table|list|csv]'
+    switches:
+      - {s: '/fi', d: 'Filter: `/fi "imagename eq chrome.exe"` or `/fi "status eq not responding"`.'}
+      - {s: '/svc', d: 'The services inside each process.'}
+      - {s: '/v', d: 'More details, such as status.'}
+      - {s: '/fo', d: 'Output format.'}
+    examples:
+      - {c: 'tasklist', d: 'All processes.'}
+      - {c: 'tasklist | find /i "chrome"', d: 'Only chrome.'}
+      - {c: 'tasklist /fi "status eq not responding"', d: 'Programs that are frozen.'}
+    related: [taskkill, systeminfo]
+    keywords: ['task manager', 'running programs', 'process', 'pid']
+
+  - name: taskkill
+    category: processes
+    level: 2
+    danger: danger
+    full: 'Kill a task'
+    summary: 'Closes a program by name or PID.'
+    details: 'Without `/f`, the program is sent a close message; a frozen program will not respond to it. Do not close critical Windows processes.'
+    syntax: 'taskkill /im name.exe | /pid n [/f] [/t]'
+    switches:
+      - {s: '/im', d: 'By program name.'}
+      - {s: '/pid', d: 'By process number.'}
+      - {s: '/f', d: 'Force close.'}
+      - {s: '/t', d: 'Including child processes.'}
+    examples:
+      - {c: 'taskkill /im notepad.exe', d: 'Close Notepad.'}
+      - {c: 'taskkill /pid 7810 /f', d: 'Force close a frozen Spotify.'}
+      - {c: 'taskkill /im chrome.exe /f /t', d: 'Close all Chrome windows.'}
+    warning: 'Unsaved work in that program is lost. Closing processes like csrss or winlogon breaks the system.'
+    related: [tasklist]
+    keywords: ['close program', 'kill', 'frozen', 'not responding', 'end task']
+
+# ---------------- network ----------------
+  - name: ipconfig
+    category: network
+    level: 2
+    full: 'IP configuration'
+    summary: 'Shows the IP address, gateway and network settings.'
+    syntax: 'ipconfig [/all] [/release] [/renew] [/flushdns] [/displaydns]'
+    switches:
+      - {s: '/all', d: 'All details: MAC, DNS, DHCP.'}
+      - {s: '/release /renew', d: 'Gives back the IP and gets it again from the router.'}
+      - {s: '/flushdns', d: 'Clears the DNS cache.'}
+      - {s: '/displaydns', d: 'Shows the DNS cache.'}
+    examples:
+      - {c: 'ipconfig', d: 'IP and gateway.'}
+      - {c: 'ipconfig /all', d: 'Full details.'}
+      - {c: 'ipconfig | find "IPv4"', d: 'Only the IP.'}
+      - {c: 'ipconfig /flushdns', d: 'When a website opens with an old address.'}
+    related: [ping, getmac, nslookup, arp]
+    keywords: ['ip address', 'ip', 'network', 'gateway']
+
+  - name: ping
+    category: network
+    level: 2
+    full: 'Packet INternet Groper'
+    summary: 'Checks whether a device or website is reachable and how long the response takes.'
+    details: '`Reply from` means the connection works. `Request timed out` means no reply came back, and `could not find host` means the name was not found (a DNS problem).'
+    syntax: 'ping [-n count] [-t] [-l size] [-a] host'
+    switches:
+      - {s: '-n', d: 'Number of packets (default 4).'}
+      - {s: '-t', d: 'Non-stop until Ctrl+C.'}
+      - {s: '-l', d: 'Packet size.'}
+      - {s: '-a', d: 'Find the device name from the IP.'}
+    examples:
+      - {c: 'ping google.com', d: 'Is the internet working?'}
+      - {c: 'ping -n 2 192.168.1.1', d: 'Two packets to the router.'}
+      - {c: 'ping 10.0.0.99', d: 'A device that does not respond.'}
+    related: [tracert, pathping, ipconfig, nslookup]
+    keywords: ['internet', 'connection', 'network test', 'reachable']
+
+  - name: tracert
+    category: network
+    level: 3
+    full: 'Trace route'
+    summary: 'Shows the route packets take to the destination, step by step (hop).'
+    syntax: 'tracert [-d] [-h max] host'
+    switches:
+      - {s: '-d', d: 'Do not look up hop names (faster).'}
+      - {s: '-h', d: 'Maximum number of hops.'}
+    examples:
+      - {c: 'tracert google.com', d: 'The route to Google.'}
+      - {c: 'tracert -d -h 5 google.com', d: 'Fast, with at most 5 hops.'}
+    related: [ping, pathping]
+    keywords: ['network route', 'hop', 'traceroute']
+
+  - name: pathping
+    category: network
+    level: 3
+    full: 'Path ping'
+    summary: 'A mix of `tracert` and `ping`: the percentage of lost packets at each hop.'
+    syntax: 'pathping host'
+    examples:
+      - {c: 'pathping google.com', d: 'Where along the route are packets lost?'}
+    related: [tracert, ping]
+    keywords: ['packet loss']
+
+  - name: nslookup
+    category: network
+    level: 3
+    full: 'Name server lookup'
+    summary: 'Asks DNS which IP a domain name has.'
+    syntax: 'nslookup name [server]'
+    examples:
+      - {c: 'nslookup google.com', d: 'The IP of the Google website.'}
+      - {c: 'nslookup google.com 8.8.8.8', d: 'Ask Google''s DNS.'}
+    related: [ping, ipconfig]
+    keywords: ['dns', 'domain', 'lookup']
+
+  - name: netstat
+    category: network
+    level: 3
+    full: 'Network statistics'
+    summary: 'Shows network connections and open ports.'
+    syntax: 'netstat [-a] [-n] [-o] [-b] [-r]'
+    switches:
+      - {s: '-a', d: 'All connections and listening ports.'}
+      - {s: '-n', d: 'Numbers instead of names (faster).'}
+      - {s: '-o', d: 'PID of the program that owns the connection.'}
+      - {s: '-b', d: 'Program name (requires admin).'}
+      - {s: '-r', d: 'Routing table.'}
+    examples:
+      - {c: 'netstat -an', d: 'All connections, as numbers.'}
+      - {c: 'netstat -ano | find "LISTENING"', d: 'Open ports and their PID.'}
+    related: [tasklist, route]
+    keywords: ['open ports', 'port', 'connection']
+
+  - name: arp
+    category: network
+    level: 3
+    full: 'Address Resolution Protocol'
+    summary: 'The IP-to-MAC table of devices on the local network.'
+    syntax: 'arp -a'
+    examples:
+      - {c: 'arp -a', d: 'Devices you have recently communicated with.'}
+    related: [getmac, ipconfig]
+    keywords: ['mac', 'local network', 'lan']
+
+  - name: route
+    category: network
+    level: 3
+    full: 'Routing table'
+    summary: 'Shows the routing table.'
+    syntax: 'route print'
+    examples:
+      - {c: 'route print', d: 'The routing table and the default gateway.'}
+    related: [netstat, ipconfig]
+    keywords: ['routing', 'gateway']
+
+  - name: getmac
+    category: network
+    level: 2
+    full: 'Get MAC address'
+    summary: 'Shows the MAC address of the network adapters.'
+    syntax: 'getmac [/v]'
+    examples:
+      - {c: 'getmac', d: 'MAC of the adapters.'}
+      - {c: 'getmac /v', d: 'Including the network adapter name.'}
+    related: [ipconfig, arp]
+    keywords: ['mac', 'physical address', 'mac address']
+
+# ---------------- disk ----------------
+  - name: vol
+    category: disk
+    level: 1
+    full: 'Volume'
+    summary: 'Shows the name (label) and serial number of a drive.'
+    syntax: 'vol [drive:]'
+    examples:
+      - {c: 'vol', d: 'The current drive.'}
+      - {c: 'vol E:', d: 'The USB stick drive.'}
+    related: [label, chkdsk]
+    keywords: ['drive', 'volume', 'label']
+
+  - name: label
+    category: disk
+    level: 2
+    danger: caution
+    full: 'Volume label'
+    summary: 'Changes the name of a drive. Requires administrator rights.'
+    syntax: 'label [drive:] [name]'
+    examples:
+      - {c: 'label E: BACKUP', d: 'Rename the USB stick to BACKUP.', mode: admin}
+    related: [vol, format]
+    keywords: ['drive name', 'rename drive']
+
+  - name: chkdsk
+    category: disk
+    level: 3
+    danger: caution
+    full: 'Check Disk'
+    summary: 'Checks the file system of a drive and repairs its errors.'
+    details: 'Without a switch it only reports. `/f` repairs, and for the system drive (C:) it schedules the work for the next restart. Requires admin rights.'
+    syntax: 'chkdsk [drive:] [/f] [/r]'
+    switches:
+      - {s: '/f', d: 'Repairs errors.'}
+      - {s: '/r', d: 'Finds bad sectors and recovers data (takes a long time).'}
+    examples:
+      - {c: 'chkdsk E:', d: 'Only check the USB stick.', mode: admin}
+      - {c: 'chkdsk E: /f', d: 'Check and repair the USB stick.', mode: admin}
+    warning: 'Do not turn off the computer in the middle of `chkdsk /r`.'
+    related: [sfc, vol]
+    keywords: ['repair disk', 'disk error', 'check disk']
+
+  - name: sfc
+    category: disk
+    level: 3
+    full: 'System File Checker'
+    summary: 'Checks Windows system files and repairs corrupted ones.'
+    syntax: 'sfc /scannow | /verifyonly'
+    switches:
+      - {s: '/scannow', d: 'Check and repair.'}
+      - {s: '/verifyonly', d: 'Check only.'}
+    examples:
+      - {c: 'sfc /scannow', d: 'Check and repair system files.', mode: admin}
+    related: [dism, chkdsk]
+    keywords: ['repair windows', 'corrupted system files']
+
+  - name: dism
+    category: disk
+    level: 3
+    full: 'Deployment Image Servicing and Management'
+    summary: 'Checks and repairs the Windows image (the repair source for `sfc`).'
+    details: 'When `sfc` cannot repair files, run DISM first and then `sfc` again. RestoreHealth needs an internet connection.'
+    syntax: 'dism /online /cleanup-image /checkhealth | /scanhealth | /restorehealth'
+    examples:
+      - {c: 'dism /online /cleanup-image /checkhealth', d: 'Quick check.', mode: admin}
+      - {c: 'dism /online /cleanup-image /restorehealth', d: 'Repair the image.', mode: admin}
+    related: [sfc]
+    keywords: ['repair windows', 'image']
+
+  - name: format
+    category: disk
+    level: 3
+    danger: danger
+    full: 'Format'
+    summary: 'Formats a drive: all of its data is erased.'
+    syntax: 'format drive: [/fs:ntfs|fat32|exfat] [/q] [/v:label]'
+    switches:
+      - {s: '/fs:', d: 'File system type.'}
+      - {s: '/q', d: 'Quick Format.'}
+      - {s: '/v:', d: 'Drive name.'}
+    examples:
+      - {c: 'format E: /fs:exfat /q /v:USB', d: 'Quick format of the USB stick (in the simulator).', mode: admin}
+    warning: 'All files on that drive are erased. Before pressing Enter, double-check the drive letter with `vol`.'
+    related: [diskpart, label, vol]
+    keywords: ['format', 'wipe usb', 'erase drive']
+
+  - name: diskpart
+    category: disk
+    level: 3
+    danger: danger
+    full: 'Disk partitioning'
+    summary: 'An interactive tool for managing disks and partitions.'
+    details: 'After you run it, the prompt changes to `DISKPART>`. The workflow: `list disk` → `select disk N` → `detail disk` → command. `clean` erases all partitions on the selected disk. Leave with `exit`.'
+    syntax: 'diskpart  →  list disk | select disk n | list volume | clean | create partition primary | format fs=ntfs quick | assign letter=x | exit'
+    examples:
+      - {c: 'diskpart', d: 'Enter DiskPart.', mode: admin}
+    warning: 'Selecting the wrong disk and running `clean` means losing all data on that disk. Always run `detail disk` first.'
+    related: [format, chkdsk]
+    keywords: ['partition', 'disk', 'disk management']
+
+  - name: bootrec
+    category: disk
+    level: 3
+    danger: danger
+    full: 'Boot recovery'
+    summary: 'Repairs Windows boot; only in the Recovery environment.'
+    syntax: 'bootrec /fixmbr | /fixboot | /scanos | /rebuildbcd'
+    switches:
+      - {s: '/scanos', d: 'Searches for Windows installations.'}
+      - {s: '/rebuildbcd', d: 'Rebuilds the boot list.'}
+      - {s: '/fixmbr', d: 'Writes a new MBR.'}
+      - {s: '/fixboot', d: 'Writes a new boot sector.'}
+    examples:
+      - {c: 'bootrec /scanos', d: 'Find Windows.', mode: winre}
+      - {c: 'bootrec /rebuildbcd', d: 'Rebuild the BCD.', mode: winre}
+    warning: 'Only when Windows will not start and you are sure the problem is the boot.'
+    related: [bcdboot, bcdedit, diskpart]
+    keywords: ['boot', 'windows will not start', 'recovery']
+
+  - name: bcdboot
+    category: disk
+    level: 3
+    danger: danger
+    full: 'Boot files'
+    summary: 'Recreates the boot files from the Windows folder.'
+    syntax: 'bcdboot C:\Windows [/s drive:]'
+    examples:
+      - {c: 'bcdboot C:\Windows', d: 'Recreate the boot files.', mode: winre}
+    related: [bootrec, bcdedit]
+    keywords: ['boot', 'boot files']
+
+  - name: bcdedit
+    category: disk
+    level: 3
+    danger: danger
+    full: 'Boot configuration editor'
+    summary: 'Shows or edits the boot configuration (BCD).'
+    syntax: 'bcdedit [/enum]'
+    examples:
+      - {c: 'bcdedit', d: 'Show the boot settings.', mode: admin}
+    warning: 'A wrong BCD edit can stop Windows from starting.'
+    related: [bootrec, bcdboot]
+    keywords: ['boot', 'bcd', 'boot settings']
+
+# ---------------- batch ----------------
+  - name: rem
+    category: batch
+    level: 2
+    full: 'Remark'
+    summary: 'A comment in a batch script; it is not executed.'
+    details: '`::` is also used for comments, but inside parentheses `rem` is safer.'
+    syntax: 'rem text  ·  :: text'
+    examples:
+      - {c: 'rem This line does nothing', d: 'Produces no output.'}
+    related: [echo, pause]
+    keywords: ['remark', 'comment', 'note']
+
+  - name: pause
+    category: batch
+    level: 2
+    full: 'Pause'
+    summary: 'Stops the script until the user presses a key.'
+    syntax: 'pause  ·  pause > nul'
+    examples:
+      - {c: 'pause', d: 'Press any key to continue . . .'}
+      - {c: 'echo Press a key to start & pause > nul', d: 'Your own text, without the default message.'}
+    related: [timeout, choice]
+    keywords: ['pause', 'wait for key', 'stop']
+
+  - name: if
+    category: batch
+    level: 3
+    full: 'Conditional'
+    summary: 'Runs a command if a condition is true.'
+    details: 'Conditions: `exist file`, `"%a%"=="%b%"`, `defined var`, `errorlevel n` and number comparisons with `equ neq lss leq gtr geq`. `/i` ignores case. `else` must be on the same line as the closing parenthesis: `) else (`.'
+    syntax: 'if [/i] [not] condition command [else command]'
+    switches:
+      - {s: '/i', d: 'Compares text, ignoring case.'}
+      - {s: 'not', d: 'Reverses the condition.'}
+    examples:
+      - {c: 'if exist Desktop\notes.txt echo Found', d: 'Does the file exist?'}
+      - {c: 'if 7 gtr 5 echo big', d: 'Number comparison with `gtr` (greater than).'}
+      - {c: 'if /i "YES"=="yes" (echo same) else (echo different)', d: 'Text comparison with else.'}
+      - {c: 'if not defined city echo city is empty', d: 'Is the variable defined?'}
+    related: [goto, set, for, choice]
+    keywords: ['condition', 'if', 'else', 'conditional']
+
+  - name: for
+    category: batch
+    level: 3
+    full: 'Loop'
+    summary: 'Repeats a command for each file, number, line or word.'
+    details: 'On the command line write `%f`, and in a batch file write `%%f`. `/l` counts numbers, `/d` is for folders, `/r` goes through all subfolders, and `/f` reads the lines of a file or the output of a command.'
+    syntax: 'for %v in (set) do command  ·  for /l %v in (start,step,end) do ...  ·  for /f "tokens=1,2 delims=," %v in (file) do ...'
+    switches:
+      - {s: '/l', d: 'Number counter.'}
+      - {s: '/d', d: 'Folders only.'}
+      - {s: '/r', d: 'Walks through subfolders.'}
+      - {s: '/f', d: 'Reads lines and splits them with tokens and delims.'}
+    examples:
+      - {c: 'for %f in (Documents\*.txt) do @echo %f', d: 'Each txt file.'}
+      - {c: 'for /l %i in (1,1,5) do @echo Table %i', d: 'Count from 1 to 5.'}
+      - {c: 'for /d %d in (*) do @echo %d', d: 'All folders.'}
+      - {c: 'for /f "tokens=1" %a in (Documents\guests.txt) do @echo %a', d: 'The first word of each line.'}
+    related: [if, set, setlocal, call]
+    keywords: ['loop', 'repeat', 'iterate', 'for each']
+
+  - name: goto
+    category: batch
+    level: 3
+    full: 'Jump to label'
+    summary: 'Sends the script''s execution to a label (like `:menu`).'
+    details: '`goto :eof` means the end of the script or function. With `goto` and `if` you can build menus and loops.'
+    syntax: 'goto label  ·  goto :eof'
+    examples:
+      - {c: 'goto /?', d: 'Help; `goto` only makes sense inside a batch file.'}
+    related: [call, if, choice]
+    keywords: ['jump', 'label', 'menu']
+
+  - name: call
+    category: batch
+    level: 3
+    full: 'Call'
+    summary: 'Runs another batch file or a function (`:label`) and then returns.'
+    syntax: 'call file.bat [args]  ·  call :label [args]'
+    examples:
+      - {c: 'call /?', d: 'Help.'}
+    related: [goto, exit, shift]
+    keywords: ['call', 'function', 'subroutine']
+
+  - name: shift
+    category: batch
+    level: 3
+    full: 'Shift parameters'
+    summary: 'Moves the parameters `%1`, `%2`... one position to the left.'
+    syntax: 'shift'
+    examples:
+      - {c: 'shift /?', d: 'Help; only makes sense inside a batch file.'}
+    related: [call, for]
+    keywords: ['parameter', 'argument']
+
+  - name: setlocal
+    aliases: [endlocal]
+    category: batch
+    level: 3
+    full: 'Local variables'
+    summary: 'Makes variable changes local and turns on delayed expansion (`!var!`).'
+    details: 'After `endlocal` or the end of the script, variables go back to how they were. Inside loops and parentheses, use `!var!` to read the new value of a variable.'
+    syntax: 'setlocal [enabledelayedexpansion]  ·  endlocal'
+    examples:
+      - {c: 'setlocal /?', d: 'Help.'}
+    related: [set, for, if]
+    keywords: ['delayed expansion', 'local variable']
+
+  - name: choice
+    category: batch
+    level: 3
+    full: 'Choice'
+    summary: 'Asks the user to press one of the given keys; the number of the choice goes into ErrorLevel.'
+    syntax: 'choice [/c keys] [/n] [/t sec /d key] [/m "text"]'
+    switches:
+      - {s: '/c', d: 'Allowed keys, like `/c ync`.'}
+      - {s: '/m', d: 'Question text.'}
+      - {s: '/t /d', d: 'Waiting time and default key.'}
+      - {s: '/n', d: 'Do not show the keys in the question.'}
+    examples:
+      - {c: 'choice /c yn /m "Continue"', d: 'Choose yes or no.'}
+      - {c: 'choice /c abc /t 5 /d a', d: 'If there is no answer within 5 seconds, a.'}
+    related: [if, timeout, set]
+    keywords: ['menu', 'choice', 'user input', 'errorlevel']
+
+  - name: timeout
+    category: batch
+    level: 2
+    full: 'Timeout'
+    summary: 'Waits a few seconds (a key press interrupts it, unless you use `/nobreak`).'
+    syntax: 'timeout /t sec [/nobreak]'
+    examples:
+      - {c: 'timeout /t 3', d: 'Wait three seconds.'}
+      - {c: 'timeout /t 3 /nobreak > nul', d: 'Wait silently, without interruption.'}
+    related: [pause, choice]
+    keywords: ['wait', 'delay', 'sleep']
+
+# ---------------- operators ----------------
+  - name: '>'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Redirect output'
+    summary: 'Writes a command''s output to a file instead of the screen; the old file is replaced.'
+    syntax: 'command > file'
+    examples:
+      - {c: 'dir /b > list.txt', d: 'The list of names in a file.'}
+      - {c: 'ipconfig > net.txt', d: 'Save the network info.'}
+      - {c: 'echo test > nul', d: '`nul` means throwing the output away.'}
+    warning: 'If the file exists, its old contents are erased.'
+    related: ['>>', '<', '2>', echo]
+    lessons: [28]
+    keywords: ['redirect', 'save output', 'write to file']
+
+  - name: '>>'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Append output'
+    summary: 'Adds the output to the end of a file.'
+    syntax: 'command >> file'
+    examples:
+      - {c: 'echo Day 1 >> log.txt', d: 'Add a line to the log.'}
+      - {c: 'date /t >> log.txt', d: 'Add the date.'}
+    related: ['>', echo]
+    lessons: [29]
+    keywords: ['append', 'add to file']
+
+  - name: '<'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Redirect input'
+    summary: 'Gives a file''s contents to a command as input.'
+    syntax: 'command < file'
+    examples:
+      - {c: 'sort < Documents\guests.txt', d: 'Sort with input from a file.'}
+      - {c: 'find "Pizza" < Documents\menu.txt', d: 'Search in the input.'}
+    related: ['>', '|', sort]
+    lessons: [36]
+    keywords: ['input', 'redirect input']
+
+  - name: '2>'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Redirect errors'
+    summary: 'Sends error messages (stderr) to a file or to `nul`.'
+    details: '`2>&1` sends errors to the same place as the normal output; for example `> all.txt 2>&1`. `2>>` adds errors to the end of a file.'
+    syntax: 'command 2> file  ·  command > file 2>&1  ·  command 2>> file'
+    examples:
+      - {c: 'dir NoSuchFolder 2> errors.txt', d: 'The error goes to a file, not the screen.'}
+      - {c: 'del nothing.txt 2> nul', d: 'Hide the error message.'}
+      - {c: 'dir Documents NoSuch > all.txt 2>&1', d: 'Output and errors together in one file.'}
+    related: ['>', '>>', '||']
+    lessons: [30]
+    keywords: ['stderr', 'error message', 'error']
+
+  - name: '|'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Pipe'
+    summary: 'Turns the output of one command into the input of the next command.'
+    syntax: 'command1 | command2'
+    examples:
+      - {c: 'tasklist | find "chrome"', d: 'Filter processes.'}
+      - {c: 'type Documents\guests.txt | sort', d: 'Sort the contents of a file.'}
+      - {c: 'dir /b /s *.txt | find /c /v ""', d: 'Count all txt files.'}
+    related: [find, sort, more, clip]
+    lessons: [33]
+    keywords: ['pipe', 'chain output', 'combine commands']
+
+  - name: '&'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Run both'
+    summary: 'Runs two commands one after the other; the result of the first does not matter.'
+    syntax: 'command1 & command2'
+    examples:
+      - {c: 'cd Documents & dir /b', d: 'Go there and see the contents.'}
+    related: ['&&', '||']
+    lessons: [31]
+    keywords: ['multiple commands', 'chain commands']
+
+  - name: '&&'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Run if success'
+    summary: 'The second command runs only if the first one succeeded.'
+    syntax: 'command1 && command2'
+    examples:
+      - {c: 'mkdir Report && echo Created', d: 'The message appears only if the folder was created.'}
+      - {c: 'cd /d D:\Backup && dir /b', d: 'See the contents only if changing folders worked.'}
+    related: ['&', '||', if]
+    lessons: [31]
+    keywords: ['if successful', 'and']
+
+  - name: '||'
+    category: operators
+    engine: false
+    level: 2
+    full: 'Run if failure'
+    summary: 'The second command runs only if the first one failed.'
+    syntax: 'command1 || command2'
+    examples:
+      - {c: 'type a.txt || echo a.txt is missing', d: 'The file does not exist, so the second message is printed.', expectError: true}
+      - {c: 'ping -n 1 10.0.0.99 > nul || echo Device is offline', d: 'Report when a device does not respond.'}
+    related: ['&&', '&', '2>']
+    lessons: [31]
+    keywords: ['if failed', 'or', 'error']
+
+  - name: '*'
+    aliases: ['?']
+    category: operators
+    engine: false
+    level: 1
+    full: 'Wildcards'
+    summary: 'In a file name, `*` means “any number of characters” and `?` means “exactly one character”.'
+    syntax: '*.txt  ·  report*.txt  ·  temp?.tmp  ·  *.*'
+    examples:
+      - {c: 'dir Documents\*.txt', d: 'All txt files.'}
+      - {c: 'dir Downloads\temp?.tmp', d: 'temp1.tmp and temp2.tmp.'}
+      - {c: 'dir Documents\Work\report*', d: 'Everything that starts with report.'}
+    warning: 'With `del` and a wildcard, always test the same pattern with `dir` first.'
+    related: [dir, del, copy]
+    lessons: [26, 27]
+    keywords: ['wildcard', 'asterisk', 'star', 'pattern', 'all files']

@@ -1,0 +1,153 @@
+# CMD Academy — full curriculum outline (100 lessons)
+# n = lesson number, t = German title, c = main command (optional)
+# aliases = other names of the same command, danger = needs a warning
+course: cmd
+levels:
+  - id: 1
+    code: BEGINNER
+    title: 'Einsteiger'
+    chapters:
+      - id: 1
+        title: 'Einstieg in CMD'
+        lessons:
+          - {n: 1, t: 'Was ist CMD?'}
+          - {n: 2, t: 'Terminal, Command Line und Shell'}
+          - {n: 3, t: 'CMD öffnen'}
+          - {n: 4, t: 'Der Aufbau eines Befehls (Command)'}
+      - id: 2
+        title: 'Dateien, Laufwerke und Pfade'
+        lessons:
+          - {n: 5, t: 'Datei und Ordner (File und Folder)'}
+          - {n: 6, t: 'Was ist ein Laufwerk (Drive)?'}
+          - {n: 7, t: 'Directory und Current Directory'}
+          - {n: 8, t: 'Was ist ein Pfad (Path)?'}
+          - {n: 9, t: 'Absolute Path'}
+          - {n: 10, t: 'Relative Path'}
+      - id: 3
+        title: 'Navigieren'
+        lessons:
+          - {n: 11, t: 'Ordnerinhalt anzeigen', c: dir}
+          - {n: 12, t: 'In einen anderen Ordner wechseln', c: cd, aliases: [chdir]}
+          - {n: 13, t: 'Zurück und zum Stammordner'}
+          - {n: 14, t: 'Laufwerk wechseln und cd /d', aliases: [pushd, popd]}
+          - {n: 15, t: 'Bildschirm leeren', c: cls}
+          - {n: 16, t: 'Hilfe bekommen', c: help}
+          - {n: 17, t: 'Anführungszeichen und Namen mit Leerzeichen'}
+      - id: 4
+        title: 'Dateien verwalten'
+        lessons:
+          - {n: 18, t: 'Ordner erstellen', c: mkdir, aliases: [md]}
+          - {n: 19, t: 'Text anzeigen', c: echo}
+          - {n: 20, t: 'Dateiinhalt anzeigen', c: type}
+          - {n: 21, t: 'Dateien kopieren', c: copy}
+          - {n: 22, t: 'Dateien verschieben', c: move}
+          - {n: 23, t: 'Umbenennen', c: ren, aliases: [rename]}
+          - {n: 24, t: 'Dateien löschen', c: del, aliases: [erase], danger: true}
+          - {n: 25, t: 'Ordner löschen', c: rmdir, aliases: [rd], danger: true}
+          - {n: 26, t: 'Platzhalter (Wildcard) Stern *'}
+          - {n: 27, t: 'Platzhalter (Wildcard) Fragezeichen ?'}
+      - id: 5
+        title: 'Umleitung (Redirect) und Befehle kombinieren'
+        lessons:
+          - {n: 28, t: 'Ausgabe in eine Datei schreiben >'}
+          - {n: 29, t: 'An eine Datei anhängen >>'}
+          - {n: 30, t: 'Fehlermeldungen und 2>'}
+          - {n: 31, t: 'Befehlsketten: & und && und ||'}
+          - {n: 32, t: 'Gemischte Übung Level 1'}
+  - id: 2
+    code: INTERMEDIATE
+    title: 'Fortgeschritten'
+    chapters:
+      - id: 6
+        title: 'Text, Suchen und Kopieren'
+        lessons:
+          - {n: 33, t: 'Pipe |'}
+          - {n: 34, t: 'Seitenweise anzeigen', c: more}
+          - {n: 35, t: 'Sortieren', c: sort}
+          - {n: 36, t: 'Eingabe aus einer Datei <'}
+          - {n: 37, t: 'Text suchen', c: find}
+          - {n: 38, t: 'Erweiterte Textsuche', c: findstr}
+          - {n: 39, t: 'Ordner als Baum anzeigen', c: tree}
+          - {n: 40, t: 'Den Speicherort eines Programms finden', c: where}
+          - {n: 41, t: 'Attribute und versteckte Dateien', c: attrib}
+          - {n: 42, t: 'Dateien vergleichen', c: fc}
+          - {n: 43, t: 'Ordner kopieren', c: xcopy}
+          - {n: 44, t: 'Profi-Kopieren', c: robocopy, danger: true}
+      - id: 7
+        title: 'Variablen und Systeminformationen'
+        lessons:
+          - {n: 45, t: 'Was ist eine Variable?', c: set}
+          - {n: 46, t: 'Environment Variables'}
+          - {n: 47, t: '%USERNAME% und %USERPROFILE%'}
+          - {n: 48, t: 'PATH und %PATH%'}
+          - {n: 49, t: 'Benutzer und Computername', c: whoami, aliases: [hostname]}
+          - {n: 50, t: 'Version und Systeminformationen', c: systeminfo, aliases: [ver]}
+          - {n: 51, t: 'Laufende Programme auflisten', c: tasklist}
+          - {n: 52, t: 'Einen Prozess (Process) beenden', c: taskkill, danger: true}
+      - id: 8
+        title: 'Netzwerk'
+        lessons:
+          - {n: 53, t: 'Was sind IP und Netzwerk?'}
+          - {n: 54, t: 'Die IP anzeigen', c: ipconfig}
+          - {n: 55, t: 'Alle Netzwerkdetails und MAC', c: getmac}
+          - {n: 56, t: 'Verbindung testen', c: ping}
+          - {n: 57, t: 'Der Weg zum Server', c: tracert, aliases: [pathping]}
+          - {n: 58, t: 'DNS und die IP einer Website finden', c: nslookup}
+          - {n: 59, t: 'Aktive Verbindungen', c: netstat}
+          - {n: 60, t: 'Die ARP-Tabelle', c: arp}
+          - {n: 61, t: 'Route-Tabelle und Netzwerk-Fehlersuche', c: route}
+      - id: 9
+        title: 'Profi-Befehle'
+        lessons:
+          - {n: 62, t: 'Exit Code'}
+          - {n: 63, t: 'Grundlegende Berechtigungen (Permissions) und Access is denied'}
+          - {n: 64, t: 'Administrator CMD'}
+          - {n: 65, t: 'Windows-Dienste', c: sc, aliases: [net]}
+          - {n: 66, t: 'Häufige CMD-Fehler und ihre Lösungen'}
+          - {n: 67, t: 'Befehle kombinieren: Praxisübungen Level 2'}
+  - id: 3
+    code: ADVANCED
+    title: 'Profi'
+    chapters:
+      - id: 10
+        title: 'Batch-Grundlagen'
+        lessons:
+          - {n: 68, t: 'Was ist ein Batch-Skript?'}
+          - {n: 69, t: 'Der Unterschied zwischen .bat und .cmd'}
+          - {n: 70, t: 'Die erste Batch-Datei erstellen'}
+          - {n: 71, t: '@echo off und Kommentare', c: rem}
+          - {n: 72, t: 'Warten auf einen Tastendruck', c: pause}
+          - {n: 73, t: 'Variablen in Batch'}
+          - {n: 74, t: 'Eingaben mit set /p'}
+          - {n: 75, t: 'Rechnen mit set /a'}
+          - {n: 76, t: 'Argumente: %1 und %2'}
+          - {n: 77, t: 'Argumente verschieben', c: shift}
+      - id: 11
+        title: 'Logik und Schleifen'
+        lessons:
+          - {n: 78, t: 'Bedingungen', c: if}
+          - {n: 79, t: 'if ... else'}
+          - {n: 80, t: 'if exist'}
+          - {n: 81, t: 'errorlevel in Batch'}
+          - {n: 82, t: 'goto und Labels', c: goto}
+          - {n: 83, t: 'Schleifen über Dateien', c: for}
+          - {n: 84, t: 'for /l und for /f'}
+          - {n: 85, t: 'Delayed Expansion und !var!', c: setlocal, aliases: [endlocal]}
+          - {n: 86, t: 'call: Funktionen und andere Skripte', c: call}
+          - {n: 87, t: 'Ein einfaches Menü mit choice und timeout', c: choice, aliases: [timeout]}
+      - id: 12
+        title: 'Projekte und Systemreparatur'
+        lessons:
+          - {n: 88, t: 'Skript zur Dateiverwaltung'}
+          - {n: 89, t: 'Backup Script'}
+          - {n: 90, t: 'Rename Script'}
+          - {n: 91, t: 'Skript zur Dateisuche'}
+          - {n: 92, t: 'Einfache Automatisierung: Log und Zeitplanung', c: shutdown}
+          - {n: 93, t: 'Dateisystem und Datenträgerprüfung', c: chkdsk, aliases: [vol], danger: true}
+          - {n: 94, t: 'Systemdateien reparieren', c: sfc}
+          - {n: 95, t: 'Das Windows-Image reparieren', c: dism}
+          - {n: 96, t: 'Recovery Environment'}
+          - {n: 97, t: 'Den Boot reparieren', c: bootrec, aliases: [bcdboot, bcdedit], danger: true}
+          - {n: 98, t: 'diskpart und format (Simulation)', c: diskpart, aliases: [format], danger: true}
+          - {n: 99, t: 'Grundlegende Windows-Fehlersuche'}
+          - {n: 100, t: 'Abschlussprojekt'}

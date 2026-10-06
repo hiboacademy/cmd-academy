@@ -1,0 +1,498 @@
+# Lessons 53–61 · Chapter 8: networking (a simulated home network)
+
+- n: 53
+  term: 'IP · DNS · Gateway'
+  fullForm: 'Network basics'
+  difficulty: 2
+  objective: 'Understand the basic networking ideas so that the output of network commands makes sense to you.'
+  summary: 'Every device on a network has an IP Address (like `192.168.1.24`). The Router is the gateway (Gateway) out to the internet, and DNS turns website names into IPs.'
+  meaning: 'IPs like `192.168.x.x` and `10.x.x.x` are private (inside a home or company). `127.0.0.1` means “this very computer” (localhost). The Subnet Mask decides which IPs are on your own network. The MAC Address is the hardware number of the network card.'
+  usage: 'Every network troubleshooting session starts with these ideas: Do I have an IP? Can I reach the Router? The internet? Is DNS working?'
+  syntax: "ipconfig\nping 127.0.0.1"
+  demo:
+    cmds: ['ipconfig', 'ping -n 2 127.0.0.1']
+  examples:
+    - c: 'ipconfig'
+      d: 'The IP, Mask and Gateway of this computer.'
+    - c: 'ping 127.0.0.1'
+      d: 'Test the computer''s own internal network.'
+    - c: 'nslookup google.com'
+      d: 'DNS: name → IP (lesson 58).'
+  mistakes:
+    - 'Confusing a private IP (`192.168...`) with the public IP the internet sees you as.'
+  tip: 'In the Simulator: this computer is `192.168.1.24`, the Router is `192.168.1.1` and a printer is `192.168.1.50`.'
+  restaurant: 'The IP is the table number, the Router is the restaurant entrance, and DNS is like the host who takes a guest''s name and tells them their table number.'
+  practice:
+    - id: P53a
+      start: 'C:\Users\Student'
+      task: 'Check that the computer''s own internal network works: ping the localhost address (`127.0.0.1`).'
+      checks: [{type: anyCmd, value: ping}, {type: lastOutputIncludes, value: 'Reply from 127.0.0.1'}]
+      hints: ['To find out whether an address answers, you use the `ping` command. Here the target is this very computer (localhost).', 'Structure: first the command name `ping`, then a space, then the localhost address `127.0.0.1` as the argument.']
+      answer: 'ping 127.0.0.1'
+      explain: '`ping` sends a few small packets to the target, and `127.0.0.1` means this very computer; so the reply `Reply from 127.0.0.1` shows the computer''s internal network is healthy.'
+    - id: P53b
+      start: 'C:\Users\Student'
+      task: 'Find the IP Address of this computer.'
+      checks: [{type: anyCmd, value: ipconfig}, {type: lastOutputIncludes, value: '192.168.1.24'}]
+      hints: ['You''re looking for a command that shows the IP settings of the network cards (IP Configuration). Its name is a short form of exactly those two words.', 'The command name is made of `ip` + `config` and needs no argument or switch. In the output, read the `IPv4 Address` line.']
+      answer: 'ipconfig'
+      explain: '`ipconfig` shows the IP, Subnet Mask and Default Gateway for each network card, and the `IPv4 Address` line is this computer''s IP (`192.168.1.24`).'
+  quiz:
+    - kind: mcq
+      q: 'What does `127.0.0.1` refer to?'
+      options: ['This very computer', 'Router', 'A Google server', 'DNS']
+      answer: 0
+      explain: 'localhost.'
+    - kind: mcq
+      q: 'What is the job of DNS?'
+      options: ['Turning a website name into an IP', 'Giving the computer an IP', 'Encrypting the connection', 'Making the internet faster']
+      answer: 0
+      explain: 'DNS is like the phone book of the internet.'
+    - kind: tf
+      q: '`192.168.1.24` is a private IP.'
+      answer: true
+      explain: 'IPs of the form `192.168.x.x` are private.'
+  recap: 'IP = the device''s address. Gateway = the Router. DNS = name → IP. `127.0.0.1` = the computer itself.'
+
+- n: 54
+  term: ipconfig
+  fullForm: 'IP Configuration'
+  difficulty: 2
+  objective: 'Read the IP settings and clear the DNS Cache.'
+  summary: '`ipconfig` shows the IP, Subnet Mask and Default Gateway for each network card.'
+  meaning: 'If a card isn''t connected, you see `Media disconnected`. `/flushdns` clears the DNS memory (useful when a site opens with an old IP). `/release` and `/renew` give up the IP and get it again.'
+  usage: 'The first step of any network troubleshooting.'
+  syntax: "ipconfig\nipconfig /flushdns\nipconfig /release\nipconfig /renew"
+  demo:
+    cmds: ['ipconfig | find "Gateway"', 'ipconfig /flushdns']
+  examples:
+    - c: 'ipconfig'
+      d: 'A summary of the settings.'
+    - c: 'ipconfig | find "IPv4"'
+      d: 'Only the IP.'
+    - c: 'ipconfig /flushdns'
+      d: 'Clear the DNS Cache.'
+    - c: 'ipconfig /release'
+      d: 'Release the IP (the connection drops!).'
+      noTry: true
+  mistakes:
+    - 'Running `/release` on a remote computer: the connection drops and you lose access.'
+  tip: 'If the IPv4 address starts with `169.254`, the computer did not get an IP from the Router.'
+  practice:
+    - id: P54a
+      start: 'C:\Users\Student'
+      task: 'Show only the Default Gateway line (the Router''s address) from the ipconfig output.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: '192.168.1.1'}, {type: lastOutputExcludes, value: 'IPv4'}]
+      hints: ['The output of `ipconfig` has several lines. Use a pipe (`|`) to pass it to `find` so only the line with the word you want remains.', 'Three parts: 1) the main command `ipconfig` 2) the `|` symbol 3) `find` with the word `"Gateway"` in quotes.']
+      answer: 'ipconfig | find "Gateway"'
+      explain: '`|` passes the output of `ipconfig` to `find`, and `find "Gateway"` keeps only the line containing the word Gateway, which is the Router''s address.'
+    - id: P54b
+      start: 'C:\Users\Student'
+      task: 'Clear the DNS memory (DNS Cache).'
+      checks: [{type: switch, value: '/flushdns', cmd: ipconfig, anyRun: true}, {type: lastOutputIncludes, value: 'Successfully flushed'}]
+      hints: ['`ipconfig` has a special switch for clearing the DNS Cache. “Emptying” something out is called flush in English.', 'After `ipconfig`, add a space and start the switch with `/`: `/` + `flush` + `dns` (all joined together).']
+      answer: 'ipconfig /flushdns'
+      explain: 'The `/flushdns` switch tells `ipconfig` to empty the DNS memory (the saved names and IPs), so next time the names are asked from the DNS Server again.'
+  quiz:
+    - kind: mcq
+      q: 'The Default Gateway is usually the address of which device?'
+      options: ['Router', 'The printer', 'The computer itself', 'Google''s DNS server']
+      answer: 0
+      explain: 'The Gateway is the way out to other networks.'
+    - kind: predict
+      q: 'The computer''s IPv4 is `169.254.12.7`. What does that mean?'
+      code: 'IPv4 Address. . . : 169.254.12.7'
+      options: ['It didn''t get an address from the Router (DHCP)', 'It is connected to the internet', 'It has a public address', 'DNS is broken']
+      answer: 0
+      explain: 'Windows creates a 169.254 address by itself when DHCP doesn''t answer.'
+    - kind: type
+      q: 'Get an IP address from the Router again.'
+      accept: ['ipconfig /renew']
+      explain: '`/renew`'
+  recap: '`ipconfig` = IP, Mask, Gateway. `/flushdns` clears the DNS Cache. `/release` and `/renew` release and get an IP.'
+
+- n: 55
+  term: 'ipconfig /all'
+  fullForm: 'Full network details · getmac'
+  difficulty: 2
+  objective: 'Find the full details of the network card, DNS, DHCP and the MAC Address.'
+  summary: '`ipconfig /all` shows every detail: Physical Address (MAC), DHCP, Lease time and DNS Servers. `getmac` shows only the MAC Addresses.'
+  meaning: 'The MAC Address is the hardware number of the network card, like `3C-52-82-4A-1F-9B`. The Router uses it to recognize devices. DNS Servers are the addresses of the servers that translate website names.'
+  usage: 'Registering a device in the Router or the company network, checking DNS, finding out whether the IP came from DHCP or was set by hand.'
+  syntax: "ipconfig /all\ngetmac [/v]"
+  demo:
+    cmds: ['ipconfig /all | findstr /c:"Physical" /c:"DNS Servers" /c:"DHCP Server"', 'getmac']
+  examples:
+    - c: 'ipconfig /all'
+      d: 'All the details.'
+    - c: 'ipconfig /all | find "DNS Servers"'
+      d: 'Only DNS.'
+    - c: 'getmac /v'
+      d: 'The MAC of every card, with names.'
+  mistakes:
+    - 'Confusing the MAC (hardware, fixed) with the IP (can change).'
+  tip: 'A device can have several MACs: one for Wi-Fi and one for Ethernet.'
+  practice:
+    - id: P55a
+      start: 'C:\Users\Student'
+      task: 'Find the DNS Server address in the full ipconfig output.'
+      checks: [{type: switch, value: '/all', cmd: ipconfig, anyRun: true}, {type: lastOutputIncludes, value: 'DNS Servers'}]
+      hints: ['The DNS Server address only appears in the full output of `ipconfig` (with the `/all` switch). To find that exact line, filter the output with a pipe and `find`.', 'Two parts joined by `|`: on the left `ipconfig /all`, on the right `find` with the text `"DNS Servers"` in quotes.']
+      answer: 'ipconfig /all | find "DNS Servers"'
+      explain: '`ipconfig /all` shows all the details, and `| find "DNS Servers"` picks out just the DNS Server address line.'
+    - id: P55b
+      start: 'C:\Users\Student'
+      task: 'Show the MAC Addresses of the network cards with the command made for that.'
+      checks: [{type: anyCmd, value: getmac}, {type: lastOutputIncludes, value: '3C-52-82-4A-1F-9B'}]
+      hints: ['To see only the MAC Addresses there is a separate command whose name means “get the MAC”.', 'The command name is made of `get` + `mac` and runs without an argument. In the output, the `Physical Address` column is the MAC.']
+      answer: 'getmac'
+      explain: '`getmac` shows only the Physical Address (MAC) of each network card, like `3C-52-82-4A-1F-9B`.'
+  quiz:
+    - kind: mcq
+      q: 'Under what name does the MAC Address appear in the output of `ipconfig /all`?'
+      options: ['Physical Address', 'IPv4 Address', 'Subnet Mask', 'Host Name']
+      answer: 0
+      explain: 'Physical Address = MAC.'
+    - kind: tf
+      q: 'The MAC Address changes every time you connect to a network.'
+      answer: false
+      explain: 'The MAC is a hardware number; the IP may change.'
+    - kind: type
+      q: 'Show the MAC Addresses together with the network card names.'
+      accept: ['getmac /v', 'getmac /v /fo list', 'ipconfig /all']
+      show: 'getmac /v'
+      explain: '`/v` = Verbose.'
+  recap: '`ipconfig /all` = all the details (MAC, DHCP, DNS). `getmac` = only the MAC.'
+
+- n: 56
+  term: ping
+  fullForm: 'Ping (Packet InterNet Groper)'
+  difficulty: 2
+  objective: 'Use ping to test the connection to a device or website and interpret the replies.'
+  summary: '`ping` sends a few small packets to the target and waits for a reply. A reply means the path is working; `time` shows how long it took.'
+  meaning: '`Reply from` = a reply came back. `Request timed out.` = no reply came (device off or a Firewall). `could not find host` = DNS didn''t recognize the name. `Destination host unreachable` = the device couldn''t be found on the network. `-n` sets the count and `-t` sends endlessly (Ctrl+C to stop).'
+  usage: 'Is the internet connected? Is the printer on? Is the server answering?'
+  syntax: 'ping [-n count] [-t] target'
+  demo:
+    cmds: ['ping -n 2 google.com', 'ping -n 2 10.0.0.99', 'ping nosuchsite.test']
+  examples:
+    - c: 'ping google.com'
+      d: 'Tests the internet and DNS at the same time.'
+    - c: 'ping 192.168.1.1'
+      d: 'Test the Router.'
+    - c: 'ping -n 10 8.8.8.8'
+      d: '10 packets to a public IP.'
+    - c: 'ping -t 192.168.1.50'
+      d: 'Endless ping; stop it with Ctrl+C.'
+  mistakes:
+    - 'Jumping to conclusions: some servers don''t answer ping even when they are working.'
+    - 'Typing `http://google.com`; ping only takes a name or an IP.'
+  tip: 'The final statistics: `Lost = 0 (0% loss)` is excellent. High loss means an unstable connection.'
+  practice:
+    - id: P56a
+      start: 'C:\Users\Student'
+      task: 'Ping `google.com` only twice.'
+      checks: [{type: anyCmd, value: ping}, {type: lastOutputIncludes, value: 'Sent = 2'}, {type: lastOutputIncludes, value: 'Received = 2'}]
+      hints: ['By default `ping` sends four packets. With the `-n` switch you can choose the number of packets yourself.', 'Order: `ping`, then the `-n` switch followed right away by the count (`2`), and finally the target `google.com`.']
+      answer: 'ping -n 2 google.com'
+      explain: '`-n 2` sets the number of packets to two and `google.com` is the target; that''s why the final statistics show `Sent = 2` and `Received = 2`.'
+    - id: P56b
+      start: 'C:\Users\Student'
+      task: 'Check whether the home Router (`192.168.1.1`) answers.'
+      checks: [{type: lastOutputIncludes, value: 'Reply from 192.168.1.1'}]
+      hints: ['To find out whether a device on the network answers, send it a `ping`. This time the target is the Router''s IP instead of a website name.', 'The `ping` command followed by the Router''s IP (`192.168.1.1`) as the argument. If you see `Reply from` lines, the Router has answered.']
+      answer: 'ping 192.168.1.1'
+      explain: '`ping` sends packets to the Router''s IP, and each `Reply from 192.168.1.1` line means the Router is on and the path to it is working.'
+  quiz:
+    - kind: mcq
+      q: 'What does `Request timed out.` mean?'
+      options: ['No reply came within the set time', 'The website name wasn''t found', 'The connection is excellent', 'The computer has no IP']
+      answer: 0
+      explain: 'The target didn''t answer, or a Firewall blocked it.'
+    - kind: predict
+      q: 'What is the output?'
+      code: 'ping nosuchsite.test'
+      options: ['Ping request could not find host nosuchsite.test...', 'Request timed out.', 'Reply from nosuchsite.test', 'Destination host unreachable.']
+      answer: 0
+      explain: 'DNS doesn''t know this name.'
+    - kind: type
+      q: 'Ping `8.8.8.8` five times.'
+      accept: ['ping -n 5 8.8.8.8', 'ping 8.8.8.8 -n 5', 'ping /n 5 8.8.8.8']
+      show: 'ping -n 5 8.8.8.8'
+      explain: '`-n 5`'
+    - kind: sim
+      q: 'Ping `google.com` with just one packet.'
+      start: 'C:\Users\Student'
+      checks: [{type: cmd, value: ping}, {type: switch, value: '-n'}, {type: lastOutputIncludes, value: 'Sent = 1'}]
+      answer: 'ping -n 1 google.com'
+      explain: '`-n` sets the number of packets.'
+  recap: '`ping target`. Reply = working, timed out = no answer, could not find host = name/DNS problem. `-n` count, `-t` endless.'
+
+- n: 57
+  term: tracert
+  fullForm: 'Trace Route · pathping'
+  difficulty: 2
+  objective: 'See the path packets take to a server and find out at which step the problem is.'
+  summary: '`tracert` shows every single Router (Hop) the packet passes through, with its response time. `pathping` does the same and also tells you the percentage of lost packets at each Hop.'
+  meaning: 'The first Hop is usually the home Router, then the servers of your internet provider (ISP), and finally the target. `* * * Request timed out.` at a Hop in the middle of the path isn''t necessarily a problem; some Routers just don''t answer. `-d` skips looking up names and is faster.'
+  usage: 'Finding out whether slowness or an outage comes from your home network, from the ISP, or from the target server.'
+  syntax: "tracert [-d] target\npathping target"
+  demo:
+    cmds: ['tracert google.com']
+  examples:
+    - c: 'tracert google.com'
+      d: 'The path to Google.'
+    - c: 'tracert -d example.com'
+      d: 'Without names, IPs only.'
+    - c: 'pathping github.com'
+      d: 'The path + packet loss statistics for each Hop.'
+  mistakes:
+    - 'Worrying about a `*` line in the middle of the path when the target answers at the end.'
+  tip: 'If everything from the second Hop onward is `*`, the problem is probably with your internet provider, not your computer.'
+  practice:
+    - id: P57a
+      start: 'C:\Users\Student'
+      task: 'Trace the path to `google.com`.'
+      checks: [{type: anyCmd, value: tracert}, {type: lastOutputIncludes, value: 'Trace complete'}]
+      hints: ['To see every Router on the path (Hop) to a website, use the `tracert` (Trace Route) command.', 'The command name `tracert` followed by the target `google.com` as the argument. Wait until the `Trace complete` line appears.']
+      answer: 'tracert google.com'
+      explain: '`tracert` follows the packets Hop by Hop to `google.com` and shows the response time for each Router.'
+    - id: P57b
+      start: 'C:\Users\Student'
+      task: 'Show the path to `example.com` without looking up the Router names (IPs only).'
+      checks: [{type: switch, value: '-d', cmd: tracert, anyRun: true}, {type: lastOutputIncludes, value: '93.184.215.14'}, {type: lastOutputExcludes, value: 'router.home'}]
+      hints: ['By default `tracert` also looks up the name of each Hop. The `-d` switch turns that off so only the IPs remain.', 'Order: `tracert`, then the `-d` switch, then the target `example.com`. The switch comes before the target.']
+      answer: 'tracert -d example.com'
+      explain: 'The `-d` switch stops the Router names from being looked up, so the output contains only IPs and also finishes faster.'
+  quiz:
+    - kind: mcq
+      q: 'In the tracert output, what is Hop number 1 usually?'
+      options: ['The home Router', 'The target server', 'Google''s DNS', 'The computer itself']
+      answer: 0
+      explain: 'The first stop is the Gateway.'
+    - kind: mcq
+      q: 'Which command shows the percentage of lost packets at each Hop?'
+      options: ['pathping', 'tracert', 'ping', 'nslookup']
+      answer: 0
+      code_options: true
+      explain: 'pathping = ping + tracert with statistics.'
+    - kind: tf
+      q: 'A `* * *` in the middle of the path always means the internet is down.'
+      answer: false
+      explain: 'Some Routers don''t answer these requests.'
+  recap: '`tracert` = the path Hop by Hop. `-d` without names. `pathping` = path + loss percentage.'
+
+- n: 58
+  term: nslookup
+  fullForm: 'Name Server Lookup'
+  difficulty: 2
+  objective: 'Ask DNS directly which IP a name has (and the other way round).'
+  summary: '`nslookup name` asks the DNS Server which IP that name leads to. If you give it an IP, it finds the matching name (Reverse Lookup).'
+  meaning: 'The first line of the output (`Server`) shows which DNS Server was asked. `Non-authoritative answer` means the answer came from the memory of an intermediate DNS server. `Non-existent domain` means no such name exists.'
+  usage: 'When `ping google.com` says it couldn''t find the host: with nslookup you find out whether the problem is DNS. With `nslookup name 8.8.8.8` you ask a different DNS server.'
+  syntax: "nslookup name [server]\nnslookup ip"
+  demo:
+    cmds: ['nslookup github.com', 'nslookup 8.8.8.8', 'nslookup nosuchsite.test']
+  examples:
+    - c: 'nslookup google.com'
+      d: 'Google''s IP.'
+    - c: 'nslookup google.com 8.8.8.8'
+      d: 'Ask Google''s DNS instead of the Router.'
+    - c: 'nslookup 1.1.1.1'
+      d: 'The name that owns an IP.'
+    - c: 'nslookup'
+      d: 'Interactive mode; leave it with `exit`.'
+  mistakes:
+    - 'Adding an extra `www` or `http://`; just type the domain name.'
+  tip: 'If `nslookup` answers but the website still won''t open, the problem isn''t DNS; look for a different cause.'
+  practice:
+    - id: P58a
+      start: 'C:\Users\Student'
+      task: 'Ask DNS which IP Address `github.com` has.'
+      checks: [{type: anyCmd, value: nslookup}, {type: lastOutputIncludes, value: '140.82.121.4'}]
+      hints: ['To ask DNS directly which IP a name has, use the `nslookup` (Name Server Lookup) command.', 'The `nslookup` command followed by just the domain name `github.com` (without `http://` or `www`). Find the IP on the `Address` line under `Name`.']
+      answer: 'nslookup github.com'
+      explain: '`nslookup github.com` asks the DNS Server which IP `github.com` leads to and shows the answer (`140.82.121.4`).'
+    - id: P58b
+      start: 'C:\Users\Student'
+      task: 'Find out which name the IP `8.8.8.8` belongs to (Reverse Lookup).'
+      checks: [{type: anyCmd, value: nslookup}, {type: lastOutputIncludes, value: 'dns.google'}]
+      hints: ['Reverse Lookup means the other way round: from IP to name. The same `nslookup` does this too.', 'Give `nslookup` the IP itself, `8.8.8.8`, as the argument instead of a website name. The name appears on the `Name` line.']
+      answer: 'nslookup 8.8.8.8'
+      explain: 'When you give `nslookup` an IP, it asks DNS for the name that owns it; for `8.8.8.8` the answer is `dns.google`.'
+  quiz:
+    - kind: mcq
+      q: 'What does `Non-existent domain` in the nslookup output mean?'
+      options: ['No such name exists in DNS', 'The internet is down', 'The website is slow', 'A Firewall blocked it']
+      answer: 0
+      explain: 'The name isn''t registered or was mistyped.'
+    - kind: type
+      q: 'Find the IP of `example.com` using the DNS Server `1.1.1.1`.'
+      accept: ['nslookup example.com 1.1.1.1']
+      explain: 'The second argument is the DNS Server.'
+    - kind: tf
+      q: 'nslookup can go from an IP to a name.'
+      answer: true
+      explain: 'Reverse Lookup.'
+  recap: '`nslookup name` = its IP. `nslookup IP` = its name. `nslookup name server` = ask a different DNS server.'
+
+- n: 59
+  term: netstat
+  fullForm: 'Network Statistics'
+  difficulty: 3
+  objective: 'See the active connections and open Ports, and find out which program each connection belongs to.'
+  summary: '`netstat` shows the computer''s network connections: local address, remote address and state (`ESTABLISHED`, `LISTENING`, ...).'
+  meaning: '`-a` shows all connections and listening Ports, `-n` shows addresses as numbers (faster), `-o` shows the PID of the program that owns the connection. The common combination: `netstat -ano`. With the PID you can find the program name in `tasklist`.'
+  usage: 'Finding a program that secretly connects to the internet, checking that a server is listening on the right Port.'
+  syntax: 'netstat [-a] [-n] [-o] [-b]'
+  demo:
+    cmds: ['netstat -no']
+  examples:
+    - c: 'netstat'
+      d: 'Active connections.'
+    - c: 'netstat -ano'
+      d: 'Everything with PIDs; the most common combination.'
+    - c: 'netstat -ano | find "ESTABLISHED"'
+      d: 'Only established connections.'
+    - c: 'netstat -b'
+      d: 'Program names (needs Administrator).'
+  mistakes:
+    - 'Worrying about system `LISTENING` Ports like 135 and 445; these belong to Windows.'
+  tip: 'An address ending in `:443` means HTTPS (secure web). `:80` means HTTP.'
+  practice:
+    - id: P59a
+      start: 'C:\Users\Student'
+      task: 'Show all connections and Ports with numeric addresses and PIDs.'
+      checks: [{type: anyCmd, value: netstat}, {type: lastOutputIncludes, value: 'LISTENING'}, {type: lastOutputIncludes, value: '7810'}]
+      hints: ['`netstat` shows network connections. For “all connections”, “numeric addresses” and “PID” you have a one-letter switch each, and you can write them one after another.', 'The switches: `a` = all, `n` = numeric, `o` = owner PID. Write all three side by side after a single `-`.']
+      answer: 'netstat -ano'
+      explain: '`-a` shows all connections and `LISTENING` Ports, `-n` shows numeric addresses, and `-o` shows the PID of the program that owns each connection.'
+    - id: P59b
+      start: 'C:\Users\Student'
+      task: 'A connection with PID `7810` is connected to the internet. Find out which program this PID belongs to.'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: 'Spotify.exe'}]
+      hints: ['You find a program name from its PID with `tasklist`. Instead of looking through the whole list, use its filter (the `/fi` switch).', 'After `tasklist /fi`, write a condition in quotes: the column name `pid`, the operator `eq` (equal) and the number `7810`.']
+      answer: 'tasklist /fi "pid eq 7810"'
+      explain: '`/fi` filters the list of processes, and the condition `"pid eq 7810"` keeps only the process whose PID is 7810, which is `Spotify.exe`.'
+  quiz:
+    - kind: mcq
+      q: 'What does the `-o` switch add in netstat?'
+      options: ['The PID of the program that owns the connection', 'The name of the target website', 'The connection speed', 'MAC Address']
+      answer: 0
+      code_options: false
+      explain: '`-o` = Owner PID.'
+    - kind: mcq
+      q: 'What does the state `LISTENING` mean?'
+      options: ['A program is waiting for connections on that Port', 'The connection was closed', 'Something is downloading', 'An error occurred']
+      answer: 0
+      explain: 'The Port is open and waiting.'
+    - kind: order
+      q: 'Put the steps in order for finding the program that is connected to a suspicious IP.'
+      items: ['netstat -ano', 'Read the PID from the last column', 'tasklist /fi "pid eq <PID>"']
+      explain: 'netstat → PID → tasklist.'
+  recap: '`netstat -ano` = all connections with PIDs. Look up the PID in `tasklist`.'
+
+- n: 60
+  term: arp
+  fullForm: 'Address Resolution Protocol'
+  difficulty: 3
+  objective: 'Read the ARP table and understand how IPs are turned into MACs.'
+  summary: '`arp -a` shows a table that links the IPs of the devices on the local network to their MAC Addresses.'
+  meaning: 'To send data on the local network, the computer must know the target''s MAC. ARP finds it and keeps it in this table. `dynamic` means it was learned automatically, `static` means it is fixed.'
+  usage: 'Finding the MAC of a printer or Router, and troubleshooting when two devices have the same IP.'
+  syntax: "arp -a\narp -d (Administrator)"
+  demo:
+    cmds: ['arp -a']
+  examples:
+    - c: 'arp -a'
+      d: 'The ARP table.'
+    - c: 'arp -a | find "192.168.1.1"'
+      d: 'MAC Router.'
+    - c: 'arp -d *'
+      d: 'Clear the table (needs Administrator).'
+  mistakes:
+    - 'Expecting to see internet devices in ARP; it covers only the local network.'
+  tip: 'If you ping a device, it usually shows up in the ARP table afterwards.'
+  practice:
+    - id: P60a
+      start: 'C:\Users\Student'
+      task: 'Find the MAC Address of the Router (`192.168.1.1`) in the ARP table.'
+      checks: [{type: anyCmd, value: arp}, {type: lastOutputIncludes, value: 'f4-6b-ef-12-a0-01'}]
+      hints: ['The table that links local network IPs to MACs is the ARP table. Its command is `arp`, and it needs a switch to display the table.', 'After `arp`, write the `-a` switch (all = show everything). In the output, find the `192.168.1.1` line and read the `Physical Address` column.']
+      answer: 'arp -a'
+      explain: '`arp -a` shows the ARP table; on the `192.168.1.1` line, the Physical Address column is the Router''s MAC (`f4-6b-ef-12-a0-01`).'
+  quiz:
+    - kind: mcq
+      q: 'What does ARP link to what?'
+      options: ['IP to MAC', 'Name to IP', 'MAC to name', 'Port to program']
+      answer: 0
+      explain: 'Name → IP is the job of DNS.'
+    - kind: tf
+      q: 'The ARP table shows the devices on the local network.'
+      answer: true
+      explain: 'Only your own network.'
+    - kind: predict
+      q: 'A normal user (without Administrator) runs this. What happens?'
+      code: 'arp -d *'
+      options: ['The ARP entry deletion failed: The requested operation requires elevation.', 'The table is cleared', 'The internet goes down', 'Nothing']
+      answer: 0
+      explain: 'Changing the table requires Administrator.'
+  recap: '`arp -a` = the IP-to-MAC table of the local network.'
+
+- n: 61
+  term: 'route print'
+  fullForm: 'Routing table · Network troubleshooting'
+  difficulty: 3
+  objective: 'Get to know the Route table and have a clear, step-by-step routine for troubleshooting the internet.'
+  summary: '`route print` shows which Gateway packets should take for each destination. The `0.0.0.0` line is the Default Gateway: “everywhere else, go this way”.'
+  meaning: 'The troubleshooting routine: 1) `ipconfig`: do I have an IP? 2) `ping 127.0.0.1`: is the computer itself OK? 3) `ping` the Gateway: can I reach the Router? 4) `ping 8.8.8.8`: can I reach the internet? 5) `ping google.com` or `nslookup`: is DNS working? The first step that fails is where the problem is.'
+  usage: 'Any time “the internet isn''t working”: instead of guessing, check step by step.'
+  syntax: "route print\nipconfig\nping 192.168.1.1\nping 8.8.8.8\nnslookup google.com"
+  demo:
+    cmds: ['route print']
+  examples:
+    - c: 'route print'
+      d: 'The Route table.'
+    - c: 'ping 8.8.8.8'
+      d: 'Test the internet without DNS.'
+    - c: 'ipconfig /renew'
+      d: 'Get an IP again if you don''t have one.'
+  mistakes:
+    - 'Starting from the end (opening a website) instead of from the beginning (the IP).'
+    - 'Changing the Route table without enough knowledge.'
+  tip: 'If `ping 8.8.8.8` answers but `ping google.com` doesn''t, the problem is DNS.'
+  daily: 'It''s like when a light won''t turn on: first the switch, then the bulb, then the fuse. From simple to complex.'
+  practice:
+    - id: P61a
+      start: 'C:\Users\Student'
+      task: 'Show the computer''s Route table.'
+      checks: [{type: anyCmd, value: route}, {type: lastOutputIncludes, value: 'Active Routes'}]
+      hints: ['The table of routes is shown with the `route` command. `route` needs a word after it that says “show/print”.', 'Structure: `route` + a space + the word `print`. In the output, find the `Active Routes` section.']
+      answer: 'route print'
+      explain: '`route print` shows the Route table; in the `Active Routes` section, the `0.0.0.0` line is the Default Gateway.'
+    - id: P61b
+      start: 'C:\Users\Student'
+      setup: {net: false}
+      task: 'This computer''s internet isn''t working. Check the status with `ipconfig`, fix the problem, and finally show with `ping google.com` that the internet is back.'
+      multi: true
+      checks: [{type: netConnected, value: true}, {type: anyCmd, value: ipconfig}, {type: lastOutputIncludes, value: 'Reply from'}]
+      hints: ['First check the status with `ipconfig`: if there is no IPv4 line, the computer didn''t get an address from the Router. One of the `ipconfig` switches gets the address “again” (renew).', 'Three steps in order: 1) `ipconfig` to see the status 2) `ipconfig` with the `/renew` switch to get a fresh IP 3) `ping` to `google.com` to prove the internet is back.']
+      answer: ['ipconfig', 'ipconfig /renew', 'ping google.com']
+      explain: '`ipconfig` shows you have no IP, `ipconfig /renew` gets an IP from the Router (DHCP) again, and `ping google.com` with a `Reply from` answer proves that the connection and DNS are working.'
+  quiz:
+    - kind: order
+      q: 'Put the internet troubleshooting steps in order, from simple to complex.'
+      items: ['ipconfig', 'ping 127.0.0.1', 'ping 192.168.1.1', 'ping 8.8.8.8', 'ping google.com']
+      explain: 'IP → the computer itself → Router → internet → DNS.'
+    - kind: predict
+      q: '`ping 8.8.8.8` answers, but `ping google.com` says could not find host. Where is the problem?'
+      code: "ping 8.8.8.8     -> Reply\nping google.com  -> could not find host"
+      options: ['DNS', 'Router', 'The network card', 'The cable']
+      answer: 0
+      explain: 'The connection is fine, but the name isn''t being translated into an IP.'
+    - kind: mcq
+      q: 'In the Route table, what does the destination `0.0.0.0` mean?'
+      options: ['All other destinations (Default Route)', 'No destination', 'The computer itself', 'The local network']
+      answer: 0
+      explain: 'The default route to the Gateway.'
+  recap: '`route print` = the route table. Troubleshooting: ipconfig → 127.0.0.1 → Gateway → 8.8.8.8 → website name.'

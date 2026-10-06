@@ -1,0 +1,634 @@
+# Lessons 11–20 · Chapter 3 (navigation) and the start of Chapter 4 (files)
+# demo: commands run in a fresh Simulator when the lesson opens, so the
+#       example output is always exactly what the Simulator prints.
+
+- n: 11
+  term: dir
+  fullForm: 'Directory (list)'
+  difficulty: 1
+  objective: 'See what is inside any folder and read the output of `dir`.'
+  summary: '`dir` lists the files and folders inside a folder. With no argument, it shows the contents of the current directory.'
+  meaning: 'Each line of output is one file or folder: date, time, `<DIR>` for a folder or the file size in bytes, and the name. At the bottom you see the number of files and the free space on the drive.'
+  usage: 'Before you do anything with files, use `dir` to see what is there and what the exact names are.'
+  syntax: 'dir [path] [/w] [/b]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['dir']
+  examples:
+    - c: 'dir'
+      d: 'Contents of the current folder.'
+    - c: 'dir Pictures'
+      at: 'C:\Users\Student'
+      d: 'Contents of the Pictures folder, without going into it.'
+    - c: 'dir /w'
+      d: 'Compact view in several columns; folders are shown inside `[ ]`.'
+    - c: 'dir /b'
+      d: 'Names only (Bare), no date or size.'
+  mistakes:
+    - 'Typing `ls`: that command belongs to Linux. In CMD, use `dir`.'
+    - 'Forgetting the space: `dir/w` works, but `dirPictures` does not.'
+  tip: '`.` means this folder and `..` means the folder above; you see both in every folder except the root.'
+  restaurant: '`dir` is like looking at the menu on the table: before you order, you see what is available.'
+  practice:
+    - id: P11a
+      start: 'C:\Users\Student\Pictures'
+      task: 'You are inside Pictures. See which files and folders are here.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: cwd, value: 'C:\Users\Student\Pictures'}]
+      hints:
+        - 'You want to list the files and folders of the current folder. This lesson''s command, `dir`, does exactly that when you give it no argument.'
+        - 'Just one part: what to do? (`dir`). On what? You don''t need to write it; without an argument, `dir` shows the contents of the current directory (Pictures).'
+      answer: 'dir'
+      explain: '`dir` with no argument lists the contents of the current directory; here that is `C:\Users\Student\Pictures`.'
+    - id: P11b
+      start: 'C:\Users\Student'
+      task: 'Without going into the Documents folder, show only the names of the files and folders inside it (Bare format).'
+      checks: [{type: cmd, value: dir}, {type: argIncludes, value: documents}, {type: switch, value: '/b'}, {type: ok}]
+      hints:
+        - 'You don''t need to go into Documents: give the folder name to `dir` as an argument. To get names only, you also need a special “Bare” switch.'
+        - 'Three parts: what to do? (`dir`) On what? (the folder name Documents) How? (a switch with the first letter of Bare after `/`, which removes date and size).'
+      answer: 'dir Documents /b'
+      explain: '`dir` lists, `Documents` says which folder to list, and `/b` (Bare) shows only the names, without date and size.'
+  quiz:
+    - kind: mcq
+      q: 'In the output of `dir`, what is the number next to a file name?'
+      options: ['The file size in bytes', 'The number of lines in the file', 'The file number', 'The file''s age in days']
+      answer: 0
+      explain: 'Files show their size in bytes, and folders show `<DIR>`.'
+    - kind: mcq
+      q: 'Which command shows only names, without date and size?'
+      options: ['dir /b', 'dir /w', 'dir', 'dir /s']
+      answer: 0
+      code_options: true
+      explain: '`/b` means Bare: names only.'
+    - kind: type
+      q: 'Show the contents of the Music folder without going into it. (You are in `C:\Users\Student` right now.)'
+      accept: ['dir music', 'dir music\', 'dir .\music', 'dir c:\users\student\music']
+      show: 'dir Music'
+      explain: 'Give the folder name to `dir` as an argument.'
+    - kind: sim
+      q: 'Show only the names of the files and folders in Downloads, without date and size.'
+      start: 'C:\Users\Student'
+      checks: [{type: cmd, value: dir}, {type: switch, value: '/b'}, {type: lastOutputIncludes, value: 'invoice.pdf'}]
+      answer: 'dir Downloads /b'
+      explain: '`/b` shows names only.'
+  recap: '`dir` = see the contents. `/w` compact, `/b` names only. Folders are marked with `<DIR>`.'
+
+- n: 12
+  term: cd
+  fullForm: 'Change Directory'
+  difficulty: 1
+  objective: 'Go into any folder with `cd` and always know where you are.'
+  summary: '`cd` changes the current directory. After you run it, the prompt shows the new path.'
+  meaning: '`cd` with a path (relative or absolute) takes you to that folder. `cd` with no argument just prints the current path.'
+  usage: 'Almost every task in CMD starts by going to the right folder.'
+  syntax: 'cd [path]'
+  demo:
+    cmds: ['cd Documents', 'cd Work', 'cd']
+  examples:
+    - c: 'cd Documents'
+      d: 'Go to the Documents folder inside the current folder.'
+    - c: 'cd Documents\Work'
+      d: 'Go two folders deep in one step.'
+    - c: 'cd C:\Windows'
+      d: 'Go there with an absolute path.'
+    - c: 'chdir'
+      d: '`chdir` is the same as `cd`; it shows the current path.'
+  mistakes:
+    - 'Typing just the folder name (`Documents`): CMD thinks it is a command and shows an error.'
+    - '`cd` to a file: `cd todo.txt` gives the error `The directory name is invalid.`'
+    - 'A typo in the folder name; check the exact name with `dir`.'
+  tip: 'Type the first few letters of a folder name and press Tab, and CMD completes the rest (it works in the Simulator too).'
+  restaurant: '`cd` means the waiter moves from table 1 to table 2. Every order you take after that belongs to the new table.'
+  practice:
+    - id: P12a
+      start: 'C:\Users\Student'
+      task: 'Go into the Downloads folder.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Downloads'}]
+      hints:
+        - 'To go to a folder, use `cd` (Change Directory). Downloads is inside this folder, so give its name as the destination.'
+        - 'Two parts: what to do? (`cd`) Where to? (the folder name Downloads). After Enter, the prompt should change to `C:\Users\Student\Downloads>`.'
+      answer: 'cd Downloads'
+      explain: '`cd` changes the current directory and `Downloads` is the destination; because it is a relative path, it is added to `C:\Users\Student`.'
+    - id: P12b
+      start: 'C:\Users\Student'
+      task: 'With one command, go into the Holidays folder inside Pictures, then print the current path.'
+      multi: true
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures\Holidays'}, {type: cmd, value: cd}, {type: noArgs}]
+      hints:
+        - 'Two steps in a row: first use `cd` with a two-part path (outer folder, then inner folder), then use the same `cd` to ask where you are now.'
+        - 'Line 1: `cd` + path (the name `Pictures`, the separator `\`, the name `Holidays`). Line 2: `cd` alone, with no argument, to print the current path.'
+      answer: ['cd Pictures\Holidays', 'cd']
+      explain: '`cd Pictures\Holidays` goes two levels down with one path. Then `cd` with no argument just prints the current path and goes nowhere.'
+  quiz:
+    - kind: mcq
+      q: 'What does `cd` stand for?'
+      options: ['Change Directory', 'Copy Data', 'Create Directory', 'Clear Display']
+      answer: 0
+      code_options: true
+      explain: 'Change Directory: changing the current folder.'
+    - kind: fix
+      q: 'The user wants to go into Music. What went wrong?'
+      code: "C:\\Users\\Student>Music\n'Music' is not recognized as an internal or external command,"
+      options: ['They didn''t type `cd` before the folder name', 'Music must be in lowercase', 'Music does not exist', 'They must run `dir` first']
+      answer: 0
+      explain: 'A folder name is not a command; correct: `cd Music`'
+    - kind: type
+      q: 'From `C:\Users\Student`, go into `Documents\Work` with one command.'
+      accept: ['cd documents\work', 'chdir documents\work', 'cd .\documents\work', 'cd c:\users\student\documents\work']
+      show: 'cd Documents\Work'
+      explain: 'Join the folder names with `\`.'
+  recap: '`cd folder` = go there. `cd` alone = show the current path.'
+
+- n: 13
+  term: 'cd ..   cd \'
+  fullForm: 'Parent · Root'
+  difficulty: 1
+  objective: 'Go back to the folder above and jump straight to the root of the drive.'
+  summary: '`cd ..` goes up one folder (to the parent). `cd \` goes straight to the root of the drive, like `C:\`.'
+  meaning: '`..` in any path means “the folder above”. You can repeat it: `..\..` means two folders up. A `\` at the start of a path means the root of the current drive.'
+  usage: 'To come back from deep folders, or to start a path from the top of the drive.'
+  syntax: "cd ..\ncd ..\\..\ncd \\"
+  demo:
+    start: 'C:\Users\Student\Documents\Work'
+    cmds: ['cd ..', 'cd ..\..', 'cd \']
+  examples:
+    - c: 'cd ..'
+      d: 'One folder up.'
+    - c: 'cd ..\..'
+      d: 'Two folders up.'
+    - c: 'cd ..\Music'
+      at: 'C:\Users\Student\Documents'
+      d: 'Go up, then into the neighboring Music folder.'
+    - c: 'cd \'
+      d: 'Straight to the root of the current drive.'
+  mistakes:
+    - '`cd..` (without a space) also works, but don''t learn `cd...` with three dots; it is not standard in Windows.'
+    - 'Mixing up `\` and `/`: the root uses a backslash: `cd \`'
+  tip: 'At the root (`C:\`) there is nothing above; `cd ..` does nothing there.'
+  daily: 'In a building: `..` means one floor down toward the lobby, and `\` means go straight to the lobby.'
+  practice:
+    - id: P13a
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'You are inside `Documents\Work`. Go up two folders with one command (to `C:\Users\Student`).'
+      checks: [{type: cwd, value: 'C:\Users\Student'}, {type: cmd, value: cd}]
+      hints:
+        - '`..` means “one folder up” (the parent). You need to go up two steps, so join two `..` in one path and give it to `cd`.'
+        - 'Two parts: what to do? (`cd`) Where to? (path: the first `..`, the separator `\`, the second `..`). The first step takes you to Documents, the second to Student.'
+      answer: 'cd ..\..'
+      explain: '`..\..` means “the parent, and then its parent”. From `Documents\Work` you first reach `Documents` and then `C:\Users\Student`.'
+    - id: P13b
+      start: 'C:\Users\Student\Pictures\Holidays'
+      task: 'Go to the root of drive C with the shortest command.'
+      checks: [{type: cwd, value: 'C:\'}]
+      hints:
+        - 'The root of a drive is shown by a single character: the same backslash that separates folders. Give it to `cd`.'
+        - 'Two parts: what to do? (`cd`) Where to? (the root, just one `\`). You don''t need to repeat `..` several times or write a full path.'
+      answer: 'cd \'
+      explain: '`\` on its own means the root of the current drive, so `cd \` takes you to `C:\` from any depth with one command.'
+  quiz:
+    - kind: predict
+      q: 'Current directory: `C:\Users\Student\Music` — where are you after this command?'
+      code: 'cd ..\Pictures'
+      options: ['C:\Users\Student\Pictures', 'C:\Pictures', 'C:\Users\Pictures', 'C:\Users\Student\Music\Pictures']
+      answer: 0
+      code_options: true
+      explain: 'First one folder up (Student), then into Pictures.'
+    - kind: tf
+      q: '`cd \` always goes to the root of the current drive.'
+      answer: true
+      explain: 'A `\` at the start of a path means the root.'
+    - kind: type
+      q: 'Go up one folder.'
+      accept: ['cd ..', 'cd..', 'chdir ..', 'cd ..\']
+      explain: '`cd ..`'
+    - kind: sim
+      q: 'From `Documents\Work`, go to the Music folder with one command.'
+      start: 'C:\Users\Student\Documents\Work'
+      checks: [{type: cwd, value: 'C:\Users\Student\Music'}]
+      answer: 'cd ..\..\Music'
+      explain: 'Two `..` up to Student, then Music; or use an absolute path.'
+  recap: '`cd ..` = one folder up. `cd ..\..` = two folders. `cd \` = root of the drive.'
+
+- n: 14
+  term: 'D:   cd /d'
+  fullForm: 'Change drive'
+  difficulty: 1
+  objective: 'Switch between drives and go to a folder on another drive with one command.'
+  summary: 'To go to another drive, type its letter with a colon, like `D:`. To go to a folder on another drive, use `cd /d`.'
+  meaning: 'Each drive remembers its own current path. `cd D:\Backup` only changes the path on D and you stay on C; `cd /d D:\Backup` changes both the drive and the folder.'
+  usage: 'Working with a USB stick, a second hard drive, or a backup on another drive.'
+  syntax: "D:\ncd /d D:\\folder"
+  demo:
+    cmds: ['D:', 'dir /b', 'C:', 'cd /d D:\Projects']
+  examples:
+    - c: 'E:'
+      d: 'Go to the virtual USB stick.'
+    - c: 'cd /d D:\Backup'
+      d: 'Go to the Backup folder on drive D with one command.'
+    - c: 'pushd D:\Projects'
+      d: 'Saves the current path and goes there; `popd` takes you back.'
+  mistakes:
+    - '`cd D:\Backup` without `/d`: the prompt still shows C and you think the command didn''t work.'
+    - 'Typing `D` without the colon.'
+  tip: '`pushd` and `popd` work like a bookmark: go somewhere with `pushd` and come back to where you were with `popd`.'
+  restaurant: 'The restaurant has several branches. `D:` means going to branch D. `cd /d D:\Backup` means “go to branch D, Backup hall” in one move.'
+  practice:
+    - id: P14a
+      start: 'C:\Users\Student'
+      task: 'Go to the `D:\Projects` folder with one command.'
+      checks: [{type: drive, value: D}, {type: cwd, value: 'D:\Projects'}]
+      hints:
+        - 'The destination is on another drive. `cd` alone does not change the drive; you need to add a switch so the drive and the folder change together.'
+        - 'Three parts: what to do? (`cd`) How? (a switch with the letter `d` after `/`, for drive) Where to? (the full absolute path, from `D:\` to `Projects`).'
+      answer: 'cd /d D:\Projects'
+      explain: '`cd` changes the folder, `/d` lets it change the drive too, and `D:\Projects` is the full destination; so you get there with one command.'
+    - id: P14b
+      start: 'C:\Users\Student'
+      task: 'Go to the USB stick (drive E), look at its contents, and go back to drive C.'
+      multi: true
+      checks: [{type: drive, value: C}, {type: any, of: [{type: argIncludes, cmd: drive, value: 'E:'}, {type: argIncludes, cmd: cd, value: 'E:'}, {type: argIncludes, cmd: pushd, value: 'E:'}]}, {type: anyCmd, value: dir}]
+      hints:
+        - 'Three steps: go to drive E, look at its contents, and go back to drive C. To switch drives you only need the letter and a colon.'
+        - 'Line 1: the USB drive letter with a colon. Line 2: the command to see the contents. Line 3: the letter of the main Windows drive with a colon.'
+      answer: ['E:', 'dir', 'C:']
+      explain: '`E:` goes to the USB stick, `dir` shows its contents, and `C:` takes you back to drive C, to the same folder you were in before on C.'
+  quiz:
+    - kind: predict
+      q: 'You are in `C:\Users\Student`. After this command, what does the prompt show?'
+      code: 'cd D:\Backup'
+      options: ['C:\Users\Student>', 'D:\Backup>', 'D:\>', 'An error']
+      answer: 0
+      code_options: true
+      explain: 'Without `/d`, only the path on drive D changes and you stay on C.'
+    - kind: type
+      q: 'Go to `D:\Backup` with one command.'
+      accept: ['cd /d d:\backup', 'chdir /d d:\backup', 'pushd d:\backup']
+      show: 'cd /d D:\Backup'
+      explain: '`/d` means: change the drive too.'
+    - kind: order
+      q: 'Put these commands in order to go to the USB stick, see its contents, and go back to C.'
+      items: ['E:', 'dir', 'C:']
+      explain: 'First switch the drive, then do your work, then go back.'
+  recap: '`D:` = go to a drive. `cd /d path` = drive + folder together. Each drive remembers its own path.'
+
+- n: 15
+  term: cls
+  fullForm: 'Clear Screen'
+  difficulty: 1
+  objective: 'Clear the screen and work faster with CMD keyboard shortcuts.'
+  summary: '`cls` = clears the visible Command Prompt screen. No file or folder is deleted; only the text on the screen is cleaned up.'
+  warning: '`cls` does not delete any file or folder and does not break anything. Only the text on the screen is cleared, and the prompt comes back at the top.'
+  meaning: 'After `cls`, only the prompt is left at the top of the screen. The current directory does not change either.'
+  usage: 'When the output of earlier commands has made the screen messy and you want to focus.'
+  syntax: 'cls'
+  examples:
+    - c: 'cls'
+      d: 'Clear the screen.'
+    - c: 'dir & cls'
+      d: 'Run two commands one after the other (`&` comes in lesson 31).'
+      noTry: true
+  mistakes:
+    - 'Thinking `cls` deletes files. No, it only clears the screen.'
+    - 'Typing `clear`: that command belongs to Linux.'
+  tip: 'Useful keys: ↑ and ↓ for earlier commands, Tab to complete names, Esc to clear the line you are typing. The Simulator also has ↑ and Tab buttons.'
+  practice:
+    - id: P15a
+      start: 'C:\Users\Student'
+      task: 'First look at the folder contents with `dir`, then clear the screen.'
+      multi: true
+      checks: [{type: cmd, value: cls}, {type: anyCmd, value: dir}]
+      hints:
+        - 'First put something on the screen with `dir`, then clean the screen with this lesson''s command (Clear Screen).'
+        - 'Two lines in order: line 1: `dir` to see the contents. Line 2: the three-letter command made from the letters of Clear Screen.'
+      answer: ['dir', 'cls']
+      explain: '`dir` prints the folder contents and `cls` (Clear Screen) clears all the text on the screen so only the prompt is left. Your files do not change.'
+  quiz:
+    - kind: tf
+      q: '`cls` deletes the files in the current folder.'
+      answer: false
+      explain: 'Only the screen is cleared.'
+    - kind: mcq
+      q: 'Which key do you press to bring back the previous command?'
+      options: ['↑ (up arrow)', 'Esc', 'Delete', 'F1']
+      answer: 0
+      explain: 'The up arrow brings back earlier commands one by one.'
+    - kind: mcq
+      q: 'After `cls`, what happens to the current directory?'
+      options: ['It stays the same', 'It goes to `C:\`', 'It goes to the Desktop', 'It gets deleted']
+      answer: 0
+      explain: '`cls` only clears the display.'
+  recap: '`cls` cleans the screen, not your files. ↑ previous command, Tab completes names.'
+
+- n: 16
+  term: 'help   /?'
+  fullForm: 'Help'
+  difficulty: 1
+  objective: 'Get help for any command on your own and read the help output.'
+  summary: '`help` shows the list of CMD commands. `command /?` shows the full help for that command.'
+  meaning: 'In the help text, parts inside `[ ]` are optional and `|` means “one of these”. For example, `DIR [/W] [/B]` means `/w` and `/b` are optional.'
+  usage: 'The most important skill of a CMD user: whenever you forget a switch, type `/?`.'
+  syntax: "help\nhelp command\ncommand /?"
+  demo:
+    cmds: ['mkdir /?']
+  examples:
+    - c: 'help'
+      d: 'A list of all commands with a one-line description.'
+    - c: 'copy /?'
+      d: 'The full help for `copy`.'
+    - c: 'help dir'
+      d: 'The same as `dir /?`.'
+  mistakes:
+    - 'Typing `-?` or `--help`: in CMD the correct form is `/?`.'
+  tip: 'The Windows help is in English; just look for the switches and the key words.'
+  practice:
+    - id: P16a
+      start: 'C:\Users\Student'
+      task: 'Show the list of CMD commands.'
+      checks: [{type: cmd, value: help}, {type: noArgs}]
+      hints:
+        - 'CMD has its own list of commands. The command is simply the English word for asking for assistance.'
+        - 'Just one part: what to do? (the word Help). No argument needed; if you add a command name after it, you see only the help for that command instead of the full list.'
+      answer: 'help'
+      explain: '`help` with no argument shows the list of CMD commands with a short description of each.'
+    - id: P16b
+      start: 'C:\Users\Student'
+      task: 'Show the help for the `copy` command.'
+      checks: [{type: any, of: [{type: switch, value: '/?', cmd: copy, anyRun: true}, {type: argIncludes, cmd: help, value: copy}]}]
+      hints:
+        - 'To see the help for a command, type the command name and put the help switch (`/?`) after it. (Another way: `help` followed by the command name.)'
+        - 'Two parts: what to do? (the name of the command you want help for, `copy`) How? (the help switch: `/` and a question mark), with a space between them.'
+      answer: 'copy /?'
+      explain: '`copy` is the command name and `/?` tells it to show its own help instead of copying.'
+  quiz:
+    - kind: mcq
+      q: 'In CMD help, what do `[ ]` around a part mean?'
+      options: ['That part is optional', 'That part is required', 'You must type the `[ ]` too', 'That part is outdated']
+      answer: 0
+      explain: 'Parts inside square brackets are optional.'
+    - kind: type
+      q: 'Show the help for the `dir` command.'
+      accept: ['dir /?', 'help dir']
+      explain: '`dir /?` or `help dir`'
+    - kind: tf
+      q: 'In CMD, `dir --help` shows the help.'
+      answer: false
+      explain: 'CMD uses `/?`.'
+  recap: '`help` = list of commands. `command /?` = help for that command. `[ ]` = optional.'
+
+- n: 17
+  term: '"quotes"'
+  fullForm: 'Spaces in names'
+  difficulty: 1
+  objective: 'Work correctly with names that contain spaces.'
+  summary: 'CMD treats a space as the border between parts of a command. If a file or folder name has a space, put it inside quotes `" "`.'
+  meaning: '`type shopping list.txt` means two separate files: `shopping` and `list.txt`. But `type "shopping list.txt"` means one file.'
+  usage: 'Folders like `Program Files` or `Summer 2026` and files like `shopping list.txt`.'
+  syntax: 'command "name with spaces"'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['type shopping list.txt', 'type "shopping list.txt"']
+  examples:
+    - c: 'cd "C:\Program Files"'
+      d: 'Go to a folder whose name has a space.'
+    - c: 'cd "Pictures\Summer 2026"'
+      at: 'C:\Users\Student'
+      d: 'A relative path with a space.'
+    - c: 'mkdir "My Notes"'
+      d: 'Create a folder whose name has a space.'
+  mistakes:
+    - '`mkdir My Notes` creates two separate folders: `My` and `Notes`.'
+    - 'Opening a quote and not closing it.'
+  tip: '`cd` is an exception and also understands `cd Program Files`, but it is better to always use quotes.'
+  daily: 'If you tell a courier “Rose Garden Lane”, they might think it is several addresses. Quotes say: this is one name.'
+  practice:
+    - id: P17a
+      start: 'C:\Users\Student\Pictures'
+      task: 'Go into the `Summer 2026` folder.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures\Summer 2026'}]
+      hints:
+        - 'The folder name has a space; CMD sees it as two separate pieces. Put the whole name inside quotes (`" "`) so it counts as one argument.'
+        - 'Two parts: what to do? (`cd`) Where to? (the whole folder name, that is Summer, a space and 2026, inside one pair of `"`).'
+      answer: 'cd "Summer 2026"'
+      explain: '`cd` changes the folder and `"Summer 2026"` is in quotes, so CMD sees it as one complete name, not two separate arguments.'
+    - id: P17b
+      start: 'C:\Users\Student\Desktop'
+      task: 'Display the contents of the file `shopping list.txt`.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'shopping list.txt'}]
+      hints:
+        - 'To see the contents of a file, use `type`. This file name has a space, so you must put it inside quotes.'
+        - 'Two parts: what to do? (`type`) On what? (the full file name with its extension, that is shopping list.txt, inside one pair of `"`).'
+      answer: 'type "shopping list.txt"'
+      explain: '`type` shows the contents of the file, and thanks to the quotes `"shopping list.txt"` counts as one complete name; without quotes, CMD would look for a file called `shopping`.'
+  quiz:
+    - kind: predict
+      q: 'How many folders does this command create?'
+      code: 'mkdir Old Photos'
+      options: ['2', '1', '0', 'An error']
+      answer: 0
+      explain: 'The space makes two separate names: `Old` and `Photos`.'
+    - kind: type
+      q: 'Create a folder called `Old Photos` (one folder).'
+      accept: ['mkdir "old photos"', 'md "old photos"']
+      show: 'mkdir "Old Photos"'
+      explain: 'Put the name inside quotes.'
+    - kind: fix
+      q: 'Why can''t this command find the file?'
+      code: 'type my notes.txt'
+      options: ['The name has a space and no quotes', '`type` only shows folders', 'The extension is wrong', 'You must use `dir`']
+      answer: 0
+      explain: 'Correct: `type "my notes.txt"`'
+  recap: 'A name with a space = inside `" "`. Without quotes, CMD sees each word separately.'
+
+- n: 18
+  term: mkdir
+  fullForm: 'Make Directory'
+  difficulty: 1
+  objective: 'Create a new folder, several folders, and nested folders.'
+  summary: '`mkdir` (or the shorter `md`) creates a new folder wherever you specify.'
+  meaning: 'With just a name, the folder is created in the current directory. With a full path, anywhere you like. Folders in between are created automatically too.'
+  usage: 'Preparing folders for a project, a backup, or for organizing files.'
+  syntax: 'mkdir [drive:]path'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['mkdir Restaurant', 'mkdir Restaurant', 'dir /b']
+  examples:
+    - c: 'mkdir Restaurant'
+      d: 'One folder in the current folder.'
+    - c: 'md Menu Orders'
+      d: 'Two folders: Menu and Orders.'
+    - c: 'mkdir Projects\Web\Images'
+      d: 'Three levels of folders with one command.'
+    - c: 'mkdir D:\Backup\2026'
+      d: 'Create a folder on another drive.'
+  mistakes:
+    - 'Creating a folder that already exists: error `A subdirectory or file ... already exists.`'
+    - 'Using characters that are not allowed, like `?` or `:`, in the name.'
+  tip: 'After creating it, check with `dir` that the folder was really created.'
+  restaurant: 'Setting up a new empty shelf in the kitchen for today''s orders.'
+  practice:
+    - id: P18a
+      start: 'C:\Users\Student\Documents'
+      task: 'You are inside Documents. Create a folder called `Restaurant`.'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Restaurant'}]
+      hints:
+        - 'To create a folder, use `mkdir` (Make Directory) and give the new folder''s name as the argument.'
+        - 'Two parts: what to do? (`mkdir`) What? (the new folder name: Restaurant). The folder is created inside the current directory, which is Documents.'
+      answer: 'mkdir Restaurant'
+      explain: '`mkdir` creates a folder and `Restaurant` is its name; because the path is relative, the folder is created inside `C:\Users\Student\Documents`.'
+    - id: P18b
+      start: 'C:\Users\Student\Documents'
+      task: 'Create the path `Projects\Web\Images` with one command (three nested folders).'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Projects\Web\Images'}]
+      hints:
+        - 'You don''t need to create the three folders one by one: if you give `mkdir` a full path, it creates all the folders along the way by itself.'
+        - 'Two parts: what to do? (`mkdir`) What? (a three-part path: `Projects`, then `Web`, then `Images`, with `\` between each).'
+      answer: 'mkdir Projects\Web\Images'
+      explain: '`mkdir Projects\Web\Images` creates every folder in this path that does not exist yet, in order and nested, with one command.'
+  quiz:
+    - kind: mcq
+      q: 'What is the short form of `mkdir`?'
+      options: ['md', 'mk', 'mdir', 'nd']
+      answer: 0
+      code_options: true
+      explain: '`md` does exactly the same thing.'
+    - kind: type
+      q: 'Create a folder called `Backup`.'
+      accept: ['mkdir backup', 'md backup']
+      explain: '`mkdir Backup`'
+    - kind: predict
+      q: 'The Work folder already exists. What is the output?'
+      code: 'mkdir Work'
+      options: ['A subdirectory or file Work already exists.', 'A folder Work2 is created', 'The old folder is deleted and created again', 'There is no output']
+      answer: 0
+      explain: 'CMD does not overwrite an existing folder.'
+    - kind: sim
+      q: 'Create the folders `Shop\2026` and `Shop\2027`.'
+      start: 'C:\Users\Student'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Shop\2026'}, {type: dirExists, path: 'C:\Users\Student\Shop\2027'}]
+      answer: 'mkdir Shop\2026 Shop\2027'
+      explain: '`mkdir` creates several paths at once and several levels in one go.'
+  recap: '`mkdir name` or `md name`. With a full path, the folders in between are created too.'
+
+- n: 19
+  term: echo
+  fullForm: 'Echo'
+  difficulty: 1
+  objective: 'Print any text you like and get ready for creating files.'
+  summary: '`echo` displays whatever text you write after it. `echo.` prints an empty line.'
+  meaning: 'In scripts, `echo` is used to show messages to the user. In lesson 28 you will see that with `>` you can write its output into a file.'
+  usage: 'Showing messages, creating simple text files (with `>`), and showing the values of variables.'
+  syntax: "echo message\necho."
+  demo:
+    cmds: ['echo Hello CMD Academy', 'echo.', 'echo Bye!']
+  examples:
+    - c: 'echo Welcome to my restaurant'
+      d: 'Display a sentence.'
+    - c: 'echo.'
+      d: 'An empty line.'
+    - c: 'echo'
+      d: 'With no text, it shows the echo status: `ECHO is on.`'
+  mistakes:
+    - 'A space between `echo` and the dot: `echo .` prints a dot, not an empty line.'
+    - 'Using quotes for no reason: `echo "Hi"` prints the quotes too.'
+  tip: '`echo` can print text in other languages too, but the commands themselves are always in English.'
+  practice:
+    - id: P19a
+      start: 'C:\Users\Student'
+      task: 'Print the sentence `Welcome to CMD Academy`.'
+      checks: [{type: cmd, value: echo}, {type: argIncludes, value: 'welcome to cmd academy'}]
+      hints:
+        - 'To print text, use `echo`. Whatever you write after it, even several words with spaces, is printed exactly as it is.'
+        - 'Two parts: what to do? (`echo`) What text? (the whole sentence Welcome to CMD Academy). No quotes needed; if you add them, the `"` is printed too.'
+      answer: 'echo Welcome to CMD Academy'
+      explain: '`echo` prints whatever comes after it on the screen, here the whole sentence `Welcome to CMD Academy`.'
+    - id: P19b
+      start: 'C:\Users\Student'
+      task: 'Print an empty line.'
+      checks: [{type: cmd, value: echo}, {type: noArgs}, {type: not, check: {type: lastOutputIncludes, value: 'ECHO is'}}]
+      hints:
+        - '`echo` with no text writes `ECHO is on.` instead of an empty line. For an empty line, put a small character right after `echo`, with no space.'
+        - 'One word: `echo` with a dot (`.`) attached to it. Don''t put a space between `echo` and the dot.'
+      answer: 'echo.'
+      explain: '`echo.` means “print nothing but an empty line”. The attached dot stops CMD from showing the status `ECHO is on.`'
+  quiz:
+    - kind: predict
+      q: 'What is the output of this command?'
+      code: 'echo "Hi"'
+      options: ['"Hi"', 'Hi', 'An error', 'An empty line']
+      answer: 0
+      code_options: true
+      explain: '`echo` prints the quotes too.'
+    - kind: mcq
+      q: 'Which command prints an empty line?'
+      options: ['echo.', 'echo', 'echo off', 'echo " "']
+      answer: 0
+      code_options: true
+      explain: '`echo` on its own shows the message `ECHO is on.`'
+    - kind: type
+      q: 'Print the word `Ready`.'
+      accept: ['echo ready']
+      show: 'echo Ready'
+      explain: '`echo Ready`'
+  recap: '`echo text` = print text. `echo.` = empty line.'
+
+- n: 20
+  term: type
+  fullForm: 'Type (show file)'
+  difficulty: 1
+  objective: 'Read the contents of text files in CMD.'
+  summary: '`type` prints the contents of a text file on the screen, without opening or changing it.'
+  meaning: 'It is good for text files like `.txt`, `.bat`, `.ini` and `.log`. For pictures or programs it shows unreadable characters.'
+  usage: 'Quickly reading notes, settings, logs, and later batch scripts.'
+  syntax: 'type [drive:][path]filename'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['type todo.txt']
+  examples:
+    - c: 'type todo.txt'
+      d: 'Show the contents of todo.txt.'
+    - c: 'type Documents\menu.txt'
+      at: 'C:\Users\Student'
+      d: 'Read a file in another folder with a relative path.'
+    - c: 'type C:\Windows\win.ini'
+      d: 'Read a file with an absolute path.'
+  mistakes:
+    - 'Leaving out the extension: `type todo` cannot find the file; the correct form is `type todo.txt`.'
+    - '`type` on a folder: error `Access is denied.`'
+  tip: 'If a file is very long, in lesson 34 we read it page by page with `more`.'
+  practice:
+    - id: P20a
+      start: 'C:\Users\Student\Documents'
+      task: 'Display the contents of the file `menu.txt`.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'menu.txt'}]
+      hints:
+        - 'To display the contents of a text file, use `type` and give it the full file name, including the extension.'
+        - 'Two parts: what to do? (`type`) On which file? (the name menu with the extension `.txt`). The file is in the current directory, so its name is enough.'
+      answer: 'type menu.txt'
+      explain: '`type` prints the file contents on the screen, and `menu.txt` is a file in this Documents folder.'
+    - id: P20b
+      start: 'C:\Users\Student'
+      task: 'Without going to the Desktop, display the contents of `notes.txt` inside Desktop.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'notes.txt'}, {type: cwd, value: 'C:\Users\Student'}]
+      hints:
+        - 'The file is inside the Desktop folder, but you are in `C:\Users\Student`. Instead of going to Desktop, give `type` a relative path.'
+        - 'Two parts: what to do? (`type`) On what? (path: the folder name `Desktop`, the separator `\`, then the file name `notes.txt`).'
+      answer: 'type Desktop\notes.txt'
+      explain: '`type` reads the file, and `Desktop\notes.txt` is counted from the current directory; so the file is displayed and you don''t move.'
+  quiz:
+    - kind: mcq
+      q: 'On which file does `type` give readable output?'
+      options: ['notes.txt', 'beach.jpg', 'setup.exe', 'song.mp3']
+      answer: 0
+      code_options: true
+      explain: '`type` is for text files.'
+    - kind: fix
+      q: 'The file `report.txt` exists, but this command gives an error. Why?'
+      code: "type report\nThe system cannot find the file specified."
+      options: ['The extension (`.txt`) is missing', '`type` is the wrong command', 'You must run `cd report`', 'The file is broken']
+      answer: 0
+      explain: 'You need the full file name: `type report.txt`'
+    - kind: type
+      q: 'Display the contents of `todo.txt`.'
+      accept: ['type todo.txt', 'type .\todo.txt']
+      explain: '`type todo.txt`'
+  recap: '`type file` = read a text file. Write the full name with the extension.'

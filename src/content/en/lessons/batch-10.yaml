@@ -1,0 +1,699 @@
+# Lessons 88–100 · Chapter 12: real projects and Windows repair
+
+- n: 88
+  term: 'organize.bat'
+  fullForm: 'File management script'
+  difficulty: 3
+  objective: 'Write a real script that sorts the files in a folder into separate folders by file type.'
+  summary: 'The Downloads folder is usually a mess. This script creates a folder for each file type and moves the files into it.'
+  meaning: 'The pattern: go to the folder with `cd /d`, create folders with `if not exist ... mkdir`, and move files with `move` and a wildcard. `>nul` hides extra messages, and `if exist *.pdf` prevents the “file not found” error.'
+  usage: 'Tidy up Downloads, the Desktop or your photo folder with one click.'
+  syntax: "cd /d \"%USERPROFILE%\\Downloads\"\nif not exist PDF mkdir PDF\nif exist *.pdf move *.pdf PDF >nul"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\organize.bat', content: "@echo off\nrem Sort Downloads into folders by type\ncd /d \"%USERPROFILE%\\Downloads\"\nfor %%t in (PDF Archives Programs) do if not exist %%t mkdir %%t\nif exist *.pdf move *.pdf PDF >nul\nif exist *.zip move *.zip Archives >nul\nif exist *.exe move *.exe Programs >nul\necho Downloads organized:\ntree /f\n"}]
+    cmds: ['organize.bat']
+  examples:
+    - c: 'if exist *.pdf move *.pdf PDF >nul'
+      d: 'Moves files only if there are any.'
+      noTry: true
+    - c: 'for %%t in (PDF Archives) do if not exist %%t mkdir %%t'
+      d: 'Creates several folders with one loop.'
+      noTry: true
+  mistakes:
+    - 'Forgetting `cd /d`: the script moves files around in the wrong folder.'
+    - 'Not testing the script on a test copy before running it on the real folder.'
+  tip: 'First run the script with `echo move ...` instead of `move ...` to see what it would do, then remove the `echo`.'
+  practice:
+    - id: P88a
+      batch: {file: 'organize.bat', starter: "@echo off\ncd /d \"%USERPROFILE%\\Downloads\"\n"}
+      task: 'Complete the script so that in Downloads, `.pdf` files are moved to the `PDF` folder, `.zip` files to `Archives` and `.exe` files to `Programs` (creating the folders if needed).'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'C:\Users\Student\Downloads\PDF\invoice.pdf'}, {type: fileExists, path: 'C:\Users\Student\Downloads\Archives\photos.zip'}, {type: fileExists, path: 'C:\Users\Student\Downloads\Programs\setup.exe'}]
+      hints: ['Each file type needs two steps: if the target folder doesn''t exist, create it with `if not exist ... mkdir`, then move the files into it with `move` and a wildcard (like `*.pdf`).', 'Repeat this pattern for three types: first create the folders `PDF`, `Archives` and `Programs`; then move `*.pdf` to `PDF`, `*.zip` to `Archives` and `*.exe` to `Programs` (with `>nul` for clean output). At the end you can add `echo Done`.']
+      answer: ['@echo off', 'cd /d "%USERPROFILE%\Downloads"', 'if not exist PDF mkdir PDF', 'if not exist Archives mkdir Archives', 'if not exist Programs mkdir Programs', 'move *.pdf PDF >nul', 'move *.zip Archives >nul', 'move *.exe Programs >nul', 'echo Done']
+      explain: '`cd /d` takes the script to Downloads, and `if not exist ... mkdir` creates each folder only when needed. Each `move` with a wildcard moves all files of one type into their folder, and `>nul` hides the extra messages.'
+  quiz:
+    - kind: mcq
+      q: 'Why does the script start with `cd /d "%USERPROFILE%\Downloads"`?'
+      options: ['To make sure it works in the right folder', 'To make it faster', 'Because move doesn''t work without it', 'To clear the screen']
+      answer: 0
+      explain: 'The script could be run from any folder.'
+    - kind: tf
+      q: 'Before running a file-moving script on the real folder, it''s better to test it on a test folder.'
+      answer: true
+      explain: 'Or put `echo` in front of the commands.'
+    - kind: order
+      q: 'Put the lines of this script in a logical order.'
+      items: ['@echo off', 'cd /d "%USERPROFILE%\Downloads"', 'if not exist PDF mkdir PDF', 'move *.pdf PDF >nul', 'echo Done']
+      explain: 'Setup → go to folder → create → move → report.'
+  recap: 'Sorting script: `cd /d` → create folders with `if not exist` → `move` with a wildcard.'
+
+- n: 89
+  term: 'backup.bat'
+  fullForm: 'Backup script'
+  difficulty: 3
+  objective: 'Write a reliable backup script: a dated target folder, copying, error checking and writing to a log.'
+  summary: 'A good backup: source and target in variables, create the target if needed, copy with `xcopy` or `robocopy`, check ERRORLEVEL and write the result to a log file.'
+  meaning: 'For a dated folder you use parts of `%DATE%`: `%DATE:~10,4%` is the year, `%DATE:~4,2%` the month, `%DATE:~7,2%` the day (with US date settings). `>>` appends the result of each run to the log.'
+  usage: 'A daily backup of Documents to another drive or a USB stick.'
+  syntax: "set \"src=%USERPROFILE%\\Documents\"\nset \"dest=D:\\Backup\\Docs\"\nxcopy \"%src%\" \"%dest%\" /s /i /y >nul\nif %errorlevel% equ 0 (echo OK >> log.txt)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\backup.bat', content: "@echo off\nset \"src=%USERPROFILE%\\Documents\"\nset \"stamp=%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%\"\nset \"dest=D:\\Backup\\%stamp%\"\necho Backing up %src% to %dest% ...\nxcopy \"%src%\" \"%dest%\" /s /i /y /q\nif %errorlevel% equ 0 (\n  echo %DATE% %TIME% Backup OK >> D:\\Backup\\backup.log\n  echo Backup OK\n) else (\n  echo %DATE% %TIME% Backup FAILED >> D:\\Backup\\backup.log\n  echo Backup FAILED\n)\n"}]
+    cmds: ['backup.bat', 'type D:\Backup\backup.log']
+  examples:
+    - c: 'set "stamp=%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%"'
+      d: 'The date in the form 2026-10-06.'
+      noTry: true
+    - c: 'robocopy "%src%" "%dest%" /e /r:1 /w:1'
+      d: 'The robocopy version (a code below 8 = success).'
+      noTry: true
+  mistakes:
+    - 'Not putting quotes around paths stored in variables.'
+    - 'Checking robocopy''s ERRORLEVEL like xcopy''s (for robocopy, use `geq 8` to detect an error).'
+  tip: 'Read the log after a few days; if you see a FAILED line, find out why.'
+  practice:
+    - id: P89a
+      batch: {file: 'backup.bat', starter: "@echo off\nset \"src=%USERPROFILE%\\Documents\"\nset \"dest=D:\\Backup\\Docs\"\n"}
+      task: 'Complete the script: it should copy Documents with all subfolders to `%dest%` and, if that succeeded, append the line `Backup OK` to the file `D:\Backup\backup.log`.'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'D:\Backup\Docs\Work\report.txt'}, {type: fileContains, path: 'D:\Backup\backup.log', value: 'Backup OK'}]
+      hints: ['You need two steps: 1) copy Documents with subfolders using `xcopy` from `%src%` to `%dest%`. 2) check for success with `%errorlevel%` and append a line to the log with `>>`.', 'Line 1: `xcopy` → `"%src%"` → `"%dest%"` → the switches `/s` (subfolders), `/i` (the target is a folder) and `/y` (no questions). Line 2: `if %errorlevel% equ 0` → `echo Backup OK` → `>>` to `D:\Backup\backup.log`.']
+      answer: ['@echo off', 'set "src=%USERPROFILE%\Documents"', 'set "dest=D:\Backup\Docs"', 'xcopy "%src%" "%dest%" /s /i /y >nul', 'if %errorlevel% equ 0 echo Backup OK >> D:\Backup\backup.log']
+      explain: '`xcopy "%src%" "%dest%" /s /i /y` copies all of Documents with subfolders without asking. If the copy succeeds, `%errorlevel%` is zero, and `echo Backup OK >> D:\Backup\backup.log` appends a line to the end of the log.'
+  quiz:
+    - kind: predict
+      q: 'If `%DATE%` is `Tue 10/06/2026`, what does this show?'
+      code: 'echo %DATE:~10,4%'
+      options: ['2026', '10/0', 'Tue ', '06/2']
+      answer: 0
+      code_options: true
+      explain: 'Starting at position 10, four characters.'
+    - kind: mcq
+      q: 'Which symbol do you use to append the result of each backup to the log?'
+      options: ['>>', '>', '|', '<']
+      answer: 0
+      code_options: true
+      explain: '`>` wipes the previous log.'
+    - kind: tf
+      q: 'After robocopy, an ERRORLEVEL of 1 means the backup failed.'
+      answer: false
+      explain: 'For robocopy, anything below 8 means success.'
+  recap: 'Backup = source and target variables + xcopy/robocopy + ERRORLEVEL check + `>>` to the log.'
+
+- n: 90
+  term: 'rename.bat'
+  fullForm: 'Batch rename script'
+  difficulty: 3
+  objective: 'Rename lots of files at once with a script and a fixed pattern.'
+  summary: 'With `for` over the files and `ren`, you can add a prefix or suffix to every file name, e.g. `beach.jpg` → `holiday_beach.jpg`.'
+  meaning: 'Technical note: if you rename files inside `for %%f in (*.jpg)`, the loop may see a renamed file again. Safer: first get the list with `for /f ... in (''dir /b *.jpg'')`, then rename.'
+  usage: 'Naming photos from a trip, adding a date to reports, making file names consistent.'
+  syntax: "for /f \"delims=\" %%f in ('dir /b *.jpg') do ren \"%%f\" \"prefix_%%f\""
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\rename.bat', content: "@echo off\ncd /d \"%USERPROFILE%\\Pictures\"\nfor /f \"delims=\" %%f in ('dir /b *.jpg') do ren \"%%f\" \"holiday_%%f\"\ndir /b\n"}]
+    cmds: ['rename.bat']
+  examples:
+    - c: 'ren *.txt *.bak'
+      d: 'Without a script: changes the extension of all of them.'
+      noTry: true
+    - c: 'for /f "delims=" %%f in (''dir /b *.jpg'') do ren "%%f" "2026_%%f"'
+      d: 'Adds a year prefix to all jpg files.'
+      noTry: true
+  mistakes:
+    - 'Not putting quotes around `%%f`, which causes errors for names with spaces.'
+    - 'Running the script twice and getting names like `holiday_holiday_beach.jpg`.'
+  tip: 'Before the real run, replace `ren` with `echo ren` to see the new names.'
+  practice:
+    - id: P90a
+      batch: {file: 'rename.bat', starter: "@echo off\ncd /d \"%USERPROFILE%\\Pictures\"\n"}
+      task: 'Add the prefix `holiday_` to the beginning of the name of every `.jpg` file in Pictures (like `holiday_beach.jpg`). The file `logo.png` must not change.'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'C:\Users\Student\Pictures\holiday_beach.jpg'}, {type: fileExists, path: 'C:\Users\Student\Pictures\holiday_cat.jpg'}, {type: fileNotExists, path: 'C:\Users\Student\Pictures\beach.jpg'}, {type: fileExists, path: 'C:\Users\Student\Pictures\logo.png'}, {type: fileNotExists, path: 'C:\Users\Student\Pictures\holiday_holiday_beach.jpg'}]
+      hints: ['First get a fixed list of the jpg files with `for /f` and the output of `dir /b *.jpg`, then in each round add the prefix `holiday_` to the file name with `ren`. This prevents files from being renamed twice.', 'The parts: `for /f "delims="` (the whole name, even with spaces) → `%%f` → `in` and the command in single quotes: `(''dir /b *.jpg'')` → `do ren` → the current name `"%%f"` → the new name = `holiday_` joined to `%%f`, in quotes.']
+      answer: ['@echo off', 'cd /d "%USERPROFILE%\Pictures"', "for /f \"delims=\" %%f in ('dir /b *.jpg') do ren \"%%f\" \"holiday_%%f\""]
+      explain: '`for /f` with `(''dir /b *.jpg'')` first gets the complete list of jpg files, so a renamed file doesn''t come up in the loop again. `ren "%%f" "holiday_%%f"` renames each file with the prefix, and `logo.png` isn''t touched because it isn''t a jpg.'
+  quiz:
+    - kind: predict
+      q: 'What does this line do to the file `cat.jpg`?'
+      code: 'ren "cat.jpg" "2026_cat.jpg"'
+      options: ['2026_cat.jpg', 'cat_2026.jpg', '2026.jpg', 'An error']
+      answer: 0
+      code_options: true
+      explain: 'The new name is exactly what you typed.'
+    - kind: mcq
+      q: 'Why is `for /f` with `dir /b` safer for renaming?'
+      options: ['The file list is fixed before renaming starts', 'It''s faster', 'It also picks up hidden files', 'You don''t need quotes']
+      answer: 0
+      explain: 'A renamed file doesn''t come up in the loop again.'
+    - kind: tf
+      q: 'To see the result without really changing anything, you can put `echo` in front of `ren`.'
+      answer: true
+      explain: 'The command is only printed.'
+  recap: 'Batch renaming: `for /f ... (''dir /b pattern'') do ren "%%f" "new_%%f"`. Test with `echo` first.'
+
+- n: 91
+  term: 'search.bat'
+  fullForm: 'Search script'
+  difficulty: 3
+  objective: 'Write a tool that asks the user for a word and searches for it in all files of a folder.'
+  summary: 'A combination of `set /p` to ask for the word, `findstr /s /i /m` to search and ERRORLEVEL for a “not found” message.'
+  meaning: '`findstr /m` shows only the file names. An exit code of 1 means nothing was found. By checking whether the input is empty, the script doesn''t run for no reason.'
+  usage: 'Quickly searching through notes, reports or the code of a project.'
+  syntax: "set /p word=Search for: \nfindstr /s /i /m \"%word%\" *.txt\nif errorlevel 1 echo Nothing found."
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['sales']
+    files: [{path: 'C:\Users\Student\Desktop\search.bat', content: "@echo off\nset /p word=Search for: \nif \"%word%\"==\"\" (echo Please type a word. & goto :eof)\ncd /d \"%USERPROFILE%\\Documents\"\necho Files that contain \"%word%\":\nfindstr /s /i /m \"%word%\" *.txt\nif errorlevel 1 echo Nothing found.\n"}]
+    cmds: ['search.bat']
+  examples:
+    - c: 'findstr /s /i /m "%word%" *.txt'
+      d: 'Names of the files that contain the word.'
+      noTry: true
+    - c: 'findstr /s /i /n "%word%" *.txt'
+      d: 'Shows the line and its line number.'
+      noTry: true
+  mistakes:
+    - 'Forgetting `/i`, so the word isn''t found when its capitalization differs.'
+    - 'Searching in the wrong folder; use `cd /d` first.'
+  tip: 'To search all kinds of text files, write `*.txt *.log *.bat`.'
+  practice:
+    - id: P91a
+      batch: {file: 'search.bat', starter: "@echo off\ncd /d \"%USERPROFILE%\\Documents\"\n"}
+      inputs: ['sales']
+      task: 'Write a script that asks the user for a word and shows the names of all `.txt` files (including subfolders) that contain it; if nothing is found, it should say `Nothing found`. (Test it with the word `sales`.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\search.bat', value: ['set /p', 'findstr']}, {type: outputIncludes, value: 'report1.txt'}]
+      hints: ['You need three steps: get the word from the user with `set /p`, search the `*.txt` files with `findstr`, and show a “not found” message with `if errorlevel`.', 'Line 1: `set /p word=` with a question text like `Search for: `. Line 2: `findstr` with the switches `/s` (subfolders), `/i` (ignore upper/lower case) and `/m` (file names only), then `"%word%"` and `*.txt`. Line 3: `if errorlevel 1` and `echo Nothing found`.']
+      answer: ['@echo off', 'cd /d "%USERPROFILE%\Documents"', 'set /p word=Search for: ', 'findstr /s /i /m "%word%" *.txt', 'if errorlevel 1 echo Nothing found']
+      explain: '`set /p` stores the user''s word in `word`, and `findstr /s /i /m "%word%" *.txt` shows the names of the files that contain it. If nothing is found, ERRORLEVEL is 1 and `Nothing found` is printed.'
+  quiz:
+    - kind: mcq
+      q: 'Which findstr switch shows only the file names?'
+      options: ['/m', '/n', '/s', '/i']
+      answer: 0
+      code_options: true
+      explain: '`/m`'
+    - kind: predict
+      q: 'The user just pressed Enter (empty input). What happens with this line?'
+      code: 'if "%word%"=="" (echo Please type a word. & goto :eof)'
+      options: ['The message is printed and the script ends', 'All files are found', 'It shows an error', 'The script asks again']
+      answer: 0
+      explain: 'The empty input was caught.'
+    - kind: tf
+      q: 'An exit code of 1 after findstr means the word was not found.'
+      answer: true
+      explain: '0 = found.'
+  recap: 'Search script: `set /p` → check for empty input → `findstr /s /i /m` → `if errorlevel 1`.'
+
+- n: 92
+  term: 'Automation'
+  fullForm: 'Logs and scheduling'
+  difficulty: 3
+  objective: 'Write a script that records its work with timestamps in a log, and get to know scheduling and `shutdown`.'
+  summary: 'Automation means a script works without you being there: it runs at a set time via Windows Task Scheduler and writes everything it did to a log with `%DATE% %TIME%`.'
+  meaning: 'An automatic script must not contain `pause` or questions. `shutdown /s /t 3600` shuts the computer down one hour later, and `shutdown /a` cancels it. Scheduling in Windows is done with Task Scheduler or the `schtasks` command.'
+  usage: 'Daily reports, automatically deleting temporary files, nightly backups, timed shutdowns.'
+  syntax: "echo %DATE% %TIME% - message >> log.txt\nshutdown /s /t 3600\nshutdown /a"
+  warning: 'On a real computer, `shutdown` destroys unsaved work. In the simulator nothing gets shut down.'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\daily.bat', content: "@echo off\nset \"log=%USERPROFILE%\\Desktop\\activity.log\"\necho %DATE% %TIME% - daily check started >> \"%log%\"\nipconfig | find \"IPv4\" >> \"%log%\"\nif exist \"%TEMP%\\*.tmp\" del /q \"%TEMP%\\*.tmp\"\necho %DATE% %TIME% - temp files cleaned >> \"%log%\"\ntype \"%log%\"\n"}]
+    cmds: ['daily.bat', 'shutdown /s /t 3600', 'shutdown /a']
+  examples:
+    - c: 'echo %DATE% %TIME% - done >> log.txt'
+      d: 'One log line with a timestamp.'
+      noTry: true
+    - c: 'shutdown /r /t 60'
+      d: 'Restart after one minute.'
+    - c: 'shutdown /a'
+      expectError: true
+      d: 'Cancel.'
+  mistakes:
+    - 'Writing the log with `>` and wiping the history.'
+    - 'Putting `pause` in an automatic script.'
+  tip: 'In Task Scheduler, the option “Run whether user is logged on or not” is useful for nightly scripts.'
+  practice:
+    - id: P92a
+      batch: {file: 'daily.bat', starter: "@echo off\n"}
+      task: 'Write a script that appends two lines to the file `%USERPROFILE%\Desktop\activity.log`: the date and time with the text `check done`, and the IPv4 line from the ipconfig output.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\activity.log', value: ['check done', '192.168.1.24']}, {type: fileContains, path: 'C:\Users\Student\Desktop\daily.bat', value: ['%date%', '>>']}]
+      hints: ['To append a line to the end of a file, use `>>`. Build the first line with `echo` and the variables `%DATE%` and `%TIME%`, and the second from the output of `ipconfig`, filtered with `find`.', 'Line 1: `echo %DATE% %TIME% - check done` → `>>` → the log path in quotes. Line 2: `ipconfig` → `|` → `find "IPv4"` → `>>` → the same path `"%USERPROFILE%\Desktop\activity.log"`.']
+      answer: ['@echo off', 'echo %DATE% %TIME% - check done >> "%USERPROFILE%\Desktop\activity.log"', 'ipconfig | find "IPv4" >> "%USERPROFILE%\Desktop\activity.log"']
+      explain: '`>>` appends each line to the end of `activity.log` without wiping the history. The first line writes the date and time with the text `check done`, and in the second line `find "IPv4"` picks just the IPv4 address line out of the `ipconfig` output.'
+    - id: P92b
+      start: 'C:\Users\Student'
+      task: 'Schedule a shutdown for one hour from now (3600 seconds) and cancel it right away.'
+      multi: true
+      checks: [{type: switch, value: '/s', cmd: shutdown, anyRun: true}, {type: switch, value: '/a', cmd: shutdown, anyRun: true}, {type: argIncludes, cmd: shutdown, value: '3600'}]
+      hints: ['The `shutdown` command shuts down with the switch `/s` and takes the delay in seconds with `/t`. There''s also a separate switch to cancel a scheduled shutdown (Abort).', 'Two commands in a row: 1) `shutdown` + `/s` + `/t` + the number `3600` (one hour). 2) `shutdown` again, but with the switch `/a` to cancel.']
+      answer: ['shutdown /s /t 3600', 'shutdown /a']
+      explain: '`shutdown /s /t 3600` schedules a shutdown for 3600 seconds (one hour) from now, and `shutdown /a` (Abort) cancels it. In the simulator nothing really shuts down.'
+  quiz:
+    - kind: mcq
+      q: 'Why must an automatic script not contain `pause`?'
+      options: ['Nobody is there to press a key, so the script keeps waiting', 'pause is forbidden in Task Scheduler', 'It wipes the log', 'It slows things down']
+      answer: 0
+      explain: 'The script would wait forever.'
+    - kind: type
+      q: 'Restart the computer in 10 minutes.'
+      accept: ['shutdown /r /t 600', 'shutdown -r -t 600', 'shutdown /t 600 /r']
+      show: 'shutdown /r /t 600'
+      explain: '600 seconds = 10 minutes.'
+    - kind: tf
+      q: '`shutdown /a` cancels a scheduled shutdown.'
+      answer: true
+      explain: 'Abort.'
+  recap: 'Automation = a script without questions + a log with `%DATE% %TIME%` and `>>` + scheduling. `shutdown /s /t n` and `/a`.'
+
+- n: 93
+  term: chkdsk
+  fullForm: 'File System · vol · Check Disk'
+  difficulty: 3
+  objective: 'Get to know file systems and check and repair a disk with chkdsk.'
+  summary: 'A file system is the way files are stored on a disk: NTFS for Windows, FAT32 and exFAT for USB sticks. `vol` shows a drive''s name and serial number. `chkdsk` finds file system errors and repairs them with `/f`.'
+  meaning: 'Without `/f`, `chkdsk` only reads (read-only). `/f` fixes errors, and `/r` also searches for bad sectors on the disk (slower). The drive Windows runs on (`C:`) is in use, so chkdsk offers to do the check after a restart. FAT32 does not accept files larger than 4GB.'
+  usage: 'A USB stick or disk that shows errors, files that won''t open, after a sudden power cut.'
+  syntax: "vol [drive:]\nchkdsk [drive:] [/f] [/r]"
+  warning: '`chkdsk /r` can take hours on a large disk, and you must not turn the computer off in the middle. Back up important data before repairing.'
+  demo:
+    admin: true
+    cmds: ['vol E:', 'chkdsk E:']
+  examples:
+    - c: 'vol'
+      d: 'The name and serial number of the current drive.'
+    - c: 'chkdsk E:'
+      d: 'A read-only check of the USB stick.'
+    - c: 'chkdsk E: /f'
+      d: 'Check and repair.'
+    - c: 'chkdsk C: /f'
+      d: 'For C:, scheduled for after a restart.'
+  mistakes:
+    - 'Running chkdsk in a normal CMD window; it needs administrator rights.'
+    - 'Pulling out the USB stick in the middle of chkdsk.'
+  tip: 'For a new USB stick, exFAT works with both Windows and Mac and has no 4GB limit.'
+  practice:
+    - id: P93a
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'Only check the USB stick (drive E), without repairing it.'
+      checks: [{type: anyCmd, value: chkdsk}, {type: argIncludes, cmd: chkdsk, value: 'e:'}, {type: lastOutputIncludes, value: 'FAT32'}, {type: not, check: {type: switch, value: '/f', cmd: chkdsk, anyRun: true}}]
+      hints: ['To check a drive''s file system, use `chkdsk`. Since we only want a check, no repair switch is needed.', 'The command has two parts: the command name `chkdsk` and then the drive letter with a colon (`E:`). Don''t write the switch `/f`.']
+      answer: 'chkdsk E:'
+      explain: 'Without `/f`, `chkdsk E:` only reads drive E and reports (read-only), so nothing changes. The output also shows its file system type (`FAT32`).'
+    - id: P93b
+      start: 'C:\Windows\System32'
+      admin: true
+      setup: {diskErrors: {E: true}}
+      task: 'The USB stick has a file system error. Check and repair it.'
+      checks: [{type: any, of: [{type: switch, value: '/f', cmd: chkdsk, anyRun: true}, {type: switch, value: '/r', cmd: chkdsk, anyRun: true}]}, {type: lastOutputIncludes, value: 'made corrections'}]
+      hints: ['You need `chkdsk` again, but this time it should also fix the errors, so add the repair switch.', 'The parts: `chkdsk` → the drive letter `E:` → the repair switch `/f` (from the word fix).']
+      answer: 'chkdsk E: /f'
+      explain: '`chkdsk E:` checks the USB drive, and `/f` allows it to fix file system errors. The message `made corrections` means the repair was done.'
+  quiz:
+    - kind: mcq
+      q: 'Which file system does not accept files larger than 4GB?'
+      options: ['FAT32', 'NTFS', 'exFAT', 'None of them']
+      answer: 0
+      explain: 'That''s the FAT32 limit.'
+    - kind: predict
+      q: 'In an administrator CMD: `chkdsk C: /f`. What happens?'
+      code: 'chkdsk C: /f'
+      options: ['It offers to check after a restart', 'It repairs immediately', 'C: gets erased', 'An Access denied error']
+      answer: 0
+      explain: 'C: is in use.'
+    - kind: tf
+      q: 'Without `/f`, `chkdsk` doesn''t change anything.'
+      answer: true
+      explain: 'It only reads.'
+  recap: 'NTFS for Windows, FAT32/exFAT for USB. `vol` = drive details. `chkdsk` checks, `/f` repairs, `/r` finds bad sectors (administrator).'
+
+- n: 94
+  term: 'sfc /scannow'
+  fullForm: 'System File Checker'
+  difficulty: 3
+  objective: 'Find and repair damaged Windows system files with sfc.'
+  summary: '`sfc /scannow` checks all protected Windows files and replaces damaged versions with healthy ones.'
+  meaning: 'Possible results: “did not find any integrity violations” means everything is fine, “found corrupt files and successfully repaired them” means it was repaired, “found corrupt files but was unable to fix some” means you must run DISM first (next lesson). It needs administrator rights.'
+  usage: 'When Windows shows strange errors, built-in Windows apps won''t open, or after a virus.'
+  syntax: "sfc /scannow\nsfc /verifyonly"
+  demo:
+    admin: true
+    setup: {sysCorrupt: true}
+    cmds: ['sfc /scannow', 'sfc /scannow']
+  examples:
+    - c: 'sfc /scannow'
+      d: 'Check and repair.'
+    - c: 'sfc /verifyonly'
+      d: 'Check only.'
+  mistakes:
+    - 'Running it in a normal CMD window.'
+    - 'Closing the window in the middle of the scan.'
+  tip: 'After a repair, restart the computer.'
+  practice:
+    - id: P94a
+      start: 'C:\Windows\System32'
+      admin: true
+      setup: {sysCorrupt: true}
+      task: 'Windows is acting strangely. Check and repair the system files.'
+      checks: [{type: anyCmd, value: sfc}, {type: lastOutputIncludes, value: 'successfully repaired'}]
+      hints: ['The System File Checker tool, short name `sfc`, checks and repairs Windows system files. CMD must be running as administrator (it is here).', 'The parts: the command `sfc` → then the switch that means “scan now”: `/scannow`.']
+      answer: 'sfc /scannow'
+      explain: '`sfc /scannow` checks all protected Windows files and replaces damaged versions with healthy ones. The message `successfully repaired` means the repair worked.'
+  quiz:
+    - kind: mcq
+      q: 'What does the message “did not find any integrity violations” mean?'
+      options: ['The system files are healthy', 'A repair was done', 'The disk is damaged', 'The scan didn''t finish']
+      answer: 0
+      explain: 'No problem was found.'
+    - kind: tf
+      q: '`sfc /scannow` runs in a normal CMD window (without administrator rights).'
+      answer: false
+      explain: 'Administrator rights are required.'
+    - kind: type
+      q: 'Only check the system files, without repairing them.'
+      accept: ['sfc /verifyonly']
+      explain: '`/verifyonly`'
+  recap: '`sfc /scannow` (administrator) = check and repair system files. Restart afterwards.'
+
+- n: 95
+  term: DISM
+  fullForm: 'Deployment Image Servicing and Management'
+  difficulty: 3
+  objective: 'Use DISM to fix the Windows repair source (Component Store) and know the right order of DISM and SFC.'
+  summary: '`sfc` repairs files from an internal backup copy. If that backup itself is damaged, DISM repairs it with the help of Windows Update.'
+  meaning: 'Three steps: `/checkhealth` (fast, status only), `/scanhealth` (full scan), `/restorehealth` (repair, needs internet). Recommended order when sfc couldn''t repair: first `dism ... /restorehealth`, then `sfc /scannow` again.'
+  usage: 'Deep Windows damage, failed updates, when sfc doesn''t succeed.'
+  syntax: "dism /online /cleanup-image /checkhealth\ndism /online /cleanup-image /scanhealth\ndism /online /cleanup-image /restorehealth"
+  demo:
+    admin: true
+    setup: {storeCorrupt: true}
+    cmds: ['dism /online /cleanup-image /checkhealth', 'dism /online /cleanup-image /restorehealth']
+  examples:
+    - c: 'dism /online /cleanup-image /checkhealth'
+      d: 'A quick check.'
+    - c: 'dism /online /cleanup-image /restorehealth'
+      d: 'Repair (internet required).'
+  mistakes:
+    - 'Running restorehealth without internet and getting the error `0x800f081f`.'
+    - 'Leaving out `/online` or `/cleanup-image`.'
+  tip: 'restorehealth may sit at one percentage for a while; be patient.'
+  practice:
+    - id: P95a
+      start: 'C:\Windows\System32'
+      admin: true
+      setup: {storeCorrupt: true}
+      task: 'With DISM, first quickly check the status of the Component Store, then repair it.'
+      multi: true
+      checks: [{type: switch, value: '/checkhealth', cmd: dism, anyRun: true}, {type: lastOutputIncludes, value: 'restore operation completed'}]
+      hints: ['Do two things in a row with `dism`: first a quick status check with `/checkhealth`, then a repair with `/restorehealth`. Both commands refer to the running Windows (`/online`) and the system image (`/cleanup-image`).', 'Each command has three fixed parts: `dism` → `/online` → `/cleanup-image`, plus a last part that differs: `/checkhealth` in the first command and `/restorehealth` in the second.']
+      answer: ['dism /online /cleanup-image /checkhealth', 'dism /online /cleanup-image /restorehealth']
+      explain: '`/online` means the Windows that is running right now, and `/cleanup-image` means working on the system image. `/checkhealth` just shows the status quickly, and `/restorehealth` repairs the repair source (Component Store) with the help of Windows Update.'
+  quiz:
+    - kind: order
+      q: 'sfc said it couldn''t repair all files. Put the steps in order.'
+      items: ['dism /online /cleanup-image /restorehealth', 'sfc /scannow', 'Restart']
+      explain: 'First fix the repair source, then sfc, then restart.'
+    - kind: mcq
+      q: 'Which DISM option just shows the status quickly?'
+      options: ['/checkhealth', '/restorehealth', '/scanhealth', '/scannow']
+      answer: 0
+      code_options: true
+      explain: '`/scannow` belongs to sfc.'
+    - kind: tf
+      q: '`/restorehealth` usually needs internet.'
+      answer: true
+      explain: 'It gets healthy files from Windows Update.'
+  recap: 'DISM fixes the repair source: checkhealth → scanhealth → restorehealth. Then `sfc /scannow`.'
+
+- n: 96
+  term: 'WinRE'
+  fullForm: 'Windows Recovery Environment'
+  difficulty: 3
+  objective: 'Know what the Recovery Environment is, how to get there and how to find your way around its CMD.'
+  summary: 'WinRE is a small, separate Windows for repairs. When the main Windows won''t start, you can open CMD from here, rescue files and repair the boot process.'
+  meaning: 'Ways to get there: hold Shift while clicking Restart; Settings → System → Recovery → Advanced startup; or automatically after two failed boots. Then: Troubleshoot → Advanced options → Command Prompt. Here the current drive is `X:`, and the Windows drive letter may not be `C:`; find it with `dir C:\` and `dir D:\`.'
+  usage: 'Windows won''t start, rescuing files before reinstalling, repairing the boot process.'
+  syntax: "X:\\Windows\\System32>\ndir C:\\\ncopy C:\\Users\\...\\file E:\\"
+  demo:
+    mode: winre
+    cmds: ['dir C:\ /b', 'whoami']
+  examples:
+    - c: 'dir C:\'
+      d: 'Is Windows on C:?'
+    - c: 'dir D:\'
+      d: 'The drive letters may have shifted.'
+    - c: 'notepad'
+      d: 'In a real WinRE, the Open dialog in Notepad works like a simple File Explorer.'
+      noTry: true
+  mistakes:
+    - 'Assuming Windows is always on `C:`.'
+    - 'Starting a repair before rescuing important files.'
+  tip: 'In the simulator, choose “Recovery” mode on the simulator page.'
+  practice:
+    - id: P96a
+      mode: winre
+      task: 'You''re in the Recovery Environment (drive X:). Switch to drive C and check whether Windows is there (find the Windows folder in the root).'
+      multi: true
+      checks: [{type: drive, value: C}, {type: lastOutputIncludes, value: 'Windows'}]
+      hints: ['In WinRE the current drive is `X:`. First you need to change the current drive to `C`, then look at the contents of its root to find the `Windows` folder.', 'Two steps: 1) type just the drive letter with a colon and press Enter; the prompt changes. 2) run the listing command `dir` and look for `Windows` in the output.']
+      answer: ['C:', 'dir']
+      explain: 'Typing `C:` changes the current drive from `X:` to `C:`. Then `dir` shows the contents of the current folder, and seeing the `Windows` folder means Windows is installed on this drive.'
+    - id: P96b
+      mode: winre
+      task: 'Before any repair, rescue the important file `C:\Users\Student\Documents\menu.txt` to the USB stick (`E:\`).'
+      checks: [{type: fileExists, path: 'E:\menu.txt'}]
+      hints: ['Use `copy` to rescue the file. Since you''re on drive `X:`, write the source with its full path (starting with `C:\`) and make the target the root of the USB stick.', 'The parts: `copy` → source `C:\Users\Student\Documents\menu.txt` → a space → target `E:\`.']
+      answer: 'copy C:\Users\Student\Documents\menu.txt E:\'
+      explain: '`copy` takes the file from the full source path and puts a copy in the root of the USB stick (`E:\`). The full path is needed because in WinRE the current drive is `X:`, not `C:`.'
+  quiz:
+    - kind: mcq
+      q: 'In the Recovery Environment CMD, which drive is usually the current one?'
+      options: ['X:', 'C:', 'A:', 'E:']
+      answer: 0
+      code_options: true
+      explain: 'X: is a temporary drive in memory.'
+    - kind: mcq
+      q: 'Which of these takes you to WinRE?'
+      options: ['Holding Shift and clicking Restart', 'Pressing F5 on the desktop', 'Running cls', 'Opening Task Manager']
+      answer: 0
+      explain: 'Or Settings → Recovery → Advanced startup.'
+    - kind: tf
+      q: 'In WinRE the Windows drive letter may differ from normal.'
+      answer: true
+      explain: 'Check with dir.'
+  recap: 'WinRE = the repair Windows. Shift+Restart. The current drive is X:; find the Windows drive with `dir`. Rescue files first.'
+
+- n: 97
+  term: bootrec
+  fullForm: 'bootrec · bcdboot'
+  difficulty: 3
+  objective: 'Repair boot problems (Windows won''t start) with the WinRE tools.'
+  summary: '`bootrec` has four main jobs: `/scanos` finds Windows installations, `/rebuildbcd` rebuilds the boot list, `/fixmbr` and `/fixboot` rewrite the disk''s startup areas. `bcdboot C:\Windows` recreates the boot files from scratch.'
+  meaning: 'The BCD (Boot Configuration Data) is a list that tells the computer where Windows is. On newer computers (UEFI), `bootrec /fixboot` often gives `Access is denied`, and `bcdboot` is the better way. These commands only exist in WinRE.'
+  usage: 'Errors like “Boot device not found”, “BOOTMGR is missing”, or the computer booting straight into the BIOS.'
+  syntax: "bootrec /scanos\nbootrec /rebuildbcd\nbootrec /fixmbr\nbcdboot C:\\Windows"
+  warning: 'These commands rewrite vital areas of the disk. On a real computer, only use them when Windows won''t boot, and after making a backup.'
+  demo:
+    mode: winre
+    inputs: ['Y']
+    cmds: ['bootrec /scanos', 'bootrec /rebuildbcd', 'bootrec /fixboot', 'bcdboot C:\Windows']
+  examples:
+    - c: 'bootrec /scanos'
+      d: 'Finds Windows installations.'
+    - c: 'bootrec /rebuildbcd'
+      d: 'Rebuilds the BCD (asks whether to add the installation).'
+    - c: 'bcdboot C:\Windows'
+      d: 'Creates the boot files; the main method on UEFI.'
+  mistakes:
+    - 'Running bootrec in normal Windows; it only exists in WinRE.'
+    - 'Giving bcdboot the wrong path (if Windows is on D:, use `bcdboot D:\Windows`).'
+  tip: 'The usual order: `/scanos` → `/rebuildbcd` → `bcdboot` if needed.'
+  practice:
+    - id: P97a
+      mode: winre
+      task: 'Windows won''t start. First, find all Windows installations on the disks.'
+      checks: [{type: anyCmd, value: bootrec}, {type: lastOutputIncludes, value: 'Total identified Windows installations: 1'}]
+      hints: ['The `bootrec` tool in WinRE is for repairing the boot process. The first step is just finding the installed Windows systems, with the “scan OS” option.', 'The parts: the command `bootrec` → the switch `/scanos` (scan = search, os = operating system).']
+      answer: 'bootrec /scanos'
+      explain: '`bootrec /scanos` searches all disks for Windows installations and reports how many there are. This step doesn''t change anything; it only shows where Windows is.'
+    - id: P97b
+      mode: winre
+      inputs: ['Y']
+      task: 'Rebuild the boot list (BCD) and add the Windows installation that was found.'
+      checks: [{type: switch, value: '/rebuildbcd', cmd: bootrec, anyRun: true}, {type: lastOutputIncludes, value: 'completed successfully'}]
+      hints: ['The boot list is the BCD. Do this with `bootrec` and the option that rebuilds the BCD from scratch.', 'The parts: `bootrec` → the switch `/rebuildbcd`. When it asks whether to add the Windows installation it found, press `Y`.']
+      answer: 'bootrec /rebuildbcd'
+      explain: '`bootrec /rebuildbcd` searches the disks and adds the Windows installations it finds to the boot list (BCD). Answering `Y` adds it, and the message `completed successfully` is shown.'
+  quiz:
+    - kind: mcq
+      q: 'On a UEFI computer where `bootrec /fixboot` gives an Access denied error, what is the best alternative?'
+      options: ['bcdboot C:\Windows', 'format C:', 'chkdsk /r', 'sfc /scannow']
+      answer: 0
+      code_options: true
+      explain: 'bcdboot creates the boot files.'
+    - kind: tf
+      q: '`bootrec` also runs in the normal Windows CMD.'
+      answer: false
+      explain: 'Only in WinRE.'
+    - kind: order
+      q: 'Put the usual BCD repair steps in order.'
+      items: ['bootrec /scanos', 'bootrec /rebuildbcd', 'Restart and test']
+      explain: 'Find, rebuild, test.'
+  recap: 'WinRE: `bootrec /scanos` → `/rebuildbcd`. On UEFI: `bcdboot C:\Windows`.'
+
+- n: 98
+  term: diskpart
+  fullForm: 'diskpart · format'
+  difficulty: 3
+  objective: 'View the structure of disks and partitions with diskpart and prepare a USB stick from scratch, with full attention to safety.'
+  summary: '`diskpart` is a separate environment with the prompt `DISKPART>`. First `list disk`, then `select disk n`, and then all actions happen on that disk. `format` in CMD erases a drive and prepares it.'
+  meaning: 'Read-only commands: `list disk`, `list volume`, `list partition`, `detail disk`. Dangerous commands: `clean` (erases everything on the disk), `delete partition`, `format`. Preparing a USB stick: `select disk 1` → `clean` → `create partition primary` → `format fs=ntfs quick label=NAME` → `assign`.'
+  usage: 'Preparing a new USB stick or hard drive, seeing hidden partitions (EFI, Recovery), fixing a USB stick that doesn''t work properly.'
+  syntax: "diskpart\nDISKPART> list disk\nDISKPART> select disk 1\nDISKPART> clean\nformat E: /fs:ntfs /q"
+  warning: 'The most important rule: before `clean`, always run `list disk` and use the size to make sure the right disk is selected. Selecting the wrong one means completely erasing your main hard drive. Be extremely careful on a real computer.'
+  demo:
+    admin: true
+    inputs: ['list disk', 'select disk 1', 'list partition', 'list volume', 'exit']
+    cmds: ['diskpart']
+  examples:
+    - c: 'diskpart'
+      d: 'Enters diskpart (administrator).'
+    - c: 'format E: /fs:exfat /q /v:USB'
+      d: 'Quick format of a USB stick with exFAT.'
+      noTry: true
+  mistakes:
+    - '`select disk 0` and `clean` instead of the USB disk: Windows gets erased.'
+    - 'Forgetting `assign`: the disk is ready but doesn''t show up in File Explorer.'
+  tip: 'In the simulator, Windows doesn''t allow `clean` on the system disk (just like in reality), but it really (virtually) erases the USB disk. “Reset” brings everything back.'
+  practice:
+    - id: P98a
+      start: 'C:\Windows\System32'
+      admin: true
+      inputs: ['list disk', 'list volume', 'exit']
+      task: 'Enter diskpart, view the list of disks and volumes, and exit. (Don''t change anything.)'
+      checks: [{type: anyCmd, value: diskpart}, {type: dpUsed, value: 'list disk'}, {type: dpUsed, value: 'list vol'}, {type: driveExists, value: E}]
+      hints: ['First enter the diskpart environment with `diskpart`. Inside it the prompt changes to `DISKPART>` and you can use the read-only `list` commands.', 'At the `DISKPART>` prompt, in order: `list disk` (list of disks) → `list volume` (list of volumes) → `exit` (leave). Don''t use any `select` or `clean` command.']
+      answer: 'diskpart'
+      explain: '`diskpart` opens the disk management environment; `list disk` and `list volume` only show disks and volumes and don''t change anything. `exit` leaves diskpart and returns to CMD.'
+    - id: P98b
+      start: 'C:\Windows\System32'
+      admin: true
+      inputs: ['list disk', 'select disk 1', 'clean', 'create partition primary', 'format fs=ntfs quick label=Backup', 'assign letter=F', 'exit']
+      task: 'The USB stick (disk 1, 14GB) is broken. Use diskpart to erase it completely, create a partition, format it with NTFS and the name `Backup`, and give it the letter `F`.'
+      checks: [{type: driveExists, value: F}, {type: driveLabel, drive: F, value: Backup}, {type: dpUsed, value: 'select disk 1'}]
+      hints: ['After entering with `diskpart`, first look at the disks and make sure which one is the USB stick (14GB). Then select that disk, erase it, partition it, format it and give it a letter.', 'The order at `DISKPART>`: `list disk` → `select disk 1` → `clean` → `create partition primary` → `format` with `fs=ntfs`, `quick` and `label=Backup` → `assign letter=F` → `exit`.']
+      answer: 'diskpart'
+      explain: '`select disk 1` selects the USB stick, `clean` erases everything on it, and `create partition primary` creates a partition. `format fs=ntfs quick label=Backup` prepares it with NTFS and the name `Backup`, and `assign letter=F` gives it the letter `F` so it shows up in File Explorer.'
+  quiz:
+    - kind: order
+      q: 'Put the steps for preparing a USB stick in diskpart in order.'
+      items: ['list disk', 'select disk 1', 'clean', 'create partition primary', 'format fs=ntfs quick', 'assign']
+      explain: 'View → select → erase → create → format → assign a letter.'
+    - kind: mcq
+      q: 'What is the most important thing to do before `clean`?'
+      options: ['Use list disk to make sure the right disk is selected', 'Restart', 'Run sfc', 'Close all programs']
+      answer: 0
+      explain: 'clean on the wrong disk is a disaster.'
+    - kind: tf
+      q: '`format E: /q` erases all data on drive E.'
+      answer: true
+      explain: 'A quick format also makes the data inaccessible.'
+  recap: 'diskpart: list → select → (carefully) clean → create → format → assign. Always run `list disk` first.'
+
+- n: 99
+  term: 'Troubleshooting'
+  fullForm: 'A basic Windows troubleshooting workflow'
+  difficulty: 3
+  objective: 'Have a systematic process for troubleshooting the most common Windows problems.'
+  summary: 'Good troubleshooting isn''t guessing: define the problem precisely, gather information, start with the simplest cause, make one change at a time and check the result.'
+  meaning: 'The big picture: slowness → `tasklist` (memory), `taskkill` for a frozen program. Internet → the process from lesson 61. Printer → `sc query spooler` and restart the service. System errors → `dism` and `sfc`. Disk errors → `chkdsk`. Windows won''t start → WinRE, rescue files, `bootrec`.'
+  usage: 'Tech support for yourself, your family or your workplace.'
+  syntax: "tasklist /fi \"memusage gt 100000\"\nsc query spooler\nipconfig & ping 8.8.8.8\nsfc /scannow"
+  demo:
+    admin: true
+    cmds: ['tasklist /fi "status eq not responding"', 'sc query spooler | find "STATE"', 'ping -n 1 8.8.8.8']
+  examples:
+    - c: 'tasklist /fi "status eq not responding"'
+      d: 'Frozen programs.'
+    - c: 'systeminfo | find "Boot Time"'
+      d: 'Has the computer been restarted recently?'
+    - c: 'dir C:\ | find "bytes free"'
+      d: 'Free space on C:.'
+  mistakes:
+    - 'Changing several things at once; then you don''t know which one fixed the problem.'
+    - 'Going straight to heavy tools (format, reinstalling).'
+  tip: 'Write down everything you did (even with `>>` into a file); if the problem comes back, you know where to start.'
+  practice:
+    - id: P99a
+      start: 'C:\Windows\System32'
+      admin: true
+      task: 'A user says: “The computer is slow and the printer won''t print.” Find and close the program that isn''t responding, and restart the `Spooler` service.'
+      multi: true
+      checks: [{type: procGone, value: 'Spotify.exe'}, {type: serviceState, name: Spooler, value: RUNNING}, {type: any, of: [{type: argIncludes, cmd: net, value: 'stop'}, {type: argIncludes, cmd: sc, value: 'stop'}]}, {type: anyCmd, value: tasklist}]
+      hints: ['Solve the two problems one by one: 1) use `tasklist` with the filter `/fi` to find the program that isn''t responding (status not responding) and close it with `taskkill`. 2) stop the print service (`Spooler`) with `net` and start it again.', 'The order: `tasklist /fi` with the filter `"status eq not responding"` → read the program name in the output → `taskkill /im` + that program''s name + `/f` → `net stop spooler` → `net start spooler`.']
+      answer: ['tasklist /fi "status eq not responding"', 'taskkill /im Spotify.exe /f', 'net stop spooler', 'net start spooler']
+      explain: '`tasklist /fi "status eq not responding"` shows only frozen programs (here `Spotify.exe`), and `taskkill /im Spotify.exe /f` forces it to close. `net stop spooler` followed by `net start spooler` restarts the print service so the stuck queue is cleared.'
+  quiz:
+    - kind: order
+      q: 'Put the general troubleshooting process in order.'
+      items: ['Define the problem precisely', 'Gather information', 'Try the simplest cause', 'Check the result and write it down']
+      explain: 'Define → gather information → simple test → check.'
+    - kind: mcq
+      q: 'The printer won''t print and the print queue is stuck. What''s a good first command?'
+      options: ['sc query spooler', 'format C:', 'bootrec /fixmbr', 'diskpart']
+      answer: 0
+      code_options: true
+      explain: 'Check the status of the print service.'
+    - kind: tf
+      q: 'It''s best to make only one change at each step.'
+      answer: true
+      explain: 'So you know which change fixed the problem.'
+  recap: 'Define the problem → gather information → simplest cause → one change at a time → check and write it down.'
+
+- n: 100
+  term: 'toolbox.bat'
+  fullForm: 'Final project'
+  difficulty: 3
+  objective: 'Combine everything you''ve learned into one complete tool with a menu.'
+  summary: 'The final project is a “toolbox”: a menu with `choice` that shows system information, backs up Documents, deletes temporary files and exits.'
+  meaning: 'This project uses variables, `choice` and `if errorlevel`, labels and `goto`, `call :function`, `xcopy`, `del` with a wildcard, `>>` for the log and `if exist`. Write and test each part separately, then put them together.'
+  usage: 'A real tool you can keep on your own computer and extend.'
+  syntax: ":menu\nchoice /c 1234 /m \"Choose\"\nif errorlevel 4 goto end\n...\ncall :log \"message\""
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['1', '4']
+    files: [{path: 'C:\Users\Student\Desktop\toolbox.bat', content: "@echo off\ntitle CMD Academy Toolbox\nset \"log=%USERPROFILE%\\Desktop\\toolbox.log\"\n:menu\necho.\necho ===== TOOLBOX =====\necho 1. System info\necho 2. Backup Documents\necho 3. Clean temp files\necho 4. Quit\nchoice /c 1234 /m \"Choose\"\nif errorlevel 4 goto end\nif errorlevel 3 goto clean\nif errorlevel 2 goto backup\n:info\necho Computer: %COMPUTERNAME%   User: %USERNAME%\nipconfig | find \"IPv4\"\ncall :log \"info shown\"\ngoto menu\n:backup\nxcopy \"%USERPROFILE%\\Documents\" \"D:\\Backup\\Documents\" /s /i /y /q\ncall :log \"backup done\"\ngoto menu\n:clean\nif exist \"%TEMP%\\*.tmp\" del /q \"%TEMP%\\*.tmp\"\necho Temp files cleaned.\ncall :log \"temp cleaned\"\ngoto menu\n:end\necho Bye!\ngoto :eof\n\n:log\necho %DATE% %TIME% - %~1 >> \"%log%\"\nexit /b\n"}]
+    cmds: ['toolbox.bat']
+  examples:
+    - c: 'call :log "backup done"'
+      d: 'A function for logging.'
+      noTry: true
+    - c: 'title CMD Academy Toolbox'
+      d: 'The window title.'
+  mistakes:
+    - 'Writing everything at once and then not being able to find the error; build it step by step.'
+    - 'Forgetting `goto menu` at the end of each section.'
+  tip: 'When you''re done, add a new option of your own, for example “5. Ping Google”.'
+  practice:
+    - id: P100a
+      batch: {file: 'toolbox.bat', starter: "@echo off\n:menu\necho 1. System info\necho 2. Backup Documents\necho 3. Clean temp files\necho 4. Quit\nchoice /c 1234 /m \"Choose\"\n"}
+      inputs: ['1', '2', '3', '4']
+      task: 'Complete the toolbox menu: 1 shows the computer name (`%COMPUTERNAME%`) and the IPv4 line, 2 copies the Documents folder with subfolders to `D:\Backup\Documents`, 3 deletes all `*.tmp` files in `%TEMP%`, and 4 exits with the message `Bye!`. After each option, return to the menu. (Try 1, 2, 3 and then 4.)'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['ACADEMY-PC', '192.168.1.24', 'Bye!']}, {type: fileExists, path: 'D:\Backup\Documents\Work\report.txt'}, {type: countFiles, path: 'C:\Users\Student\AppData\Local\Temp\*.tmp', value: 0}, {type: fileContains, path: 'C:\Users\Student\Desktop\toolbox.bat', value: ['goto menu', 'errorlevel']}]
+      hints: ['After `choice`, the number of the chosen option is in ERRORLEVEL. Use `if errorlevel` and `goto` to jump to each section''s label; since `if errorlevel n` means “n or higher”, write the conditions from 4 down to 2. Each section must return to the menu with `goto menu`.', 'Structure: three `if errorlevel` lines (4 → `end`, 3 → `clean`, 2 → `backup`) → the info section right below them (`echo` with `%COMPUTERNAME%`, `ipconfig | find "IPv4"`, `goto menu`) → `:backup` with `xcopy` and `/s /i /y` and `goto menu` → `:clean` with `del /q` on `"%TEMP%\*.tmp"` and `goto menu` → `:end` with `echo Bye!`.']
+      answer: ['@echo off', ':menu', 'echo 1. System info', 'echo 2. Backup Documents', 'echo 3. Clean temp files', 'echo 4. Quit', 'choice /c 1234 /m "Choose"', 'if errorlevel 4 goto end', 'if errorlevel 3 goto clean', 'if errorlevel 2 goto backup', 'echo Computer: %COMPUTERNAME%', 'ipconfig | find "IPv4"', 'goto menu', ':backup', 'xcopy "%USERPROFILE%\Documents" "D:\Backup\Documents" /s /i /y /q', 'goto menu', ':clean', 'del /q "%TEMP%\*.tmp"', 'echo Temp files cleaned.', 'goto menu', ':end', 'echo Bye!']
+      explain: 'The `if errorlevel` conditions, from highest to lowest, send each option to the right label, and option 1 falls straight through to the info section below them. `xcopy ... /s /i /y` makes the backup, `del /q "%TEMP%\*.tmp"` deletes the temporary files without asking, and `goto menu` at the end of each section shows the menu again.'
+  quiz:
+    - kind: order
+      q: 'Put the structure of each menu section in order.'
+      items: [':backup', 'xcopy ... /s /i /y', 'call :log "backup done"', 'goto menu']
+      explain: 'Label → task → log → back to the menu.'
+    - kind: mcq
+      q: 'What happens if you forget `goto menu` at the end of the info section?'
+      options: ['Execution continues into the next section (backup)', 'The script shows an error', 'The menu is shown again', 'Nothing']
+      answer: 0
+      explain: 'Batch keeps going line by line.'
+    - kind: tf
+      q: 'It''s best to build a big project section by section and test each section separately.'
+      answer: true
+      explain: 'That makes finding errors easier.'
+  recap: 'Congratulations! You can now work with CMD, manage files and networks, troubleshoot Windows and write batch scripts. Keep going: solve the challenges and build your own tool.'

@@ -1,0 +1,602 @@
+# Lessons 78–87 · Chapter 11: logic, loops and menus
+
+- n: 78
+  term: if
+  fullForm: 'if (compare text)'
+  difficulty: 3
+  objective: 'Im Skript anhand eines Vergleichs zweier Texte eine Entscheidung treffen.'
+  summary: '`if "A"=="B" Befehl` führt den Befehl (Command) nur aus, wenn beide Seiten gleich sind. `/i` ignoriert Groß- und Kleinschreibung, und `not` kehrt die Bedingung um.'
+  meaning: 'Die Anführungszeichen (Quotes) um beide Seiten sind wichtig: Ist die Variable leer, wird aus `if %x%==yes` ein `if ==yes`, und das ergibt einen Fehler. Aus `if "%x%"=="yes"` wird dagegen `if ""=="yes"` – und das funktioniert korrekt.'
+  usage: 'Die Antwort des Benutzers prüfen, prüfen, ob ein Argument übergeben wurde, verschiedene Teile des Skripts ausführen.'
+  syntax: "if \"%x%\"==\"text\" command\nif /i \"%x%\"==\"y\" command\nif not \"%1\"==\"\" command"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['Y']
+    files: [{path: 'C:\Users\Student\Desktop\like.bat', content: "@echo off\nset /p answer=Do you like CMD? (y/n) \nif /i \"%answer%\"==\"y\" echo Great!\nif /i not \"%answer%\"==\"y\" echo Maybe later.\n"}]
+    cmds: ['like.bat']
+  examples:
+    - c: 'if "%1"=="" echo No name given'
+      d: 'Prüft, ob das Argument leer ist.'
+      noTry: true
+    - c: 'if /i "%answer%"=="yes" echo OK'
+      d: 'yes und YES werden beide akzeptiert.'
+      noTry: true
+  mistakes:
+    - 'Die Anführungszeichen weglassen – dann kommt bei leerer Variable der Fehler `was unexpected at this time.`'
+    - 'Nur ein `=` verwenden; zum Vergleichen braucht man `==`.'
+  tip: 'Wenn nach der Bedingung mehrere Befehle nötig sind, setze sie in Klammern `( )` (nächste Lektion).'
+  practice:
+    - id: P78a
+      batch: {file: 'like.bat', starter: "@echo off\nset /p answer=Do you like CMD? (y/n) \n"}
+      inputs: ['Y']
+      task: 'Das Skript fragt den Benutzer, ob er CMD mag. Wenn die Antwort `y` oder `Y` ist, gib `Great!` aus. (Führe es aus und tippe `y`.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\like.bat', value: ['if', '/i']}, {type: outputIncludes, value: 'Great!'}]
+      hints: ['Du musst die Antwort des Benutzers, die in der Variable `answer` gespeichert ist, mit `y` vergleichen; dafür nimmst du `if`. Weil auch ein großes `Y` akzeptiert werden soll, brauchst du den Switch (Schalter) `/i`.', 'Füge am Ende des Skripts eine Zeile mit diesen Teilen hinzu: `if /i` → die beiden Vergleichsseiten in Anführungszeichen, also `"%answer%"` und `"y"`, mit `==` dazwischen → zum Schluss der Befehl, der ausgeführt werden soll: `echo` mit dem Text `Great!`.']
+      answer: ['@echo off', 'set /p answer=Do you like CMD? (y/n) ', 'if /i "%answer%"=="y" echo Great!']
+      explain: '`if /i "%answer%"=="y"` vergleicht die Antwort des Benutzers ohne Rücksicht auf Groß- und Kleinschreibung mit `y`, und wenn beide gleich sind, wird `echo Great!` ausgeführt. Die Anführungszeichen verhindern außerdem einen Fehler, wenn die Antwort leer ist.'
+    - id: P78b
+      batch: {file: 'hello.bat', starter: "@echo off\n", args: ''}
+      task: 'Schreibe ein Skript, das die Meldung `Please give a name` anzeigt, wenn es ohne Argument ausgeführt wird. (Führe es ohne Argument aus.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\hello.bat', value: ['if', '%1']}, {type: outputIncludes, value: 'Please give a name'}]
+      hints: ['Das erste Argument steht in `%1`. Wird das Skript ohne Argument ausgeführt, ist `%1` leer; prüfe also mit `if`, ob `%1` gleich „nichts“ ist.', 'Teile der Zeile: `if` → links `"%1"` → `==` → rechts ein leeres Paar Anführungszeichen `""` → danach `echo` mit der Meldung `Please give a name`.']
+      answer: ['@echo off', 'if "%1"=="" echo Please give a name']
+      explain: 'Wenn kein Argument übergeben wird, wird `"%1"` zu `""` und ist damit gleich `""` – also zeigt `echo` die Meldung an. Dank der Anführungszeichen funktioniert die Zeile auch mit leerem `%1` ohne Fehler.'
+  quiz:
+    - kind: fix
+      q: 'Wenn `%x%` leer ist, ergibt diese Zeile einen Fehler. Welche Korrektur ist richtig?'
+      code: 'if %x%==yes echo OK'
+      options: ['if "%x%"=="yes" echo OK', 'if %x%=yes echo OK', 'if (%x%)==yes echo OK', 'if x==yes echo OK']
+      answer: 0
+      code_options: true
+      explain: 'Anführungszeichen um beide Seiten.'
+    - kind: mcq
+      q: 'Was macht `/i` bei `if`?'
+      options: ['Es ignoriert Groß- und Kleinschreibung', 'Es kehrt die Bedingung um', 'Es vergleicht Zahlen', 'Es liest eine Eingabe ein']
+      answer: 0
+      explain: 'Ignore case.'
+    - kind: predict
+      q: '`answer` ist `NO`. Was wird ausgegeben?'
+      code: "if \"%answer%\"==\"no\" echo A\nif /i \"%answer%\"==\"no\" echo B"
+      options: ['B', 'A', 'A und B', 'Nichts']
+      answer: 0
+      explain: 'Nur mit `/i` gelten Groß- und Kleinbuchstaben als gleich.'
+  recap: '`if "%x%"=="Text" Befehl`. Immer Anführungszeichen. `/i` ignoriert Groß-/Kleinschreibung, `not` kehrt um.'
+
+- n: 79
+  term: 'if ... else'
+  fullForm: 'else · number comparisons'
+  difficulty: 3
+  objective: 'Mit `else` zwei Wege bauen und Zahlen vergleichen.'
+  summary: '`if Bedingung ( ... ) else ( ... )` führt den ersten Teil aus, wenn die Bedingung wahr ist, sonst den zweiten. Für Zahlen verwendest du `equ neq lss leq gtr geq`.'
+  meaning: '`) else (` muss in einer Zeile stehen. Operatoren: `equ` gleich, `neq` ungleich, `lss` kleiner, `leq` kleiner oder gleich, `gtr` größer, `geq` größer oder gleich. Sind beide Seiten Zahlen, wird numerisch verglichen.'
+  usage: 'Entscheidungen nach Alter, Anzahl der Dateien, Größe oder dem Ergebnis einer Berechnung.'
+  syntax: "if %n% geq 18 (\n  echo Adult\n) else (\n  echo Child\n)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['20']
+    files: [{path: 'C:\Users\Student\Desktop\age.bat', content: "@echo off\nset /p age=How old are you? \nif %age% geq 18 (\n  echo You are an adult.\n) else (\n  echo You are under 18.\n)\n"}]
+    cmds: ['age.bat']
+  examples:
+    - c: 'if %count% gtr 10 (echo Many) else (echo Few)'
+      d: 'Alles in einer Zeile.'
+      noTry: true
+    - c: 'if %errorlevel% neq 0 echo Something failed'
+      d: 'Fehler prüfen (Lektion 81).'
+      noTry: true
+  mistakes:
+    - '`else` in die nächste Zeile schreiben; `) else (` muss in einer Zeile stehen.'
+    - '`>` zum Vergleichen verwenden: `if %a% > 5` erstellt eine Datei namens 5! Nimm `gtr`.'
+  tip: 'Schreibe die Befehle in den Klammern eingerückt, damit das Skript gut lesbar bleibt.'
+  practice:
+    - id: P79a
+      batch: {file: 'age.bat', starter: "@echo off\nset /p age=How old are you? \n"}
+      inputs: ['20']
+      task: 'Wenn das eingegebene Alter `18` oder mehr ist, gib `Adult` aus, sonst `Child`. (Teste es mit `20`.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\age.bat', value: ['geq', 'else']}, {type: outputIncludes, value: 'Adult'}, {type: outputExcludes, value: 'Child'}]
+      hints: ['Du brauchst zwei Wege: einen für `18` oder mehr und einen für alles andere. Verwende `if ... else` und den Zahlenoperator „größer oder gleich“, also `geq`.', 'Aufbau: die Bedingung `if %age% geq 18` und eine offene Klammer, in der `echo Adult` steht → danach `) else (` in einer Zeile → im else-Teil der Befehl `echo Child` → und zum Schluss die Klammer mit `)` schließen.']
+      answer: ['@echo off', 'set /p age=How old are you? ', 'if %age% geq 18 (', '  echo Adult', ') else (', '  echo Child', ')']
+      explain: '`geq` bedeutet „größer oder gleich“, also ist die Bedingung bei `20` wahr und der erste Teil (`echo Adult`) wird ausgeführt. Der Teil nach `else` läuft nur, wenn das Alter kleiner als `18` ist.'
+    - id: P79b
+      batch: {file: 'stock.bat', starter: "@echo off\nset /a pizzas=5\n"}
+      task: 'Wenn die Anzahl der Pizzen (`pizzas`) größer als `3` ist, gib `Enough pizza` aus, sonst `Order more`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\stock.bat', value: ['gtr', 'else']}, {type: outputIncludes, value: 'Enough pizza'}]
+      hints: ['Vergleiche den Wert von `pizzas` mit der Zahl `3` und gib mit `if ... else` eine der beiden Meldungen aus. Der Operator für „größer als“ ist `gtr` (nicht `>`).', 'Teile in einer Zeile: `if` → `%pizzas%` → `gtr 3` → erste Klammer mit `echo Enough pizza` → `else` → zweite Klammer mit `echo Order more`.']
+      answer: ['@echo off', 'set /a pizzas=5', 'if %pizzas% gtr 3 (echo Enough pizza) else (echo Order more)']
+      explain: '`%pizzas%` ist `5`, und `5 gtr 3` ist wahr, also wird die erste Klammer ausgeführt und `Enough pizza` ausgegeben. Wäre die Anzahl `3` oder weniger, würde der `else`-Teil, also `Order more`, laufen.'
+  quiz:
+    - kind: mcq
+      q: 'Welcher Operator bedeutet „kleiner als“?'
+      options: ['lss', 'leq', 'gtr', 'neq']
+      answer: 0
+      code_options: true
+      explain: 'less.'
+    - kind: fix
+      q: 'Dieses Skript ergibt einen Fehler. Warum?'
+      code: "if %n% equ 1 (\n  echo one\n)\nelse (\n  echo other\n)"
+      options: ['`else` muss in derselben Zeile wie `)` stehen', '`equ` ist falsch', 'Die Klammern sind überflüssig', 'n ist nicht definiert']
+      answer: 0
+      explain: 'Richtig: `) else (`'
+    - kind: predict
+      q: 'Was wird ausgegeben?'
+      code: "set a=9\nif %a% lss 10 (echo small) else (echo big)"
+      options: ['small', 'big', 'small big', 'Fehler']
+      answer: 0
+      explain: '9 ist kleiner als 10.'
+  recap: '`if ... ( ) else ( )` mit `) else (` in einer Zeile. Zahlen: `equ neq lss leq gtr geq`.'
+
+- n: 80
+  term: 'if exist'
+  fullForm: 'if exist · if defined'
+  difficulty: 3
+  objective: 'Vor der Arbeit mit einer Datei oder einem Ordner prüfen, ob sie existieren.'
+  summary: '`if exist Pfad Befehl` führt den Befehl nur aus, wenn die Datei oder der Ordner existiert. `if not exist` ist das Gegenteil. `if defined name` prüft, ob eine Variable definiert ist.'
+  meaning: 'Ein sehr häufiges Muster: `if not exist "%dest%" mkdir "%dest%"` bedeutet „Wenn der Ordner nicht da ist, erstelle ihn“. Das verhindert den Fehler `already exists` und macht das Skript sicher.'
+  usage: 'Ordner nur bei Bedarf erstellen, nur kopieren, wenn die Datei da ist, freundliche Fehlermeldungen.'
+  syntax: "if exist file command\nif not exist folder mkdir folder\nif defined name command"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\check.bat', content: "@echo off\nif exist \"%USERPROFILE%\\Documents\\menu.txt\" (echo Menu found) else (echo No menu)\nif not exist Reports mkdir Reports\nif exist Reports echo Reports folder is ready\nif defined USERNAME echo USERNAME is defined\n"}]
+    cmds: ['check.bat', 'check.bat']
+  examples:
+    - c: 'if exist menu.txt type menu.txt'
+      d: 'Nur anzeigen, wenn die Datei da ist.'
+      noTry: true
+    - c: 'if not exist "D:\Backup" mkdir "D:\Backup"'
+      d: 'Nur bei Bedarf erstellen.'
+      noTry: true
+    - c: 'if exist *.tmp del *.tmp'
+      d: 'Funktioniert auch mit Platzhaltern (Wildcards).'
+      noTry: true
+  mistakes:
+    - 'Bei Pfaden mit Leerzeichen die Anführungszeichen vergessen.'
+    - '`%` bei `if defined` schreiben: Richtig ist `if defined name`, nicht `if defined %name%`.'
+  tip: 'Ein gutes Skript darf auch beim zweiten Ausführen keinen Fehler zeigen; `if not exist` sorgt dafür.'
+  practice:
+    - id: P80a
+      batch: {file: 'prepare.bat', starter: "@echo off\n"}
+      task: 'Schreibe ein Skript, das den Ordner `Reports` auf dem Desktop nur erstellt, wenn er noch nicht existiert, und danach `Ready` ausgibt. (Führe es zweimal aus; auch beim zweiten Mal darf kein Fehler kommen.)'
+      checks: [{type: ranBatch}, {type: dirExists, path: 'C:\Users\Student\Desktop\Reports'}, {type: fileContains, path: 'C:\Users\Student\Desktop\prepare.bat', value: 'if not exist'}, {type: outputIncludes, value: 'Ready'}, {type: outputExcludes, value: 'already exists'}]
+      hints: ['Der Ordner soll nur erstellt werden, wenn er nicht existiert; das erledigt `if not exist`, und zum Erstellen des Ordners nimmst du `mkdir`. Danach gibst du die Meldung aus.', 'Schreibe zwei Zeilen: Zeile 1 = `if not exist` + Ordnername `Reports` + der Befehl, der genau diesen Ordner mit `mkdir` erstellt. Zeile 2 = `echo` mit dem Text `Ready`.']
+      answer: ['@echo off', 'if not exist Reports mkdir Reports', 'echo Ready']
+      explain: '`if not exist Reports mkdir Reports` erstellt den Ordner nur, wenn er fehlt – deshalb gibt der zweite Durchlauf keinen `already exists`-Fehler. Danach zeigt `echo Ready` in beiden Durchläufen die Meldung an.'
+    - id: P80b
+      batch: {file: 'menu.bat', starter: "@echo off\n"}
+      task: 'Wenn die Datei `%USERPROFILE%\Documents\menu.txt` existiert, gib `Menu found` aus, sonst `No menu`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\menu.bat', value: 'if exist'}, {type: outputIncludes, value: 'Menu found'}]
+      hints: ['Prüfe mit `if exist`, ob eine Datei existiert, und weil zwei verschiedene Meldungen nötig sind, verwende auch `else`. Schreibe den Pfad in Anführungszeichen.', 'Teile: `if exist` → Pfad `"%USERPROFILE%\Documents\menu.txt"` → erste Klammer mit `echo Menu found` → `else` → zweite Klammer mit `echo No menu`.']
+      answer: ['@echo off', 'if exist "%USERPROFILE%\Documents\menu.txt" (echo Menu found) else (echo No menu)']
+      explain: '`if exist` prüft, ob die Datei `menu.txt` in Documents vorhanden ist; weil sie da ist, wird der erste Teil, also `Menu found`, ausgegeben. Gäbe es die Datei nicht, würde der `else`-Teil die Meldung `No menu` zeigen.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Zeile erstellt den Ordner Backup nur, wenn er noch nicht existiert?'
+      options: ['if not exist Backup mkdir Backup', 'if exist Backup mkdir Backup', 'mkdir Backup if not exist', 'if Backup==none mkdir Backup']
+      answer: 0
+      code_options: true
+      explain: '`if not exist`'
+    - kind: fix
+      q: 'Was ist richtig, um zu prüfen, ob die Variable `name` definiert ist?'
+      code: 'if defined %name% echo yes'
+      options: ['if defined name echo yes', 'if exist name echo yes', 'if "%name%" defined echo yes', 'if name echo yes']
+      answer: 0
+      code_options: true
+      explain: 'Variablenname ohne `%`.'
+    - kind: tf
+      q: '`if exist` funktioniert auch bei Ordnern.'
+      answer: true
+      explain: 'Datei oder Ordner.'
+  recap: '`if exist` / `if not exist` für Dateien und Ordner. `if defined name` für Variablen.'
+
+- n: 81
+  term: 'if errorlevel'
+  fullForm: 'Decisions from exit codes'
+  difficulty: 3
+  objective: 'Im Skript abhängig davon entscheiden, ob der vorherige Befehl erfolgreich war oder fehlgeschlagen ist.'
+  summary: 'Zwei Wege: `if %errorlevel% neq 0` (exakter Vergleich) und `if errorlevel 1` (bedeutet 1 **oder mehr**). `&&` und `||` sind die Kurzform dafür.'
+  meaning: 'Wichtig: `if errorlevel 1` ist für jeden Code wahr, der 1 oder größer ist. Darum schreibt man die Bedingungen in Menüs (Lektion 87) von groß nach klein.'
+  usage: 'Prüfen, ob ein Kopiervorgang geklappt hat, ob ein Text gefunden wurde, ob ein Server antwortet, und Fehler melden.'
+  syntax: "command\nif %errorlevel% neq 0 (echo failed)\nif errorlevel 1 (echo code 1 or more)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\check.bat', content: "@echo off\nfind \"Pizza\" \"%USERPROFILE%\\Documents\\menu.txt\" >nul\nif errorlevel 1 (echo No pizza today) else (echo We have pizza)\nping -n 1 10.0.0.99 >nul\nif %errorlevel% neq 0 echo Server 10.0.0.99 is down\n"}]
+    cmds: ['check.bat']
+  examples:
+    - c: 'if errorlevel 1 goto failed'
+      d: 'Sprung zum Fehlerteil.'
+      noTry: true
+    - c: 'xcopy a b /s /y >nul || echo Copy failed'
+      d: 'Kurzform mit `||`.'
+      noTry: true
+  mistakes:
+    - 'Glauben, dass `if errorlevel 1` genau 1 bedeutet.'
+    - 'Zwischen dem eigentlichen Befehl und der ERRORLEVEL-Prüfung noch einen anderen Befehl ausführen.'
+  tip: 'Für eine saubere Ausgabe versteckst du die Ausgabe des Befehls mit `>nul` und zeigst nur deine eigene Meldung.'
+  practice:
+    - id: P81a
+      batch: {file: 'pizza.bat', starter: "@echo off\nfind \"Pizza\" \"%USERPROFILE%\\Documents\\menu.txt\" >nul\n"}
+      task: 'Gib nach `find` mit Hilfe von ERRORLEVEL `No pizza` aus, wenn Pizza nicht gefunden wurde, und `We have pizza`, wenn sie gefunden wurde.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\pizza.bat', value: 'errorlevel'}, {type: outputIncludes, value: 'We have pizza'}, {type: outputExcludes, value: 'No pizza'}]
+      hints: ['`find` setzt ERRORLEVEL auf `0`, wenn der Text gefunden wird, und auf `1`, wenn nicht. Gib mit `if errorlevel` und `else` je nach diesem Code eine der beiden Meldungen aus.', 'Teile: `if errorlevel 1` (also: nicht gefunden) → erste Klammer mit `echo No pizza` → `else` → zweite Klammer mit `echo We have pizza`.']
+      answer: ['@echo off', 'find "Pizza" "%USERPROFILE%\Documents\menu.txt" >nul', 'if errorlevel 1 (echo No pizza) else (echo We have pizza)']
+      explain: '`if errorlevel 1` bedeutet „Code 1 oder mehr“, was bei `find` heißt: Text nicht gefunden. Weil Pizza auf der Speisekarte steht, ist der Code `0`, und der `else`-Teil, also `We have pizza`, wird ausgeführt.'
+    - id: P81b
+      batch: {file: 'server.bat', starter: "@echo off\nping -n 1 10.0.0.99 >nul\n"}
+      task: 'Wenn ping nicht erfolgreich war (`%errorlevel%` ist nicht null), zeige die Meldung `Server is down` an.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\server.bat', value: '%errorlevel%'}, {type: outputIncludes, value: 'Server is down'}]
+      hints: ['Nach `ping` steht der Ergebniscode in `%errorlevel%`: `0` heißt erfolgreich. Prüfe mit `if`, ob diese Zahl „ungleich“ null ist; der Operator für ungleich ist `neq`.', 'Teile der Zeile: `if` → `%errorlevel%` → `neq 0` → danach `echo` mit der Meldung `Server is down`.']
+      answer: ['@echo off', 'ping -n 1 10.0.0.99 >nul', 'if %errorlevel% neq 0 echo Server is down']
+      explain: 'Bekommt `ping` keine Antwort, ist `%errorlevel%` nicht null und die Bedingung `neq 0` ist wahr – also wird `Server is down` ausgegeben. `neq 0` ist ein exakter Vergleich und erfasst jeden Fehlercode.'
+  quiz:
+    - kind: predict
+      q: 'ERRORLEVEL ist 3. Welche Zeilen werden ausgeführt?'
+      code: "if errorlevel 1 echo A\nif errorlevel 3 echo B\nif errorlevel 5 echo C"
+      options: ['A und B', 'Nur B', 'A, B und C', 'Nur A']
+      answer: 0
+      explain: '`if errorlevel n` bedeutet n oder mehr.'
+    - kind: mcq
+      q: 'Was ist besser, um „genau nicht null“ zu prüfen?'
+      options: ['if %errorlevel% neq 0', 'if errorlevel 0', 'if errorlevel==0', 'if not errorlevel']
+      answer: 0
+      code_options: true
+      explain: '`if errorlevel 0` ist immer wahr!'
+    - kind: tf
+      q: '`command || echo failed` erledigt dasselbe wie eine ERRORLEVEL-Prüfung, nur in Kurzform.'
+      answer: true
+      explain: '`||` läuft, wenn der Befehl fehlschlägt.'
+  recap: '`if %errorlevel% neq 0` ist exakt. `if errorlevel n` = n oder mehr. `&&` und `||` sind die Kurzform.'
+
+- n: 82
+  term: goto
+  fullForm: 'goto · :labels'
+  difficulty: 3
+  objective: 'Mit Labels und `goto` im Skript springen und Schleifen bauen.'
+  summary: 'Ein Label ist eine Zeile, die mit `:` beginnt, z. B. `:start`. `goto start` lässt die Ausführung zu dieser Zeile springen. `goto :eof` springt ans Ende des Skripts.'
+  meaning: 'Mit `goto` nach oben baust du eine Schleife; deshalb brauchst du unbedingt eine Abbruchbedingung (`if ... goto end`), sonst läuft die Schleife endlos. `goto` nach unten dient dazu, einen Teil zu überspringen.'
+  usage: 'Menüs, Wiederholen bis zum Ergebnis, Teile bei einem Fehler überspringen.'
+  syntax: ":loop\n...\nif condition goto end\ngoto loop\n:end"
+  warning: 'Eine `goto`-Schleife ohne Abbruchbedingung läuft für immer. Im Simulator stoppst du sie mit `Ctrl+C`.'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\countdown.bat', content: "@echo off\nset /a n=3\n:loop\necho %n%...\nset /a n-=1\nif %n% gtr 0 goto loop\necho Liftoff!\n"}]
+    cmds: ['countdown.bat']
+  examples:
+    - c: 'goto end'
+      d: 'Sprung zu `:end`.'
+      noTry: true
+    - c: 'goto :eof'
+      d: 'Ende des Skripts (eingebautes Label).'
+      noTry: true
+  mistakes:
+    - 'Die Abbruchbedingung vergessen.'
+    - 'Den `:` braucht man bei `goto loop` nicht, beim Label selbst ist er aber Pflicht.'
+    - 'Zwei Labels mit demselben Namen: `goto` sucht ab der Zeile nach sich selbst nach unten und nimmt das erste gleichnamige Label, das es findet (findet es bis zum Dateiende keins, sucht es ab dem Dateianfang). Das Ergebnis ist verwirrend; gib Labels eindeutige Namen.'
+  tip: 'Gib Labels aussagekräftige Namen: `:menu`, `:error`, `:end`.'
+  practice:
+    - id: P82a
+      batch: {file: 'countdown.bat', starter: "@echo off\nset /a n=3\n"}
+      task: 'Gib mit einem Label und `goto` den Countdown `3`, `2`, `1` aus und zum Schluss `Liftoff!`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\countdown.bat', value: ['goto', ':']}, {type: outputOrder, value: ['3', '2', '1', 'Liftoff!']}]
+      hints: ['Zum Wiederholen setzt du ein Label über den Wiederholungsteil und springst mit `goto` dorthin zurück. Gib jedes Mal `%n%` aus und verringere es um eins; vergiss die Abbruchbedingung nicht, damit die Schleife nicht endlos läuft.', 'Reihenfolge der Zeilen nach `set /a n=3`: Label `:loop` → `%n%` mit `echo` ausgeben → mit `set /a n-=1` verringern → wenn `%n%` noch `gtr 0` ist, `goto loop` → nach der Schleife `echo Liftoff!`.']
+      answer: ['@echo off', 'set /a n=3', ':loop', 'echo %n%', 'set /a n-=1', 'if %n% gtr 0 goto loop', 'echo Liftoff!']
+      explain: 'Das Label `:loop` ist der Startpunkt der Schleife: In jeder Runde gibt `echo %n%` die Zahl aus und `set /a n-=1` zieht eins ab. `if %n% gtr 0 goto loop` springt zurück, solange `n` größer als null ist, danach erreicht die Ausführung `echo Liftoff!`.'
+    - id: P82b
+      batch: {file: 'skip.bat', starter: "@echo off\necho Start\necho This line must be skipped\necho End\n"}
+      task: 'Sorge mit `goto` und einem Label dafür, dass die Zeile `This line must be skipped` nicht ausgeführt wird, `Start` und `End` aber ausgegeben werden.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Start', 'End']}, {type: outputExcludes, value: 'must be skipped'}]
+      hints: ['Mit `goto` kannst du über mehrere Zeilen springen und zu einem Label weiter unten gehen. Eine Zeile zwischen `goto` und dem Label wird nicht ausgeführt.', 'Füge zwei Zeilen hinzu: nach `echo Start` ein `goto` mit einem beliebigen Namen (z. B. `finish`), und direkt vor `echo End` denselben Namen als Label mit `:` am Zeilenanfang.']
+      answer: ['@echo off', 'echo Start', 'goto finish', 'echo This line must be skipped', ':finish', 'echo End']
+      explain: '`goto finish` lässt die Ausführung direkt zur Zeile `:finish` springen, daher wird `echo This line must be skipped` dazwischen nicht ausgeführt. `Start` wird vor dem Sprung und `End` nach dem Label ausgegeben.'
+  quiz:
+    - kind: predict
+      q: 'Was wird ausgegeben?'
+      code: "@echo off\ngoto b\n:a\necho A\n:b\necho B"
+      options: ['B', 'A B', 'A', 'Nichts']
+      answer: 0
+      explain: 'Sprung zu `:b`, also wird A nicht ausgeführt.'
+    - kind: mcq
+      q: 'Was macht `goto :eof`?'
+      options: ['Es springt ans Ende des Skripts und beendet es', 'Es springt zum Anfang des Skripts zurück', 'Es ergibt einen Fehler', 'Es schließt CMD']
+      answer: 0
+      explain: 'End Of File.'
+    - kind: tf
+      q: 'Eine goto-Schleife ohne Abbruchbedingung kann für immer laufen.'
+      answer: true
+      explain: 'Setze immer eine Abbruchbedingung.'
+  recap: '`:label` und `goto label`. Schleife = goto nach oben + Abbruchbedingung. `goto :eof` = Ende.'
+
+- n: 83
+  term: 'for'
+  fullForm: 'for %%f in (files) do'
+  difficulty: 3
+  objective: 'Mit `for` einen Befehl für alle Dateien eines Musters oder alle Einträge einer Liste wiederholen.'
+  summary: '`for %%f in (*.txt) do echo %%f` führt den Befehl einmal für jede txt-Datei aus und legt den Dateinamen in `%%f` ab.'
+  meaning: 'In einer Batch-Datei schreibt man die Schleifenvariable mit zwei `%%`, in der Befehlszeile mit einem (`%f`). In die Klammern kannst du ein Muster (`*.jpg`) oder eine einfache Liste (`red green blue`) schreiben. `%%~nf` ist nur der Name ohne Erweiterung, `%%~xf` die Erweiterung und `%%~nxf` der vollständige Dateiname.'
+  usage: 'Arbeit mit allen Dateien: kopieren, umbenennen, zählen, Berichte.'
+  syntax: "for %%f in (*.txt) do command %%f\nfor %%c in (red green blue) do echo %%c"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\photos.bat', content: "@echo off\nfor %%f in (\"%USERPROFILE%\\Pictures\\*.jpg\") do echo Photo: %%~nxf\nfor %%c in (red green blue) do echo Color: %%c\n"}]
+    cmds: ['photos.bat', 'for %i in (a b c) do @echo %i']
+  examples:
+    - c: 'for %i in (*.txt) do @echo %i'
+      d: 'In der Befehlszeile (ein `%`).'
+    - c: 'for %%f in (*.jpg) do copy "%%f" E:\Photos'
+      d: 'In einer Batch-Datei: alle jpg-Dateien kopieren.'
+      noTry: true
+    - c: 'for %%f in (*.txt) do echo %%~nf'
+      d: 'Nur der Name ohne Erweiterung.'
+      noTry: true
+  mistakes:
+    - 'Ein `%` in einer Batch-Datei oder zwei `%%` in der Befehlszeile schreiben.'
+    - 'Die Schleifenvariable unterscheidet Groß- und Kleinschreibung: `%%f` und `%%F` sind zwei Variablen.'
+    - 'Keine Anführungszeichen um `%%f` setzen, wenn Dateinamen Leerzeichen enthalten.'
+  tip: 'Ein `@` vor dem Befehl nach `do` verhindert in der Befehlszeile, dass der Befehl jedes Mal mit angezeigt wird.'
+  practice:
+    - id: P83a
+      batch: {file: 'photos.bat', starter: "@echo off\n"}
+      task: 'Gib für jede `.jpg`-Datei im Pictures-Ordner des Benutzers eine Zeile `Photo:` gefolgt vom Dateinamen aus.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\photos.bat', value: ['for', '%%']}, {type: outputIncludes, value: ['beach.jpg', 'cat.jpg']}, {type: outputExcludes, value: 'logo.png'}]
+      hints: ['Mit `for` kannst du für jede Datei, die zu einem Muster passt, einen Befehl ausführen. Das Muster sind alle `*.jpg`-Dateien im Pictures-Ordner des Benutzers, und in einer Batch-Datei schreibt man die Schleifenvariable als `%%f`.', 'Teile: `for %%f in` → in der Klammer das Muster in Anführungszeichen: `"%USERPROFILE%\Pictures\*.jpg"` → `do echo Photo:` → zum Schluss der Dateiname mit `%%~nxf` (Name und Erweiterung, ohne Pfad).']
+      answer: ['@echo off', 'for %%f in ("%USERPROFILE%\Pictures\*.jpg") do echo Photo: %%~nxf']
+      explain: '`for` läuft einmal für jede jpg-Datei und legt ihren Pfad in `%%f` ab. `%%~nxf` liefert nur Name und Erweiterung (z. B. `beach.jpg`), und `logo.png` wird nicht ausgegeben, weil es nicht zu `*.jpg` passt.'
+    - id: P83b
+      batch: {file: 'totext.bat', starter: "@echo off\nif not exist E:\\Texts mkdir E:\\Texts\n"}
+      task: 'Kopiere mit einer `for`-Schleife alle `.txt`-Dateien aus dem Ordner Documents einzeln nach `E:\Texts`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\totext.bat', value: 'for'}, {type: fileExists, path: 'E:\Texts\menu.txt'}, {type: fileExists, path: 'E:\Texts\guests.txt'}]
+      hints: ['Baue eine `for`-Schleife über alle `*.txt`-Dateien im Ordner Documents und schicke darin jede Datei mit `copy` nach `E:\Texts`.', 'Teile: `for %%f in` → das Muster in der Klammer in Anführungszeichen: `"%USERPROFILE%\Documents\*.txt"` → `do copy` → die aktuelle Datei `"%%f"` → das Ziel `E:\Texts` → (optional) `>nul`, um die Meldungen zu verstecken.']
+      answer: ['@echo off', 'if not exist E:\Texts mkdir E:\Texts', 'for %%f in ("%USERPROFILE%\Documents\*.txt") do copy "%%f" E:\Texts >nul']
+      explain: 'Die Schleife legt jede txt-Datei nacheinander in `%%f` ab, und `copy "%%f" E:\Texts` kopiert sie ins Ziel. Die Anführungszeichen um `%%f` sind für Namen mit Leerzeichen da, `>nul` sorgt für eine saubere Ausgabe.'
+  quiz:
+    - kind: mcq
+      q: 'Wie schreibt man die Schleifenvariable von `for` in einer Batch-Datei?'
+      options: ['%%f', '%f', '%f%', '!f!']
+      answer: 0
+      code_options: true
+      explain: 'In der Befehlszeile `%f`.'
+    - kind: predict
+      q: 'Was wird ausgegeben?'
+      code: 'for %%x in (1 2 3) do echo N%%x'
+      options: ["N1\nN2\nN3", 'N123', 'N%%x', 'N1']
+      answer: 0
+      code_options: true
+      explain: 'Einmal für jeden Eintrag.'
+    - kind: mcq
+      q: 'Was liefert `%%~nf` für die Datei `report.txt`?'
+      options: ['report', 'report.txt', '.txt', 'C:\...\report.txt']
+      answer: 0
+      code_options: true
+      explain: '`~n` = Name ohne Erweiterung.'
+  recap: '`for %%f in (Muster) do Befehl`. In der Befehlszeile ein `%`. `%%~nf` Name, `%%~xf` Erweiterung, `%%~nxf` beides.'
+
+- n: 84
+  term: 'for /l · for /f'
+  fullForm: 'Counting loops and reading files'
+  difficulty: 3
+  objective: 'Mit `for /l` zählen und mit `for /f` eine Datei oder die Ausgabe eines Befehls Zeile für Zeile lesen.'
+  summary: '`for /l %%i in (Start,Schritt,Ende)` ist ein Zähler. `for /f %%a in (file.txt)` liest jede Zeile einer Datei und kann die Zeile in mehrere Teile (Tokens) zerlegen.'
+  meaning: 'Bei `for /f` stehen die Optionen in Anführungszeichen: `tokens=1,2` heißt, der erste Teil kommt in `%%a` und der zweite in `%%b`, `delims=,` heißt, das Trennzeichen ist ein Komma (Standard: Leerzeichen), `skip=2` heißt, die ersten zwei Zeilen werden übersprungen. Mit `(''command'')` liest du die Ausgabe eines Befehls.'
+  usage: 'Eine bestimmte Anzahl von Wiederholungen, Listen und CSV-Dateien lesen, die Ausgabe von Befehlen verarbeiten.'
+  syntax: "for /l %%i in (1,1,5) do echo %%i\nfor /f \"tokens=1,2\" %%a in (file.txt) do echo %%a %%b\nfor /f \"delims=\" %%L in ('dir /b') do echo %%L"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\loops.bat', content: "@echo off\nfor /l %%i in (1,1,3) do echo Round %%i\nfor /f \"skip=2 tokens=1,2\" %%a in (%USERPROFILE%\\Documents\\menu.txt) do echo %%a costs %%b\n"}]
+    cmds: ['loops.bat']
+  examples:
+    - c: 'for /l %i in (10,-2,0) do @echo %i'
+      d: 'Countdown mit negativer Schrittweite.'
+    - c: 'for /f "delims=" %%L in (guests.txt) do echo Guest: %%L'
+      d: 'Jede Zeile komplett lesen (ohne Zerlegen).'
+      noTry: true
+    - c: 'for /f "tokens=2 delims=:" %%a in (''ipconfig ^| find "IPv4"'') do echo IP:%%a'
+      d: 'Die Ausgabe eines Befehls lesen; `^|` innerhalb der einfachen Anführungszeichen.'
+      noTry: true
+  mistakes:
+    - 'Reihenfolge der Zahlen bei `/l`: (Start, Schritt, Ende), nicht (Start, Ende, Schritt).'
+    - '`delims=` vergessen, wenn eine Zeile mit Leerzeichen vollständig gelesen werden soll.'
+  tip: 'Bei `tokens=1,2` ist die zweite Variable automatisch der nächste Buchstabe: `%%a` und `%%b`.'
+  practice:
+    - id: P84a
+      batch: {file: 'numbers.bat', starter: "@echo off\n"}
+      task: 'Gib mit `for /l` die Zahlen 1 bis 5 in der Form `Number 1` bis `Number 5` aus.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\numbers.bat', value: 'for /l'}, {type: outputOrder, value: ['Number 1', 'Number 3', 'Number 5']}, {type: outputExcludes, value: 'Number 6'}]
+      hints: ['Zum Zählen nimmst du `for /l`; in die Klammer kommen drei Zahlen: Start, Schritt und Ende. Gib in jeder Runde die aktuelle Zahl zusammen mit dem Text `Number` aus.', 'Teile: `for /l %%i in` → Klammer `(1,1,5)`, also von 1 in Schritten von 1 bis 5 → `do echo Number` → zum Schluss die Schleifenvariable `%%i`.']
+      answer: ['@echo off', 'for /l %%i in (1,1,5) do echo Number %%i']
+      explain: '`for /l %%i in (1,1,5)` ist ein Zähler, der `%%i` von 1 bis 5 jeweils um eins erhöht. In jeder Runde gibt `echo Number %%i` eine Zeile wie `Number 3` aus.'
+    - id: P84b
+      batch: {file: 'prices.bat', starter: "@echo off\n"}
+      task: 'Lies die Datei `%USERPROFILE%\Documents\menu.txt` mit `for /f` (die ersten zwei Zeilen sind Überschriften) und schreibe für jedes Gericht: `Pizza costs 8.50`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\prices.bat', value: ['for /f', 'skip=2']}, {type: outputIncludes, value: ['Pizza costs 8.50', 'Coffee costs 2.50']}, {type: outputExcludes, value: 'Restaurant costs'}]
+      hints: ['Um die Datei Zeile für Zeile zu lesen, nimmst du `for /f`. Überspringe die ersten zwei Zeilen mit der Option `skip` und hole mit `tokens` den Namen des Gerichts und den Preis getrennt heraus.', 'Teile: `for /f` → Optionen in Anführungszeichen: `"skip=2 tokens=1,2"` → Variable `%%a` (der zweite Teil kommt automatisch in `%%b`) → `in` und der Dateipfad in Klammern → `do echo` mit `%%a`, dem Wort `costs` und `%%b`.']
+      answer: ['@echo off', 'for /f "skip=2 tokens=1,2" %%a in (%USERPROFILE%\Documents\menu.txt) do echo %%a costs %%b']
+      explain: '`skip=2` überspringt die zwei Überschriftszeilen, und `tokens=1,2` legt den ersten Teil jeder Zeile (Name des Gerichts) in `%%a` und den zweiten Teil (Preis) in `%%b`. Dann baut `echo %%a costs %%b` einen Satz wie `Pizza costs 8.50`.'
+  quiz:
+    - kind: predict
+      q: 'Wie oft läuft diese Schleife?'
+      code: 'for /l %%i in (0,5,20) do echo %%i'
+      options: ['5 (0, 5, 10, 15, 20)', '20', '4', '21']
+      answer: 0
+      explain: 'Von 0 in Schritten von 5 bis 20.'
+    - kind: mcq
+      q: 'In welcher Variable steht bei `for /f "tokens=1,2 delims=," %%a in (data.csv)` der zweite Teil jeder Zeile?'
+      options: ['%%b', '%%a', '%%2', '%%c']
+      answer: 0
+      code_options: true
+      explain: 'Zweites Token = nächster Buchstabe.'
+    - kind: tf
+      q: '`for /f` kann auch die Ausgabe eines Befehls lesen.'
+      answer: true
+      explain: 'Mit einfachen Anführungszeichen: `(''dir /b'')`.'
+  recap: '`for /l (Start,Schritt,Ende)` zählt. `for /f "tokens= delims= skip="` liest eine Datei oder Ausgabe Zeile für Zeile.'
+
+- n: 85
+  term: '!var!'
+  fullForm: 'Delayed Expansion'
+  difficulty: 3
+  objective: 'Das bekannte Problem mit Variablen in Schleifen und Klammern verstehen und es mit Delayed Expansion lösen.'
+  summary: 'CMD ersetzt alle `%var%` in einem Klammerblock (z. B. im Rumpf von `for` oder `if`) **einmal** und **vor der Ausführung**. Eine Änderung der Variable innerhalb der Schleife ist mit `%var%` deshalb nicht sichtbar. Die Lösung: `setlocal enabledelayedexpansion` und `!var!` schreiben.'
+  meaning: '`!var!` liest bei jeder Ausführung den aktuellen Wert. `setlocal` sorgt außerdem dafür, dass Änderungen an Variablen bis `endlocal` (oder bis zum Ende des Skripts) lokal bleiben und die CMD-Umgebung nicht zumüllen.'
+  usage: 'Zähler in Schleifen, Text Schritt für Schritt zusammenbauen, jede Variable, die sich innerhalb von `( )` ändert.'
+  syntax: "setlocal enabledelayedexpansion\nset count=0\nfor %%f in (*.txt) do (\n  set /a count+=1\n  echo !count!. %%f\n)\nendlocal"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files:
+      - {path: 'C:\Users\Student\Desktop\wrong.bat', content: "@echo off\nset count=0\nfor %%f in (a b c) do (\n  set /a count+=1\n  echo %%f: count is %count%\n)\n"}
+      - {path: 'C:\Users\Student\Desktop\right.bat', content: "@echo off\nsetlocal enabledelayedexpansion\nset count=0\nfor %%f in (a b c) do (\n  set /a count+=1\n  echo %%f: count is !count!\n)\nendlocal\n"}
+    cmds: ['wrong.bat', 'right.bat']
+  examples:
+    - c: 'setlocal enabledelayedexpansion'
+      d: 'Delayed Expansion einschalten (meist die zweite Zeile des Skripts).'
+      noTry: true
+    - c: 'echo !count!'
+      d: 'Den aktuellen Wert lesen.'
+      noTry: true
+  mistakes:
+    - '`!var!` ohne `setlocal enabledelayedexpansion` schreiben; dann wird einfach der Text `!var!` ausgegeben.'
+    - 'Sich wundern, dass `%count%` in der Schleife immer null ist.'
+  tip: 'Außerhalb der Schleife, nachdem sie fertig ist, zeigt `%count%` den Endwert korrekt an.'
+  practice:
+    - id: P85a
+      batch: {file: 'list.bat', starter: "@echo off\nset count=0\nfor %%f in (\"%USERPROFILE%\\Documents\\*.txt\") do (\n  set /a count+=1\n  echo %count%. %%~nxf\n)\n"}
+      task: 'Dieses Skript soll eine nummerierte Liste der Dateien ausgeben (`1. guests.txt` ...), aber alle Nummern sind `0`. Repariere es mit Delayed Expansion.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\list.bat', value: ['enabledelayedexpansion', '!count!']}, {type: outputIncludes, value: ['1. guests.txt', '3. todo.txt']}]
+      hints: ['Das Problem: `%count%` wird in der Klammer der Schleife nur einmal, vor der Ausführung, gelesen. Du musst Delayed Expansion einschalten und den aktuellen Wert mit `!` lesen.', 'Zwei Änderungen sind nötig: 1) Direkt nach `@echo off` die Zeile, die Delayed Expansion einschaltet, also `setlocal enabledelayedexpansion`. 2) In der Schleife `%count%` durch `!count!` ersetzen. (Am Ende kannst du noch `endlocal` setzen.)']
+      answer: ['@echo off', 'setlocal enabledelayedexpansion', 'set count=0', 'for %%f in ("%USERPROFILE%\Documents\*.txt") do (', '  set /a count+=1', '  echo !count!. %%~nxf', ')', 'endlocal']
+      explain: '`setlocal enabledelayedexpansion` erlaubt, dass `!count!` jedes Mal den aktuellen Wert der Variable liest – also wird nach jedem `set /a count+=1` die richtige Nummer (1, 2, 3) ausgegeben. `endlocal` am Ende hält die Änderungen an den Variablen lokal.'
+  quiz:
+    - kind: predict
+      q: 'Was gibt die zweite Zeile ohne Delayed Expansion aus?'
+      code: "set x=1\n(set x=2\n echo %x%)"
+      options: ['1', '2', '%x%', 'Fehler']
+      answer: 0
+      explain: 'Die ganze Klammer wurde vor der Ausführung mit x=1 ersetzt.'
+    - kind: mcq
+      q: 'Welche Zeile wird benötigt, um `!var!` zu verwenden?'
+      options: ['setlocal enabledelayedexpansion', 'set /a', 'echo on', 'call']
+      answer: 0
+      code_options: true
+      explain: 'Ohne sie hat `!` keine besondere Bedeutung.'
+    - kind: tf
+      q: 'Das Delayed-Expansion-Problem tritt nur innerhalb von Klammerblöcken auf.'
+      answer: true
+      explain: 'Einzelne Zeilen werden jeweils separat ersetzt.'
+  recap: 'Innerhalb von `( )` wird `%var%` einmal ersetzt. `setlocal enabledelayedexpansion` + `!var!` = aktueller Wert.'
+
+- n: 86
+  term: call
+  fullForm: 'call :label · call script.bat'
+  difficulty: 3
+  objective: 'Mit `call` wiederverwendbare Teile (Funktionen) bauen und ein anderes Skript ausführen und zurückkehren.'
+  summary: '`call :name args` springt zu einem Label, führt es wie eine Funktion aus und kehrt bei `goto :eof` oder `exit /b` zur Zeile nach dem `call` zurück. `call other.bat` führt ein anderes Skript aus und macht danach weiter.'
+  meaning: 'Innerhalb der Funktion liest man die Argumente des `call` selbst mit `%1`, `%2`. Ohne `call` beendet das Ausführen von `other.bat` das Hauptskript, und es geht nicht zurück. `exit /b 1` kann einen Fehlercode zurückgeben.'
+  usage: 'Wiederholten Code vermeiden, ein großes Skript in kleine Teile aufteilen, Hilfsskripte.'
+  syntax: "call :greet Ali\ngoto :eof\n:greet\necho Hi %1\nexit /b"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\func.bat', content: "@echo off\ncall :greet Ali\ncall :greet Mina\necho Done.\ngoto :eof\n\n:greet\necho Hi %1, welcome to the restaurant!\nexit /b\n"}]
+    cmds: ['func.bat']
+  examples:
+    - c: 'call :log "Backup started"'
+      d: 'Eine Funktion, die eine Meldung ins Log schreibt.'
+      noTry: true
+    - c: 'call helper.bat hello'
+      d: 'Ein anderes Skript ausführen und zurückkehren.'
+      noTry: true
+  mistakes:
+    - '`goto :eof` vor den Funktionen vergessen; dann läuft das Skript nach der Hauptarbeit in die Funktionen hinein und führt sie unnötig aus.'
+    - 'Ein anderes Skript ohne `call` ausführen und sich wundern, dass der Rest des Skripts nicht läuft.'
+  tip: 'Schreibe Funktionen ans Ende des Skripts und setze direkt davor `goto :eof`.'
+  practice:
+    - id: P86a
+      batch: {file: 'func.bat', starter: "@echo off\n"}
+      task: 'Schreibe eine Funktion `:greet`, die `Hi` und ihr erstes Argument ausgibt. Rufe sie einmal für `Ali` und einmal für `Mina` auf und gib zum Schluss `Done` aus.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\func.bat', value: ['call :greet', ':greet']}, {type: outputOrder, value: ['Hi Ali', 'Hi Mina', 'Done']}]
+      hints: ['Eine Funktion ist ein Label unten im Skript, das mit `call :Name` aufgerufen wird und mit `exit /b` zurückkehrt; innerhalb der Funktion steht das erste Argument in `%1`. Setze vor die Funktion `goto :eof`, damit das Skript nicht hineinläuft.', 'Reihenfolge der Zeilen: zwei Zeilen `call :greet` (eine mit `Ali`, eine mit `Mina`) → `echo Done` → `goto :eof` → Label `:greet` → `echo Hi` zusammen mit `%1` → `exit /b`.']
+      answer: ['@echo off', 'call :greet Ali', 'call :greet Mina', 'echo Done', 'goto :eof', ':greet', 'echo Hi %1', 'exit /b']
+      explain: 'Jedes `call :greet` springt zum Label `:greet`, `echo Hi %1` gibt den übergebenen Namen aus, und `exit /b` kehrt zur Zeile nach dem `call` zurück. `goto :eof` nach `echo Done` sorgt dafür, dass das Skript nach der Hauptarbeit nicht in die Funktion läuft.'
+    - id: P86b
+      batch: {file: 'main.bat', starter: "@echo off\n"}
+      files: [{path: 'C:\Users\Student\Desktop\helper.bat', content: "@echo off\necho Helper says %1\n"}]
+      task: 'Auf dem Desktop liegt die Datei `helper.bat`. Rufe sie aus `main.bat` mit dem Argument `hello` auf und gib danach `Back in main` aus.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\main.bat', value: 'call'}, {type: outputOrder, value: ['Helper says hello', 'Back in main']}]
+      hints: ['Um ein anderes Skript auszuführen und zum aktuellen Skript zurückzukehren, musst du `call` verwenden; ohne diesen Befehl macht `main.bat` nach `helper.bat` nicht weiter.', 'Zwei Zeilen: zuerst `call` + Dateiname `helper.bat` + Argument `hello`. Dann `echo` mit dem Text `Back in main`.']
+      answer: ['@echo off', 'call helper.bat hello', 'echo Back in main']
+      explain: '`call helper.bat hello` führt die Hilfsdatei mit dem Argument `hello` aus (dort ist `%1` also `hello`), und danach geht die Kontrolle an `main.bat` zurück. Deshalb wird `echo Back in main` danach ausgeführt.'
+  quiz:
+    - kind: predict
+      q: 'Was wird ausgegeben? (main.bat)'
+      code: "@echo off\nother.bat\necho After"
+      options: ['Nur die Ausgabe von other.bat; After wird nicht ausgegeben', 'Die Ausgabe von other.bat und danach After', 'Nur After', 'Fehler']
+      answer: 0
+      explain: 'Ohne `call` kehrt die Kontrolle nicht zurück.'
+    - kind: mcq
+      q: 'Warum setzt man `goto :eof` vor die Funktionen?'
+      options: ['Damit das Skript nach der Hauptarbeit nicht in die Funktionen läuft', 'Damit die Funktionen schneller werden', 'Es ist Pflicht für call', 'Um den Bildschirm zu leeren']
+      answer: 0
+      explain: 'Sonst werden die Funktionen einmal zu viel ausgeführt.'
+    - kind: tf
+      q: 'Innerhalb einer Funktion ist `%1` das erste Argument des `call` selbst, nicht das Argument des Skripts.'
+      answer: true
+      explain: 'Jeder call hat seine eigenen Argumente.'
+  recap: '`call :label args` = Funktion, kehrt mit `exit /b` zurück. `call file.bat` = anderes Skript ausführen und zurückkehren.'
+
+- n: 87
+  term: choice
+  fullForm: 'choice · timeout · menus'
+  difficulty: 3
+  objective: 'Ein einfaches Menü bauen, in dem der Benutzer mit einer Taste wählt, und das Skript für ein paar Sekunden anhalten.'
+  summary: '`choice /c 123 /m "Choose"` wartet auf eine der Tasten 1, 2 oder 3 und legt die Nummer der Option in ERRORLEVEL ab (erste = 1, zweite = 2 ...). `timeout /t 5` wartet fünf Sekunden.'
+  meaning: 'Weil `if errorlevel n` „n oder mehr“ bedeutet, schreibst du die Bedingungen von der größten zur kleinsten Option, oder du verwendest `if %errorlevel% equ n`. `timeout /t 5 /nobreak` lässt sich nicht durch einen Tastendruck abbrechen.'
+  usage: 'Menüs für Werkzeuge, Bestätigung mit J/N (Y/N) abfragen, Warten vor dem Wiederholen einer Aufgabe.'
+  syntax: "choice /c YN /m \"Continue?\"\nif errorlevel 2 goto no\ntimeout /t 5"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['1', '2', '3']
+    files: [{path: 'C:\Users\Student\Desktop\menu.bat', content: "@echo off\n:menu\necho.\necho 1. Show date\necho 2. Show user\necho 3. Quit\nchoice /c 123 /m \"Choose\"\nif errorlevel 3 goto end\nif errorlevel 2 goto user\necho Today is %DATE%\ngoto menu\n:user\necho You are %USERNAME%\ngoto menu\n:end\necho Bye!\n"}]
+    cmds: ['menu.bat']
+  examples:
+    - c: 'choice /c YN /m "Delete old logs?"'
+      d: 'Ja/Nein-Frage.'
+      noTry: true
+    - c: 'choice /c ABC /t 10 /d A'
+      d: 'Wird 10 Sekunden lang keine Taste gedrückt, wird A gewählt.'
+      noTry: true
+    - c: 'timeout /t 3'
+      d: 'Drei Sekunden warten.'
+  mistakes:
+    - 'Die Bedingungen mit `if errorlevel` von klein nach groß schreiben: Dann gewinnt immer Option 1.'
+    - '`timeout` in einem Skript verwenden, dessen Eingabe umgeleitet (Redirect) wird.'
+  tip: 'Für ein Menü: Optionen mit echo anzeigen → `choice` → mit `if errorlevel` springen → mit `goto menu` zurück.'
+  practice:
+    - id: P87a
+      batch: {file: 'confirm.bat', starter: "@echo off\n"}
+      inputs: ['N']
+      task: 'Frage mit `choice` `Continue?` (Y/N). Drückt der Benutzer `N`, gib `Stopped` aus, drückt er `Y`, gib `Continuing` aus. (Teste es mit `N`.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\confirm.bat', value: ['choice', 'errorlevel']}, {type: outputIncludes, value: 'Stopped'}, {type: outputExcludes, value: 'Continuing'}]
+      hints: ['Gib bei `choice` mit dem Switch `/c` die erlaubten Tasten (`Y` und `N`) und mit `/m` den Fragetext an. Die Nummer der gedrückten Taste landet in ERRORLEVEL: `Y` = 1 und `N` = 2.', 'Zwei Zeilen: 1) `choice /c YN` + `/m` mit dem Text `"Continue?"`. 2) `if errorlevel 2` (also N) → Klammer mit `echo Stopped` → `else` → Klammer mit `echo Continuing`.']
+      answer: ['@echo off', 'choice /c YN /m "Continue?"', 'if errorlevel 2 (echo Stopped) else (echo Continuing)']
+      explain: '`choice /c YN` wartet auf `Y` oder `N` und setzt ERRORLEVEL bei `N` (zweite Option) auf 2. `if errorlevel 2` ist für 2 oder mehr wahr, also wird `Stopped` ausgegeben; bei `Y` würde der `else`-Teil, also `Continuing`, laufen.'
+    - id: P87b
+      batch: {file: 'wait.bat', starter: "@echo off\necho Starting soon...\n"}
+      task: 'Warte mit `timeout` drei Sekunden, bevor `Done` ausgegeben wird.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\wait.bat', value: 'timeout'}, {type: outputOrder, value: ['Starting soon', 'Waiting for', 'Done']}]
+      hints: ['Um im Skript ein paar Sekunden zu warten, nimmst du `timeout`; der Switch `/t` bekommt die Anzahl der Sekunden. Dieser Befehl muss vor der Ausgabe von `Done` stehen.', 'Füge nach `echo Starting soon...` zwei Zeilen hinzu: zuerst `timeout` mit `/t` und der Zahl `3`, dann `echo Done`.']
+      answer: ['@echo off', 'echo Starting soon...', 'timeout /t 3', 'echo Done']
+      explain: '`timeout /t 3` wartet drei Sekunden und zeigt die Meldung `Waiting for ...` an. Weil es vor `echo Done` steht, wird `Done` erst nach dem Warten ausgegeben.'
+  quiz:
+    - kind: predict
+      q: 'Der Benutzer drückt bei diesem choice die Taste `C`. Was ist ERRORLEVEL?'
+      code: 'choice /c ABC'
+      options: ['3', '1', '0', 'C']
+      answer: 0
+      explain: 'Dritte Option.'
+    - kind: fix
+      q: 'In diesem Menü wird bei jeder Taste „One“ ausgegeben. Warum?'
+      code: "choice /c 123\nif errorlevel 1 goto one\nif errorlevel 2 goto two\nif errorlevel 3 goto three"
+      options: ['Die Bedingungen müssen von 3 nach 1 geschrieben werden', 'choice ist falsch', 'Die Labels sind falsch', 'Man muss %errorlevel% schreiben']
+      answer: 0
+      explain: '`if errorlevel 1` ist für 1, 2 und 3 wahr.'
+    - kind: mcq
+      q: 'Was macht `timeout /t 10 /nobreak`?'
+      options: ['Es wartet 10 Sekunden und lässt sich nicht per Taste abbrechen', 'Es wartet 10 Minuten', 'Es wartet, bis eine Taste gedrückt wird', 'Es schaltet den Computer aus']
+      answer: 0
+      explain: '`/nobreak` = Tastendruck ignorieren.'
+  recap: '`choice /c Optionen /m "Meldung"` → ERRORLEVEL = Nummer der Option. Bedingungen von groß nach klein. `timeout /t n` wartet.'

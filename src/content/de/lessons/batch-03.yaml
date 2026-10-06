@@ -1,0 +1,786 @@
+# Lessons 21–32 · file management, wildcards, redirection, chaining
+
+- n: 21
+  term: copy
+  fullForm: 'Copy'
+  difficulty: 1
+  objective: 'Du erstellst eine Kopie einer Datei, kopierst sie in einen anderen Ordner oder auf ein anderes Laufwerk und verstehst die Meldungen von copy.'
+  summary: '`copy` kopiert eine oder mehrere Dateien von einem Ort an einen anderen. Die Originaldatei bleibt, wo sie ist.'
+  meaning: 'Das erste Argument ist die Quelle, das zweite das Ziel. Das Ziel kann ein Ordner (Folder) sein (die Datei wird mit demselben Namen kopiert) oder ein neuer Name.'
+  usage: 'Eine Sicherungskopie anlegen, eine Datei auf einen USB-Stick bringen, vor dem Bearbeiten eine zweite Version erstellen.'
+  syntax: 'copy source [destination] [/y]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['copy todo.txt todo_backup.txt', 'copy menu.txt E:\', 'dir E:\ /b']
+  examples:
+    - c: 'copy todo.txt todo_backup.txt'
+      d: 'Eine zweite Version mit neuem Namen im selben Ordner.'
+    - c: 'copy menu.txt D:\Backup'
+      d: 'Kopieren in einen Ordner auf einem anderen Laufwerk; der Dateiname bleibt gleich.'
+    - c: 'copy menu.txt E:\menu_old.txt'
+      d: 'Kopieren auf den USB-Stick mit neuem Namen.'
+    - c: 'copy /y todo.txt D:\Backup'
+      d: '`/y` bedeutet: Wenn die Datei im Ziel schon existiert, ohne Nachfrage ersetzen.'
+  mistakes:
+    - 'Eine Datei auf sich selbst kopieren: `copy todo.txt .` liefert den Fehler `The file cannot be copied onto itself.`'
+    - 'Ein Ziel, das nicht existiert: Wenn der Zielordner fehlt, legt copy ihn nicht an.'
+    - 'Erwarten, dass ein ganzer Ordner mit Unterordnern kopiert wird; dafür brauchst du `xcopy` oder `robocopy` (Lektion 43 und 44).'
+  tip: 'Wenn die Datei im Ziel schon existiert, fragt CMD `Overwrite ...? (Yes/No/All)`. `Y` heißt ja, `N` nein, `A` heißt für alle.'
+  restaurant: 'Du schickst eine Fotokopie des Originalrezepts an eine andere Filiale; das Original bleibt in deinem eigenen Rezeptbuch.'
+  practice:
+    - id: P21a
+      start: 'C:\Users\Student\Documents'
+      task: 'Erstelle von der Datei `todo.txt` eine Kopie mit dem Namen `todo_backup.txt` im selben Ordner.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\todo_backup.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\todo.txt'}]
+      hints:
+        - 'Um eine zweite Version einer Datei zu erstellen, benutzt du `copy`. `copy` nimmt zwei Argumente: zuerst die Quelldatei (was?), dann den Zielnamen (wohin oder mit welchem Namen?).'
+        - 'Drei Teile: Was tun? (`copy`) Quelle? (die Originaldatei `todo.txt`) Ziel? (der Name der neuen Kopie `todo_backup.txt`). Die Reihenfolge ist wichtig: zuerst Quelle, dann Ziel.'
+      answer: 'copy todo.txt todo_backup.txt'
+      explain: '`copy` liest die erste Datei (`todo.txt`) und erstellt im selben Ordner eine Kopie mit dem zweiten Namen (`todo_backup.txt`); die Originaldatei bleibt unverändert.'
+    - id: P21b
+      start: 'C:\Users\Student\Documents'
+      task: 'Kopiere die Datei `menu.txt` in das Stammverzeichnis des USB-Sticks (Laufwerk E).'
+      checks: [{type: fileExists, path: 'E:\menu.txt'}]
+      hints:
+        - 'Wieder `copy` mit Quelle und Ziel. Diesmal ist das Ziel kein Dateiname, sondern das Stammverzeichnis eines anderen Laufwerks; der Dateiname bleibt gleich.'
+        - 'Drei Teile: Was tun? (`copy`) Quelle? (`menu.txt`) Ziel? (Stammverzeichnis von Laufwerk E: Laufwerksbuchstabe, Doppelpunkt und ein `\`).'
+      answer: 'copy menu.txt E:\'
+      explain: '`copy` nimmt die Datei `menu.txt`, und weil das Ziel `E:\` ein Ordner ist (das Stammverzeichnis des USB-Sticks), legt es dort eine Kopie mit demselben Namen an.'
+  quiz:
+    - kind: mcq
+      q: 'Was passiert nach `copy a.txt D:\Backup` mit der Originaldatei `a.txt`?'
+      options: ['Sie bleibt, wo sie ist', 'Sie wird gelöscht', 'Ihr Name ändert sich', 'Sie wird geleert']
+      answer: 0
+      explain: '`copy` erstellt eine Kopie; zum Verschieben brauchst du `move`.'
+    - kind: predict
+      q: 'Der Ordner `D:\Old` existiert nicht. Was ist das Ergebnis dieses Befehls?'
+      code: 'copy menu.txt D:\Old\menu.txt'
+      options: ['The system cannot find the path specified.', 'Der Ordner Old wird angelegt und die Datei kopiert', '1 file(s) copied.', 'Access is denied.']
+      answer: 0
+      explain: '`copy` legt den Zielordner nicht an; erstelle ihn zuerst mit `mkdir`.'
+    - kind: type
+      q: 'Kopiere die Datei `todo.txt` in den Ordner `D:\Backup`.'
+      accept: ['copy todo.txt d:\backup', 'copy todo.txt d:\backup\', 'copy todo.txt d:\backup\todo.txt']
+      show: 'copy todo.txt D:\Backup'
+      explain: 'Quelle, Leerzeichen, Ziel.'
+    - kind: sim
+      q: 'Kopiere die Datei `menu.txt` aus Documents nach `D:\Backup`.'
+      start: 'C:\Users\Student'
+      checks: [{type: fileExists, path: 'D:\Backup\menu.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\menu.txt'}]
+      answer: 'copy Documents\menu.txt D:\Backup'
+      explain: '`copy Quelle Ziel`; die Originaldatei bleibt, wo sie ist.'
+  recap: '`copy Quelle Ziel`. Das Original bleibt erhalten. Der Zielordner muss existieren. `/y` = ohne Nachfrage.'
+
+- n: 22
+  term: move
+  fullForm: 'Move'
+  difficulty: 1
+  objective: 'Du verschiebst eine Datei oder einen Ordner an einen anderen Ort.'
+  summary: '`move` nimmt eine Datei oder einen Ordner vom aktuellen Ort weg und legt sie im Ziel ab. Danach ist sie am alten Ort nicht mehr vorhanden.'
+  meaning: 'Ist das Ziel ein Ordner, kommt die Datei in diesen Ordner. Ist das Ziel ein neuer Name, wird die Datei unter diesem Namen verschoben.'
+  usage: 'Dateien aufräumen, Downloads in den richtigen Ordner bringen, Ordner verschieben.'
+  syntax: 'move [/y] source destination'
+  demo:
+    start: 'C:\Users\Student\Downloads'
+    cmds: ['move invoice.pdf ..\Documents', 'dir /b', 'dir ..\Documents /b']
+  examples:
+    - c: 'move invoice.pdf ..\Documents'
+      d: 'Die Datei in den Ordner Documents verschieben.'
+    - c: 'move todo.txt Work\tasks.txt'
+      at: 'C:\Users\Student\Documents'
+      d: 'In den Ordner Work verschieben, mit neuem Namen.'
+    - c: 'move Work Office'
+      at: 'C:\Users\Student\Documents'
+      d: 'Wenn Office nicht existiert, wird der Ordner Work umbenannt.'
+  mistakes:
+    - 'Denken, dass `move` eine Kopie anlegt; die Datei verschwindet vom alten Ort.'
+    - 'Einen Ordner verschieben, in dem du dich gerade befindest.'
+  tip: 'Wenn im Ziel schon eine Datei mit demselben Namen liegt, fragt CMD vor dem Ersetzen nach.'
+  daily: '`copy` heißt, ein Blatt zu fotokopieren; `move` heißt, das Blatt selbst aus der einen Schublade zu nehmen und in eine andere zu legen.'
+  practice:
+    - id: P22a
+      start: 'C:\Users\Student\Documents'
+      task: 'Verschiebe die Datei `todo.txt` in den Ordner `Work`.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\Work\todo.txt'}, {type: fileNotExists, path: 'C:\Users\Student\Documents\todo.txt'}]
+      hints:
+        - '`move` nimmt wie `copy` Quelle und Ziel, nur dass die Datei vom ersten Ort entfernt wird. Das Ziel ist hier ein Ordner.'
+        - 'Drei Teile: Was tun? (`move`) Welche Datei? (`todo.txt`) Wohin? (der Name des Ordners Work, der hier in Documents liegt).'
+      answer: 'move todo.txt Work'
+      explain: '`move` bringt die Datei `todo.txt` in den Ordner `Work`; anders als bei `copy` bleibt in Documents keine Kopie zurück.'
+    - id: P22b
+      start: 'C:\Users\Student'
+      task: 'Verschiebe die Datei `invoice.pdf` von Downloads nach Documents, ohne in die Ordner zu wechseln.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\invoice.pdf'}, {type: fileNotExists, path: 'C:\Users\Student\Downloads\invoice.pdf'}]
+      hints:
+        - 'Benutze `move`, aber weil du in `C:\Users\Student` bist, schreibst du Quelle und Ziel als Relative Path (von hier aus).'
+        - 'Drei Teile: Was tun? (`move`) Quelle? (Pfad der Datei: Ordner `Downloads`, `\`, dann `invoice.pdf`) Ziel? (der Name des Ordners Documents).'
+      answer: 'move Downloads\invoice.pdf Documents'
+      explain: '`move` nimmt die Datei aus `Downloads\invoice.pdf` und legt sie in den Ordner `Documents`. Beide Pfade werden relativ zu `C:\Users\Student` gerechnet.'
+  quiz:
+    - kind: tf
+      q: 'Nach `move` bleibt die Datei auch an ihrem ursprünglichen Ort.'
+      answer: false
+      explain: '`move` verschiebt, es kopiert nicht.'
+    - kind: mcq
+      q: 'Welcher Befehl bringt die Datei `a.txt` in den Ordner `Archive`?'
+      options: ['move a.txt Archive', 'copy a.txt Archive', 'ren a.txt Archive', 'cd a.txt Archive']
+      answer: 0
+      code_options: true
+      explain: '`move` nimmt die Quelle weg und legt sie im Ziel ab.'
+    - kind: predict
+      q: 'Im aktuellen Ordner gibt es nur die Datei `old.txt`. Was hast du nach diesem Befehl?'
+      code: 'move old.txt new.txt'
+      options: ['Nur new.txt', 'old.txt und new.txt', 'Nur old.txt', 'Fehler']
+      answer: 0
+      explain: 'Verschieben auf einen neuen Namen im selben Ordner ist ein Umbenennen.'
+  recap: '`move Quelle Ziel` = verschieben. Die Datei bleibt nicht am alten Ort.'
+
+- n: 23
+  term: ren
+  fullForm: 'Rename'
+  difficulty: 1
+  objective: 'Du benennst eine Datei oder einen Ordner um und kennst die Grenzen von `ren`.'
+  summary: '`ren` (oder `rename`) ändert nur den Namen; die Datei bleibt im selben Ordner.'
+  meaning: 'Das erste Argument ist die aktuelle Datei (mit Pfad, falls nötig). Das zweite Argument ist nur der neue Name, ohne Pfad.'
+  usage: 'Namen korrigieren, ein Datum an den Namen anhängen, die Extension (Dateiendung) ändern.'
+  syntax: 'ren [drive:][path]oldname newname'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['ren notes.txt ideas.txt', 'dir /b']
+  examples:
+    - c: 'ren notes.txt ideas.txt'
+      d: 'Eine Datei umbenennen.'
+    - c: 'ren Work Office'
+      at: 'C:\Users\Student\Documents'
+      d: 'Einen Ordner umbenennen.'
+    - c: 'ren Documents\menu.txt menu_2026.txt'
+      at: 'C:\Users\Student'
+      d: 'Ein Pfad steht nur beim ersten Namen.'
+  mistakes:
+    - 'Einen Pfad in den neuen Namen schreiben: `ren a.txt D:\b.txt` gibt einen Fehler. Um etwas an einen anderen Ort zu bringen, benutze `move`.'
+    - 'Ein neuer Name, der schon existiert: `A duplicate file name exists...`'
+    - 'Die Extension vergessen: `ren notes.txt ideas` erzeugt eine Datei ohne `.txt`.'
+  tip: 'In Lektion 26 siehst du, dass `ren *.txt *.bak` alle Extensions auf einmal ändert.'
+  practice:
+    - id: P23a
+      start: 'C:\Users\Student\Desktop'
+      task: 'Benenne die Datei `notes.txt` in `ideas.txt` um.'
+      checks: [{type: fileExists, path: 'C:\Users\Student\Desktop\ideas.txt'}, {type: fileNotExists, path: 'C:\Users\Student\Desktop\notes.txt'}]
+      hints:
+        - 'Zum Umbenennen benutzt du `ren` (Rename). Zuerst gibst du den aktuellen Dateinamen an, dann den neuen.'
+        - 'Drei Teile: Was tun? (`ren`) Aktueller Name? (`notes.txt`) Neuer Name? (`ideas.txt`). Schreib die Extension bei beiden Namen.'
+      answer: 'ren notes.txt ideas.txt'
+      explain: '`ren` ändert den Namen der ersten Datei (`notes.txt`) in den zweiten Namen (`ideas.txt`); Inhalt und Ort der Datei bleiben gleich.'
+    - id: P23b
+      start: 'C:\Users\Student\Documents'
+      task: 'Benenne den Ordner `Work` in `Office` um.'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Office'}, {type: dirNotExists, path: 'C:\Users\Student\Documents\Work'}]
+      hints:
+        - '`ren` ist nicht nur für Dateien; es funktioniert auch bei Ordnern. Wieder dieselbe Reihenfolge: aktueller Name, dann neuer Name.'
+        - 'Drei Teile: Was tun? (`ren`) Aktueller Ordnername? (Work) Neuer Name? (Office). Ein Ordner hat keine Extension.'
+      answer: 'ren Work Office'
+      explain: '`ren` benennt den Ordner `Work` in `Office` um, und alle Dateien darin bleiben an ihrem Platz.'
+  quiz:
+    - kind: fix
+      q: 'Dieser Befehl gibt den Fehler `The syntax of the command is incorrect.` aus. Warum?'
+      code: 'ren report.txt D:\report.txt'
+      options: ['Der neue Name darf keinen Pfad haben', 'Man muss `rename` schreiben', 'Die Datei existiert nicht', 'Laufwerk D ist voll']
+      answer: 0
+      explain: '`ren` ändert nur den Namen. Zum Verschieben: `move`.'
+    - kind: tf
+      q: '`rename` und `ren` sind derselbe Befehl.'
+      answer: true
+      explain: '`ren` ist die Kurzform von `rename`.'
+    - kind: type
+      q: 'Benenne `draft.txt` in `final.txt` um.'
+      accept: ['ren draft.txt final.txt', 'rename draft.txt final.txt']
+      explain: '`ren alt neu`'
+  recap: '`ren alt neu` ändert nur den Namen. Der neue Name steht ohne Pfad.'
+
+- n: 24
+  term: del
+  fullForm: 'Delete'
+  difficulty: 1
+  objective: 'Du löschst eine Datei mit `del` und kennst die Gefahr dabei.'
+  summary: '`del` (oder `erase`) löscht eine Datei. Die Datei landet nicht im Recycle Bin (Papierkorb) und lässt sich nur sehr schwer wiederherstellen.'
+  meaning: '`del` löscht nur Dateien, keine Ordner. Wenn du den Namen eines Ordners angibst, löscht es die Dateien darin und fragt vorher nach.'
+  usage: 'Temporäre Dateien, alte Ausgaben und nicht mehr benötigte Dateien entfernen.'
+  syntax: 'del [/p] [/q] [/f] [/s] names'
+  warning: 'Eine mit `del` gelöschte Datei landet nicht im Recycle Bin. Lies Namen und Pfad vor dem Drücken von Enter noch einmal. Auf einem echten Computer prüfst du dasselbe Muster zuerst mit `dir`.'
+  demo:
+    start: 'C:\Users\Student\Downloads'
+    cmds: ['del temp1.tmp', 'dir /b', 'del nothing.txt']
+  examples:
+    - c: 'del temp1.tmp'
+      d: 'Eine Datei löschen.'
+    - c: 'del /p photos.zip'
+      d: '`/p` fragt vor dem Löschen jeder Datei nach.'
+    - c: 'del Old'
+      d: 'Wenn Old ein Ordner ist: Die Dateien darin werden gelöscht (nach einer Nachfrage).'
+      noTry: true
+  mistakes:
+    - 'Denken, dass die Datei im Recycle Bin liegt.'
+    - 'Im falschen Ordner löschen; schau immer auf den Prompt (Eingabeaufforderung).'
+    - 'Erwarten, dass `del` einen Ordner löscht; Ordner löschst du mit `rd` (nächste Lektion).'
+  tip: 'Wenn die Datei nicht gefunden wird, meldet `del` `Could Not Find ...` und es wird nichts gelöscht.'
+  practice:
+    - id: P24a
+      start: 'C:\Users\Student\Downloads'
+      task: 'Lösche die Datei `temp1.tmp`.'
+      checks: [{type: fileNotExists, path: 'C:\Users\Student\Downloads\temp1.tmp'}, {type: fileExists, path: 'C:\Users\Student\Downloads\temp2.tmp'}]
+      hints:
+        - 'Zum Löschen einer Datei benutzt du `del` (Delete) und gibst genau den Namen der Datei an, die weg soll; die anderen Dateien müssen bleiben.'
+        - 'Zwei Teile: Was tun? (`del`) Welche Datei? (der vollständige Name `temp1.tmp` mit Extension). Pass auf, dass du nicht `temp2.tmp` schreibst.'
+      answer: 'del temp1.tmp'
+      explain: '`del` löscht nur genau die Datei, deren Name angegeben ist (`temp1.tmp`). Eine mit `del` gelöschte Datei landet nicht im Recycle Bin.'
+    - id: P24b
+      start: 'C:\Users\Student'
+      task: 'Lösche die Datei `photos.zip` in Downloads, ohne in diesen Ordner zu wechseln.'
+      checks: [{type: fileNotExists, path: 'C:\Users\Student\Downloads\photos.zip'}, {type: cwd, value: 'C:\Users\Student'}]
+      hints:
+        - 'Wieder `del`, aber die Datei liegt im Ordner Downloads und du bist in `C:\Users\Student`. Gib `del` einen Relative Path.'
+        - 'Zwei Teile: Was tun? (`del`) Welche Datei? (Pfad: Ordner `Downloads`, Trennzeichen `\`, dann `photos.zip`).'
+      answer: 'del Downloads\photos.zip'
+      explain: '`del` löscht die Datei unter `Downloads\photos.zip`; der Pfad wird vom aktuellen Ordner (Current Directory) aus gerechnet, du musst also nicht wechseln.'
+  quiz:
+    - kind: tf
+      q: 'Eine mit `del` gelöschte Datei landet im Recycle Bin.'
+      answer: false
+      explain: 'Sie wird direkt gelöscht.'
+    - kind: mcq
+      q: 'Welcher Switch (Schalter) fragt vor dem Löschen jeder Datei nach?'
+      options: ['/p', '/q', '/s', '/f']
+      answer: 0
+      code_options: true
+      explain: '`/p` = Prompt. `/q` macht das Gegenteil und löscht ohne Nachfrage.'
+    - kind: predict
+      q: 'Die Datei `x.txt` existiert nicht. Was ist die Ausgabe?'
+      code: 'del x.txt'
+      options: ['Could Not Find C:\...\x.txt', 'File deleted.', 'Access is denied.', 'Nichts']
+      answer: 0
+      explain: '`del` meldet, dass es die Datei nicht gefunden hat.'
+    - kind: sim
+      q: 'Lösche die Datei `draft.tmp` aus `Documents\Work`; die Berichte müssen bleiben.'
+      start: 'C:\Users\Student\Documents'
+      checks: [{type: fileNotExists, path: 'C:\Users\Student\Documents\Work\draft.tmp'}, {type: fileExists, path: 'C:\Users\Student\Documents\Work\report.txt'}]
+      answer: 'del Work\draft.tmp'
+      explain: 'Relativer Pfad von Documents aus: `Work\draft.tmp`.'
+  recap: '`del Datei` = löschen ohne Recycle Bin. `/p` fragt nach, `/q` nicht. Ordner löscht es nicht.'
+
+- n: 25
+  term: rmdir
+  fullForm: 'Remove Directory (rd)'
+  difficulty: 1
+  objective: 'Du löschst leere und volle Ordner und kennst den Unterschied zwischen `/s` und `/q`.'
+  summary: '`rmdir` (oder `rd`) löscht einen Ordner. Ohne Switch wird nur ein leerer Ordner gelöscht.'
+  meaning: '`/s` löscht den Ordner mit allen Dateien und Unterordnern und fragt vorher nach. `/q` heißt: nicht nachfragen.'
+  usage: 'Alte oder temporäre Ordner und abgeschlossene Projekte entfernen.'
+  syntax: 'rd [/s] [/q] path'
+  warning: '`rd /s /q` löscht einen ganzen Ordner mit allem Inhalt ohne jede Nachfrage. Führe es niemals bei einem Ordner aus, bei dem du dir nicht sicher bist.'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['mkdir Empty', 'rd Empty', 'rd Pictures']
+  examples:
+    - c: 'rd Empty'
+      noTry: true
+      d: 'Einen leeren Ordner löschen.'
+    - c: 'rd /s OldProject'
+      d: 'Einen Ordner mit allem Inhalt löschen; vorher fragt es `Are you sure (Y/N)?`'
+      noTry: true
+    - c: 'rd /s /q Temp'
+      d: 'Löschen ohne Nachfrage. Gefährlich!'
+      noTry: true
+  mistakes:
+    - 'Einen Ordner löschen, in dem du dich gerade befindest: Geh zuerst mit `cd ..` hinaus.'
+    - '`del` zum Löschen eines Ordners verwenden.'
+  tip: 'Schau vor `rd /s` mit `dir` oder `tree` nach, was in dem Ordner ist.'
+  practice:
+    - id: P25a
+      start: 'C:\Users\Student'
+      setup: {mkdir: ['C:\Users\Student\Empty']}
+      task: 'Hier gibt es einen leeren Ordner namens `Empty`. Lösche ihn.'
+      checks: [{type: dirNotExists, path: 'C:\Users\Student\Empty'}]
+      hints:
+        - 'Zum Löschen eines Ordners benutzt du `rd` (oder `rmdir`). Weil der Ordner leer ist, brauchst du keinen Switch.'
+        - 'Zwei Teile: Was tun? (`rd`) Welcher Ordner? (Ordnername: Empty). `del` funktioniert hier nicht; das ist für Dateien.'
+      answer: 'rd Empty'
+      explain: '`rd` (Remove Directory) löscht den leeren Ordner `Empty`. Wäre der Ordner nicht leer, gäbe es ohne Switch einen Fehler.'
+    - id: P25b
+      start: 'C:\Users\Student'
+      task: 'Lösche den Ordner `Pictures\Holidays` samt der Datei darin. (Wenn eine Frage kommt, beantworte sie.)'
+      checks: [{type: dirNotExists, path: 'C:\Users\Student\Pictures\Holidays'}, {type: dirExists, path: 'C:\Users\Student\Pictures'}]
+      inputs: ['y']
+      hints:
+        - 'Der Ordner Holidays ist nicht leer, also löscht `rd` allein ihn nicht. Du brauchst einen Switch, der den Ordner mit allem Inhalt löscht.'
+        - 'Drei Teile: Was tun? (`rd`) Wie? (Switch mit dem Buchstaben `s` und `/`) Welcher Ordner? (Pfad `Pictures\Holidays`). Wenn `Are you sure (Y/N)?` kommt, antworte mit `Y`.'
+      answer: 'rd /s Pictures\Holidays'
+      explain: '`rd` löscht Ordner, `/s` bedeutet samt allen Dateien und Unterordnern, und `Pictures\Holidays` ist der Zielordner. Die Antwort `Y` bestätigt das Löschen, und Pictures bleibt unversehrt.'
+  quiz:
+    - kind: predict
+      q: 'Der Ordner `Work` enthält zwei Dateien. Was ist die Ausgabe dieses Befehls?'
+      code: 'rd Work'
+      options: ['The directory is not empty.', 'Ordner und Dateien werden gelöscht', 'Nur die Dateien werden gelöscht', 'Are you sure (Y/N)?']
+      answer: 0
+      explain: 'Ohne `/s` wird nur ein leerer Ordner gelöscht.'
+    - kind: mcq
+      q: 'Welcher Befehl löscht einen Ordner mit allem Inhalt ohne Nachfrage?'
+      options: ['rd /s /q Temp', 'rd Temp', 'rd /s Temp', 'del Temp']
+      answer: 0
+      code_options: true
+      explain: '`/s` allen Inhalt, `/q` ohne Nachfrage.'
+    - kind: tf
+      q: '`rd` und `rmdir` sind derselbe Befehl.'
+      answer: true
+      explain: '`rd` ist die Kurzform.'
+  recap: '`rd Ordner` = leeren Ordner löschen. `/s` = mit Inhalt. `/q` = ohne Nachfrage. Erst nachsehen, dann löschen.'
+
+- n: 26
+  term: '*'
+  fullForm: 'Wildcard: any characters'
+  difficulty: 2
+  objective: 'Du wählst mit `*` eine ganze Gruppe von Dateien auf einmal aus.'
+  summary: '`*` bedeutet „beliebig viele Zeichen, auch gar keins“. `*.jpg` heißt: alle Dateien, die auf `.jpg` enden.'
+  meaning: 'Den Platzhalter (Wildcard) kannst du mit `dir`, `copy`, `move`, `del` und `ren` verwenden. `report*` heißt alles, was mit report beginnt. `*.*` heißt alle Dateien.'
+  usage: 'Mit einem Befehl mit mehreren gleichartigen Dateien arbeiten: alle Fotos kopieren, alle temporären Dateien löschen.'
+  syntax: "dir *.jpg\ncopy *.txt D:\\Backup\ndel *.tmp"
+  warning: '`del *.*` löscht alle Dateien im Ordner. Teste dasselbe Muster immer zuerst mit `dir`.'
+  demo:
+    start: 'C:\Users\Student\Pictures'
+    cmds: ['dir *.jpg /b', 'dir *.* /b']
+  examples:
+    - c: 'dir *.jpg'
+      d: 'Nur jpg-Dateien.'
+    - c: 'copy *.txt E:\'
+      at: 'C:\Users\Student\Documents'
+      d: 'Alle Textdateien auf den USB-Stick kopieren.'
+    - c: 'del *.tmp'
+      d: 'Alle temporären Dateien löschen.'
+      noTry: true
+    - c: 'ren *.txt *.bak'
+      d: 'Die Extension aller txt-Dateien ändern.'
+      noTry: true
+  mistakes:
+    - '`del` mit Wildcard ausführen, ohne vorher mit `dir` zu testen.'
+    - 'Den Punkt vergessen: `*jpg` erfasst auch eine Datei wie `myjpg`.'
+  tip: 'Goldene Regel: zuerst `dir Muster`; wenn nur die richtigen Dateien erscheinen, dann `del Muster`.'
+  restaurant: '„Bring alle Getränke“ heißt `*.drink`; du musst nicht jedes einzeln beim Namen nennen.'
+  practice:
+    - id: P26a
+      start: 'C:\Users\Student\Pictures'
+      task: 'Zeige nur die `.jpg`-Dateien in diesem Ordner an.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: outputIncludes, value: ['beach.jpg', 'cat.jpg']}, {type: outputExcludes, value: 'logo.png'}]
+      hints:
+        - 'Mit der Wildcard `*` kannst du „jeder beliebige Name“ sagen. Gib `dir` ein Muster, das jeden Namen akzeptiert, aber nur die Extension `.jpg`.'
+        - 'Zwei Teile: Was tun? (`dir`) Welches Muster? (`*` statt des Dateinamens, dann Punkt und `jpg`). `.png`-Dateien passen nicht zu diesem Muster.'
+      answer: 'dir *.jpg'
+      explain: '`dir` zeigt nur Dateien, die zum Muster `*.jpg` passen: `*` akzeptiert jeden Namen und `.jpg` lässt nur JPG-Bilder übrig.'
+    - id: P26b
+      start: 'C:\Users\Student\Downloads'
+      task: 'Lösche alle `.tmp`-Dateien in diesem Ordner mit einem einzigen Befehl (die anderen Dateien müssen bleiben).'
+      checks: [{type: countFiles, path: 'C:\Users\Student\Downloads\*.tmp', value: 0}, {type: fileExists, path: 'C:\Users\Student\Downloads\setup.exe'}]
+      hints:
+        - 'Mit `del` und der Wildcard `*` kannst du mehrere Dateien mit einem Befehl löschen. Vor dem Löschen schaust du am besten mit `dir` und demselben Muster nach, welche Dateien ausgewählt werden.'
+        - 'Zwei Teile: Was tun? (`del`) Welche Dateien? (Muster: `*` für jeden Namen, dann Punkt und `tmp`). Wenn du die Extension weglässt, werden alle Dateien gelöscht!'
+      answer: 'del *.tmp'
+      explain: '`del` löscht alle Dateien, die zum Muster `*.tmp` passen; Dateien wie `setup.exe` passen nicht dazu und bleiben erhalten.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Datei passt zum Muster `r*.txt`?'
+      options: ['report.txt', 'menu.txt', 'report.doc', 'art.txt']
+      answer: 0
+      code_options: true
+      explain: 'Sie muss mit r beginnen und auf .txt enden.'
+    - kind: predict
+      q: 'Im Ordner liegen: `a.txt`, `b.txt`, `c.jpg`. Wie viele Dateien werden gelöscht?'
+      code: 'del *.txt'
+      options: ['2', '3', '1', '0']
+      answer: 0
+      explain: 'Nur zwei Dateien enden auf `.txt`.'
+    - kind: type
+      q: 'Kopiere alle `.txt`-Dateien nach `E:\`.'
+      accept: ['copy *.txt e:\', 'copy *.txt e:', 'xcopy *.txt e:\']
+      show: 'copy *.txt E:\'
+      explain: 'Wildcard in der Quelle.'
+    - kind: sim
+      q: 'Kopiere alle `.jpg`-Dateien in Pictures (nur dieser Ordner selbst) nach `E:\Photos`.'
+      start: 'C:\Users\Student\Pictures'
+      checks: [{type: fileExists, path: 'E:\Photos\beach.jpg'}, {type: fileExists, path: 'E:\Photos\cat.jpg'}, {type: fileNotExists, path: 'E:\Photos\logo.png'}]
+      answer: 'copy *.jpg E:\Photos'
+      explain: '`*.jpg` wählt alle jpg-Dateien in diesem Ordner aus.'
+  recap: '`*` = beliebig viele Zeichen. `*.jpg` alle jpgs. Zuerst mit `dir` testen, dann `del`.'
+
+- n: 27
+  term: '?'
+  fullForm: 'Wildcard: one character'
+  difficulty: 2
+  objective: 'Du wählst mit `?` Dateien aus, die sich nur in einem Zeichen unterscheiden.'
+  summary: '`?` bedeutet „ein Zeichen“. `report?.txt` erfasst die Dateien `report1.txt` und `report2.txt`, aber nicht `report10.txt`.'
+  meaning: 'Jedes `?` steht für ein Zeichen; `??` heißt zwei Zeichen. Besonderheit in CMD: Ein `?` direkt vor dem Punkt oder am Ende des Namens darf auch leer sein, deshalb erfasst `report?.txt` auch `report.txt` selbst.'
+  usage: 'Nummerierte Dateien wie `photo1.jpg`, `photo2.jpg` oder Monate und Jahre.'
+  syntax: 'dir name?.ext'
+  demo:
+    start: 'C:\Users\Student\Documents\Work'
+    cmds: ['dir report?.txt /b', 'dir report??.txt /b']
+  examples:
+    - c: 'dir report?.txt'
+      d: 'report1 und report2 (und report), aber nicht report10.'
+    - c: 'dir report??.txt'
+      d: 'Bis zu zwei Zeichen nach report; auch report10 erscheint.'
+    - c: 'copy report?.txt D:\Backup'
+      d: 'Nur die einstelligen Berichte kopieren.'
+  mistakes:
+    - '`?` statt `*` verwenden, wenn die Anzahl der Zeichen nicht feststeht.'
+  tip: 'Du kannst `*` und `?` zusammen verwenden: `photo?.*` heißt photo + ein Zeichen mit beliebiger Extension.'
+  practice:
+    - id: P27a
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'Kopiere nur die einstelligen Berichte (`report1.txt` und `report2.txt`) nach `D:\Backup`; `report10.txt` darf nicht kopiert werden.'
+      checks: [{type: fileExists, path: 'D:\Backup\report1.txt'}, {type: fileExists, path: 'D:\Backup\report2.txt'}, {type: fileNotExists, path: 'D:\Backup\report10.txt'}]
+      hints:
+        - '`?` bedeutet als Wildcard „genau ein Zeichen“. Mit `copy` und einem Muster, das nach report nur ein Zeichen zulässt, bleibt `report10.txt` außen vor.'
+        - 'Drei Teile: Was tun? (`copy`) Welche Dateien? (Muster: `report`, ein `?`, dann `.txt`) Wohin? (Absolute Path des Ordners `D:\Backup`).'
+      answer: 'copy report?.txt D:\Backup'
+      explain: 'In `report?.txt` steht `?` nur für ein Zeichen; `report1` und `report2` passen also, `report10` (zwei Ziffern) aber nicht. `copy` bringt sie nach `D:\Backup`.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Datei passt nicht zu `photo?.jpg`?'
+      options: ['photo12.jpg', 'photo1.jpg', 'photoA.jpg', 'photo9.jpg']
+      answer: 0
+      code_options: true
+      explain: '`?` ist nur ein Zeichen; `12` sind zwei Zeichen.'
+    - kind: tf
+      q: '`??` bedeutet zwei Zeichen.'
+      answer: true
+      explain: 'Jedes `?` ist ein Zeichen.'
+    - kind: mcq
+      q: 'Welches Muster ist am besten, um `jan.txt`, `feb.txt` und `mar.txt` (drei Buchstaben) auszuwählen?'
+      options: ['???.txt', '?.txt', '*.*', 'j*.txt']
+      answer: 0
+      code_options: true
+      explain: 'Drei Fragezeichen für drei Buchstaben.'
+  recap: '`?` = ein Zeichen. `*` = beliebig viele. Beide funktionieren auch zusammen.'
+
+- n: 28
+  term: '>'
+  fullForm: 'Redirect output (overwrite)'
+  difficulty: 2
+  objective: 'Du schreibst die Ausgabe eines Befehls in eine Datei statt auf den Bildschirm.'
+  summary: '`>` schreibt die Ausgabe des Befehls in eine Datei. Gibt es die Datei nicht, wird sie angelegt; gibt es sie schon, wird ihr bisheriger Inhalt gelöscht und ersetzt.'
+  meaning: 'Jeder Befehl hat zwei Arten von Ausgabe: die normale Ausgabe (stdout) und Fehlermeldungen (stderr). `>` leitet nur die normale Ausgabe in die Datei um (Redirect).'
+  usage: 'Eine Dateiliste speichern, mit `echo` eine Textdatei erstellen, einen Bericht mit Systeminformationen erzeugen.'
+  syntax: 'command > file'
+  warning: '`>` löscht den bisherigen Inhalt der Datei komplett. Um etwas am Ende der Datei anzuhängen, benutze `>>` (nächste Lektion).'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['echo Hello CMD > hello.txt', 'type hello.txt', 'dir ..\Documents /b > list.txt', 'type list.txt']
+  examples:
+    - c: 'echo Hello > hello.txt'
+      d: 'Eine Datei mit einer Textzeile erstellen.'
+    - c: 'dir /b > files.txt'
+      d: 'Die Dateiliste speichern.'
+    - c: 'ipconfig > network.txt'
+      d: 'Netzwerkinformationen für später speichern.'
+  mistakes:
+    - '`>` auf eine wichtige Datei anwenden: Ihr Inhalt wird gelöscht.'
+    - 'Erwarten, die Ausgabe auf dem Bildschirm zu sehen: Mit `>` wird nichts angezeigt.'
+  tip: 'Mit `>nul` wirfst du die Ausgabe weg: `copy a.txt b.txt >nul` zeigt die Meldung „copied“ nicht an.'
+  restaurant: 'Statt die Bestellung laut auszurufen, schreibt der Koch sie auf einen Zettel und legt ihn in die Kasse.'
+  practice:
+    - id: P28a
+      start: 'C:\Users\Student\Desktop'
+      task: 'Erstelle eine Datei namens `hello.txt`, in der `Hello CMD` steht.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\hello.txt', value: 'Hello CMD'}]
+      hints:
+        - '`echo` gibt Text aus. Mit dem Zeichen `>` kannst du die Ausgabe statt auf den Bildschirm in eine Datei schicken; gibt es die Datei nicht, wird sie angelegt.'
+        - 'Drei Teile der Reihe nach: ein Befehl mit Ausgabe (`echo` + der Text Hello CMD), das Redirect-Zeichen (`>`) und der Name der Zieldatei (`hello.txt`).'
+      answer: 'echo Hello CMD > hello.txt'
+      explain: '`echo Hello CMD` erzeugt den Text und `>` schreibt ihn statt auf den Bildschirm in die Datei `hello.txt`; gibt es die Datei nicht, wird sie angelegt.'
+    - id: P28b
+      start: 'C:\Users\Student'
+      task: 'Speichere die Dateiliste von Documents in einer Datei namens `list.txt` (in diesem Ordner).'
+      checks: [{type: fileContains, path: 'C:\Users\Student\list.txt', value: 'menu.txt'}, {type: usedOp, value: '>'}]
+      hints:
+        - 'Die Ausgabe jedes Befehls lässt sich mit `>` in einer Datei speichern. Schreib zuerst den Befehl, der die Liste von Documents liefert, und schick dann seine Ausgabe in die Datei.'
+        - 'Drei Teile: der Listen-Befehl (`dir` + der Ordnername Documents), das Zeichen `>`, der Name der Zieldatei (`list.txt`). Auf dem Bildschirm siehst du nichts; alles geht in die Datei.'
+      answer: 'dir Documents > list.txt'
+      explain: '`dir Documents` erzeugt die Liste des Ordners und `>` speichert sie in `list.txt` (im aktuellen Ordner), statt sie auf dem Bildschirm anzuzeigen.'
+  quiz:
+    - kind: predict
+      q: 'Was steht nach diesen beiden Befehlen in `a.txt`?'
+      code: "echo One > a.txt\necho Two > a.txt"
+      options: ['Nur Two', 'One und Two', 'Nur One', 'Sie ist leer']
+      answer: 0
+      explain: '`>` löscht jedes Mal den bisherigen Inhalt.'
+    - kind: type
+      q: 'Schreibe die Ausgabe von `ipconfig` in die Datei `net.txt`.'
+      accept: ['ipconfig > net.txt', 'ipconfig >net.txt', 'ipconfig 1> net.txt']
+      show: 'ipconfig > net.txt'
+      explain: 'Befehl, `>`, Dateiname.'
+    - kind: tf
+      q: 'Mit `>` wird die Ausgabe des Befehls auch auf dem Bildschirm angezeigt.'
+      answer: false
+      explain: 'Die Ausgabe geht nur in die Datei.'
+    - kind: sim
+      q: 'Speichere die Ausgabe von `ver` in der Datei `version.txt` in diesem Ordner.'
+      start: 'C:\Users\Student\Desktop'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\version.txt', value: 'Microsoft Windows'}]
+      answer: 'ver > version.txt'
+      explain: '`>` schreibt die Ausgabe statt auf den Bildschirm in die Datei.'
+  recap: '`Befehl > Datei` = Ausgabe in eine Datei schreiben (ersetzen). `>nul` = Ausgabe wegwerfen.'
+
+- n: 29
+  term: '>>'
+  fullForm: 'Redirect output (append)'
+  difficulty: 2
+  objective: 'Du hängst etwas an das Ende einer Datei an, ohne den bisherigen Inhalt zu löschen.'
+  summary: '`>>` hängt die Ausgabe des Befehls an das Ende der Datei an. Gibt es die Datei nicht, wird sie angelegt.'
+  meaning: 'Der Hauptunterschied: `>` = Overwrite (ersetzen), `>>` = Append (anhängen).'
+  usage: 'Ein Log anlegen, mehrere Zeilen in eine Datei schreiben, die Berichte mehrerer Befehle sammeln.'
+  syntax: 'command >> file'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['echo Day 1: learned dir > log.txt', 'echo Day 2: learned copy >> log.txt', 'echo Day 3: learned >> >> log.txt', 'type log.txt']
+  examples:
+    - c: 'echo Ali >> guests.txt'
+      d: 'Einen Namen am Ende der Liste anhängen.'
+    - c: 'echo %date% %time% >> log.txt'
+      d: 'Die Uhrzeit im Log festhalten (Variablen in Lektion 46).'
+    - c: 'dir D:\Backup >> report.txt'
+      d: 'Die Liste eines anderen Ordners an den Bericht anhängen.'
+  mistakes:
+    - 'Beim zweiten Befehl `>` verwenden, wodurch die erste Zeile gelöscht wird.'
+    - 'Ein Leerzeichen zwischen den beiden Zeichen: `> >` ist falsch; es muss `>>` sein.'
+  tip: 'Übliches Muster: die erste Zeile mit `>` (neue Datei), alle weiteren mit `>>`.'
+  daily: '`>` ist wie Schreiben auf ein neues Blatt; `>>` ist wie Weiterschreiben unter den bisherigen Zeilen desselben Blatts.'
+  practice:
+    - id: P29a
+      start: 'C:\Users\Student\Desktop'
+      files: [{path: 'C:\Users\Student\Desktop\log.txt', content: "Day 1\n"}]
+      task: 'Die Datei `log.txt` hat eine Zeile (`Day 1`). Hänge die Zeile `Day 2` am Ende an, ohne dass die erste Zeile gelöscht wird.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\log.txt', value: ['Day 1', 'Day 2']}]
+      hints:
+        - '`>` schreibt die Datei neu, und die bisherige Zeile wird gelöscht. Um etwas am Ende der Datei anzuhängen, benutze die Version mit zwei Zeichen (`>>`).'
+        - 'Drei Teile: der Ausgabe-Befehl (`echo` + der Text Day 2), das Append-Zeichen (zwei `>` direkt hintereinander), der Dateiname (`log.txt`).'
+      answer: 'echo Day 2 >> log.txt'
+      explain: '`echo Day 2` erzeugt den Text und `>>` hängt ihn an das Ende von `log.txt` an; anders als bei `>` wird die Zeile `Day 1` nicht gelöscht.'
+    - id: P29b
+      start: 'C:\Users\Student\Desktop'
+      task: 'Erstelle eine Datei namens `names.txt` mit zwei Zeilen: in der ersten Zeile `Ali` und in der zweiten Zeile `Sara`.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\names.txt', value: ['Ali', 'Sara']}, {type: fileLines, path: 'C:\Users\Student\Desktop\names.txt', value: 2}]
+      hints:
+        - 'Du brauchst zwei `echo`-Befehle. Der erste muss die Datei anlegen (mit `>`), der zweite eine Zeile am Ende anhängen (mit `>>`).'
+        - 'Zeile 1: `echo` + Ali, dann `>`, dann `names.txt`. Zeile 2: `echo` + Sara, dann `>>`, dann wieder `names.txt`. Wenn auch Zeile 2 `>` benutzt, wird Ali gelöscht.'
+      answer: ['echo Ali > names.txt', 'echo Sara >> names.txt']
+      explain: 'Die erste Zeile legt mit `>` die Datei `names.txt` mit `Ali` an, und die zweite fügt mit `>>` das Wort `Sara` in der nächsten Zeile hinzu; die Datei hat also zwei Zeilen.'
+  quiz:
+    - kind: predict
+      q: 'Wie viele Zeilen hat `a.txt` nach diesen Befehlen?'
+      code: "echo 1 > a.txt\necho 2 >> a.txt\necho 3 >> a.txt"
+      options: ['3', '1', '2', '0']
+      answer: 0
+      explain: 'Die erste Zeile hat die Datei angelegt, und die zwei weiteren wurden angehängt.'
+    - kind: mcq
+      q: 'Welches Zeichen behält den bisherigen Inhalt der Datei?'
+      options: ['>>', '>', '<', '|']
+      answer: 0
+      code_options: true
+      explain: '`>>` = Append.'
+    - kind: order
+      q: 'Bring die Befehle in die richtige Reihenfolge, um die Datei `todo.txt` mit den Zeilen „Buy milk“ und „Call Ali“ zu erstellen.'
+      items: ['echo Buy milk > todo.txt', 'echo Call Ali >> todo.txt', 'type todo.txt']
+      explain: 'Zuerst mit `>` anlegen, dann mit `>>` anhängen, zum Schluss ansehen.'
+  recap: '`>` ersetzt, `>>` hängt an.'
+
+- n: 30
+  term: '2>'
+  fullForm: 'stdout (1) · stderr (2)'
+  difficulty: 2
+  objective: 'Du speicherst oder versteckst Fehlermeldungen getrennt von der normalen Ausgabe.'
+  summary: 'CMD hat zwei Ausgabekanäle: Nummer 1 ist die normale Ausgabe (stdout) und Nummer 2 sind Fehlermeldungen (stderr). `2>` leitet nur die Fehlermeldungen in eine Datei um.'
+  meaning: '`>` ist dasselbe wie `1>`. `2>nul` versteckt Fehler. `2>&1` bedeutet „schick die Fehler dorthin, wohin auch die normale Ausgabe geht“.'
+  usage: 'Fehler in einer eigenen Datei festhalten, unwichtige Fehlermeldungen verstecken, alles in einer Datei speichern.'
+  syntax: "command 2> errors.txt\ncommand > all.txt 2>&1\ncommand 2>nul"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['type missing.txt', 'type missing.txt 2> error.txt', 'type error.txt', 'type missing.txt 2>nul']
+  examples:
+    - c: 'type missing.txt 2> error.txt'
+      d: 'Die Fehlermeldung geht in die Datei statt auf den Bildschirm.'
+    - c: 'dir C:\nothing 2>nul'
+      d: 'Den Fehler verstecken.'
+    - c: 'dir Documents nothing > all.txt 2>&1'
+      d: 'Ausgabe und Fehler beide in einer Datei.'
+    - c: 'type menu.txt > out.txt 2> err.txt'
+      d: 'Normale Ausgabe und Fehler in zwei getrennten Dateien.'
+  mistakes:
+    - 'Ein Leerzeichen zwischen 2 und `>`: `2 >` bedeutet das Argument „2“ und danach `>`; es muss `2>` sein.'
+    - '`2>&1` vor `>` schreiben: Die Reihenfolge ist wichtig; zuerst `> file`, dann `2>&1`.'
+  tip: '`>nul 2>&1` heißt „zeig gar nichts an“; das ist in Batch-Skripten sehr verbreitet.'
+  practice:
+    - id: P30a
+      start: 'C:\Users\Student\Desktop'
+      task: 'Der Befehl `type missing.txt` gibt einen Fehler aus. Führe ihn so aus, dass die Fehlermeldung in der Datei `error.txt` gespeichert wird.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\error.txt', value: 'cannot find'}, {type: usedOp, value: '2>'}]
+      hints:
+        - 'Die Fehlermeldung kommt aus Kanal Nummer 2 (stderr), nicht aus dem normalen Kanal. Das normale `>` erfasst nur Kanal 1; schreib also die 2 vor das `>`.'
+        - 'Drei Teile: der Befehl, der den Fehler erzeugt (`type missing.txt`), das Redirect-Zeichen für Fehler (`2` direkt an `>`), und die Zieldatei (`error.txt`).'
+      answer: 'type missing.txt 2> error.txt'
+      explain: '`type missing.txt` erzeugt den Fehler „Datei nicht gefunden“, und `2>` speichert genau diese Fehlermeldung (Kanal 2) statt auf dem Bildschirm in `error.txt`.'
+    - id: P30b
+      start: 'C:\Users\Student'
+      task: 'Führe den Befehl `dir Documents\nothing` aus und speichere sowohl die normale Ausgabe als auch den Fehler in der Datei `all.txt`.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\all.txt', value: ['Volume', 'File Not Found']}, {type: usedOp, value: '2>&1'}]
+      hints:
+        - 'Du musst beide Kanäle in eine Datei schicken: Leite zuerst die normale Ausgabe mit `>` in die Datei um und sag dann, dass der Fehlerkanal (2) dorthin gehen soll, wo auch Kanal 1 hingeht.'
+        - 'Der Reihe nach: der Befehl (`dir Documents\nothing`), dann `>` und der Dateiname `all.txt`, und zum Schluss der Teil „Fehler zu Kanal 1 schicken“: `2>` und dann `&1`.'
+      answer: 'dir Documents\nothing > all.txt 2>&1'
+      explain: '`> all.txt` schickt die normale Ausgabe in die Datei, und `2>&1` heißt „schick Kanal 2 (Fehler) dorthin, wo Kanal 1 hingeht“; also landet beides in `all.txt`.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Kanalnummer haben Fehlermeldungen in CMD?'
+      options: ['2', '1', '0', '3']
+      answer: 0
+      explain: '0 Eingabe, 1 normale Ausgabe, 2 Fehler.'
+    - kind: predict
+      q: 'Die Datei `x.txt` existiert nicht. Was ist auf dem Bildschirm zu sehen?'
+      code: 'type x.txt 2>nul'
+      options: ['Gar nichts', 'The system cannot find the file specified.', 'x.txt', 'nul']
+      answer: 0
+      explain: 'Die Fehlermeldung ging nach `nul`.'
+    - kind: fix
+      q: 'Jemand möchte, dass Ausgabe und Fehler beide in `log.txt` landen. Wo ist der Fehler?'
+      code: 'dir C:\nothing 2>&1 > log.txt'
+      options: ['`2>&1` muss nach `> log.txt` kommen', 'Man muss `>>` schreiben', '`2>&1` gibt es nicht', 'Man muss `1>&2` schreiben']
+      answer: 0
+      explain: 'Richtig: `dir C:\nothing > log.txt 2>&1`'
+  recap: '1 = Ausgabe, 2 = Fehler. `2>` Fehler in eine Datei, `2>nul` verstecken, `> file 2>&1` alles in eine Datei.'
+
+- n: 31
+  term: '&   &&   ||'
+  fullForm: 'Command chaining'
+  difficulty: 2
+  objective: 'Du führst mehrere Befehle in einer Zeile aus und machst den zweiten Befehl vom Erfolg oder Misserfolg des ersten abhängig.'
+  summary: '`&` führt den zweiten Befehl immer aus. `&&` nur, wenn der erste erfolgreich war. `||` nur, wenn der erste fehlgeschlagen ist.'
+  meaning: 'Jeder Befehl hat nach dem Ausführen einen Exit Code: Null heißt erfolgreich. `&&` und `||` prüfen genau das (Lektion 62).'
+  usage: '`mkdir X && cd X` (wenn er angelegt wurde, hineinwechseln), `type file || echo nicht gefunden` (eine freundliche Meldung statt eines Fehlers).'
+  syntax: "cmd1 & cmd2\ncmd1 && cmd2\ncmd1 || cmd2"
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['mkdir Shop && cd Shop', 'type nofile.txt || echo File not found', 'echo One & echo Two']
+  examples:
+    - c: 'mkdir Shop && cd Shop'
+      d: 'Nur wenn das Anlegen geklappt hat, in den Ordner wechseln.'
+    - c: 'type a.txt || echo a.txt is missing'
+      expectError: true
+      d: 'Wenn die Datei fehlt, deine eigene Meldung anzeigen.'
+    - c: 'cd Documents & dir /b'
+      d: 'Zwei Befehle nacheinander, ohne Bedingung.'
+    - c: 'copy a.txt E:\ && echo OK || echo FAILED'
+      expectError: true
+      d: 'Das Ergebnis mit einem einzigen Wort melden.'
+  mistakes:
+    - '`|` (Pipe, Lektion 33) mit `||` verwechseln.'
+    - '`&` verwenden, wenn der zweite Befehl vom ersten abhängt: Wenn `cd` fehlschlägt, läuft `del *.*` im falschen Ordner! Hier ist `&&` sicherer.'
+  tip: 'Sicherheitsregel: Benutze vor gefährlichen Befehlen `&&`, damit sie nur laufen, wenn der vorige Schritt erfolgreich war.'
+  restaurant: '`&` heißt „bring die Vorspeise und danach das Hauptgericht“. `&&` heißt „wenn ihr Pizza habt, bring auch eine Limo“. `||` heißt „wenn ihr keine Pizza habt, bring Pasta“.'
+  practice:
+    - id: P31a
+      start: 'C:\Users\Student'
+      task: 'Lege in einer Zeile den Ordner `Shop` an und wechsle nur dann hinein, wenn er angelegt wurde.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Shop'}, {type: usedOp, value: '&&'}]
+      hints:
+        - 'Zwei Befehle lassen sich in einer Zeile verbinden. Du brauchst ein Zeichen, das den zweiten Befehl nur ausführt, wenn der erste erfolgreich war.'
+        - 'Drei Teile: der erste Befehl (`mkdir` + der Name Shop), das Zeichen „nur wenn erfolgreich“ (zwei `&`), der zweite Befehl (`cd` + der Name Shop).'
+      answer: 'mkdir Shop && cd Shop'
+      explain: '`mkdir Shop` legt den Ordner an, und `&&` führt `cd Shop` nur aus, wenn das geklappt hat; wäre das Anlegen fehlgeschlagen, wärst du nicht in den Ordner gewechselt.'
+    - id: P31b
+      start: 'C:\Users\Student'
+      task: 'Zeige in einer Zeile die Datei `nofile.txt` an und gib, falls das fehlschlägt, die Meldung `File not found` aus.'
+      checks: [{type: lastOutputIncludes, value: 'File not found'}, {type: usedOp, value: '||'}]
+      hints:
+        - 'Diesmal soll der zweite Befehl nur laufen, wenn der erste fehlgeschlagen ist. Das Zeichen dafür sind zwei senkrechte Striche (`||`).'
+        - 'Drei Teile: der erste Befehl (`type` + der Dateiname nofile.txt), das Zeichen „nur wenn fehlgeschlagen“ (`||`), der zweite Befehl (`echo` + die Meldung File not found).'
+      answer: 'type nofile.txt || echo File not found'
+      explain: '`type nofile.txt` schlägt fehl, weil die Datei nicht existiert, und `||` führt in diesem Fall `echo File not found` aus, sodass deine eigene Meldung erscheint.'
+  quiz:
+    - kind: predict
+      q: 'Die Datei `a.txt` existiert nicht. Was wird ausgegeben?'
+      code: 'type a.txt && echo YES || echo NO'
+      options: ['Eine Fehlermeldung und dann NO', 'YES', 'YES und NO', 'Nur die Fehlermeldung']
+      answer: 0
+      explain: '`type` ist fehlgeschlagen, also lief `echo YES` nicht, aber `|| echo NO` lief.'
+    - kind: mcq
+      q: 'Welches Zeichen führt den zweiten Befehl immer aus?'
+      options: ['&', '&&', '||', '|']
+      answer: 0
+      code_options: true
+      explain: '`&` hat keine Bedingung.'
+    - kind: tf
+      q: 'Wenn der Ordner X in `mkdir X && cd X` schon existiert, wird `cd X` nicht ausgeführt.'
+      answer: true
+      explain: '`mkdir` hat einen Fehler gemeldet (already exists), also hat `&&` den zweiten Befehl nicht ausgeführt.'
+  recap: '`&` immer, `&&` wenn erfolgreich, `||` wenn fehlgeschlagen. Benutze vor gefährlichen Aktionen `&&`.'
+
+- n: 32
+  term: 'Level 1 Practice'
+  fullForm: 'Combining what you learned'
+  difficulty: 2
+  objective: 'Du kombinierst die Befehle aus Level 1 für eine echte Aufgabe.'
+  summary: 'In dieser Lektion verwendest du Pfade, Ordner, Kopieren, Wildcards und Redirect zusammen, um eine vollständige Aufgabe zu erledigen.'
+  meaning: 'Eine echte Aufgabe hat meistens mehrere Schritte: an den richtigen Ort gehen, den Inhalt ansehen, das Ziel anlegen, die Arbeit erledigen und das Ergebnis prüfen.'
+  usage: 'Allgemeines Muster: `cd` → `dir` → `mkdir` → `copy`/`move` → `dir` zur Kontrolle.'
+  syntax: "cd folder\nmkdir target\ncopy *.ext target\ndir target"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['mkdir Archive', 'copy *.txt Archive', 'dir Archive /b']
+  examples:
+    - c: 'mkdir Archive && copy *.txt Archive'
+      d: 'Einen Ordner anlegen und alle Textdateien hineinkopieren, in einer Zeile.'
+    - c: 'copy ..\Pictures\*.jpg E:\Photos'
+      d: 'Alle jpgs auf den USB-Stick kopieren.'
+    - c: 'dir E:\Photos /b > E:\photos.txt'
+      d: 'Die Liste für später speichern.'
+  mistakes:
+    - 'Loslegen, ohne auf den Prompt zu schauen; wisse immer, in welchem Ordner du bist.'
+    - 'Das Ergebnis nicht mit `dir` prüfen.'
+  tip: 'Teile jede große Aufgabe in kleine Schritte und schau dir nach jedem Schritt das Ergebnis an.'
+  practice:
+    - id: P32a
+      start: 'C:\Users\Student\Documents'
+      task: 'Lege in Documents einen Ordner namens `Archive` an, kopiere alle `.txt`-Dateien hinein und sieh dir zum Schluss den Inhalt von Archive an.'
+      multi: true
+      checks: [{type: fileExists, path: 'C:\Users\Student\Documents\Archive\menu.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\Archive\todo.txt'}, {type: fileExists, path: 'C:\Users\Student\Documents\Archive\guests.txt'}, {type: argIncludes, cmd: dir, value: archive}]
+      hints:
+        - 'Drei Schritte nacheinander: Lege zuerst den Ordner Archive an, kopiere dann alle `.txt`-Dateien mit der Wildcard `*` hinein und sieh dir zum Schluss den Inhalt an.'
+        - 'Zeile 1: `mkdir` + Ordnername. Zeile 2: `copy` + Muster für alle txt-Dateien (`*` und `.txt`) + Zielordner. Zeile 3: `dir` + der Name desselben Ordners.'
+      answer: ['mkdir Archive', 'copy *.txt Archive', 'dir Archive']
+      explain: '`mkdir Archive` legt den Ordner an, `copy *.txt Archive` kopiert alle Textdateien hinein und `dir Archive` zeigt, dass die Kopien angekommen sind.'
+    - id: P32b
+      start: 'C:\Users\Student\Pictures'
+      task: 'Kopiere alle `.jpg`-Bilder in diesem Ordner nach `E:\Photos` und speichere die Dateiliste dieses Ordners in `E:\photos.txt`.'
+      multi: true
+      checks: [{type: fileExists, path: 'E:\Photos\beach.jpg'}, {type: fileExists, path: 'E:\Photos\cat.jpg'}, {type: fileContains, path: 'E:\photos.txt', value: 'beach.jpg'}]
+      hints:
+        - 'Zwei Schritte: Schick zuerst alle `.jpg`-Bilder mit `copy` und Wildcard in den Ordner auf dem USB-Stick, und speichere dann die Liste dieses Ordners mit `dir` und `>` in einer Datei.'
+        - 'Zeile 1: `copy` + Muster für jpgs + Ziel `E:\Photos`. Zeile 2: `dir` + dasselbe `E:\Photos` + das Zeichen `>` + Zieldatei `E:\photos.txt`.'
+      answer: ['copy *.jpg E:\Photos', 'dir E:\Photos > E:\photos.txt']
+      explain: '`copy *.jpg E:\Photos` bringt alle jpgs auf den USB-Stick. Danach erzeugt `dir E:\Photos` die Liste dieses Ordners und `>` schreibt sie in `E:\photos.txt`.'
+  quiz:
+    - kind: order
+      q: 'Bring die Befehle in die richtige Reihenfolge, um alle `.pdf`-Dateien aus Downloads in einen neuen Ordner `Docs` zu verschieben. (Du startest in `C:\Users\Student`.)'
+      items: ['cd Downloads', 'mkdir Docs', 'move *.pdf Docs', 'dir Docs']
+      explain: 'Zuerst hingehen, das Ziel anlegen, verschieben, das Ergebnis ansehen.'
+    - kind: predict
+      q: 'Current Directory: `C:\Users\Student`. Was ist das Ergebnis dieser Zeile?'
+      code: 'cd Nothing && del *.*'
+      options: ['cd meldet einen Fehler und del wird nicht ausgeführt', 'Alle Dateien in Student werden gelöscht', 'Der Ordner Nothing wird angelegt', 'del wird in C:\ ausgeführt']
+      answer: 0
+      explain: 'Darum ist `&&` so wichtig: Mit `&` wären die Dateien im falschen Ordner gelöscht worden.'
+    - kind: mcq
+      q: 'Welcher Befehl hängt die Dateiliste von E:\ an das Ende von `report.txt` an?'
+      options: ['dir E:\ >> report.txt', 'dir E:\ > report.txt', 'type E:\ >> report.txt', 'copy E:\ report.txt']
+      answer: 0
+      code_options: true
+      explain: '`>>` hängt an.'
+  recap: 'Echte Aufgabe = kleine Schritte: hingehen, ansehen, anlegen, erledigen, prüfen. `&&` verhindert gefährliche Fehler.'

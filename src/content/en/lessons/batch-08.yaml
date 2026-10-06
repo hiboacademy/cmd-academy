@@ -1,0 +1,561 @@
+# Lessons 68–77 · Chapter 10: Batch basics
+# Practice tasks with "batch:" open the script editor. "answer" is a working script.
+
+- n: 68
+  term: '.bat'
+  fullForm: 'Batch Script'
+  difficulty: 2
+  objective: 'Understand what a batch script is and why it automates your work in CMD.'
+  summary: 'A batch script is a text file with the extension `.bat` that contains several CMD commands. When you run the file, the commands run one by one, from top to bottom.'
+  meaning: 'Anything you type in CMD can also be written in a batch file. On top of that, batch has variables, conditions (`if`), loops (`for`) and jumps (`goto`), so it can make decisions and repeat things.'
+  usage: 'Repetitive jobs: a daily backup, sorting files, installing and setting up several computers, creating reports.'
+  syntax: "file.bat\n(each line = one command)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\first.bat', content: "echo Hello Batch\nver\n"}]
+    cmds: ['type first.bat', 'first.bat']
+  examples:
+    - c: 'first.bat'
+      noTry: true
+      d: 'Run a batch file in the current directory.'
+    - c: 'first'
+      noTry: true
+      d: 'It also runs without the extension.'
+    - c: 'type first.bat'
+      noTry: true
+      d: 'View the contents of the script.'
+  mistakes:
+    - 'Saving the file in Notepad as `first.bat.txt`. In the Save window, set the file type to All Files.'
+  tip: 'In CMD Academy, the Batch Editor (on the practice page) is a safe place to write and run scripts.'
+  restaurant: 'A batch file is like the order sheet for a party: instead of the waiter coming to your table ten times, you write all the orders on one sheet and the kitchen prepares them in order.'
+  practice:
+    - id: P68a
+      batch: {file: 'first.bat', starter: "echo Hello Batch\n"}
+      task: 'This script has one line. Add a second line that shows the Windows version (`ver`), then run it.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello Batch', 'Microsoft Windows']}]
+      hints: ['Each line of a batch script is one command, and the lines run in order from the top. Write the command that shows the Windows version on a new line, below the `echo` line.', 'Keep line 1 as `echo Hello Batch`; line 2: the command `ver`. Then press the “Run” button to see both outputs.']
+      answer: ['echo Hello Batch', 'ver']
+      explain: 'The script first runs `echo Hello Batch` and prints the text, then `ver` shows the Windows version (`Microsoft Windows ...`).'
+    - id: P68b
+      start: 'C:\Users\Student\Desktop'
+      task: 'Without the editor, using only CMD, create a file `hi.bat` that contains the command `echo Hi from a file`, then run it.'
+      multi: true
+      checks: [{type: fileContains, path: 'C:\Users\Student\Desktop\hi.bat', value: 'echo Hi from a file'}, {type: ranBatch}, {type: outputIncludes, value: 'Hi from a file'}]
+      hints: ['Two steps: first use `echo` and a redirect (`>`) to write one line of text into the file `hi.bat`; that text is itself a command. Then run the file by its name.', 'The first line has three parts: `echo` + the text that should go into the file (`echo Hi from a file`) + `>` and the file name `hi.bat`. The second line: just the file name `hi.bat`.']
+      answer: ['echo echo Hi from a file > hi.bat', 'hi.bat']
+      explain: 'The first `echo` writes the text `echo Hi from a file` into `hi.bat` using `>`. When you run `hi.bat`, that line runs and `Hi from a file` is printed.'
+  quiz:
+    - kind: mcq
+      q: 'In what order do the commands in a batch script run?'
+      options: ['From top to bottom, one by one', 'All at the same time', 'From bottom to top', 'In alphabetical order']
+      answer: 0
+      explain: 'Unless `goto` or `call` changes the order.'
+    - kind: tf
+      q: 'Every command that works in CMD also works inside a batch file.'
+      answer: true
+      explain: 'Batch is the same CMD commands, plus scripting features.'
+    - kind: type
+      q: 'Run the script `backup.bat`, which is in the current directory.'
+      accept: ['backup.bat', 'backup', 'call backup.bat', '.\backup.bat']
+      explain: 'Type the file name.'
+  recap: 'Batch = a `.bat` file with several commands that run in order. You run it by typing its file name.'
+
+- n: 69
+  term: '.bat · .cmd'
+  fullForm: 'Batch file types'
+  difficulty: 2
+  objective: 'Know the difference between `.bat` and `.cmd` and run both.'
+  summary: '`.bat` and `.cmd` are both batch files, and in modern Windows they run almost the same way.'
+  meaning: '`.bat` dates back to MS-DOS, while `.cmd` was created for Windows NT and later. A small difference: in `.cmd`, some commands such as `set` always reset ERRORLEVEL to zero. For learning, `.bat` is enough.'
+  usage: 'Recognizing both types when you look at other people''s scripts.'
+  syntax: "script.bat\nscript.cmd"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\tools.cmd', content: "@echo off\necho This is a .cmd script\n"}]
+    cmds: ['tools', 'tools.cmd']
+  examples:
+    - c: 'tools.cmd'
+      noTry: true
+      d: 'Run a .cmd file.'
+    - c: 'tools'
+      noTry: true
+      d: 'Without the extension; CMD finds the .bat or .cmd file by itself.'
+  mistakes:
+    - 'Having both `tools.bat` and `tools.cmd` in the same folder; when you type `tools`, it is not obvious which one runs.'
+  tip: 'Never give a script the same name as a command (like `dir.bat` or `ping.bat`); it is confusing and dangerous.'
+  practice:
+    - id: P69a
+      start: 'C:\Users\Student\Desktop'
+      files: [{path: 'C:\Users\Student\Desktop\tools.cmd', content: "@echo off\necho This is a .cmd script\n"}]
+      task: 'There is a file `tools.cmd` on the Desktop. Run it by typing only its name, without the extension.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'This is a .cmd script'}, {type: not, check: {type: inputIncludes, value: '.cmd'}}]
+      hints: ['When you type a script name without an extension, CMD looks in the current directory for a `.bat` or `.cmd` file with that name.', 'The file name is `tools.cmd`; type only the part before the dot and press Enter. Don''t type `.cmd`.']
+      answer: 'tools'
+      explain: 'For `tools`, CMD tries executable extensions such as `.cmd`, finds `tools.cmd`, runs it, and its message is printed.'
+    - id: P69b
+      batch: {file: 'info.cmd', starter: "@echo off\n"}
+      task: 'Write a script with the extension `.cmd` that prints the user name using the variable `%USERNAME%`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\info.cmd', value: '%username%'}, {type: outputIncludes, value: 'Student'}]
+      hints: ['The current user name is stored in the built-in variable `%USERNAME%`. With `echo` you can print some text and this variable together.', 'Leave the first line as it is. Line 2: `echo`, a label like `User:`, and then `%USERNAME%` (with `%` on both sides).']
+      answer: ['@echo off', 'echo User: %USERNAME%']
+      explain: 'When `echo User: %USERNAME%` runs, CMD replaces `%USERNAME%` with the user name (`Student`) and then prints the whole sentence.'
+  quiz:
+    - kind: tf
+      q: 'A `.cmd` file, just like a `.bat` file, runs when you type its name.'
+      answer: true
+      explain: 'Both are batch files.'
+    - kind: mcq
+      q: 'Which extension is older and dates back to MS-DOS?'
+      options: ['.bat', '.cmd', '.ps1', '.exe']
+      answer: 0
+      code_options: true
+      explain: '`.cmd` came with Windows NT.'
+    - kind: mcq
+      q: 'Why shouldn''t a script be named `ping.bat`?'
+      options: ['It may run instead of the ping command, which is confusing', 'Four-letter names are not allowed', 'Windows deletes it', 'It makes no difference']
+      answer: 0
+      explain: 'CMD searches the current directory first.'
+  recap: '`.bat` and `.cmd` are both batch files. Don''t give a script the same name as a command.'
+
+- n: 70
+  term: 'hello.bat'
+  fullForm: 'Your first batch file'
+  difficulty: 2
+  objective: 'Write, save and run your first real script.'
+  summary: 'In real Windows: open Notepad, write the commands, save as `hello.bat` with the type All Files, and run it from CMD or by double-clicking it.'
+  meaning: 'When you run a script by double-clicking it, the window closes immediately after the last command. That is why scripts often end with `pause` (lesson 72). Running the script from inside CMD keeps the window open.'
+  usage: 'Every script is made with the same cycle: write, save, run, fix.'
+  syntax: "echo ...\ndir ...\n(save as hello.bat)"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\hello.bat', content: "echo Hello, World!\necho Today is %DATE%\ndir /b\n"}]
+    cmds: ['hello.bat']
+  examples:
+    - c: 'notepad hello.bat'
+      d: 'In real Windows, Notepad opens the file for editing.'
+      noTry: true
+    - c: 'hello'
+      noTry: true
+      d: 'Run the script.'
+  mistakes:
+    - 'Saving it as `hello.bat.txt`.'
+    - 'Forgetting to save before running (in the Batch Editor, the Run button saves automatically).'
+  tip: 'In a script, `%DATE%` and `%USERNAME%` work just like on the command line.'
+  practice:
+    - id: P70a
+      batch: {file: 'hello.bat', starter: ""}
+      task: 'Write the script `hello.bat`: first it should print `Hello, World!`, then the line `Today is` followed by the date (`%DATE%`).'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Hello, World!', 'Today is']}, {type: fileContains, path: 'C:\Users\Student\Desktop\hello.bat', value: '%date%'}]
+      hints: ['Everything you want to print needs its own `echo` line. Today''s date is stored in the built-in variable `%DATE%`.', 'Line 1: `echo` + the text `Hello, World!`. Line 2: `echo` + the text `Today is` + a space + `%DATE%`.']
+      answer: ['echo Hello, World!', 'echo Today is %DATE%']
+      explain: 'The first line prints the greeting. In the second line, CMD replaces `%DATE%` with today''s date, so `Today is` is printed together with the date.'
+  quiz:
+    - kind: mcq
+      q: 'Why does the window close so quickly when you double-click a script?'
+      options: ['The script has finished, so CMD closes too', 'The script is broken', 'Windows blocked it', 'The extension is wrong']
+      answer: 0
+      explain: 'Use `pause` to see the result.'
+    - kind: tf
+      q: 'In Notepad you must set the file type to All Files so that `.txt` isn''t added to the name.'
+      answer: true
+      explain: 'Otherwise the file becomes `hello.bat.txt`.'
+    - kind: order
+      q: 'Put the steps of making a script in order.'
+      items: ['Write the commands', 'Save with the .bat extension', 'Run', 'Read the output and fix']
+      explain: 'Write → save → run → fix.'
+  recap: 'Write → save as `.bat` → run. Double-clicking closes the window, so you need `pause`.'
+
+- n: 71
+  term: '@echo off'
+  fullForm: 'echo off · rem · ::'
+  difficulty: 2
+  objective: 'Turn off the display of the commands themselves and write comments in a script.'
+  summary: 'By default, batch shows each command with the prompt before running it. `@echo off` on the first line turns this display off. `rem` and `::` are for writing explanations (comments).'
+  meaning: '`echo off` turns off the display of commands, and `@` in front of a line hides just that one line. So `@echo off` means “from here on, don''t show the commands, and don''t show this line either”. A comment doesn''t run; it is only for the reader.'
+  usage: 'Almost every script starts with `@echo off`. Comments help you understand later what each part does.'
+  syntax: "@echo off\nrem comment\n:: comment"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files:
+      - {path: 'C:\Users\Student\Desktop\noisy.bat', content: "echo Step 1\necho Step 2\n"}
+      - {path: 'C:\Users\Student\Desktop\quiet.bat', content: "@echo off\nrem This line is a comment\necho Step 1\necho Step 2\n"}
+    cmds: ['noisy.bat', 'quiet.bat']
+  examples:
+    - c: '@echo off'
+      d: 'The first line of almost every script.'
+      noTry: true
+    - c: 'rem Backup of Documents'
+      d: 'A comment.'
+      noTry: true
+    - c: ':: Step 2: copy files'
+      d: 'Another way to write a comment.'
+      noTry: true
+  mistakes:
+    - 'Writing `echo off` without `@`: this line itself is shown once.'
+    - 'Using `::` inside parentheses `( )`; `rem` is safer there.'
+  tip: 'To debug a script, temporarily change `@echo off` to `@echo on` so you can see which line is running.'
+  practice:
+    - id: P71a
+      batch: {file: 'steps.bat', starter: "echo Step 1: check files\ndir /b\necho Step 2: done\n"}
+      task: 'When this script runs, it also shows the commands themselves. Make it show only the output, and also add a comment line with `rem`.'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\steps.bat', value: ['@echo off', 'rem']}, {type: outputIncludes, value: 'Step 2: done'}, {type: outputExcludes, value: '>echo'}]
+      hints: ['You need two things: a line at the top of the script that turns off the display of the commands (`echo off` together with `@`), and a comment line that starts with `rem` and doesn''t run.', 'Line 1 (the very top): `@echo off`. Line 2: `rem` followed by a short English note about what the script does. Leave all the other lines unchanged.']
+      answer: ['@echo off', 'rem List the desktop files', 'echo Step 1: check files', 'dir /b', 'echo Step 2: done']
+      explain: '`@echo off` stops the commands from being shown with the prompt before they run (and `@` hides this line too); the `rem` line is just a comment and doesn''t run.'
+  quiz:
+    - kind: mcq
+      q: 'What does `@` at the start of a batch line do?'
+      options: ['It hides that line from the display', 'It turns the line into a comment', 'It runs the line twice', 'It runs the line as administrator']
+      answer: 0
+      explain: '`@echo off` = turn off the display + hide this line itself.'
+    - kind: tf
+      q: 'A line that starts with `rem` doesn''t run.'
+      answer: true
+      explain: 'It''s a comment.'
+    - kind: predict
+      q: 'What does the output of this script (without @echo off) look like?'
+      code: "echo Hi"
+      options: ["C:\\...>echo Hi\nHi", 'Hi', 'echo Hi', 'Nothing']
+      answer: 0
+      code_options: true
+      explain: 'With echo on, the command itself is shown with the prompt first.'
+  recap: '`@echo off` on the first line. `rem` or `::` for comments.'
+
+- n: 72
+  term: pause
+  fullForm: 'Pause'
+  difficulty: 2
+  objective: 'Stop a script so the user can see the result or get ready to continue.'
+  summary: '`pause` shows the message `Press any key to continue . . .` and waits until a key is pressed.'
+  meaning: '`pause >nul` waits without showing the message; you can write your own message before it with `echo`.'
+  usage: 'At the end of scripts that are run by double-clicking, or before an important step (“Press a key to start the backup”).'
+  syntax: "pause\necho message & pause >nul"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\wait.bat', content: "@echo off\necho Ready?\npause\necho Go!\n"}]
+    cmds: ['wait.bat']
+  examples:
+    - c: 'pause'
+      d: 'The standard message, then waiting.'
+      noTry: true
+    - c: 'echo Press any key to start the backup... & pause >nul'
+      d: 'Your own custom message.'
+      noTry: true
+  mistakes:
+    - 'Putting `pause` in scripts that run automatically (for example with Task Scheduler); the script waits forever.'
+  tip: 'In the simulator, when `pause` is waiting, press any key.'
+  practice:
+    - id: P72a
+      batch: {file: 'wait.bat', starter: "@echo off\necho Ready?\necho Go!\n"}
+      task: 'Change the script so that after `Ready?` it waits for a key press and then prints `Go!`.'
+      checks: [{type: ranBatch}, {type: outputOrder, value: ['Ready?', 'Press any key to continue', 'Go!']}]
+      hints: ['You need a command that holds the script until the user presses a key. Its position matters: it must come between printing `Ready?` and printing `Go!`.', 'Open a new line after `echo Ready?` and before `echo Go!`, and write the command `pause` alone on that line.']
+      answer: ['@echo off', 'echo Ready?', 'pause', 'echo Go!']
+      explain: 'After `Ready?`, `pause` shows the message `Press any key to continue . . .` and waits for a key press; then the script continues and `Go!` is printed.'
+    - id: P72b
+      batch: {file: 'start.bat', starter: "@echo off\n"}
+      task: 'Write a script that shows the message `Press a key to start...`, waits without the standard pause message, and then prints `Started`.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['Press a key to start', 'Started']}, {type: outputExcludes, value: 'Press any key to continue'}]
+      hints: ['Print your own message with `echo` and use `pause` to wait; hide the standard `pause` message by sending its output to `nul`.', 'After `@echo off`, three lines: 1) `echo` with the text `Press a key to start...` 2) `pause` together with `>nul` 3) `echo` with the text `Started`.']
+      answer: ['@echo off', 'echo Press a key to start...', 'pause >nul', 'echo Started']
+      explain: '`echo` shows your custom message, `pause >nul` waits for a key but sends its standard message to `nul` (nowhere), and then `Started` is printed.'
+  quiz:
+    - kind: mcq
+      q: 'What is the standard message of `pause`?'
+      options: ['Press any key to continue . . .', 'Paused.', 'Wait...', 'Hit Enter']
+      answer: 0
+      explain: 'You can hide it with `>nul`.'
+    - kind: tf
+      q: '`pause >nul` doesn''t wait.'
+      answer: false
+      explain: 'It does wait; it just doesn''t show the message.'
+    - kind: mcq
+      q: 'Where should you NOT put `pause`?'
+      options: ['In a script that runs automatically, with no user present', 'At the end of a script you double-click', 'Before an important step', 'While debugging']
+      answer: 0
+      explain: 'There is nobody there to press a key.'
+  recap: '`pause` = wait for a key. `pause >nul` = wait without a message.'
+
+- n: 73
+  term: '%var%'
+  fullForm: 'Variables in batch files'
+  difficulty: 2
+  objective: 'Create variables in a script and use them to make the script easier to read and change.'
+  summary: 'In batch, too, you create a variable with `set name=value` and read it with `%name%`. The big advantage: you define values such as paths once, at the top of the script.'
+  meaning: 'An important difference from the command line: if a variable doesn''t exist, inside a batch file `%name%` turns into “nothing” (not the text itself). For a value with spaces, use `set "name=value"`, and use `"%name%"` when you read it.'
+  usage: 'Defining the source and target paths, file names and settings at the top of the script.'
+  syntax: "set \"name=value\"\necho %name%\ndir \"%folder%\""
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\vars.bat', content: "@echo off\nset name=Hibo\nset \"city=New York\"\necho %name% lives in %city%.\necho Missing: [%nothing%]\n"}]
+    cmds: ['vars.bat']
+  examples:
+    - c: 'set "folder=%USERPROFILE%\Documents"'
+      d: 'A variable for a path.'
+      noTry: true
+    - c: 'dir "%folder%" /b'
+      d: 'Using it with quotes.'
+      noTry: true
+  mistakes:
+    - 'Spaces around `=`.'
+    - 'Using a path with spaces without quotes: `dir %folder%`.'
+  tip: 'Give variables meaningful names: `source` and `target` are better than `a` and `b`.'
+  practice:
+    - id: P73a
+      batch: {file: 'vars.bat', starter: "@echo off\n"}
+      task: 'In the script, create two variables: `name` with the value `Hibo` and `city` with the value `Vienna`, and print the sentence `Hibo lives in Vienna` using these variables.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hibo lives in Vienna'}, {type: fileContains, path: 'C:\Users\Student\Desktop\vars.bat', value: ['%name%', '%city%']}]
+      hints: ['Create two variables with `set` (name=value, no spaces around `=`). Then, in the `echo` sentence, read the variables with `%...%` instead of typing the name and city directly.', 'Line 2: `set` for `name` with the value `Hibo`. Line 3: `set` for `city` with the value `Vienna`. Line 4: `echo` a sentence with `%name%` and `%city%`, and `lives in` between them.']
+      answer: ['@echo off', 'set name=Hibo', 'set city=Vienna', 'echo %name% lives in %city%']
+      explain: 'The two `set` lines store the values `Hibo` and `Vienna` in the variables, and in the `echo` line `%name%` and `%city%` are replaced with those values.'
+    - id: P73b
+      batch: {file: 'docs.bat', starter: "@echo off\n"}
+      task: 'Create a variable named `folder` that holds the path of the user''s Documents folder using `%USERPROFILE%`, and show the contents of that folder with `dir /b` and this variable.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'menu.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\docs.bat', value: ['%userprofile%', '%folder%']}]
+      hints: ['`%USERPROFILE%` is the path of the user''s folder; add `\Documents` to the end of it and store the result in the variable `folder` with `set`. Then run `dir /b` on this variable.', 'Line 2: `set` with quotes around the whole `folder=%USERPROFILE%\Documents`. Line 3: `dir`, then `"%folder%"` in quotes, then the switch `/b`.']
+      answer: ['@echo off', 'set "folder=%USERPROFILE%\Documents"', 'dir "%folder%" /b']
+      explain: '`set "folder=..."` stores the path of the user''s Documents folder in `folder`, and `dir "%folder%" /b` shows the contents of that folder as file names only; the quotes protect the path against spaces.'
+  quiz:
+    - kind: predict
+      q: 'The variable `x` is not defined. Inside a batch file, what does this line print?'
+      code: 'echo [%x%]'
+      options: ['[]', '[%x%]', 'Error', '[x]']
+      answer: 0
+      code_options: true
+      explain: 'In batch, a variable that doesn''t exist turns into nothing.'
+    - kind: mcq
+      q: 'What is the safest way to define a variable whose value contains spaces?'
+      options: ['set "msg=Hello World"', 'set msg = Hello World', 'set msg="Hello World"', 'set "msg"=Hello World']
+      answer: 0
+      code_options: true
+      explain: 'Put quotes around the whole `name=value`.'
+    - kind: tf
+      q: 'Defining paths as variables at the top of the script makes later changes easier.'
+      answer: true
+      explain: 'You only change one line.'
+  recap: '`set "name=value"` and `"%name%"`. In batch, a variable that doesn''t exist = empty.'
+
+- n: 74
+  term: 'set /p'
+  fullForm: 'Read user input'
+  difficulty: 2
+  objective: 'Get input from the user and use it in a script.'
+  summary: '`set /p name=question` shows the question, waits for the user to type something and press Enter, and puts the answer in the variable `name`.'
+  meaning: 'The question text comes after `=` (usually with a space at the end). If the user just presses Enter, the variable doesn''t change. With `set /p line=<file.txt`, the first line of a file goes into the variable.'
+  usage: 'Asking for a name, a path, a confirmation (Y/N), or a choice from a menu.'
+  syntax: "set /p name=Your name? \nset /p first=<file.txt"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    inputs: ['Sara']
+    files: [{path: 'C:\Users\Student\Desktop\ask.bat', content: "@echo off\nset /p name=What is your name? \necho Hello %name%!\n"}]
+    cmds: ['ask.bat']
+  examples:
+    - c: 'set /p name=What is your name? '
+      d: 'Ask for a name.'
+      noTry: true
+    - c: 'set /p first=<todo.txt'
+      d: 'The first line of a file.'
+      noTry: true
+  mistakes:
+    - 'Forgetting the space at the end of the question; the user''s answer gets stuck to the question.'
+    - 'Assuming the user always types something; check for an empty answer with `if` (lesson 78).'
+  tip: 'In the simulator, when the script asks a question, type the answer in the terminal and press Enter.'
+  practice:
+    - id: P74a
+      batch: {file: 'ask.bat', starter: "@echo off\n"}
+      inputs: ['Sara']
+      task: 'Write a script that asks for the user''s name and then says `Hello` followed by that name. (Run it and enter your name.)'
+      checks: [{type: ranBatch}, {type: fileContains, path: 'C:\Users\Student\Desktop\ask.bat', value: ['set /p', '%name%']}, {type: outputIncludes, value: 'Hello'}]
+      hints: ['To get input from the user, use `set /p`: it shows the question and puts the answer in a variable. Then print that variable with `echo`.', 'Line 2: `set /p`, the variable name (`name`), `=`, and the question text such as `What is your name?` with a space at the end. Line 3: `echo Hello` followed by `%name%`.']
+      answer: ['@echo off', 'set /p name=What is your name? ', 'echo Hello %name%']
+      explain: '`set /p name=...` shows the question and puts the user''s answer in `name`; `echo Hello %name%` prints that answer after `Hello`.'
+    - id: P74b
+      batch: {file: 'first.bat', starter: "@echo off\n"}
+      task: 'Write a script that reads the first line of the file `C:\Users\Student\Documents\todo.txt` into a variable and prints it with the text `First task:`.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'First task: 1. Learn dir'}]
+      hints: ['`set /p` can take its input from a file instead of the keyboard: give it the file with `<`, and the first line of the file goes into the variable.', 'Line 2: `set /p`, a variable such as `line`, `=`, and right after it `<` and the full path `C:\Users\Student\Documents\todo.txt`. Line 3: `echo` with the text `First task:` followed by `%line%`.']
+      answer: ['@echo off', 'set /p line=<C:\Users\Student\Documents\todo.txt', 'echo First task: %line%']
+      explain: '`<` feeds the contents of `todo.txt` to `set /p` instead of the keyboard, and only the first line ends up in `line`; `echo First task: %line%` prints it.'
+  quiz:
+    - kind: mcq
+      q: 'In `set /p age=How old are you? `, where is the user''s answer stored?'
+      options: ['In the variable age', 'In the file age', 'In ERRORLEVEL', 'It isn''t stored anywhere']
+      answer: 0
+      explain: 'The name before `=`.'
+    - kind: tf
+      q: 'With `set /p x=<a.txt`, all lines of the file go into x.'
+      answer: false
+      explain: 'Only the first line.'
+    - kind: type
+      q: 'Ask the user for their city and put it in the variable `city` (question: `City? `).'
+      accept: ['set /p city=city? ', 'set /p city=city?', 'set /p "city=city? "']
+      show: 'set /p city=City? '
+      explain: '`set /p city=City? `'
+  recap: '`set /p name=question ` = get input. `set /p x=<file` = the first line of a file.'
+
+- n: 75
+  term: 'set /a'
+  fullForm: 'Arithmetic'
+  difficulty: 2
+  objective: 'Calculate with numbers in batch and build a counter.'
+  summary: '`set /a` calculates a math expression: `set /a total=price*qty`. Whole numbers only; no decimals.'
+  meaning: 'Inside `set /a`, variable names also work without `%`. Operators: `+ - * /` and `%` for the remainder (in a batch file you must write `%%`). `+=` and `-=` increase and decrease a value. Division drops the decimal part: `7/2` becomes `3`.'
+  usage: 'Counters in loops, counting files, simple price calculations.'
+  syntax: "set /a x=5+3\nset /a total=price*qty\nset /a count+=1\nset /a r=10%%3"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\math.bat', content: "@echo off\nset price=8\nset qty=3\nset /a total=price*qty\necho Total: %total%\nset /a half=7/2\necho 7/2 = %half%\nset /a rest=7%%2\necho 7 mod 2 = %rest%\n"}]
+    cmds: ['math.bat', 'set /a 10*4+2']
+  examples:
+    - c: 'set /a 10*4+2'
+      d: 'On the command line, it also prints the result.'
+    - c: 'set /a count+=1'
+      d: 'Add one.'
+      noTry: true
+    - c: 'set /a "x=(2+3)*4"'
+      d: 'Parentheses; safer inside quotes.'
+  mistakes:
+    - 'Expecting decimals: `set /a x=5/2` gives 2, not 2.5.'
+    - 'Writing a single `%` for the remainder inside a batch file; it must be `%%`.'
+  tip: 'If a variable''s value is not a number, `set /a` treats it as zero.'
+  practice:
+    - id: P75a
+      batch: {file: 'price.bat', starter: "@echo off\nset price=8\nset qty=3\n"}
+      task: 'One pizza costs `8` and the quantity is `3`. Calculate the total price with `set /a` and print `Total: 24`.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Total: 24'}, {type: fileContains, path: 'C:\Users\Student\Desktop\price.bat', value: 'set /a'}]
+      hints: ['Calculations are done with `set /a`: it puts the result of a math expression into a new variable. Inside `set /a`, variable names also work without `%`, and multiplication uses `*`.', 'New line: `set /a`, the result variable (`total`), `=`, and `price` multiplied by `qty`. Last line: `echo Total:` followed by `%total%`.']
+      answer: ['@echo off', 'set price=8', 'set qty=3', 'set /a total=price*qty', 'echo Total: %total%']
+      explain: '`set /a total=price*qty` multiplies 8 by 3 and puts 24 in `total`; `echo Total: %total%` prints the result.'
+    - id: P75b
+      batch: {file: 'count.bat', starter: "@echo off\nset count=0\n"}
+      task: 'Increase the counter `count` by one, three times, using `set /a`, and at the end print `Count: 3`.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Count: 3'}, {type: fileContains, path: 'C:\Users\Student\Desktop\count.bat', value: '+='}]
+      hints: ['To add one to a counter, `set /a` has the operator `+=`. Repeat this three times and then print the value.', 'Three identical lines: `set /a` + `count` + `+=1`. Then one `echo` line with the text `Count:` and `%count%`.']
+      answer: ['@echo off', 'set count=0', 'set /a count+=1', 'set /a count+=1', 'set /a count+=1', 'echo Count: %count%']
+      explain: 'Each `set /a count+=1` adds one to `count`, so it goes from 0 to 3, and `echo Count: %count%` shows the number 3.'
+  quiz:
+    - kind: predict
+      q: 'What is the output?'
+      code: "set /a x=9/2\necho %x%"
+      options: ['4', '4.5', '5', '9/2']
+      answer: 0
+      code_options: true
+      explain: 'Whole numbers only; the decimal part is dropped.'
+    - kind: mcq
+      q: 'In a batch file, how do you calculate the remainder of 10 divided by 3?'
+      options: ['set /a r=10%%3', 'set /a r=10%3', 'set /a r=10 mod 3', 'set r=10%%3']
+      answer: 0
+      code_options: true
+      explain: 'In batch, `%` must be doubled.'
+    - kind: type
+      q: 'Add one to the variable `n`.'
+      accept: ['set /a n+=1', 'set /a n=n+1', 'set /a n=%n%+1', 'set /a "n+=1"']
+      show: 'set /a n+=1'
+      explain: '`+=`'
+  recap: '`set /a` = math with whole numbers. `+=` increases. Remainder in batch: `%%`.'
+
+- n: 76
+  term: '%1 %2 %*'
+  fullForm: 'Arguments'
+  difficulty: 3
+  objective: 'Pass input to a script and write reusable scripts.'
+  summary: 'Anything you write after the script name is an argument. `%1` is the first, `%2` the second, up to `%9`. `%*` is all the arguments, and `%0` is the name of the script itself.'
+  meaning: 'For example, `greet.bat Ali Sara` → `%1` = Ali and `%2` = Sara. Put an argument with spaces in quotes, and use `%~1` to remove the quotes. `%~nx1` gives just the name and extension of a path.'
+  usage: 'Scripts like `backup.bat source target` that take different input every time they run.'
+  syntax: "script.bat arg1 arg2\necho %1 %2\necho %*"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\greet.bat', content: "@echo off\necho Script: %~nx0\necho Hello %1\necho Second: %2\necho All: %*\n"}]
+    cmds: ['greet.bat Ali Sara Reza']
+  examples:
+    - c: 'greet.bat Ali'
+      d: '`%1` = Ali.'
+      noTry: true
+    - c: 'copyto.bat "my file.txt" E:\'
+      d: 'An argument with spaces, in quotes.'
+      noTry: true
+  mistakes:
+    - 'Using `%10`; only `%0` to `%9` exist (for more, use `shift`, next lesson).'
+    - 'Assuming the user gave an argument; check with `if "%1"==""` (lesson 78).'
+  tip: 'In the Batch Editor, write the arguments in the “Arguments” box.'
+  practice:
+    - id: P76a
+      batch: {file: 'greet.bat', starter: "@echo off\n", args: 'Ali'}
+      task: 'Write a script that greets the first argument. Run it with the argument `Ali` so that `Hello Ali` is printed.'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: 'Hello Ali'}, {type: fileContains, path: 'C:\Users\Student\Desktop\greet.bat', value: '%1'}]
+      hints: ['An argument is what you write after the script name. Inside the script, the first argument is read with `%1`; put it in the `echo` sentence.', 'After `@echo off`, one line: `echo`, the word `Hello`, and then `%1`. The Arguments box should contain `Ali`; then run it.']
+      answer: ['@echo off', 'echo Hello %1']
+      explain: 'When you run it with the argument `Ali`, CMD replaces `%1` with the word `Ali` and `Hello Ali` is printed.'
+    - id: P76b
+      batch: {file: 'copyto.bat', starter: "@echo off\n", args: '..\Documents\todo.txt E:\'}
+      task: 'Write a script that copies the file `%1` to the target `%2`. Run it with the given arguments (todo.txt → USB).'
+      checks: [{type: ranBatch}, {type: fileExists, path: 'E:\todo.txt'}, {type: fileContains, path: 'C:\Users\Student\Desktop\copyto.bat', value: ['%1', '%2']}]
+      hints: ['`copy` needs two arguments: source and target. Here, instead of writing fixed paths, give the script''s arguments (`%1` and `%2`) to `copy`.', 'One line after `@echo off`: `copy`, then `%1` (the source file), then `%2` (the target). Run it with the given arguments.']
+      answer: ['@echo off', 'copy %1 %2']
+      explain: 'With the arguments `..\Documents\todo.txt` and `E:\`, the line `copy %1 %2` becomes a copy of `todo.txt` to `E:\`; so the script can be reused for any file and target.'
+  quiz:
+    - kind: predict
+      q: '`show.bat red green blue` was run. What is `%2`?'
+      code: 'echo %2'
+      options: ['green', 'red', 'blue', 'show.bat']
+      answer: 0
+      code_options: true
+      explain: '`%1` is red, `%2` is green.'
+    - kind: mcq
+      q: 'What does `%*` show?'
+      options: ['All the arguments', 'The script name', 'The number of arguments', 'The last argument']
+      answer: 0
+      explain: '`%0` is the script name.'
+    - kind: mcq
+      q: 'What should you do with an argument that contains spaces?'
+      options: ['Pass it in quotes', 'Replace the spaces with _', 'Use %10', 'It''s not possible']
+      answer: 0
+      explain: 'And remove the quotes in the script with `%~1`.'
+  recap: '`%1`…`%9` are the arguments, `%*` is all of them, `%0` is the script name. Put an argument with spaces in quotes.'
+
+- n: 77
+  term: shift
+  fullForm: 'Shift arguments'
+  difficulty: 3
+  objective: 'Use `shift` to move the arguments one place to the left so you can reach all of them.'
+  summary: 'After `shift`, `%2` moves into `%1`, `%3` into `%2`, and so on to the end. The first argument is dropped.'
+  meaning: 'With `shift` you can process more than 9 arguments, or set the first argument aside (for example, a setting) and read the rest later. It is usually used together with a `goto` loop (lesson 82).'
+  usage: 'Scripts that take an unknown number of files or names.'
+  syntax: "echo %1\nshift\necho %1"
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files: [{path: 'C:\Users\Student\Desktop\colors.bat', content: "@echo off\necho First: %1\nshift\necho Now first: %1\nshift\necho Now first: %1\n"}]
+    cmds: ['colors.bat red green blue']
+  examples:
+    - c: 'shift'
+      d: 'One shift.'
+      noTry: true
+  mistakes:
+    - 'Expecting `%*` to change after `shift`; `%*` always shows all the original arguments.'
+  tip: 'A common pattern: `if "%1"=="" goto end`, then process `%1`, then `shift` and `goto` back to the start of the loop.'
+  practice:
+    - id: P77a
+      batch: {file: 'colors.bat', starter: "@echo off\necho First: %1\n", args: 'red green blue'}
+      task: 'Right now the script prints the first color. Use `shift` so that `Then: green` is printed after it (with the arguments `red green blue`).'
+      checks: [{type: ranBatch}, {type: outputIncludes, value: ['First: red', 'Then: green']}, {type: fileContains, path: 'C:\Users\Student\Desktop\colors.bat', value: 'shift'}]
+      hints: ['`shift` moves all the arguments one place to the left: afterwards, the second argument (`green`) is in `%1`. So after `shift`, print `%1` again.', 'After the line `echo First: %1`, add two lines: 1) the command `shift` 2) `echo` with the text `Then:` and `%1`.']
+      answer: ['@echo off', 'echo First: %1', 'shift', 'echo Then: %1']
+      explain: 'The first line prints `red`; `shift` moves the arguments so that `%1` becomes `green`, and `echo Then: %1` prints `Then: green`.'
+  quiz:
+    - kind: predict
+      q: '`s.bat A B C` was run. After two `shift`s, what is `%1`?'
+      code: "shift\nshift\necho %1"
+      options: ['C', 'A', 'B', 'Empty']
+      answer: 0
+      code_options: true
+      explain: 'Each shift drops one argument.'
+    - kind: tf
+      q: 'After `shift`, the first argument is gone from `%1` for good.'
+      answer: true
+      explain: 'It is no longer available through `%1`.'
+    - kind: mcq
+      q: 'Which command is `shift` most often used with?'
+      options: ['goto (for a loop)', 'cls', 'ver', 'pause']
+      answer: 0
+      explain: 'To process all the arguments in a loop.'
+  recap: '`shift` = `%2` becomes `%1`. Used with `goto` to process many arguments.'

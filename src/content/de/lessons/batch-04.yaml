@@ -1,0 +1,739 @@
+# Lessons 33–44 · Chapter 6: pipes, text, search and copying folders
+
+- n: 33
+  term: '|'
+  fullForm: 'Pipe'
+  difficulty: 2
+  objective: 'Du gibst die Ausgabe eines Befehls (Command) direkt als Eingabe an einen anderen Befehl weiter.'
+  summary: '`|` schickt die Ausgabe des linken Befehls nicht auf den Bildschirm, sondern in die Eingabe des rechten Befehls. Wie ein Rohr, das zwei Befehle verbindet.'
+  meaning: 'Bei `type menu.txt | find "Pizza"` gibt zuerst `type` alle Zeilen aus. Diese Zeilen erscheinen nicht auf dem Bildschirm, sondern gehen in `find`, und `find` zeigt nur die Zeile mit Pizza. Warum funktioniert das? Wenn `find` keinen Dateinamen bekommt, liest es seine Eingabe aus der Pipe.'
+  usage: 'Lange Ausgaben filtern: die IP-Adresse in `ipconfig` finden, ein Programm in `tasklist` finden, Listen sortieren.'
+  syntax: 'command1 | command2'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['type menu.txt | find "Pizza"', 'ipconfig | find "IPv4"', 'dir /b | sort /r']
+  examples:
+    - c: 'type menu.txt | find "Pizza"'
+      d: 'Nur die Pizza-Zeile aus der Speisekarte.'
+    - c: 'dir | find ".txt"'
+      d: 'Nur die Zeilen der dir-Ausgabe, die `.txt` enthalten.'
+    - c: 'ipconfig | find "IPv4"'
+      d: 'Nur die IPv4-Adresse.'
+    - c: 'tasklist | find "chrome"'
+      d: 'Nur die Chrome-Prozesse.'
+  mistakes:
+    - '`|` mit `||` verwechseln (Lektion 31).'
+    - 'Einen Befehl, der keine Eingabe liest (wie `dir`), rechts von der Pipe setzen.'
+  tip: 'Du kannst mehrere Pipes hintereinander setzen: `type guests.txt | sort | more`'
+  restaurant: 'Der Kellner gibt die Bestellung direkt an den Koch, der Koch gibt das Essen direkt an den, der es anrichtet. Niemand legt die Bestellung zwischendurch auf einem Tisch ab.'
+  practice:
+    - id: P33a
+      start: 'C:\Users\Student\Documents'
+      task: 'Zeige mit `type` und einer Pipe nur die Zeile aus `menu.txt`, die `Pasta` enthält.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'Pasta'}, {type: lastOutputExcludes, value: 'Pizza'}]
+      hints:
+        - 'Mit der Pipe (`|`) geht die Ausgabe eines Befehls direkt in den nächsten Befehl. `type` gibt alle Zeilen der Speisekarte aus; gib sie an `find` weiter, damit nur die gesuchte Zeile übrig bleibt.'
+        - 'Drei Teile: der linke Befehl (`type` + `menu.txt`), das Pipe-Zeichen (`|`), der rechte Befehl (`find` + das Wort Pasta in Anführungszeichen).'
+      answer: 'type menu.txt | find "Pasta"'
+      explain: '`type menu.txt` erzeugt alle Zeilen, und `|` gibt sie statt an den Bildschirm an `find "Pasta"` weiter; `find` zeigt nur die Zeile mit Pasta.'
+    - id: P33b
+      start: 'C:\Users\Student'
+      task: 'Zeige aus der Ausgabe von `ipconfig` nur die Zeile `IPv4`.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: '192.168.1.24'}, {type: lastOutputExcludes, value: 'Subnet'}]
+      hints:
+        - '`ipconfig` gibt sehr viele Infos aus. Gib die Ausgabe per Pipe an `find`, damit nur die Zeile mit dem Wort IPv4 übrig bleibt.'
+        - 'Drei Teile: erster Befehl (`ipconfig`), das Zeichen `|`, zweiter Befehl (`find` + der Text IPv4 in `" "`). Achte auf die richtige Groß- und Kleinschreibung von IPv4.'
+      answer: 'ipconfig | find "IPv4"'
+      explain: '`ipconfig` liefert alle Netzwerkeinstellungen, und `|` schickt sie an `find "IPv4"`, das nur die Zeile mit der IPv4-Adresse behält.'
+  quiz:
+    - kind: mcq
+      q: 'Woher kommt bei `A | B` die Eingabe von Befehl B?'
+      options: ['Aus der Ausgabe von A', 'Von der Tastatur', 'Aus einer Datei', 'Vom vorherigen Befehl in der History']
+      answer: 0
+      explain: 'Die Pipe verbindet die Ausgabe von A mit der Eingabe von B.'
+    - kind: predict
+      q: 'menu.txt enthält Pizza, Pasta und Salad. Was ist die Ausgabe?'
+      code: 'type menu.txt | find "Sa"'
+      options: ['Nur die Zeile Salad', 'Pasta und Salad', 'Alle Zeilen', 'Nichts']
+      answer: 0
+      explain: '`find` unterscheidet Groß- und Kleinschreibung; „Pasta“ enthält kein „Sa“ mit großem S.'
+    - kind: type
+      q: 'Zeige aus der Ausgabe von `tasklist` nur die Zeilen mit `notepad`.'
+      accept: ['tasklist | find "notepad"', 'tasklist | find /i "notepad"', 'tasklist | findstr notepad', 'tasklist | findstr /i notepad', 'tasklist | find "notepad.exe"']
+      show: 'tasklist | find "notepad"'
+      explain: 'Gib die Ausgabe von tasklist an find weiter.'
+    - kind: sim
+      q: 'Zeige aus der Prozessliste nur die Zeilen mit `notepad`.'
+      start: 'C:\Users\Student'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'notepad.exe'}, {type: lastOutputExcludes, value: 'chrome.exe'}]
+      answer: 'tasklist | find /i "notepad"'
+      explain: 'Die Ausgabe von `tasklist` wird mit `|` an `find` weitergegeben.'
+  recap: '`A | B` = die Ausgabe von A wird zur Eingabe von B. Ideal zum Filtern langer Ausgaben.'
+
+- n: 34
+  term: more
+  fullForm: 'More (page by page)'
+  difficulty: 2
+  objective: 'Du liest lange Ausgaben Seite für Seite.'
+  summary: '`more` zeigt die Ausgabe seitenweise an und wartet. Leertaste (Space) = nächste Seite, Enter = nächste Zeile, Q = beenden.'
+  meaning: '`more` bekommt seine Eingabe entweder aus einer Datei (`more file.txt`) oder aus einer Pipe (`help | more`). Unten auf dem Bildschirm siehst du `-- More --` und wie viel Prozent schon gelesen ist.'
+  usage: 'Lange Hilfetexte, Logs und die Ausgabe von Befehlen wie `systeminfo` lesen.'
+  syntax: "more file\ncommand | more"
+  examples:
+    - c: 'help | more'
+      d: 'Die Befehlsliste Seite für Seite.'
+    - c: 'more C:\Windows\win.ini'
+      d: 'Eine Datei mit more anzeigen.'
+    - c: 'systeminfo | more'
+      d: 'Systeminfos in Ruhe lesen.'
+  mistakes:
+    - 'Denken, CMD hängt fest; `-- More --` wartet nur auf deinen Tastendruck.'
+  tip: 'Auch im Simulator gilt: Wenn `-- More --` erscheint, drücke Space oder Enter; zum Beenden Q.'
+  practice:
+    - id: P34a
+      start: 'C:\Users\Student'
+      task: 'Zeige die Befehlsliste von `help` Seite für Seite an. (Mit Space weiterblättern oder mit Q beenden.)'
+      checks: [{type: anyCmd, value: more}, {type: usedOp, value: '|'}, {type: argIncludes, cmd: help, value: ''}]
+      inputs: [' ', 'q']
+      hints:
+        - 'Die Ausgabe von `help` ist lang. Gib sie per Pipe an `more`, damit sie seitenweise angezeigt wird und auf deinen Tastendruck wartet.'
+        - 'Drei Teile: der Befehl mit der langen Ausgabe (`help`), das Zeichen `|`, der Befehl zum seitenweisen Anzeigen (`more`). Dann mit Space die nächste Seite ansehen und mit `Q` beenden.'
+      answer: 'help | more'
+      explain: '`help` liefert die Befehlsliste, und `|` schickt sie an `more`; `more` zeigt jeweils eine Seite und blättert mit Space weiter.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Taste blättert bei `-- More --` eine ganze Seite weiter?'
+      options: ['Space', 'Enter', 'Q', 'Esc']
+      answer: 0
+      explain: 'Space = nächste Seite, Enter = nur eine Zeile, Q = beenden.'
+    - kind: type
+      q: 'Zeige die Datei `log.txt` Seite für Seite an.'
+      accept: ['more log.txt', 'type log.txt | more', 'more < log.txt']
+      show: 'more log.txt'
+      explain: '`more log.txt` oder `type log.txt | more`'
+    - kind: tf
+      q: '`more` verändert den Inhalt der Datei.'
+      answer: false
+      explain: 'Es zeigt ihn nur an.'
+  recap: '`more` = Seite für Seite. Space = Seite, Enter = Zeile, Q = beenden.'
+
+- n: 35
+  term: sort
+  fullForm: 'Sort'
+  difficulty: 2
+  objective: 'Du sortierst die Zeilen einer Datei oder einer Befehlsausgabe alphabetisch.'
+  summary: '`sort` sortiert Zeilen von A bis Z. Mit `/r` umgekehrt (Z bis A).'
+  meaning: '`sort` achtet nicht auf Groß- und Kleinschreibung und verändert die Originaldatei nicht; es zeigt nur die sortierte Ausgabe. Zum Speichern nimmst du `>` oder `/o`.'
+  usage: 'Namenslisten sortieren, die Ausgabe von `dir /b` sortieren oder Daten, die von einem anderen Befehl kommen.'
+  syntax: "sort [/r] [file] [/o outfile]\ncommand | sort"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['type guests.txt', 'sort guests.txt', 'sort /r guests.txt']
+  examples:
+    - c: 'sort guests.txt'
+      d: 'Sortiert anzeigen.'
+    - c: 'type guests.txt | sort'
+      d: 'Dasselbe mit einer Pipe.'
+    - c: 'sort guests.txt > sorted.txt'
+      d: 'Das Ergebnis in einer neuen Datei speichern.'
+    - c: 'dir /b | sort /r'
+      d: 'Dateiliste in umgekehrter Reihenfolge.'
+  mistakes:
+    - '`sort guests.txt > guests.txt` schreiben: Die Datei wird geleert, bevor sie gelesen wird! Schreib immer in eine neue Datei.'
+  tip: 'Zahlen werden als Text sortiert: `10` kommt vor `9`.'
+  practice:
+    - id: P35a
+      start: 'C:\Users\Student\Documents'
+      task: 'Zeige die Namen aus `guests.txt` sortiert (A bis Z) an.'
+      checks: [{type: anyCmd, value: sort}, {type: outputOrder, value: ['Ali', 'David', 'hibo', 'mina', 'Reza', 'Sara']}]
+      hints:
+        - 'Zum Sortieren der Zeilen einer Datei nimmst du `sort` und gibst ihm den Dateinamen als Argument (Ziel).'
+        - 'Zwei Teile: Was tun? (`sort`) Mit welcher Datei? (`guests.txt`). `sort` ignoriert Groß- und Kleinschreibung, deshalb steht `hibo` zwischen David und mina.'
+      answer: 'sort guests.txt'
+      explain: '`sort guests.txt` zeigt die Zeilen der Datei alphabetisch (A bis Z); die Datei selbst bleibt unverändert.'
+    - id: P35b
+      start: 'C:\Users\Student\Documents'
+      task: 'Speichere die sortierte Version von `guests.txt` in der neuen Datei `sorted.txt`.'
+      checks: [{type: fileOrder, path: 'C:\Users\Student\Documents\sorted.txt', value: ['Ali', 'David', 'hibo', 'mina', 'Reza', 'Sara']}]
+      hints:
+        - '`sort` zeigt das Ergebnis nur an. Um es zu speichern, leitest du die Ausgabe mit einer Umleitung (Redirect, `>`) in eine neue Datei um.'
+        - 'Drei Teile: der Sortierbefehl (`sort` + `guests.txt`), das Zeichen `>`, der Name der neuen Datei (`sorted.txt`).'
+      answer: 'sort guests.txt > sorted.txt'
+      explain: '`sort guests.txt` sortiert die Namen, und `>` schreibt diese Ausgabe in `sorted.txt`; das Original `guests.txt` bleibt unberührt.'
+  quiz:
+    - kind: mcq
+      q: 'Welcher Switch (Schalter) kehrt die Reihenfolge um?'
+      options: ['/r', '/o', '/b', '/s']
+      answer: 0
+      code_options: true
+      explain: '`/r` = Reverse.'
+    - kind: predict
+      q: 'Was gibt dieser Befehl bei den Eingabezeilen `b`, `C`, `a` aus?'
+      code: 'sort names.txt'
+      options: ["a\nb\nC", "C\na\nb", "b\nC\na", "a\nC\nb"]
+      answer: 0
+      code_options: true
+      explain: 'sort achtet nicht auf Groß- und Kleinschreibung.'
+    - kind: tf
+      q: '`sort guests.txt` speichert die Datei guests.txt sortiert ab.'
+      answer: false
+      explain: 'Es zeigt nur an; zum Speichern nimmst du `>`.'
+  recap: '`sort Datei` oder `... | sort`. `/r` = umgekehrt. Die Originaldatei bleibt unverändert.'
+
+- n: 36
+  term: '<'
+  fullForm: 'Input redirection'
+  difficulty: 2
+  objective: 'Du gibst einem Befehl (Command) seine Eingabe aus einer Datei.'
+  summary: '`<` schickt den Inhalt einer Datei statt der Tastatur in die Eingabe eines Befehls. Das Gegenteil von `>`, das die Ausgabe in eine Datei schreibt.'
+  meaning: '`sort < guests.txt` heißt: „Gib guests.txt als Eingabe an sort.“ Das Ergebnis ist wie bei `type guests.txt | sort`, aber ohne einen zweiten Befehl auszuführen.'
+  usage: 'Dateien an Befehle geben, die von der Eingabe lesen (sort, find, more), und in Batch-Skripten die erste Zeile einer Datei mit `set /p` lesen (Lektion 74).'
+  syntax: "command < file\ncommand < input.txt > output.txt"
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['sort < guests.txt', 'find "Soup" < menu.txt']
+  examples:
+    - c: 'sort < guests.txt'
+      d: 'Den Dateiinhalt sortieren.'
+    - c: 'find "Pizza" < menu.txt'
+      d: 'In der Eingabe aus einer Datei suchen.'
+    - c: 'sort < guests.txt > sorted.txt'
+      d: 'Eingabe aus einer Datei, Ausgabe in eine andere Datei.'
+  mistakes:
+    - 'Die Richtung verkehrt herum schreiben: `sort > guests.txt` leert die Datei!'
+  tip: 'Schau auf die Pfeilrichtung: `<` zeigt zum Befehl (Eingabe), `>` zeigt zur Datei (Ausgabe).'
+  daily: '`>` ist wie Wasser aus dem Glas in die Flasche gießen; `<` ist wie Wasser aus der Flasche ins Glas gießen.'
+  practice:
+    - id: P36a
+      start: 'C:\Users\Student\Documents'
+      task: 'Gib mit `<` den Inhalt von `guests.txt` an `sort`, damit die Namen sortiert angezeigt werden.'
+      checks: [{type: usedOp, value: '<'}, {type: outputOrder, value: ['Ali', 'David', 'Sara']}]
+      hints:
+        - 'Das Zeichen `<` schickt den Inhalt einer Datei in die Eingabe eines Befehls (das Gegenteil von `>`). Gib den Dateinamen diesmal nicht direkt an `sort`, sondern schick ihn über `<`.'
+        - 'Drei Teile: der Befehl (`sort`), das Eingabezeichen (`<`, das zum Befehl zeigt), die Quelldatei (`guests.txt`).'
+      answer: 'sort < guests.txt'
+      explain: '`<` gibt den Inhalt von `guests.txt` an `sort`, als hättest du ihn eingetippt, und `sort` zeigt ihn sortiert an.'
+    - id: P36b
+      start: 'C:\Users\Student\Documents'
+      task: 'Finde mit `find` und `<` die Zeile `Soup` in `menu.txt`.'
+      checks: [{type: usedOp, value: '<'}, {type: anyCmd, value: find}, {type: lastOutputIncludes, value: 'Soup'}]
+      hints:
+        - '`find` bekommt den Suchtext in Anführungszeichen. Statt den Dateinamen als Argument anzugeben, schickst du den Dateiinhalt mit `<` in die Eingabe von `find`.'
+        - 'Drei Teile: der Befehl mit dem Suchtext (`find` + Soup in `" "`), das Zeichen `<`, die Quelldatei (`menu.txt`).'
+      answer: 'find "Soup" < menu.txt'
+      explain: '`find "Soup"` sucht nach dem Wort Soup, und `< menu.txt` schickt den Inhalt der Speisekarte in seine Eingabe; also wird die Zeile mit Soup angezeigt.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Datei wird bei `sort < a.txt > b.txt` gelesen?'
+      options: ['a.txt', 'b.txt', 'Beide', 'Keine']
+      answer: 0
+      explain: '`<` ist die Eingabe und `>` die Ausgabe.'
+    - kind: fix
+      q: 'Der Benutzer wollte die Datei sortiert sehen, aber jetzt ist sie leer. Warum?'
+      code: 'sort > guests.txt'
+      options: ['Die Pfeilrichtung ist falsch; es hätte `<` sein müssen', '`sort` löscht die Datei', 'Es fehlte `/r`', 'Zuerst hätte `type` stehen müssen']
+      answer: 0
+      explain: '`>` öffnet die Datei zum Schreiben und leert sie dabei.'
+    - kind: type
+      q: 'Gib den Inhalt von `names.txt` mit `<` an `sort`.'
+      accept: ['sort < names.txt', 'sort <names.txt']
+      show: 'sort < names.txt'
+      explain: '`sort < names.txt`'
+  recap: '`Befehl < Datei` = Eingabe aus einer Datei. `<` Eingabe, `>` Ausgabe, `|` verbindet zwei Befehle.'
+
+- n: 37
+  term: find
+  fullForm: 'Find text'
+  difficulty: 2
+  objective: 'Du findest Zeilen mit einem bestimmten Text in Dateien oder in Befehlsausgaben.'
+  summary: '`find "Text" Datei` zeigt alle Zeilen, die diesen Text enthalten. Der Suchtext steht immer in Anführungszeichen.'
+  meaning: 'Wichtige Switches (Schalter): `/i` ohne Rücksicht auf Groß- und Kleinschreibung, `/c` nur die Anzahl der Zeilen, `/n` Zeilennummern, `/v` Zeilen, die den Text NICHT enthalten.'
+  usage: 'In Logs und Textdateien suchen und Befehlsausgaben mit einer Pipe filtern.'
+  syntax: 'find [/i] [/c] [/n] [/v] "text" [file...]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['find "Pizza" menu.txt', 'find /c /i "a" guests.txt', 'find /n "S" guests.txt']
+  examples:
+    - c: 'find "Pizza" menu.txt'
+      d: 'Zeilen, die Pizza enthalten.'
+    - c: 'find /i "pizza" menu.txt'
+      d: 'Ohne Rücksicht auf Groß- und Kleinschreibung.'
+    - c: 'find /c "a" guests.txt'
+      d: 'Nur die Anzahl der Zeilen, die „a“ enthalten.'
+    - c: 'find /v "a" menu.txt'
+      d: 'Zeilen, die kein „a“ enthalten.'
+  mistakes:
+    - 'Die Anführungszeichen weglassen: `find Pizza menu.txt` ergibt den Fehler `Parameter format not correct`.'
+    - '`/i` vergessen und deshalb „pizza“ mit kleinem p nicht finden.'
+  tip: 'Exit Code: Wird etwas gefunden, ist er `0`, sonst `1`. Deshalb funktioniert `find ... && echo found` (Lektion 62).'
+  practice:
+    - id: P37a
+      start: 'C:\Users\Student\Documents'
+      task: 'Zähle, wie viele Zeilen in `guests.txt` den Buchstaben `a` enthalten, egal ob groß oder klein.'
+      checks: [{type: anyCmd, value: find}, {type: switch, value: '/c', cmd: find, anyRun: true}, {type: switch, value: '/i', cmd: find, anyRun: true}, {type: lastOutputMatches, value: '(^|: )5\s*$'}]
+      hints:
+        - 'Nimm `find`, aber lass dir statt der Zeilen nur ihre Anzahl zeigen. Du brauchst einen Switch zum Zählen und einen Switch, der Groß- und Kleinschreibung ignoriert.'
+        - 'Der Reihe nach: Befehl (`find`), Zähl-Switch (`/c` von Count), Switch für die Schreibweise (`/i` von Ignore case), Suchtext (`a` in `" "`) und die Datei (`guests.txt`).'
+      answer: 'find /c /i "a" guests.txt'
+      explain: '`/c` liefert statt der Zeilen nur ihre Anzahl, und `/i` sorgt dafür, dass `a` und `A` gleich zählen; `"a"` ist der Suchtext und `guests.txt` die Zieldatei.'
+    - id: P37b
+      start: 'C:\Users\Student\Documents'
+      task: 'Zeige die Zeilen aus `menu.txt`, die den Buchstaben `a` NICHT enthalten.'
+      checks: [{type: switch, value: '/v', cmd: find, anyRun: true}, {type: lastOutputIncludes, value: 'Soup'}, {type: lastOutputExcludes, value: 'Pizza'}]
+      hints:
+        - 'Diesmal willst du die Zeilen, die den Text nicht enthalten. `find` hat einen „Umkehr“-Switch, der das Ergebnis umdreht.'
+        - 'Der Reihe nach: Befehl (`find`), Umkehr-Switch (`/v`), Suchtext (`a` in `" "`), Datei (`menu.txt`).'
+      answer: 'find /v "a" menu.txt'
+      explain: 'Normalerweise zeigt `find` die Zeilen mit dem Text; `/v` dreht das um, und es erscheinen nur Zeilen aus `menu.txt` ohne `a`, zum Beispiel Soup.'
+  quiz:
+    - kind: fix
+      q: 'Warum gibt dieser Befehl einen Fehler aus?'
+      code: "find Pizza menu.txt\nFIND: Parameter format not correct"
+      options: ['Der Suchtext hat keine Anführungszeichen', 'menu.txt existiert nicht', 'Es fehlt `/i`', '`find` funktioniert nicht mit Dateien']
+      answer: 0
+      explain: 'Richtig: `find "Pizza" menu.txt`'
+    - kind: mcq
+      q: 'Welcher Switch zeigt nur die Anzahl der gefundenen Zeilen?'
+      options: ['/c', '/n', '/v', '/i']
+      answer: 0
+      code_options: true
+      explain: '`/c` = Count.'
+    - kind: type
+      q: 'Finde in `log.txt` die Zeilen mit `error`, egal ob groß oder klein geschrieben.'
+      accept: ['find /i "error" log.txt', 'find "error" /i log.txt', 'findstr /i error log.txt', 'findstr /i "error" log.txt']
+      show: 'find /i "error" log.txt'
+      explain: '`/i` ignoriert Groß- und Kleinschreibung.'
+    - kind: sim
+      q: 'Zähle die Zeilen von `guests.txt` (in Documents).'
+      start: 'C:\Users\Student\Documents'
+      checks: [{type: cmd, value: find}, {type: switch, value: '/c'}, {type: lastOutputIncludes, value: ': 6'}]
+      answer: 'find /c /v "" guests.txt'
+      explain: '`/v ""` wählt alle Zeilen aus, und `/c` zählt sie.'
+  recap: '`find "Text" Datei`. `/i` Schreibweise egal, `/c` Anzahl, `/n` Zeilennummer, `/v` umgekehrt. Anführungszeichen sind Pflicht.'
+
+- n: 38
+  term: findstr
+  fullForm: 'Find String'
+  difficulty: 2
+  objective: 'Du suchst mit `findstr` nach mehreren Wörtern gleichzeitig, in mehreren Dateien und sogar in Unterordnern.'
+  summary: '`findstr` ist die stärkere Version von `find`: Es sucht mehrere Wörter auf einmal, durchsucht Unterordner und versteht einfache Muster (Regular Expressions).'
+  meaning: '`findstr "Pizza Coffee" menu.txt` heißt Pizza **oder** Coffee. Für einen ganzen Ausdruck mit Leerzeichen nimmst du `/c:"..."`. `/s` heißt: Unterordner auch. `^` heißt Zeilenanfang und `$` Zeilenende.'
+  usage: 'Ein ganzes Projekt durchsuchen, Dateien finden, die ein bestimmtes Wort enthalten, genauer filtern.'
+  syntax: 'findstr [/i] [/s] [/n] [/m] [/c:"phrase"] "words" files'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['findstr "Pizza Coffee" menu.txt', 'findstr /s /i "sales" *.txt', 'findstr /m /s "Report" *.txt']
+  examples:
+    - c: 'findstr "Pizza Coffee" menu.txt'
+      d: 'Zeilen, die Pizza oder Coffee enthalten.'
+    - c: 'findstr /c:"Restaurant Menu" menu.txt'
+      d: 'Genau dieser Ausdruck.'
+    - c: 'findstr /s /i "sales" *.txt'
+      d: 'Suche in allen txt-Dateien, in diesem Ordner und in Unterordnern.'
+    - c: 'findstr /m /s "Report" *.txt'
+      d: 'Nur die Namen der Dateien, die Report enthalten.'
+    - c: 'findstr "^S" guests.txt'
+      d: 'Zeilen, die mit S beginnen.'
+  mistakes:
+    - 'Denken, dass `"a b"` den Ausdruck „a b“ bedeutet; in findstr heißt es a oder b. Für einen Ausdruck nimmst du `/c:`.'
+  tip: 'In findstr bedeutet `.` „ein beliebiges Zeichen“. Um nach einem echten Punkt zu suchen, schreib `\.`'
+  practice:
+    - id: P38a
+      start: 'C:\Users\Student\Documents'
+      task: 'Zeige mit einem einzigen Befehl die Zeilen aus `menu.txt`, die `Pizza` oder `Coffee` enthalten.'
+      checks: [{type: anyCmd, value: findstr}, {type: lastOutputIncludes, value: 'Pizza'}, {type: lastOutputIncludes, value: 'Coffee'}, {type: lastOutputExcludes, value: 'Pasta'}]
+      hints:
+        - '`findstr` kann mehrere Wörter gleichzeitig suchen: Wenn du in ein Paar Anführungszeichen mehrere Wörter mit Leerzeichen schreibst, heißt das „dies **oder** das“.'
+        - 'Drei Teile: Befehl (Command, `findstr`), Suchwörter (Pizza und Coffee mit einem Leerzeichen, beide in einem Paar `" "`), Datei (`menu.txt`).'
+      answer: 'findstr "Pizza Coffee" menu.txt'
+      explain: 'In `findstr` bedeutet `"Pizza Coffee"` Pizza oder Coffee; also wird jede Zeile aus `menu.txt` angezeigt, die eines der beiden Wörter enthält.'
+    - id: P38b
+      start: 'C:\Users\Student\Documents'
+      task: 'Suche in allen `.txt`-Dateien dieses Ordners und seiner Unterordner nach dem Wort `sales`, egal ob groß oder klein geschrieben.'
+      checks: [{type: switch, value: '/s', cmd: findstr, anyRun: true}, {type: switch, value: '/i', cmd: findstr, anyRun: true}, {type: lastOutputIncludes, value: 'report1.txt'}]
+      hints:
+        - 'Durchsuche mit `findstr` und dem Platzhalter (Wildcard) `*` alle Textdateien. Du brauchst einen Switch (Schalter), der auch Unterordner durchsucht, und einen, der Groß- und Kleinschreibung ignoriert.'
+        - 'Der Reihe nach: Befehl (`findstr`), Switch für Unterordner (`/s`), Switch für die Schreibweise (`/i`), Suchwort (sales in `" "`), Dateimuster (`*` und `.txt`).'
+      answer: 'findstr /s /i "sales" *.txt'
+      explain: '`/s` führt die Suche auch in Unterordner wie Work, `/i` behandelt Groß- und Kleinbuchstaben gleich, und `*.txt` heißt alle Textdateien.'
+  quiz:
+    - kind: mcq
+      q: 'Was findet `findstr "red blue" colors.txt`?'
+      options: ['Zeilen, die red oder blue enthalten', 'Nur den Ausdruck „red blue“', 'Zeilen, die beide enthalten', 'Es gibt einen Fehler aus']
+      answer: 0
+      explain: 'Ein Leerzeichen bedeutet in findstr „oder“.'
+    - kind: mcq
+      q: 'Welcher Switch zeigt nur die Dateinamen?'
+      options: ['/m', '/n', '/s', '/c']
+      answer: 0
+      code_options: true
+      explain: '`/m` = nur Dateinamen.'
+    - kind: type
+      q: 'Finde genau den Ausdruck `Status: OK` in `report.txt`.'
+      accept: ['findstr /c:"Status: OK" report.txt', 'find "Status: OK" report.txt', 'findstr /i /c:"status: ok" report.txt', 'findstr /i /c:"Status: OK" report.txt', 'find /i "status: ok" report.txt', 'find /i "Status: OK" report.txt']
+      quotedCase: true
+      show: 'findstr /c:"Status: OK" report.txt'
+      explain: 'Für einen Ausdruck mit Leerzeichen nimmst du `/c:`.'
+  recap: '`findstr` = mehrere Wörter (oder), `/c:` ganzer Ausdruck, `/s` Unterordner, `/m` Dateinamen, `^` und `$` Zeilenanfang und -ende.'
+
+- n: 39
+  term: tree
+  fullForm: 'Tree'
+  difficulty: 2
+  objective: 'Du siehst die Ordnerstruktur als Baum.'
+  summary: '`tree` zeigt alle Ordner (Folder) und Unterordner als Baum. Mit `/f` werden auch die Dateien angezeigt.'
+  meaning: 'Die Linien `├───` und `└───` zeigen, in welchem Ordner jeder Ordner liegt. `/a` nimmt statt dieser Linien einfache ASCII-Zeichen (gut zum Speichern in einer Datei).'
+  usage: 'Die Struktur eines Projekts verstehen, vor `rd /s` oder einem Backup nachsehen und Ordner dokumentieren.'
+  syntax: 'tree [path] [/f] [/a]'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['tree Pictures /f']
+  examples:
+    - c: 'tree'
+      d: 'Baum der Ordner im aktuellen Ordner.'
+    - c: 'tree Documents /f'
+      d: 'Mit Dateien.'
+    - c: 'tree /a > structure.txt'
+      d: 'Den Baum mit einfachen Zeichen in einer Datei speichern.'
+  mistakes:
+    - '`tree` auf einem echten Computer in `C:\` ausführen: Die Ausgabe hat Tausende Zeilen. Probier es zuerst mit einem kleinen Ordner.'
+  tip: 'Versteckte Dateien und Ordner (wie AppData) zeigt `tree` nicht an.'
+  practice:
+    - id: P39a
+      start: 'C:\Users\Student'
+      task: 'Zeige die Struktur des Ordners Documents samt Dateinamen als Baum an.'
+      checks: [{type: anyCmd, value: tree}, {type: switch, value: '/f', cmd: tree, anyRun: true}, {type: lastOutputIncludes, value: 'menu.txt'}, {type: lastOutputIncludes, value: 'Work'}]
+      hints:
+        - '`tree` zeigt die Ordnerstruktur als Baum, standardmäßig aber nur Ordner. Du brauchst einen Switch (Schalter), damit auch die Dateinamen erscheinen.'
+        - 'Drei Teile: Was tun? (`tree`) Mit welchem Ordner? (Documents) Wie? (Switch mit dem Anfangsbuchstaben von File, mit `/`).'
+      answer: 'tree Documents /f'
+      explain: '`tree Documents` zeichnet den Baum des Ordners Documents, und `/f` (Files) zeigt zusätzlich die Dateinamen in jedem Ordner.'
+  quiz:
+    - kind: mcq
+      q: 'Welcher Switch zeigt auch die Dateien im Baum?'
+      options: ['/f', '/a', '/s', '/b']
+      answer: 0
+      code_options: true
+      explain: '`/f` = Files.'
+    - kind: tf
+      q: '`tree` verschiebt Dateien.'
+      answer: false
+      explain: 'Es zeigt nur an.'
+    - kind: type
+      q: 'Speichere den Baum des aktuellen Ordners mit einfachen Zeichen in der Datei `tree.txt`.'
+      accept: ['tree /a > tree.txt', 'tree /a >tree.txt', 'tree /f /a > tree.txt', 'tree /a /f > tree.txt']
+      show: 'tree /a > tree.txt'
+      explain: '`/a` eignet sich besser für Dateien.'
+  recap: '`tree` = Ordnerbaum. `/f` Dateien, `/a` einfache Zeichen.'
+
+- n: 40
+  term: where
+  fullForm: 'Where (locate files)'
+  difficulty: 2
+  objective: 'Du findest heraus, wo ein Programm liegt, und suchst Dateien in Unterordnern.'
+  summary: '`where` sagt dir, wo ein Programm installiert ist. Mit `/r` findet es Dateien in einem Ordner und allen seinen Unterordnern.'
+  meaning: 'Ohne `/r` sucht `where` im aktuellen Ordner (Current Directory) und in den PATH-Ordnern (Lektion 48), also genau dort, wo CMD nach Programmen zum Ausführen sucht. Platzhalter (Wildcards) sind auch erlaubt.'
+  usage: 'Herausfinden, von wo `ping` oder `notepad` gestartet wird, alle Bilder oder alle Dateien eines Typs finden.'
+  syntax: "where name\nwhere /r folder pattern"
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['where notepad', 'where /r C:\Users\Student *.jpg', 'where nothing']
+  examples:
+    - c: 'where ping'
+      d: 'Wo die Datei ping.exe liegt.'
+    - c: 'where /r C:\Users\Student *.jpg'
+      d: 'Alle jpg-Dateien im Benutzerordner und seinen Unterordnern.'
+    - c: 'dir /s /b *.jpg'
+      d: 'Ein anderer Weg: dir mit `/s` (Unterordner) und `/b`.'
+  mistakes:
+    - '`/r` vergessen, wenn du in Unterordnern suchen willst.'
+  tip: 'Wird nichts gefunden, erscheint die Meldung `INFO: Could not find files...` und der Exit Code ist 1.'
+  practice:
+    - id: P40a
+      start: 'C:\Users\Student'
+      task: 'Finde heraus, wo das Programm `ping` installiert ist.'
+      checks: [{type: anyCmd, value: where}, {type: lastOutputIncludes, value: 'C:\Windows\System32\ping.exe'}]
+      hints:
+        - 'Du willst wissen, wo die Programmdatei auf der Festplatte liegt. Der Befehl (Command) dieser Lektion ist genau das englische Wort für „wo“.'
+        - 'Zwei Teile: Was tun? (`where`) Welches Programm? (der Name `ping`; `.exe` musst du nicht schreiben).'
+      answer: 'where ping'
+      explain: '`where ping` sucht im aktuellen Ordner und in den Ordnern, in denen CMD nach Programmen sucht, und zeigt den vollständigen Pfad von `ping.exe`.'
+    - id: P40b
+      start: 'C:\Users\Student'
+      task: 'Finde alle `.jpg`-Dateien in `C:\Users\Student` und allen Unterordnern.'
+      checks: [{type: lastOutputIncludes, value: 'family.jpg'}, {type: lastOutputIncludes, value: 'sea.jpg'}, {type: lastOutputIncludes, value: 'cat.jpg'}]
+      hints:
+        - 'Nimm `where`. Um einen Ordner und alle Unterordner zu durchsuchen, brauchst du den Switch (Schalter) `/r` (Recursive), danach kommen der Startordner und das Dateimuster.'
+        - 'Der Reihe nach: Befehl (`where`), Switch (`/r`), Startordner (absoluter Pfad `C:\Users\Student`), Dateimuster (`*` und `.jpg`).'
+      answer: 'where /r C:\Users\Student *.jpg'
+      explain: '`where /r` beginnt im angegebenen Ordner (`C:\Users\Student`) und findet in allen Unterordnern die Dateien, die zu `*.jpg` passen.'
+  quiz:
+    - kind: mcq
+      q: 'Was macht der Switch `/r` bei `where`?'
+      options: ['Sucht im Ordner und in allen Unterordnern', 'Löscht die gefundenen Dateien', 'Zeigt die Dateigröße', 'Sucht nur im PATH']
+      answer: 0
+      explain: '`/r` = Recursive.'
+    - kind: type
+      q: 'Finde heraus, wo das Programm `notepad` liegt.'
+      accept: ['where notepad', 'where notepad.exe']
+      explain: '`where notepad`'
+    - kind: tf
+      q: 'Auch `dir /s /b *.jpg` kann jpg-Dateien in Unterordnern finden.'
+      answer: true
+      explain: '`/s` bedeutet bei dir: Unterordner.'
+  recap: '`where Programm` = wo das Programm liegt. `where /r Ordner Muster` = Suche in Unterordnern.'
+
+- n: 41
+  term: attrib
+  fullForm: 'Attributes'
+  difficulty: 2
+  objective: 'Du siehst und änderst Dateieigenschaften wie „versteckt“ und „schreibgeschützt“.'
+  summary: 'Jede Datei hat mehrere Eigenschaften (Attributes): `H` versteckt, `R` schreibgeschützt, `S` Systemdatei und `A` bereit fürs Backup. `attrib` zeigt sie an und ändert sie mit `+` und `-`.'
+  meaning: 'Eine versteckte Datei siehst du mit normalem `dir` nicht; `dir /a` zeigt alle Dateien. Eine Read-only-Datei kannst du nicht ändern und nicht mit normalem `del` löschen.'
+  usage: 'Versteckte Dateien finden, eine wichtige Datei mit `+r` schützen und Probleme lösen, etwa Viren, die Dateien auf dem USB-Stick verstecken.'
+  syntax: 'attrib [+r|-r] [+h|-h] [+s|-s] [file]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['dir /b', 'dir /a /b', 'attrib secret.txt']
+  examples:
+    - c: 'dir /a'
+      d: 'Alle Dateien anzeigen, auch versteckte.'
+    - c: 'attrib'
+      d: 'Die Attribute der Dateien im aktuellen Ordner anzeigen.'
+    - c: 'attrib +r guests.txt'
+      d: 'Eine Datei schreibgeschützt machen.'
+    - c: 'attrib -h secret.txt'
+      d: 'Eine Datei wieder sichtbar machen.'
+  mistakes:
+    - 'Denken, eine versteckte Datei sei sicher; jeder sieht sie mit `dir /a`.'
+    - 'Die Attribute von Systemdateien (`S`) in `C:\Windows` ändern.'
+  tip: 'Wenn dein USB-Stick nach einem Virus leer aussieht, tippe zuerst `dir /a`; vielleicht sind die Dateien nur versteckt.'
+  practice:
+    - id: P41a
+      start: 'C:\Users\Student\Documents'
+      task: 'In diesem Ordner gibt es eine versteckte Datei. Zeige alle Dateien an, auch die versteckten.'
+      checks: [{type: anyCmd, value: dir}, {type: lastOutputIncludes, value: 'secret.txt'}]
+      hints:
+        - 'Eine versteckte Datei (Attribut `H`) siehst du mit normalem `dir` nicht. `dir` hat einen Switch (Schalter), der alle Dateien zeigt, egal mit welchem Attribut.'
+        - 'Zwei Teile: Was tun? (`dir`) Wie? (Switch mit dem Anfangsbuchstaben von Attribute, mit `/`). Ein Argument brauchst du nicht; es zeigt diesen Ordner.'
+      answer: 'dir /a'
+      explain: '`dir /a` listet alle Dateien unabhängig von ihren Attributen auf; deshalb siehst du auch die versteckte Datei `secret.txt`.'
+    - id: P41b
+      start: 'C:\Users\Student\Documents'
+      task: 'Mach die Datei `guests.txt` schreibgeschützt (Read-only).'
+      checks: [{type: fileAttr, path: 'C:\Users\Student\Documents\guests.txt', attr: r}]
+      hints:
+        - 'Zum Ändern von Attributen nimmst du `attrib`. Das Zeichen `+` fügt ein Attribut hinzu, `-` entfernt es. Finde den Buchstaben für Read-only.'
+        - 'Drei Teile: Was tun? (`attrib`) Welche Änderung? (`+` direkt vor dem Anfangsbuchstaben von Read-only, also `r`) Welche Datei? (`guests.txt`).'
+      answer: 'attrib +r guests.txt'
+      explain: '`attrib` ändert Attribute, und `+r` fügt `guests.txt` die Eigenschaft Read-only hinzu; danach kann die Datei nicht mehr geändert werden.'
+  quiz:
+    - kind: mcq
+      q: 'Was bedeutet das Attribut `H`?'
+      options: ['Hidden (versteckt)', 'Home', 'Hard disk', 'Help']
+      answer: 0
+      explain: 'H = Hidden.'
+    - kind: predict
+      q: 'Die Datei `a.txt` ist Read-only. Was passiert bei diesem Befehl?'
+      code: 'del a.txt'
+      options: ['Access is denied.', 'Die Datei wird gelöscht', 'Could Not Find', 'Are you sure (Y/N)?']
+      answer: 0
+      explain: 'Eine Read-only-Datei lässt sich mit normalem `del` nicht löschen (außer mit `/f`).'
+    - kind: type
+      q: 'Mach die Datei `notes.txt` wieder sichtbar (nicht mehr versteckt).'
+      accept: ['attrib -h notes.txt']
+      explain: '`-` entfernt ein Attribut.'
+  recap: '`attrib` = Eigenschaften ansehen und ändern. `+` hinzufügen, `-` entfernen. `dir /a` zeigt versteckte Dateien.'
+
+- n: 42
+  term: fc
+  fullForm: 'File Compare'
+  difficulty: 2
+  objective: 'Du vergleichst zwei Dateien und findest die Unterschiede.'
+  summary: '`fc` vergleicht zwei Dateien Zeile für Zeile und zeigt die Stellen, an denen sie sich unterscheiden.'
+  meaning: 'Sind die Dateien gleich, erscheint die Meldung `FC: no differences encountered`. Sonst wird der unterschiedliche Teil jeder Datei zwischen `*****`-Zeilen angezeigt. `/c` ignoriert Groß- und Kleinschreibung, `/n` zeigt Zeilennummern.'
+  usage: 'Herausfinden, was sich in einer Konfigurationsdatei geändert hat, oder prüfen, ob ein Backup mit dem Original übereinstimmt.'
+  syntax: 'fc [/c] [/n] file1 file2'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    files:
+      - {path: 'C:\Users\Student\Desktop\menu_old.txt', content: "Pizza 8.00\nPasta 7.00\nSalad 5.50\n"}
+      - {path: 'C:\Users\Student\Desktop\menu_new.txt', content: "Pizza 8.50\nPasta 7.00\nSalad 5.50\n"}
+    cmds: ['fc menu_old.txt menu_new.txt', 'fc menu_new.txt menu_new.txt']
+  examples:
+    - c: 'fc menu_old.txt menu_new.txt'
+      noTry: true
+      d: 'Die unterschiedlichen Zeilen anzeigen.'
+    - c: 'fc /n a.txt b.txt'
+      noTry: true
+      d: 'Mit Zeilennummern.'
+    - c: 'fc /c a.txt b.txt'
+      noTry: true
+      d: 'Ohne Rücksicht auf Groß- und Kleinschreibung.'
+  mistakes:
+    - 'Dateien vergleichen, die keine Textdateien sind, und eine lesbare Ausgabe erwarten.'
+  tip: 'Exit Code von `fc`: 0 heißt gleich, 1 heißt unterschiedlich. In Batch-Skripten praktisch, um ein Backup zu prüfen.'
+  practice:
+    - id: P42a
+      start: 'C:\Users\Student\Desktop'
+      files:
+        - {path: 'C:\Users\Student\Desktop\menu_old.txt', content: "Pizza 8.00\nPasta 7.00\nSalad 5.50\n"}
+        - {path: 'C:\Users\Student\Desktop\menu_new.txt', content: "Pizza 8.50\nPasta 7.00\nSalad 5.50\n"}
+      task: 'Vergleiche die Dateien `menu_old.txt` und `menu_new.txt` und finde heraus, bei welchem Gericht sich der Preis geändert hat.'
+      checks: [{type: anyCmd, value: fc, evenIfFailed: true}, {type: lastOutputIncludes, value: '8.50'}, {type: lastOutputIncludes, value: '*****'}]
+      hints:
+        - 'Zum Vergleichen zweier Dateien nimmst du `fc` (File Compare) und gibst ihm beide Dateinamen hintereinander.'
+        - 'Drei Teile: Was tun? (`fc`) Erste Datei? (`menu_old.txt`) Zweite Datei? (`menu_new.txt`). In der Ausgabe stehen die unterschiedlichen Zeilen zwischen `*****`.'
+      answer: 'fc menu_old.txt menu_new.txt'
+      explain: '`fc` vergleicht die beiden Dateien Zeile für Zeile und zeigt nur die unterschiedlichen Zeilen; hier hat sich der Preis von Pizza von 8.00 auf 8.50 geändert.'
+    - id: P42b
+      start: 'C:\Users\Student\Desktop'
+      files:
+        - {path: 'C:\Users\Student\Desktop\a.txt', content: "Hello CMD\n"}
+        - {path: 'C:\Users\Student\Desktop\b.txt', content: "HELLO cmd\n"}
+      task: 'Vergleiche `a.txt` und `b.txt`, ohne auf Groß- und Kleinschreibung zu achten. (Sie sollen als gleich erkannt werden.)'
+      checks: [{type: switch, value: '/c', cmd: fc, anyRun: true}, {type: lastOutputIncludes, value: 'no differences'}]
+      hints:
+        - 'Wieder `fc`, aber diesmal musst du sagen, dass Groß- und Kleinschreibung egal ist. Dafür hat `fc` einen Switch (Schalter).'
+        - 'Der Reihe nach: Befehl (`fc`), Switch zum Ignorieren der Schreibweise (`/c` von Case), erste Datei (`a.txt`), zweite Datei (`b.txt`).'
+      answer: 'fc /c a.txt b.txt'
+      explain: '`/c` sagt `fc`, dass `Hello` und `HELLO` gleich sind; also gelten die beiden Dateien als gleich, und die Meldung `no differences` erscheint.'
+  quiz:
+    - kind: mcq
+      q: 'Was meldet `fc`, wenn zwei Dateien gleich sind?'
+      options: ['FC: no differences encountered', 'Files are equal', '*****', 'Nichts']
+      answer: 0
+      explain: 'Die Standardmeldung von fc.'
+    - kind: mcq
+      q: 'Welcher Switch zeigt die Zeilennummern?'
+      options: ['/n', '/c', '/l', '/b']
+      answer: 0
+      code_options: true
+      explain: '`/n` = Number.'
+    - kind: tf
+      q: 'Exit Code 0 nach `fc` bedeutet, dass die Dateien gleich sind.'
+      answer: true
+      explain: '0 = gleich, 1 = unterschiedlich.'
+  recap: '`fc Datei1 Datei2` = vergleichen. `/c` Schreibweise egal, `/n` Zeilennummern. Exit Code 0 heißt gleich.'
+
+- n: 43
+  term: xcopy
+  fullForm: 'Extended Copy'
+  difficulty: 2
+  objective: 'Du kopierst einen Ordner samt Unterordnern.'
+  summary: '`xcopy` ist wie `copy`, kopiert aber auch Ordner und Unterordner. Die wichtigsten Switches (Schalter): `/s`, `/e`, `/i` und `/y`.'
+  meaning: '`/s` kopiert nicht leere Unterordner, `/e` sogar die leeren. `/i` sagt: Wenn das Ziel nicht existiert, nimm an, dass es ein Ordner ist (sonst fragt xcopy „File oder Directory?“). `/y` überschreibt ohne Nachfrage.'
+  usage: 'Ein Backup von einem ganzen Ordner machen, ein Projekt auf den USB-Stick kopieren.'
+  syntax: 'xcopy source destination [/s] [/e] [/i] [/y] [/h]'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['xcopy Documents D:\DocsBackup /e /i', 'tree D:\DocsBackup /f']
+  examples:
+    - c: 'xcopy Documents D:\DocsBackup /e /i'
+      d: 'Documents komplett mit Unterordnern kopieren.'
+    - c: 'xcopy *.txt E:\Texts /i'
+      at: 'C:\Users\Student\Documents'
+      d: 'Alle txt-Dateien in einen neuen Ordner auf dem USB-Stick kopieren.'
+    - c: 'xcopy Documents D:\DocsBackup /s /y'
+      d: 'Das Backup ohne Nachfrage aktualisieren.'
+    - c: 'xcopy Documents E:\Docs /e /i /l'
+      d: '`/l` zeigt nur die Liste, kopiert aber nichts.'
+  mistakes:
+    - '`/s` oder `/e` vergessen: Die Unterordner werden nicht kopiert.'
+    - 'Sich über die Frage `F = file, D = directory` wundern: Mit `/i` oder der Antwort `D` ist das gelöst.'
+  tip: 'Versteckte Dateien werden nur mit `/h` kopiert.'
+  practice:
+    - id: P43a
+      start: 'C:\Users\Student'
+      task: 'Kopiere den ganzen Ordner Documents samt Unterordnern nach `D:\DocsBackup`.'
+      inputs: ['d']
+      checks: [{type: fileExists, path: 'D:\DocsBackup\menu.txt'}, {type: fileExists, path: 'D:\DocsBackup\Work\report.txt'}]
+      hints:
+        - '`copy` kopiert keine Unterordner; nimm `xcopy`. Du brauchst einen Switch, der alle Unterordner kopiert (auch leere), und einen Switch, der das Ziel als Ordner behandelt.'
+        - 'Der Reihe nach: Befehl (Command, `xcopy`), Quelle (Ordner Documents), Ziel (`D:\DocsBackup`), Switch für Unterordner (`/e`), Switch „Ziel ist ein Ordner“ (`/i`).'
+      answer: 'xcopy Documents D:\DocsBackup /e /i'
+      explain: '`xcopy` kopiert den Ordner Documents nach `D:\DocsBackup`; `/e` nimmt alle Unterordner mit, auch leere, und `/i` verhindert die Frage, ob das Ziel File oder Directory ist.'
+  quiz:
+    - kind: mcq
+      q: 'Was ist der Unterschied zwischen `/s` und `/e` bei xcopy?'
+      options: ['`/e` kopiert auch leere Ordner', '`/s` ist schneller', '`/e` kopiert nur Dateien', 'Es gibt keinen Unterschied']
+      answer: 0
+      explain: '`/s` lässt leere Ordner aus.'
+    - kind: predict
+      q: 'Das Ziel `D:\New` existiert nicht. Was macht xcopy ohne `/i`?'
+      code: 'xcopy Documents D:\New /s'
+      options: ['Es fragt, ob das Ziel eine Datei oder ein Ordner ist', 'Es gibt einen Fehler aus und bricht ab', 'Es legt still einen Ordner an', 'Es schreibt alles in eine einzige Datei']
+      answer: 0
+      explain: 'Es stellt die Frage `(F = file, D = directory)?`.'
+    - kind: type
+      q: 'Kopiere den Ordner `Pictures` mit allen Unterordnern nach `E:\Pics`, ohne Nachfrage, ob Datei oder Ordner.'
+      accept: ['xcopy pictures e:\pics /e /i', 'xcopy pictures e:\pics /s /i', 'xcopy pictures e:\pics /e /i /y', 'xcopy pictures e:\pics /i /e', 'xcopy pictures e:\pics /i /s']
+      show: 'xcopy Pictures E:\Pics /e /i'
+      explain: '`/e` = Unterordner, `/i` = Ziel ist ein Ordner.'
+  recap: '`xcopy` = Ordner kopieren. `/s` oder `/e` Unterordner, `/i` Ziel ist ein Ordner, `/y` ohne Nachfrage, `/h` versteckte Dateien.'
+
+- n: 44
+  term: robocopy
+  fullForm: 'Robust File Copy'
+  difficulty: 3
+  objective: 'Du kopierst Ordner mit robocopy zuverlässig und clever und kennst die Gefahr von `/mir`.'
+  summary: '`robocopy` ist das Profi-Werkzeug zum Kopieren von Ordnern: Es kopiert nur neue oder geänderte Dateien, liefert einen ausführlichen Bericht und macht nach einer Unterbrechung weiter.'
+  meaning: 'Die Syntax ist anders: zuerst der Quellordner, dann der Zielordner, dann (optional) das Dateimuster. `/e` = Unterordner, `/mir` macht das Ziel zum Spiegelbild der Quelle, `/l` zeigt nur die Liste.'
+  usage: 'Regelmäßige Backups, Ordner synchronisieren, große Datenmengen übertragen.'
+  syntax: 'robocopy source destination [files] [/e] [/mir] [/l]'
+  warning: '`/mir` löscht im Ziel jede Datei, die es in der Quelle nicht gibt. Wenn du Quelle und Ziel vertauschst, kann dein Backup gelöscht werden.'
+  demo:
+    start: 'C:\Users\Student'
+    cmds: ['robocopy Documents D:\Sync /e']
+  examples:
+    - c: 'robocopy Documents D:\Sync /e'
+      d: 'Einen Ordner mit Unterordnern kopieren.'
+    - c: 'robocopy Documents D:\Sync *.txt'
+      d: 'Nur die txt-Dateien.'
+    - c: 'robocopy Documents D:\Sync /e /l'
+      d: 'Nur zeigen, was kopiert würde.'
+    - c: 'robocopy Documents D:\Mirror /mir'
+      d: 'Vollständiger Spiegel (gefährlich).'
+      noTry: true
+  mistakes:
+    - 'Einen Dateinamen als Quelle angeben; robocopy erwartet immer einen Ordner.'
+    - 'Denken, Exit Code 1 bedeute einen Fehler; bei robocopy heißt er „Dateien wurden kopiert“.'
+  tip: 'Führst du denselben Befehl noch einmal aus, überspringt (Skip) er unveränderte Dateien; ideal für tägliche Backups.'
+  practice:
+    - id: P44a
+      start: 'C:\Users\Student'
+      task: 'Kopiere mit robocopy den ganzen Ordner Pictures samt Unterordnern nach `E:\PicBackup`.'
+      checks: [{type: fileExists, path: 'E:\PicBackup\beach.jpg'}, {type: fileExists, path: 'E:\PicBackup\Holidays\family.jpg'}]
+      hints:
+        - '`robocopy` bekommt zuerst den Quellordner, dann den Zielordner und zum Schluss die Switches (Schalter). Für die Unterordner brauchst du auch einen Switch.'
+        - 'Der Reihe nach: Befehl (Command, `robocopy`), Quelle (Ordner Pictures), Ziel (`E:\PicBackup`), Switch für Unterordner (`/e`).'
+      answer: 'robocopy Pictures E:\PicBackup /e'
+      explain: '`robocopy` kopiert den Inhalt von `Pictures` nach `E:\PicBackup`, und `/e` sorgt dafür, dass auch Unterordner wie Holidays mitkopiert werden.'
+    - id: P44b
+      start: 'C:\Users\Student'
+      task: 'Schau nur nach, welche Dateien robocopy beim Kopieren von Documents nach `D:\Test` kopieren würde, ohne wirklich zu kopieren.'
+      checks: [{type: anyCmd, value: robocopy, evenIfFailed: true}, {type: switch, value: '/l', cmd: robocopy, anyRun: true}, {type: fileNotExists, path: 'D:\Test\menu.txt'}, {type: lastOutputIncludes, value: 'menu.txt'}]
+      hints:
+        - 'Derselbe Aufbau von `robocopy` (Quelle, Ziel, Switch), aber mit einem Switch, der nur die Liste der Aktionen zeigt und keine Datei wirklich kopiert.'
+        - 'Der Reihe nach: Befehl (`robocopy`), Quelle (Documents), Ziel (`D:\Test`), Switch „nur auflisten“ (`/l` von List).'
+      answer: 'robocopy Documents D:\Test /l'
+      explain: '`/l` sagt `robocopy`, dass es nur berichten soll, welche Dateien es von Documents nach `D:\Test` kopieren würde; es wird keine Datei kopiert.'
+  quiz:
+    - kind: mcq
+      q: 'Was bedeutet Exit Code 1 nach robocopy?'
+      options: ['Die Dateien wurden erfolgreich kopiert', 'Ein Fehler ist aufgetreten', 'Es gab keine Dateien', 'Zugriff verweigert']
+      answer: 0
+      explain: 'Bei robocopy bedeuten die Codes 0 bis 7 Erfolg; 8 und höher heißt Fehler.'
+    - kind: mcq
+      q: 'Welcher Switch macht das Ziel genau wie die Quelle und löscht überzählige Dateien?'
+      options: ['/mir', '/e', '/l', '/s']
+      answer: 0
+      code_options: true
+      explain: '`/mir` = Mirror (Spiegel); mit Vorsicht verwenden.'
+    - kind: fix
+      q: 'Dieser Befehl funktioniert nicht. Warum?'
+      code: 'robocopy menu.txt D:\Backup'
+      options: ['Die Quelle muss ein Ordner sein, und der Dateiname kommt nach dem Ziel', 'Es fehlt `/mir`', 'D:\Backup darf nicht existieren', 'robocopy kopiert keine txt-Dateien']
+      answer: 0
+      explain: 'Richtig: `robocopy . D:\Backup menu.txt`'
+  recap: '`robocopy Quelle Ziel [Dateien]`. `/e` Unterordner, `/l` Probelauf, `/mir` Spiegel (gefährlich). Exit Code unter 8 = Erfolg.'

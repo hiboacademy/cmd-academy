@@ -1,0 +1,634 @@
+# Lessons 11–20 · Chapter 3 (navigation) and the start of Chapter 4 (files)
+# demo: commands run in a fresh Simulator when the lesson opens, so the
+#       example output is always exactly what the Simulator prints.
+
+- n: 11
+  term: dir
+  fullForm: 'Directory (list)'
+  difficulty: 1
+  objective: 'Du siehst dir den Inhalt jedes Ordners an und lernst, die Ausgabe von `dir` zu lesen.'
+  summary: '`dir` zeigt die Liste der Dateien und Ordner (Folder) in einem Ordner. Ohne Argument zeigt es den Inhalt des aktuellen Ordners (Current Directory).'
+  meaning: 'Jede Zeile der Ausgabe steht für eine Datei oder einen Ordner: Datum, Uhrzeit, `<DIR>` für einen Ordner oder die Dateigröße in Byte, und der Name. Ganz unten stehen die Anzahl der Dateien und der freie Speicherplatz auf dem Laufwerk.'
+  usage: 'Bevor du mit Dateien arbeitest, schau mit `dir` nach, was dort liegt und wie es genau heißt.'
+  syntax: 'dir [path] [/w] [/b]'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['dir']
+  examples:
+    - c: 'dir'
+      d: 'Inhalt des aktuellen Ordners.'
+    - c: 'dir Pictures'
+      at: 'C:\Users\Student'
+      d: 'Inhalt des Ordners Pictures, ohne hineinzuwechseln.'
+    - c: 'dir /w'
+      d: 'Kompakte Anzeige in mehreren Spalten; Ordner stehen in `[ ]`.'
+    - c: 'dir /b'
+      d: 'Nur die Namen (Bare), ohne Datum und Größe.'
+  mistakes:
+    - '`ls` eintippen: Dieser Befehl gehört zu Linux. In CMD benutzt du `dir`.'
+    - 'Das Leerzeichen vergessen: `dir/w` funktioniert, `dirPictures` aber nicht.'
+  tip: '`.` bedeutet „dieser Ordner“ und `..` „der übergeordnete Ordner“; beide siehst du in jedem Ordner außer im Stammverzeichnis (Root).'
+  restaurant: '`dir` ist wie ein Blick auf die Speisekarte am Tisch: Bevor du bestellst, siehst du, was es alles gibt.'
+  practice:
+    - id: P11a
+      start: 'C:\Users\Student\Pictures'
+      task: 'Du bist in Pictures. Schau nach, welche Dateien und Ordner hier sind.'
+      checks: [{type: cmd, value: dir}, {type: ok}, {type: cwd, value: 'C:\Users\Student\Pictures'}]
+      hints:
+        - 'Du willst die Liste der Dateien und Ordner im aktuellen Ordner sehen. Der Befehl (Command) dieser Lektion, `dir`, macht ohne Argument genau das.'
+        - 'Nur ein Teil: Was tun? (`dir`). Worauf? Musst du nicht schreiben; ohne Argument zeigt `dir` den Inhalt des aktuellen Ordners (Pictures).'
+      answer: 'dir'
+      explain: '`dir` ohne Argument listet den Inhalt des aktuellen Ordners auf; hier also `C:\Users\Student\Pictures`.'
+    - id: P11b
+      start: 'C:\Users\Student'
+      task: 'Zeige nur die Namen der Dateien und Ordner in Documents an (Bare-Format), ohne in den Ordner zu wechseln.'
+      checks: [{type: cmd, value: dir}, {type: argIncludes, value: documents}, {type: switch, value: '/b'}, {type: ok}]
+      hints:
+        - 'Du musst nicht in Documents wechseln: Gib `dir` den Ordnernamen als Argument. Damit nur die Namen erscheinen, brauchst du zusätzlich einen Switch (Schalter) für „Bare“.'
+        - 'Drei Teile: Was tun? (`dir`) Worauf? (der Ordnername Documents) Wie? (Switch mit dem ersten Buchstaben von Bare und `/`, der Datum und Größe weglässt).'
+      answer: 'dir Documents /b'
+      explain: '`dir` erstellt die Liste, `Documents` sagt, von welchem Ordner, und `/b` (Bare) zeigt nur die Namen ohne Datum und Größe.'
+  quiz:
+    - kind: mcq
+      q: 'Was ist die Zahl neben einem Dateinamen in der Ausgabe von `dir`?'
+      options: ['Die Dateigröße in Byte', 'Die Anzahl der Zeilen in der Datei', 'Die Nummer der Datei', 'Das Alter der Datei in Tagen']
+      answer: 0
+      explain: 'Bei Dateien steht die Größe in Byte, bei Ordnern `<DIR>`.'
+    - kind: mcq
+      q: 'Welcher Befehl zeigt nur die Namen, ohne Datum und Größe?'
+      options: ['dir /b', 'dir /w', 'dir', 'dir /s']
+      answer: 0
+      code_options: true
+      explain: '`/b` bedeutet Bare: nur der Name.'
+    - kind: type
+      q: 'Zeige den Inhalt des Ordners Music an, ohne hineinzuwechseln. (Du bist gerade in `C:\Users\Student`.)'
+      accept: ['dir music', 'dir music\', 'dir .\music', 'dir c:\users\student\music']
+      show: 'dir Music'
+      explain: 'Gib `dir` den Ordnernamen als Argument.'
+    - kind: sim
+      q: 'Zeige nur die Namen der Dateien und Ordner in Downloads an, ohne Datum und Größe.'
+      start: 'C:\Users\Student'
+      checks: [{type: cmd, value: dir}, {type: switch, value: '/b'}, {type: lastOutputIncludes, value: 'invoice.pdf'}]
+      answer: 'dir Downloads /b'
+      explain: '`/b` zeigt nur die Namen.'
+  recap: '`dir` = Inhalt ansehen. `/w` kompakt, `/b` nur Namen. Ordner erkennst du an `<DIR>`.'
+
+- n: 12
+  term: cd
+  fullForm: 'Change Directory'
+  difficulty: 1
+  objective: 'Du wechselst mit `cd` in jeden Ordner und weißt immer, wo du gerade bist.'
+  summary: '`cd` wechselt den aktuellen Ordner (Current Directory). Danach zeigt der Prompt (Eingabeaufforderung) den neuen Pfad.'
+  meaning: '`cd` mit einem Pfad (relativ oder absolut) bringt dich in diesen Ordner. `cd` ohne Argument gibt nur den aktuellen Pfad aus.'
+  usage: 'Fast jede Arbeit in CMD beginnt damit, in den richtigen Ordner zu wechseln.'
+  syntax: 'cd [path]'
+  demo:
+    cmds: ['cd Documents', 'cd Work', 'cd']
+  examples:
+    - c: 'cd Documents'
+      d: 'In den Ordner Documents wechseln, der im aktuellen Ordner liegt.'
+    - c: 'cd Documents\Work'
+      d: 'Direkt zwei Ordner tiefer wechseln.'
+    - c: 'cd C:\Windows'
+      d: 'Wechseln mit einem absoluten Pfad (Absolute Path).'
+    - c: 'chdir'
+      d: '`chdir` ist dasselbe wie `cd`; es zeigt den aktuellen Pfad.'
+  mistakes:
+    - 'Nur den Ordnernamen eintippen (`Documents`): CMD hält ihn für einen Befehl und meldet einen Fehler.'
+    - '`cd` auf eine Datei: `cd todo.txt` gibt den Fehler `The directory name is invalid.`'
+    - 'Tippfehler im Ordnernamen; prüfe den genauen Namen mit `dir`.'
+  tip: 'Tippe die ersten Buchstaben des Ordnernamens und drücke Tab – CMD ergänzt den Rest (funktioniert auch im Simulator).'
+  restaurant: '`cd` heißt: Der Kellner geht von Tisch 1 zu Tisch 2. Jede Bestellung, die du danach aufnimmst, gehört zum neuen Tisch.'
+  practice:
+    - id: P12a
+      start: 'C:\Users\Student'
+      task: 'Wechsle in den Ordner Downloads.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Downloads'}]
+      hints:
+        - 'Um in einen Ordner zu wechseln, benutzt du `cd` (Change Directory). Downloads liegt in diesem Ordner, also gib seinen Namen als Ziel an.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (der Ordnername Downloads). Nach Enter sollte sich der Prompt zu `C:\Users\Student\Downloads>` ändern.'
+      answer: 'cd Downloads'
+      explain: '`cd` wechselt den aktuellen Ordner und `Downloads` ist das Ziel; weil es ein relativer Pfad (Relative Path) ist, wird er an `C:\Users\Student` angehängt.'
+    - id: P12b
+      start: 'C:\Users\Student'
+      task: 'Wechsle mit einem Befehl in den Ordner Holidays, der in Pictures liegt, und gib dann den aktuellen Pfad aus.'
+      multi: true
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures\Holidays'}, {type: cmd, value: cd}, {type: noArgs}]
+      hints:
+        - 'Zwei Schritte nacheinander: Erst wechselst du mit `cd` und einem zweiteiligen Pfad (äußerer Ordner, dann innerer Ordner), dann fragst du mit `cd` nach, wo du gerade bist.'
+        - 'Zeile 1: `cd` + Pfad (Name `Pictures`, Trennzeichen `\`, Name `Holidays`). Zeile 2: `cd` allein, ohne Argument, damit der aktuelle Pfad ausgegeben wird.'
+      answer: ['cd Pictures\Holidays', 'cd']
+      explain: '`cd Pictures\Holidays` geht mit einem Pfad zwei Stufen tiefer. Danach gibt `cd` ohne Argument nur den aktuellen Pfad aus und wechselt nirgendwohin.'
+  quiz:
+    - kind: mcq
+      q: 'Wofür steht `cd`?'
+      options: ['Change Directory', 'Copy Data', 'Create Directory', 'Clear Display']
+      answer: 0
+      code_options: true
+      explain: 'Change Directory: den aktuellen Ordner wechseln.'
+    - kind: fix
+      q: 'Jemand möchte in Music wechseln. Was ist falsch gelaufen?'
+      code: "C:\\Users\\Student>Music\n'Music' is not recognized as an internal or external command,"
+      options: ['`cd` fehlt vor dem Ordnernamen', 'Music muss kleingeschrieben werden', 'Music existiert nicht', 'Man muss zuerst `dir` eingeben']
+      answer: 0
+      explain: 'Ein Ordnername ist kein Befehl; richtig ist: `cd Music`'
+    - kind: type
+      q: 'Wechsle von `C:\Users\Student` aus mit einem Befehl in `Documents\Work`.'
+      accept: ['cd documents\work', 'chdir documents\work', 'cd .\documents\work', 'cd c:\users\student\documents\work']
+      show: 'cd Documents\Work'
+      explain: 'Verbinde die Ordnernamen mit `\`.'
+  recap: '`cd Ordner` = wechseln. `cd` allein = aktuellen Pfad anzeigen.'
+
+- n: 13
+  term: 'cd ..   cd \'
+  fullForm: 'Parent · Root'
+  difficulty: 1
+  objective: 'Du gehst einen Ordner zurück nach oben und springst direkt ins Stammverzeichnis des Laufwerks.'
+  summary: '`cd ..` geht einen Ordner nach oben (zum übergeordneten Ordner, Parent). `cd \` geht direkt ins Stammverzeichnis (Root) des Laufwerks, z. B. `C:\`.'
+  meaning: '`..` bedeutet in jedem Pfad „der Ordner darüber“. Du kannst es wiederholen: `..\..` heißt zwei Ordner nach oben. `\` am Anfang eines Pfads bedeutet das Stammverzeichnis dieses Laufwerks.'
+  usage: 'Um aus tiefen Ordnern zurückzukommen oder einen Pfad ganz vorne am Laufwerk zu beginnen.'
+  syntax: "cd ..\ncd ..\\..\ncd \\"
+  demo:
+    start: 'C:\Users\Student\Documents\Work'
+    cmds: ['cd ..', 'cd ..\..', 'cd \']
+  examples:
+    - c: 'cd ..'
+      d: 'Einen Ordner nach oben.'
+    - c: 'cd ..\..'
+      d: 'Zwei Ordner nach oben.'
+    - c: 'cd ..\Music'
+      at: 'C:\Users\Student\Documents'
+      d: 'Nach oben gehen und dann in den Nachbarordner Music wechseln.'
+    - c: 'cd \'
+      d: 'Direkt ins Stammverzeichnis des aktuellen Laufwerks.'
+  mistakes:
+    - '`cd..` (ohne Leerzeichen) funktioniert auch, aber gewöhn dir `cd...` mit drei Punkten nicht an; das ist in Windows kein Standard.'
+    - '`\` mit `/` verwechseln: Das Stammverzeichnis erreichst du mit Backslash: `cd \`'
+  tip: 'Im Stammverzeichnis (`C:\`) gibt es nichts mehr darüber; `cd ..` bewirkt dort nichts.'
+  daily: 'Wie in einem Gebäude: `..` heißt ein Stockwerk tiefer Richtung Lobby, `\` heißt direkt in die Lobby.'
+  practice:
+    - id: P13a
+      start: 'C:\Users\Student\Documents\Work'
+      task: 'Du bist in `Documents\Work`. Gehe mit einem Befehl zwei Ordner nach oben (nach `C:\Users\Student`).'
+      checks: [{type: cwd, value: 'C:\Users\Student'}, {type: cmd, value: cd}]
+      hints:
+        - '`..` bedeutet „ein Ordner nach oben“ (Parent). Du musst zwei Stufen hoch, also verbindest du zwei `..` in einem Pfad und gibst ihn `cd`.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (Pfad: erstes `..`, Trennzeichen `\`, zweites `..`). Mit der ersten Stufe kommst du zu Documents, mit der zweiten zu Student.'
+      answer: 'cd ..\..'
+      explain: '`..\..` heißt „der übergeordnete Ordner und dann dessen übergeordneter Ordner“. Von `Documents\Work` kommst du erst zu `Documents` und dann zu `C:\Users\Student`.'
+    - id: P13b
+      start: 'C:\Users\Student\Pictures\Holidays'
+      task: 'Gehe mit dem kürzesten Befehl ins Stammverzeichnis von Laufwerk C.'
+      checks: [{type: cwd, value: 'C:\'}]
+      hints:
+        - 'Das Stammverzeichnis eines Laufwerks wird mit einem einzigen Zeichen dargestellt: dem Backslash, der auch Ordner trennt. Gib ihn `cd`.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (ins Stammverzeichnis, nur ein `\`). Du musst `..` nicht mehrmals wiederholen oder einen vollständigen Pfad schreiben.'
+      answer: 'cd \'
+      explain: '`\` allein bedeutet das Stammverzeichnis des aktuellen Laufwerks, also bringt dich `cd \` aus jeder Tiefe mit einem Befehl nach `C:\`.'
+  quiz:
+    - kind: predict
+      q: 'Aktueller Ordner (Current Directory): `C:\Users\Student\Music` – wo bist du nach diesem Befehl?'
+      code: 'cd ..\Pictures'
+      options: ['C:\Users\Student\Pictures', 'C:\Pictures', 'C:\Users\Pictures', 'C:\Users\Student\Music\Pictures']
+      answer: 0
+      code_options: true
+      explain: 'Erst einen Ordner nach oben (Student), dann in Pictures.'
+    - kind: tf
+      q: '`cd \` geht immer ins Stammverzeichnis des aktuellen Laufwerks.'
+      answer: true
+      explain: '`\` am Anfang eines Pfads bedeutet das Stammverzeichnis.'
+    - kind: type
+      q: 'Gehe einen Ordner nach oben.'
+      accept: ['cd ..', 'cd..', 'chdir ..', 'cd ..\']
+      explain: '`cd ..`'
+    - kind: sim
+      q: 'Wechsle von `Documents\Work` aus mit einem Befehl in den Ordner Music.'
+      start: 'C:\Users\Student\Documents\Work'
+      checks: [{type: cwd, value: 'C:\Users\Student\Music'}]
+      answer: 'cd ..\..\Music'
+      explain: 'Zweimal `..` bis Student und dann Music; oder ein absoluter Pfad (Absolute Path).'
+  recap: '`cd ..` = einen Ordner nach oben. `cd ..\..` = zwei Ordner. `cd \` = Stammverzeichnis des Laufwerks.'
+
+- n: 14
+  term: 'D:   cd /d'
+  fullForm: 'Change drive'
+  difficulty: 1
+  objective: 'Du wechselst zwischen Laufwerken und kommst mit einem Befehl in einen Ordner auf einem anderen Laufwerk.'
+  summary: 'Um auf ein anderes Laufwerk zu wechseln, schreib seinen Buchstaben mit Doppelpunkt, z. B. `D:`. Für einen Ordner auf einem anderen Laufwerk benutzt du `cd /d`.'
+  meaning: 'Jedes Laufwerk merkt sich seinen eigenen aktuellen Pfad. `cd D:\Backup` ändert nur den Pfad auf D, und du bleibst auf C; `cd /d D:\Backup` wechselt Laufwerk und Ordner zugleich.'
+  usage: 'Arbeiten mit einem USB-Stick, einer zweiten Festplatte oder einem Backup auf einem anderen Laufwerk.'
+  syntax: "D:\ncd /d D:\\folder"
+  demo:
+    cmds: ['D:', 'dir /b', 'C:', 'cd /d D:\Projects']
+  examples:
+    - c: 'E:'
+      d: 'Auf den virtuellen USB-Stick wechseln.'
+    - c: 'cd /d D:\Backup'
+      d: 'Mit einem Befehl in den Ordner Backup auf Laufwerk D wechseln.'
+    - c: 'pushd D:\Projects'
+      d: 'Merkt sich den aktuellen Pfad und wechselt; `popd` bringt dich zurück.'
+  mistakes:
+    - '`cd D:\Backup` ohne `/d`: Der Prompt zeigt weiter C an und du denkst, der Befehl hat nicht funktioniert.'
+    - '`D` ohne Doppelpunkt schreiben.'
+  tip: '`pushd` und `popd` sind wie ein Lesezeichen (Bookmark): Mit `pushd` gehst du irgendwohin, mit `popd` kehrst du an die vorherige Stelle zurück.'
+  restaurant: 'Das Restaurant hat mehrere Filialen. `D:` heißt: in die Filiale D gehen. `cd /d D:\Backup` heißt: „Geh in Filiale D, Saal Backup“ – in einem Zug.'
+  practice:
+    - id: P14a
+      start: 'C:\Users\Student'
+      task: 'Wechsle mit einem Befehl in den Ordner `D:\Projects`.'
+      checks: [{type: drive, value: D}, {type: cwd, value: 'D:\Projects'}]
+      hints:
+        - 'Das Ziel liegt auf einem anderen Laufwerk. `cd` allein wechselt das Laufwerk nicht; du musst einen Switch (Schalter) hinzufügen, damit Laufwerk und Ordner zusammen gewechselt werden.'
+        - 'Drei Teile: Was tun? (`cd`) Wie? (Switch mit dem Buchstaben `d` und `/`, für Drive) Wohin? (der vollständige absolute Pfad, von `D:\` bis `Projects`).'
+      answer: 'cd /d D:\Projects'
+      explain: '`cd` wechselt den Ordner, `/d` erlaubt, dass auch das Laufwerk gewechselt wird, und `D:\Projects` ist das vollständige Ziel; so kommst du mit einem Befehl dorthin.'
+    - id: P14b
+      start: 'C:\Users\Student'
+      task: 'Wechsle auf den USB-Stick (Laufwerk E), sieh dir den Inhalt an und kehre wieder zu Laufwerk C zurück.'
+      multi: true
+      checks: [{type: drive, value: C}, {type: any, of: [{type: argIncludes, cmd: drive, value: 'E:'}, {type: argIncludes, cmd: cd, value: 'E:'}, {type: argIncludes, cmd: pushd, value: 'E:'}]}, {type: anyCmd, value: dir}]
+      hints:
+        - 'Drei Schritte: auf Laufwerk E wechseln, den Inhalt ansehen und zu Laufwerk C zurückkehren. Zum Wechseln des Laufwerks brauchst du nur seinen Buchstaben und einen Doppelpunkt.'
+        - 'Zeile 1: Buchstabe des USB-Laufwerks mit Doppelpunkt. Zeile 2: der Befehl zum Anzeigen des Inhalts. Zeile 3: Buchstabe des Windows-Hauptlaufwerks mit Doppelpunkt.'
+      answer: ['E:', 'dir', 'C:']
+      explain: '`E:` wechselt auf den USB-Stick, `dir` zeigt seinen Inhalt und `C:` bringt dich zurück zu Laufwerk C – in den Ordner, in dem du vorher auf C warst.'
+  quiz:
+    - kind: predict
+      q: 'Du bist gerade in `C:\Users\Student`. Was zeigt der Prompt nach diesem Befehl?'
+      code: 'cd D:\Backup'
+      options: ['C:\Users\Student>', 'D:\Backup>', 'D:\>', 'Es gibt einen Fehler']
+      answer: 0
+      code_options: true
+      explain: 'Ohne `/d` ändert sich nur der Pfad auf Laufwerk D, und du bleibst auf C.'
+    - kind: type
+      q: 'Wechsle mit einem Befehl nach `D:\Backup`.'
+      accept: ['cd /d d:\backup', 'chdir /d d:\backup', 'pushd d:\backup']
+      show: 'cd /d D:\Backup'
+      explain: '`/d` heißt: Wechsle auch das Laufwerk.'
+    - kind: order
+      q: 'Bring diese Befehle in die richtige Reihenfolge, um auf den USB-Stick zu wechseln, den Inhalt anzusehen und zu C zurückzukehren.'
+      items: ['E:', 'dir', 'C:']
+      explain: 'Erst das Laufwerk wechseln, dann arbeiten, dann zurückkehren.'
+  recap: '`D:` = Laufwerk wechseln. `cd /d Pfad` = Laufwerk + Ordner zusammen. Jedes Laufwerk merkt sich seinen eigenen Pfad.'
+
+- n: 15
+  term: cls
+  fullForm: 'Clear Screen'
+  difficulty: 1
+  objective: 'Du leerst den Bildschirm und arbeitest mit den Tastenkürzeln von CMD schneller.'
+  summary: '`cls` = leert den sichtbaren Bildschirm der Eingabeaufforderung (Command Prompt). Keine Datei und kein Ordner wird gelöscht; nur der Text auf dem Bildschirm verschwindet.'
+  warning: '`cls` löscht keine Dateien oder Ordner und macht nichts kaputt. Nur der Text auf dem Bildschirm verschwindet, und der Prompt erscheint wieder oben.'
+  meaning: 'Nach `cls` bleibt nur der Prompt oben auf dem Bildschirm. Auch der aktuelle Ordner (Current Directory) bleibt gleich.'
+  usage: 'Wenn die Ausgaben früherer Befehle alles unübersichtlich machen und du dich konzentrieren willst.'
+  syntax: 'cls'
+  examples:
+    - c: 'cls'
+      d: 'Bildschirm leeren.'
+    - c: 'dir & cls'
+      d: 'Zwei Befehle nacheinander ausführen (`&` in Lektion 31).'
+      noTry: true
+  mistakes:
+    - 'Denken, dass `cls` Dateien löscht. Nein, nur den Bildschirm.'
+    - '`clear` eintippen: Dieser Befehl gehört zu Linux.'
+  tip: 'Nützliche Tasten: ↑ und ↓ für frühere Befehle, Tab zum Vervollständigen von Namen, Esc zum Löschen der Zeile, die du gerade schreibst. Im Simulator gibt es auch Buttons für ↑ und Tab.'
+  practice:
+    - id: P15a
+      start: 'C:\Users\Student'
+      task: 'Sieh dir zuerst mit `dir` den Inhalt des Ordners an und leere dann den Bildschirm.'
+      multi: true
+      checks: [{type: cmd, value: cls}, {type: anyCmd, value: dir}]
+      hints:
+        - 'Bring zuerst mit `dir` etwas auf den Bildschirm und räume ihn dann mit dem Befehl (Command) dieser Lektion (Clear Screen) auf.'
+        - 'Zwei Zeilen nacheinander: Zeile 1: `dir`, um den Inhalt zu sehen. Zeile 2: der Befehl aus drei Buchstaben, gebildet aus Clear Screen.'
+      answer: ['dir', 'cls']
+      explain: '`dir` gibt den Inhalt des Ordners aus und `cls` (Clear Screen) löscht den ganzen Text auf dem Bildschirm, sodass nur der Prompt bleibt. Die Dateien bleiben unverändert.'
+  quiz:
+    - kind: tf
+      q: '`cls` löscht die Dateien im aktuellen Ordner.'
+      answer: false
+      explain: 'Nur die Bildschirmanzeige wird geleert.'
+    - kind: mcq
+      q: 'Welche Taste drückst du, um den vorherigen Befehl zurückzuholen?'
+      options: ['↑ (Pfeil nach oben)', 'Esc', 'Delete', 'F1']
+      answer: 0
+      explain: 'Der Pfeil nach oben holt frühere Befehle einen nach dem anderen zurück.'
+    - kind: mcq
+      q: 'Was passiert nach `cls` mit dem aktuellen Ordner (Current Directory)?'
+      options: ['Er bleibt derselbe', 'Er wechselt zu `C:\`', 'Er wechselt zum Desktop', 'Er wird gelöscht']
+      answer: 0
+      explain: '`cls` leert nur die Anzeige.'
+  recap: '`cls` räumt den Bildschirm auf, nicht die Dateien. ↑ = vorheriger Befehl, Tab = Namen vervollständigen.'
+
+- n: 16
+  term: 'help   /?'
+  fullForm: 'Help'
+  difficulty: 1
+  objective: 'Du holst dir selbst Hilfe zu jedem Befehl und lernst, die Hilfeausgabe zu lesen.'
+  summary: '`help` zeigt die Liste der CMD-Befehle. `Befehl /?` zeigt die vollständige Hilfe zu genau diesem Befehl.'
+  meaning: 'In der Hilfe sind Teile in `[ ]` optional, und `|` bedeutet „eines davon“. `DIR [/W] [/B]` heißt zum Beispiel, dass `/w` und `/b` optional sind.'
+  usage: 'Die wichtigste Fähigkeit für CMD-Nutzer: Wenn du einen Switch vergessen hast, tippe `/?`.'
+  syntax: "help\nhelp command\ncommand /?"
+  demo:
+    cmds: ['mkdir /?']
+  examples:
+    - c: 'help'
+      d: 'Liste aller Befehle mit je einer Zeile Erklärung.'
+    - c: 'copy /?'
+      d: 'Vollständige Hilfe zu `copy`.'
+    - c: 'help dir'
+      d: 'Dasselbe wie `dir /?`.'
+  mistakes:
+    - '`-?` oder `--help` schreiben: In CMD ist `/?` richtig.'
+  tip: 'Die Windows-Hilfe ist auf Englisch; es reicht, nach den Switches und Schlüsselwörtern zu suchen.'
+  practice:
+    - id: P16a
+      start: 'C:\Users\Student'
+      task: 'Zeige die Liste der CMD-Befehle an.'
+      checks: [{type: cmd, value: help}, {type: noArgs}]
+      hints:
+        - 'CMD hat selbst eine Liste seiner Befehle. Der Befehl (Command) dafür ist das englische Wort für „Hilfe“.'
+        - 'Nur ein Teil: Was tun? (das Wort Help). Ein Argument brauchst du nicht; wenn du danach einen Befehlsnamen schreibst, siehst du statt der ganzen Liste nur die Hilfe zu diesem Befehl.'
+      answer: 'help'
+      explain: '`help` ohne Argument zeigt die Liste der CMD-Befehle mit einer kurzen Erklärung zu jedem.'
+    - id: P16b
+      start: 'C:\Users\Student'
+      task: 'Zeige die Hilfe zum Befehl `copy` an.'
+      checks: [{type: any, of: [{type: switch, value: '/?', cmd: copy, anyRun: true}, {type: argIncludes, cmd: help, value: copy}]}]
+      hints:
+        - 'Um die Hilfe zu einem Befehl zu sehen, schreibst du den Befehlsnamen und dahinter den Hilfe-Switch (`/?`). (Andere Möglichkeit: `help` und dann der Befehlsname.)'
+        - 'Zwei Teile: Was tun? (der Name des Befehls, zu dem du Hilfe willst: `copy`) Wie? (Hilfe-Switch: `/` und Fragezeichen), mit einem Leerzeichen dazwischen.'
+      answer: 'copy /?'
+      explain: '`copy` ist der Befehlsname und `/?` sagt ihm, dass es statt zu kopieren seine eigene Hilfe anzeigen soll.'
+  quiz:
+    - kind: mcq
+      q: 'Was bedeuten `[ ]` um einen Teil in der CMD-Hilfe?'
+      options: ['Dieser Teil ist optional', 'Dieser Teil ist Pflicht', 'Du musst auch `[ ]` eintippen', 'Dieser Teil ist veraltet']
+      answer: 0
+      explain: 'Teile in eckigen Klammern sind optional.'
+    - kind: type
+      q: 'Zeige die Hilfe zum Befehl `dir` an.'
+      accept: ['dir /?', 'help dir']
+      explain: '`dir /?` oder `help dir`'
+    - kind: tf
+      q: 'In CMD zeigt `dir --help` die Hilfe an.'
+      answer: false
+      explain: 'In CMD benutzt man `/?`.'
+  recap: '`help` = Liste der Befehle. `Befehl /?` = Hilfe zu diesem Befehl. `[ ]` = optional.'
+
+- n: 17
+  term: '"quotes"'
+  fullForm: 'Spaces in names'
+  difficulty: 1
+  objective: 'Du arbeitest richtig mit Namen, die Leerzeichen enthalten.'
+  summary: 'CMD sieht ein Leerzeichen als Grenze zwischen den Teilen eines Befehls. Wenn ein Datei- oder Ordnername Leerzeichen enthält, setz ihn in Anführungszeichen (Quotes) `" "`.'
+  meaning: '`type shopping list.txt` bedeutet zwei getrennte Dateien: `shopping` und `list.txt`. `type "shopping list.txt"` dagegen bedeutet eine Datei.'
+  usage: 'Ordner wie `Program Files` oder `Summer 2026` und Dateien wie `shopping list.txt`.'
+  syntax: 'command "name with spaces"'
+  demo:
+    start: 'C:\Users\Student\Desktop'
+    cmds: ['type shopping list.txt', 'type "shopping list.txt"']
+  examples:
+    - c: 'cd "C:\Program Files"'
+      d: 'In einen Ordner mit Leerzeichen im Namen wechseln.'
+    - c: 'cd "Pictures\Summer 2026"'
+      at: 'C:\Users\Student'
+      d: 'Relativer Pfad mit Leerzeichen.'
+    - c: 'mkdir "My Notes"'
+      d: 'Einen Ordner mit Leerzeichen im Namen erstellen.'
+  mistakes:
+    - '`mkdir My Notes` erstellt zwei getrennte Ordner: `My` und `Notes`.'
+    - 'Ein Anführungszeichen öffnen und nicht wieder schließen.'
+  tip: '`cd` ist eine Ausnahme und versteht auch `cd Program Files`, aber setz am besten immer Anführungszeichen.'
+  daily: 'Wenn du dem Lieferdienst „Rote Rosen Gasse“ sagst, denkt er vielleicht, es sind zwei Adressen. Mit Anführungszeichen machst du klar: Das ist ein einziger Name.'
+  practice:
+    - id: P17a
+      start: 'C:\Users\Student\Pictures'
+      task: 'Wechsle in den Ordner `Summer 2026`.'
+      checks: [{type: cwd, value: 'C:\Users\Student\Pictures\Summer 2026'}]
+      hints:
+        - 'Der Ordnername enthält ein Leerzeichen; CMD sieht ihn als zwei getrennte Teile. Du musst den ganzen Namen in Anführungszeichen (`" "`) setzen, damit er als ein Argument zählt.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (der ganze Ordnername, also Summer, Leerzeichen und 2026, in einem Paar `"`).'
+      answer: 'cd "Summer 2026"'
+      explain: '`cd` wechselt den Ordner und `"Summer 2026"` steht in Anführungszeichen, also sieht CMD es als einen vollständigen Namen, nicht als zwei getrennte Argumente.'
+    - id: P17b
+      start: 'C:\Users\Student\Desktop'
+      task: 'Zeige den Inhalt der Datei `shopping list.txt` an.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'shopping list.txt'}]
+      hints:
+        - 'Um den Inhalt einer Datei zu sehen, benutzt du `type`. Der Name dieser Datei enthält ein Leerzeichen, also musst du ihn in Anführungszeichen setzen.'
+        - 'Zwei Teile: Was tun? (`type`) Worauf? (der vollständige Dateiname mit Endung (Extension), also shopping list.txt, in einem Paar `"`).'
+      answer: 'type "shopping list.txt"'
+      explain: '`type` zeigt den Inhalt der Datei und `"shopping list.txt"` zählt dank der Anführungszeichen als ein vollständiger Name; ohne sie würde CMD nach einer Datei namens `shopping` suchen.'
+  quiz:
+    - kind: predict
+      q: 'Wie viele Ordner erstellt dieser Befehl?'
+      code: 'mkdir Old Photos'
+      options: ['2', '1', '0', 'Es gibt einen Fehler']
+      answer: 0
+      explain: 'Das Leerzeichen erzeugt zwei getrennte Namen: `Old` und `Photos`.'
+    - kind: type
+      q: 'Erstelle einen Ordner namens `Old Photos` (ein einziger Ordner).'
+      accept: ['mkdir "old photos"', 'md "old photos"']
+      show: 'mkdir "Old Photos"'
+      explain: 'Setz den Namen in Anführungszeichen.'
+    - kind: fix
+      q: 'Warum findet dieser Befehl die Datei nicht?'
+      code: 'type my notes.txt'
+      options: ['Der Name enthält ein Leerzeichen und hat keine Anführungszeichen', '`type` zeigt nur Ordner an', 'Die Endung (Extension) ist falsch', 'Man muss `dir` benutzen']
+      answer: 0
+      explain: 'Richtig: `type "my notes.txt"`'
+  recap: 'Name mit Leerzeichen = in `" "` setzen. Ohne Anführungszeichen sieht CMD jedes Wort einzeln.'
+
+- n: 18
+  term: mkdir
+  fullForm: 'Make Directory'
+  difficulty: 1
+  objective: 'Du erstellst einen neuen Ordner, mehrere Ordner und verschachtelte Ordner.'
+  summary: '`mkdir` (oder kürzer `md`) erstellt einen neuen Ordner an der Stelle, die du angibst.'
+  meaning: 'Mit einem Namen wird der Ordner im aktuellen Ordner (Current Directory) erstellt. Mit einem vollständigen Pfad überall, wo du willst. Zwischenordner werden automatisch mit erstellt.'
+  usage: 'Ordner für ein Projekt oder ein Backup vorbereiten oder Dateien ordnen.'
+  syntax: 'mkdir [drive:]path'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['mkdir Restaurant', 'mkdir Restaurant', 'dir /b']
+  examples:
+    - c: 'mkdir Restaurant'
+      d: 'Ein Ordner im aktuellen Ordner.'
+    - c: 'md Menu Orders'
+      d: 'Zwei Ordner: Menu und Orders.'
+    - c: 'mkdir Projects\Web\Images'
+      d: 'Drei Ordnerebenen mit einem Befehl.'
+    - c: 'mkdir D:\Backup\2026'
+      d: 'Einen Ordner auf einem anderen Laufwerk erstellen.'
+  mistakes:
+    - 'Einen Ordner erstellen, der schon existiert: Fehler `A subdirectory or file ... already exists.`'
+    - 'Unerlaubte Zeichen wie `?` oder `:` im Namen benutzen.'
+  tip: 'Prüfe nach dem Erstellen mit `dir`, ob der Ordner wirklich da ist.'
+  restaurant: 'Ein neues, leeres Regal in der Küche für die Bestellungen von heute aufstellen.'
+  practice:
+    - id: P18a
+      start: 'C:\Users\Student\Documents'
+      task: 'Du bist in Documents. Erstelle einen Ordner namens `Restaurant`.'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Restaurant'}]
+      hints:
+        - 'Um einen Ordner (Folder) zu erstellen, benutzt du `mkdir` (Make Directory) und gibst den Namen des neuen Ordners als Argument an.'
+        - 'Zwei Teile: Was tun? (`mkdir`) Was? (der Name des neuen Ordners: Restaurant). Der Ordner wird im aktuellen Ordner, also Documents, erstellt.'
+      answer: 'mkdir Restaurant'
+      explain: '`mkdir` erstellt einen Ordner und `Restaurant` ist sein Name; weil der Pfad relativ ist, wird der Ordner in `C:\Users\Student\Documents` erstellt.'
+    - id: P18b
+      start: 'C:\Users\Student\Documents'
+      task: 'Erstelle mit einem Befehl den Pfad `Projects\Web\Images` (drei verschachtelte Ordner).'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Documents\Projects\Web\Images'}]
+      hints:
+        - 'Du musst die drei Ordner nicht einzeln erstellen: Wenn du `mkdir` einen vollständigen Pfad gibst, erstellt es alle Ordner auf dem Weg selbst.'
+        - 'Zwei Teile: Was tun? (`mkdir`) Was? (ein dreiteiliger Pfad: `Projects`, dann `Web`, dann `Images`, jeweils mit `\` dazwischen).'
+      answer: 'mkdir Projects\Web\Images'
+      explain: '`mkdir Projects\Web\Images` erstellt mit einem Befehl alle Ordner dieses Pfads, die noch nicht existieren – der Reihe nach und ineinander verschachtelt.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Kurzform hat `mkdir`?'
+      options: ['md', 'mk', 'mdir', 'nd']
+      answer: 0
+      code_options: true
+      explain: '`md` macht genau dasselbe.'
+    - kind: type
+      q: 'Erstelle einen Ordner namens `Backup`.'
+      accept: ['mkdir backup', 'md backup']
+      explain: '`mkdir Backup`'
+    - kind: predict
+      q: 'Der Ordner Work existiert bereits. Was ist die Ausgabe?'
+      code: 'mkdir Work'
+      options: ['A subdirectory or file Work already exists.', 'Ein Ordner Work2 wird erstellt', 'Der alte Ordner wird gelöscht und neu erstellt', 'Es gibt keine Ausgabe']
+      answer: 0
+      explain: 'CMD überschreibt einen vorhandenen Ordner nicht.'
+    - kind: sim
+      q: 'Erstelle die Ordner `Shop\2026` und `Shop\2027`.'
+      start: 'C:\Users\Student'
+      checks: [{type: dirExists, path: 'C:\Users\Student\Shop\2026'}, {type: dirExists, path: 'C:\Users\Student\Shop\2027'}]
+      answer: 'mkdir Shop\2026 Shop\2027'
+      explain: '`mkdir` erstellt mehrere Pfade auf einmal und mehrere Ebenen in einem Schritt.'
+  recap: '`mkdir Name` oder `md Name`. Mit einem vollständigen Pfad werden auch die Zwischenordner erstellt.'
+
+- n: 19
+  term: echo
+  fullForm: 'Echo'
+  difficulty: 1
+  objective: 'Du gibst beliebigen Text aus und bereitest dich darauf vor, Dateien zu erstellen.'
+  summary: '`echo` zeigt jeden Text an, den du dahinter schreibst. `echo.` gibt eine leere Zeile aus.'
+  meaning: '`echo` wird in Skripten (Scripts) benutzt, um dem Nutzer Meldungen anzuzeigen. In Lektion 28 siehst du, dass man seine Ausgabe mit `>` in eine Datei schreiben kann.'
+  usage: 'Meldungen anzeigen, einfache Textdateien erstellen (mit `>`) und Werte von Variablen anzeigen.'
+  syntax: "echo message\necho."
+  demo:
+    cmds: ['echo Hello CMD Academy', 'echo.', 'echo Bye!']
+  examples:
+    - c: 'echo Welcome to my restaurant'
+      d: 'Einen Satz anzeigen.'
+    - c: 'echo.'
+      d: 'Eine leere Zeile.'
+    - c: 'echo'
+      d: 'Ohne Text zeigt es den echo-Status: `ECHO is on.`'
+  mistakes:
+    - 'Leerzeichen zwischen `echo` und Punkt: `echo .` gibt einen Punkt aus, keine leere Zeile.'
+    - 'Grundlos Anführungszeichen setzen: `echo "Hi"` gibt auch die Anführungszeichen selbst aus.'
+  tip: 'Auch deutscher Text lässt sich mit `echo` ausgeben, aber die Befehle selbst sind immer Englisch.'
+  practice:
+    - id: P19a
+      start: 'C:\Users\Student'
+      task: 'Gib den Satz `Welcome to CMD Academy` aus.'
+      checks: [{type: cmd, value: echo}, {type: argIncludes, value: 'welcome to cmd academy'}]
+      hints:
+        - 'Um Text auszugeben, benutzt du `echo`. Alles, was du dahinter schreibst, auch mehrere Wörter mit Leerzeichen, wird genau so ausgegeben.'
+        - 'Zwei Teile: Was tun? (`echo`) Welcher Text? (der ganze Satz Welcome to CMD Academy). Anführungszeichen brauchst du nicht; wenn du sie setzt, wird auch `"` ausgegeben.'
+      answer: 'echo Welcome to CMD Academy'
+      explain: '`echo` gibt alles aus, was danach kommt – hier den ganzen Satz `Welcome to CMD Academy`.'
+    - id: P19b
+      start: 'C:\Users\Student'
+      task: 'Gib eine leere Zeile aus.'
+      checks: [{type: cmd, value: echo}, {type: noArgs}, {type: not, check: {type: lastOutputIncludes, value: 'ECHO is'}}]
+      hints:
+        - '`echo` ohne Text schreibt statt einer leeren Zeile `ECHO is on.` Für eine leere Zeile setzt du direkt nach `echo`, ohne Leerzeichen, ein kleines Zeichen.'
+        - 'Ein Wort: `echo` und direkt daran ein Punkt (`.`). Zwischen `echo` und Punkt kein Leerzeichen.'
+      answer: 'echo.'
+      explain: '`echo.` heißt „gib nichts aus außer einer leeren Zeile“. Der angehängte Punkt verhindert, dass CMD den Status `ECHO is on.` anzeigt.'
+  quiz:
+    - kind: predict
+      q: 'Was ist die Ausgabe dieses Befehls?'
+      code: 'echo "Hi"'
+      options: ['"Hi"', 'Hi', 'Fehler', 'Leere Zeile']
+      answer: 0
+      code_options: true
+      explain: '`echo` gibt auch die Anführungszeichen aus.'
+    - kind: mcq
+      q: 'Welcher Befehl gibt eine leere Zeile aus?'
+      options: ['echo.', 'echo', 'echo off', 'echo " "']
+      answer: 0
+      code_options: true
+      explain: '`echo` allein zeigt die Meldung `ECHO is on.`'
+    - kind: type
+      q: 'Gib das Wort `Ready` aus.'
+      accept: ['echo ready']
+      show: 'echo Ready'
+      explain: '`echo Ready`'
+  recap: '`echo Text` = Text ausgeben. `echo.` = leere Zeile.'
+
+- n: 20
+  term: type
+  fullForm: 'Type (show file)'
+  difficulty: 1
+  objective: 'Du liest den Inhalt von Textdateien direkt in CMD.'
+  summary: '`type` gibt den Inhalt einer Textdatei auf dem Bildschirm aus, ohne sie zu öffnen oder zu verändern.'
+  meaning: 'Geeignet für Textdateien wie `.txt`, `.bat`, `.ini` und `.log`. Bei Bildern oder Programmen zeigt es unverständliche Zeichen.'
+  usage: 'Schnell Notizen, Einstellungen, Logs und später Batch-Skripte lesen.'
+  syntax: 'type [drive:][path]filename'
+  demo:
+    start: 'C:\Users\Student\Documents'
+    cmds: ['type todo.txt']
+  examples:
+    - c: 'type todo.txt'
+      d: 'Den Inhalt von todo.txt anzeigen.'
+    - c: 'type Documents\menu.txt'
+      at: 'C:\Users\Student'
+      d: 'Eine Datei in einem anderen Ordner mit relativem Pfad lesen.'
+    - c: 'type C:\Windows\win.ini'
+      d: 'Lesen mit absolutem Pfad.'
+  mistakes:
+    - 'Die Endung (Extension) weglassen: `type todo` findet die Datei nicht; richtig ist `type todo.txt`.'
+    - '`type` auf einen Ordner: Fehler `Access is denied.`'
+  tip: 'Wenn eine Datei sehr lang ist, lesen wir sie in Lektion 34 mit `more` seitenweise.'
+  practice:
+    - id: P20a
+      start: 'C:\Users\Student\Documents'
+      task: 'Zeige den Inhalt der Datei `menu.txt` an.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'menu.txt'}]
+      hints:
+        - 'Um den Inhalt einer Textdatei anzuzeigen, benutzt du `type` und gibst ihm den vollständigen Dateinamen mit Endung (Extension).'
+        - 'Zwei Teile: Was tun? (`type`) Welche Datei? (der Name menu mit der Endung `.txt`). Die Datei liegt im aktuellen Ordner, also reicht ihr Name.'
+      answer: 'type menu.txt'
+      explain: '`type` gibt den Inhalt der Datei auf dem Bildschirm aus, und `menu.txt` ist die Datei, die genau hier im Ordner Documents liegt.'
+    - id: P20b
+      start: 'C:\Users\Student'
+      task: 'Zeige den Inhalt von `notes.txt` im Ordner Desktop an, ohne zum Desktop zu wechseln.'
+      checks: [{type: cmd, value: type}, {type: ok}, {type: argIncludes, value: 'notes.txt'}, {type: cwd, value: 'C:\Users\Student'}]
+      hints:
+        - 'Die Datei liegt im Ordner Desktop, du bist aber in `C:\Users\Student`. Statt zum Desktop zu wechseln, gib `type` einen relativen Pfad (Relative Path).'
+        - 'Zwei Teile: Was tun? (`type`) Worauf? (Pfad: Ordnername `Desktop`, Trennzeichen `\`, dann Dateiname `notes.txt`).'
+      answer: 'type Desktop\notes.txt'
+      explain: '`type` liest die Datei, und `Desktop\notes.txt` wird vom aktuellen Ordner aus gerechnet; so wird die Datei angezeigt, und du bleibst, wo du bist.'
+  quiz:
+    - kind: mcq
+      q: 'Bei welcher Datei liefert `type` ein lesbares Ergebnis?'
+      options: ['notes.txt', 'beach.jpg', 'setup.exe', 'song.mp3']
+      answer: 0
+      code_options: true
+      explain: '`type` ist für Textdateien gedacht.'
+    - kind: fix
+      q: 'Die Datei `report.txt` existiert, aber dieser Befehl meldet einen Fehler. Warum?'
+      code: "type report\nThe system cannot find the file specified."
+      options: ['Die Endung (`.txt`) fehlt', '`type` ist falsch', 'Man muss `cd report` eingeben', 'Die Datei ist beschädigt']
+      answer: 0
+      explain: 'Der vollständige Dateiname ist nötig: `type report.txt`'
+    - kind: type
+      q: 'Zeige den Inhalt von `todo.txt` an.'
+      accept: ['type todo.txt', 'type .\todo.txt']
+      explain: '`type todo.txt`'
+  recap: '`type Datei` = Textdatei lesen. Schreib den vollständigen Namen mit Endung.'

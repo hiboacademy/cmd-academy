@@ -1,0 +1,506 @@
+# Lessons 45–52 · Chapter 7: variables and system information
+
+- n: 45
+  term: set
+  fullForm: 'Variables'
+  difficulty: 2
+  objective: 'Du lernst, Variablen anzulegen, ihren Wert zu lesen, zu ändern oder sie zu löschen.'
+  summary: 'Eine Variable (Variable) ist ein Name, der einen Wert speichert. Mit `set name=value` legst du sie an, mit `%name%` benutzt du sie.'
+  meaning: 'Bevor CMD eine Zeile ausführt, ersetzt es `%name%` durch den Wert der Variable. `set` ohne Argument zeigt alle Variablen an. `set name=` (ohne Wert) löscht die Variable.'
+  usage: 'Pfade und Werte speichern, die du mehrmals brauchst – und die Grundlage für Batch-Skripte.'
+  syntax: "set name=value\necho %name%\nset name=\nset [prefix]"
+  demo:
+    cmds: ['set city=Vienna', 'echo I live in %city%', 'set ci', 'set city=', 'echo %city%']
+  examples:
+    - c: 'set city=Vienna'
+      d: 'Eine Variable anlegen.'
+    - c: 'echo %city%'
+      d: 'Den Wert benutzen.'
+    - c: 'set c'
+      d: 'Alle Variablen, die mit c beginnen.'
+    - c: 'set "msg=Hello World"'
+      d: 'Anführungszeichen (Quotes) um den ganzen Ausdruck – der sicherste Weg für Werte mit Leerzeichen.'
+  mistakes:
+    - 'Leerzeichen vor dem `=`: `set city =Vienna` legt eine Variable namens „city “ (mit Leerzeichen) an, und `%city%` funktioniert nicht.'
+    - 'Leerzeichen nach dem `=`: `set city= Vienna` macht den Wert zu „ Vienna“ mit Leerzeichen.'
+    - 'Die `%`-Zeichen vergessen: `echo city` gibt einfach das Wort city aus.'
+  tip: 'Variablen, die du in einem CMD-Fenster anlegst, gibt es nur, bis du genau dieses Fenster schließt.'
+  restaurant: 'Eine Variable ist wie ein Etikett auf einer Schüssel: „Soße des Tages = Pilz“. Wenn jemand „Soße des Tages“ sagt, wissen alle, dass Pilzsoße gemeint ist.'
+  practice:
+    - id: P45a
+      start: 'C:\Users\Student'
+      task: 'Lege eine Variable namens `city` mit dem Wert `Vienna` an und gib danach ihren Wert mit `echo` aus.'
+      multi: true
+      checks: [{type: envEquals, name: city, value: Vienna}, {type: inputIncludes, value: '%city%'}, {type: lastOutputIncludes, value: 'Vienna'}]
+      hints:
+        - 'Zwei Schritte: Lege zuerst mit `set` eine Variable an (Name, Zeichen `=`, Wert), dann gib ihren Wert mit `echo` aus. Um den Wert zu benutzen, setzt du den Variablennamen zwischen zwei `%`.'
+        - 'Zeile 1: `set`, Leerzeichen, dann der Name city, `=` und Vienna, alles zusammen (keine Leerzeichen um das `=`). Zeile 2: `echo` und der Name city zwischen zwei `%`-Zeichen.'
+      answer: ['set city=Vienna', 'echo %city%']
+      explain: '`set city=Vienna` legt die Variable `city` mit dem Wert Vienna an. In der zweiten Zeile ersetzt CMD vor der Ausführung `%city%` durch Vienna, und `echo` gibt es aus.'
+    - id: P45b
+      start: 'C:\Users\Student'
+      task: 'Zeige alle Variablen an, deren Name mit `user` beginnt.'
+      checks: [{type: anyCmd, value: set}, {type: lastOutputIncludes, value: 'USERNAME='}, {type: lastOutputIncludes, value: 'USERPROFILE='}]
+      hints:
+        - 'Wenn du `set` nur den Anfang eines Namens gibst, zeigt es alle Variablen, deren Name mit diesen Buchstaben beginnt.'
+        - 'Zwei Teile: Was tun? (`set`) Welcher Anfang? (die Buchstaben user). `=` und `%` brauchst du nicht – du legst hier nichts an, du schaust nur.'
+      answer: 'set user'
+      explain: '`set user` zeigt alle Variablen, deren Name mit `user` beginnt, zum Beispiel `USERNAME` und `USERPROFILE`, zusammen mit ihren Werten.'
+  quiz:
+    - kind: fix
+      q: 'Warum gibt `echo %food%` nichts anderes als `%food%` aus?'
+      code: "set food =Pizza\necho %food%"
+      options: ['Das Leerzeichen vor dem `=` ist Teil des Variablennamens geworden', 'Man muss `set /a` schreiben', 'Die Variable muss in Großbuchstaben sein', 'Pizza ist ein reserviertes Wort']
+      answer: 0
+      explain: 'Der Variablenname wurde zu „food “. Richtig: `set food=Pizza`'
+    - kind: predict
+      q: 'Was ist die Ausgabe?'
+      code: "set x=5\nset x=7\necho %x%"
+      options: ['7', '5', '57', '%x%']
+      answer: 0
+      explain: 'Der zweite Wert ersetzt den ersten.'
+    - kind: type
+      q: 'Lösche die Variable `color`.'
+      accept: ['set color=', 'set "color="']
+      show: 'set color='
+      explain: '`set name=` ohne Wert.'
+    - kind: sim
+      q: 'Lege die Variable `table` mit dem Wert `12` an.'
+      start: 'C:\Users\Student'
+      checks: [{type: envEquals, name: table, value: '12'}]
+      answer: 'set table=12'
+      explain: 'Keine Leerzeichen um das `=`.'
+  recap: '`set name=value` ohne Leerzeichen um das `=`. `%name%` = Wert. `set name=` = löschen. `set` = Liste.'
+
+- n: 46
+  term: '%VAR%'
+  fullForm: 'Environment Variables'
+  difficulty: 2
+  objective: 'Du lernst die fertigen Variablen von Windows kennen und benutzt sie in Befehlen.'
+  summary: 'Windows bringt selbst Dutzende fertige Variablen mit, die Systeminformationen speichern, zum Beispiel `%COMPUTERNAME%`, `%OS%`, `%windir%` und `%DATE%`.'
+  meaning: 'Das sind Umgebungsvariablen (Environment Variables). Manche, wie `%DATE%`, `%TIME%`, `%RANDOM%`, `%CD%` und `%ERRORLEVEL%`, sind dynamisch und haben jedes Mal einen neuen Wert. Bei Variablennamen spielt Groß- und Kleinschreibung keine Rolle.'
+  usage: 'Befehle schreiben, die auf jedem Computer funktionieren, ohne Pfade oder Namen von Hand einzutippen.'
+  syntax: "echo %COMPUTERNAME%\ncd %windir%\necho %DATE% %TIME%"
+  demo:
+    cmds: ['echo %COMPUTERNAME%', 'echo %OS%', 'echo %windir%', 'echo %CD%', 'echo %RANDOM%']
+  examples:
+    - c: 'echo %COMPUTERNAME%'
+      d: 'Der Name des Computers.'
+    - c: 'cd %windir%'
+      d: 'In den Windows-Ordner wechseln, egal wo Windows installiert ist.'
+    - c: 'echo %DATE% %TIME%'
+      d: 'Aktuelles Datum und aktuelle Uhrzeit.'
+    - c: 'echo %RANDOM%'
+      d: 'Eine Zufallszahl zwischen 0 und 32767.'
+  mistakes:
+    - '`$COMPUTERNAME` schreiben (Stil von PowerShell oder Linux). In CMD: `%COMPUTERNAME%`'
+    - 'Das letzte `%` vergessen.'
+  tip: 'Wenn eine Variable nicht existiert, gibt CMD den Text `%NAME%` unverändert aus.'
+  practice:
+    - id: P46a
+      start: 'C:\Users\Student'
+      task: 'Gib den Namen des Computers mit einer Umgebungsvariable (Environment Variable) aus.'
+      checks: [{type: inputIncludes, value: '%computername%'}, {type: lastOutputIncludes, value: 'ACADEMY-PC'}]
+      hints:
+        - 'Windows speichert den Computernamen schon in einer Umgebungsvariable. Gib ihren Wert mit `echo` aus; die Variable heißt COMPUTERNAME.'
+        - 'Zwei Teile: Was tun? (`echo`) Was? (der Variablenname COMPUTERNAME zwischen zwei `%`). Ohne `%` wird nur das Wort COMPUTERNAME ausgegeben.'
+      answer: 'echo %COMPUTERNAME%'
+      explain: 'CMD ersetzt vor der Ausführung `%COMPUTERNAME%` durch den echten Computernamen (`ACADEMY-PC`), und `echo` zeigt ihn an.'
+    - id: P46b
+      start: 'C:\Users\Student'
+      task: 'Wechsle mit der Variable `%windir%` in den Windows-Ordner.'
+      checks: [{type: cwd, value: 'C:\Windows'}, {type: inputIncludes, value: '%windir%'}]
+      hints:
+        - 'Die Variable `%windir%` enthält den Pfad zum Windows-Ordner. Du kannst sie statt eines Pfads an `cd` geben.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (statt den Pfad zu schreiben: die Variable windir zwischen zwei `%`).'
+      answer: 'cd %windir%'
+      explain: 'CMD ersetzt zuerst `%windir%` durch `C:\Windows`, und dann bringt dich `cd` genau in diesen Ordner.'
+  quiz:
+    - kind: mcq
+      q: 'Welche Variable liefert jedes Mal eine andere Zahl?'
+      options: ['%RANDOM%', '%OS%', '%COMPUTERNAME%', '%windir%']
+      answer: 0
+      code_options: true
+      explain: '`%RANDOM%` ist eine Zufallszahl.'
+    - kind: tf
+      q: '`%windir%` und `%WINDIR%` sind dieselbe Variable.'
+      answer: true
+      explain: 'Bei Variablennamen spielt Groß- und Kleinschreibung keine Rolle.'
+    - kind: predict
+      q: 'Die Variable `ABC` existiert nicht. Was ist die Ausgabe?'
+      code: 'echo %ABC%'
+      options: ['%ABC%', 'Eine leere Zeile', 'ABC', 'Fehler']
+      answer: 0
+      code_options: true
+      explain: 'In der Befehlszeile wird eine nicht vorhandene Variable unverändert ausgegeben.'
+  recap: 'Windows hat fertige Variablen: `%COMPUTERNAME%` `%OS%` `%windir%` `%DATE%` `%TIME%` `%RANDOM%` `%CD%`.'
+
+- n: 47
+  term: '%USERPROFILE%'
+  fullForm: '%USERNAME% · %USERPROFILE% · %TEMP%'
+  difficulty: 2
+  objective: 'Du erreichst mit Benutzervariablen deine persönlichen Ordner und den Temp-Ordner.'
+  summary: '`%USERNAME%` ist der Name des aktuellen Benutzers, `%USERPROFILE%` sein persönlicher Ordner (zum Beispiel `C:\Users\Student`) und `%TEMP%` der Ordner für temporäre Dateien.'
+  meaning: 'Weil diese Pfade auf jedem Computer anders sind, benutzen professionelle Skripte immer Variablen statt fester Pfade.'
+  usage: 'Schnell in den Benutzerordner wechseln, temporäre Dateien aufräumen, ein Backup-Skript schreiben, das für jeden Benutzer funktioniert.'
+  syntax: "cd %USERPROFILE%\ndir %TEMP%\necho Hello %USERNAME%"
+  demo:
+    start: 'C:\'
+    cmds: ['echo Hello %USERNAME%', 'cd %USERPROFILE%', 'dir %TEMP% /b']
+  examples:
+    - c: 'cd %USERPROFILE%\Documents'
+      d: 'In den Ordner Documents des aktuellen Benutzers wechseln.'
+    - c: 'dir %TEMP%'
+      d: 'Die temporären Dateien ansehen.'
+    - c: 'copy notes.txt %USERPROFILE%\Desktop'
+      noTry: true
+      d: 'Auf den Desktop kopieren – bei jedem Benutzer.'
+  mistakes:
+    - 'Einen festen Pfad wie `C:\Users\Ali` ins Skript schreiben – auf einem anderen Computer funktioniert das nicht.'
+  tip: 'Wenn der Pfad Leerzeichen enthält, setze ihn samt Variable in Anführungszeichen: `cd "%USERPROFILE%\My Files"`'
+  practice:
+    - id: P47a
+      start: 'C:\'
+      task: 'Wechsle von `C:\` mit der Variable `%USERPROFILE%` in den persönlichen Ordner des Benutzers.'
+      checks: [{type: cwd, value: 'C:\Users\Student'}, {type: inputIncludes, value: '%userprofile%'}]
+      hints:
+        - 'Die Variable `%USERPROFILE%` speichert den Pfad zum persönlichen Ordner des aktuellen Benutzers. Gib sie `cd` als Ziel.'
+        - 'Zwei Teile: Was tun? (`cd`) Wohin? (die Variable USERPROFILE zwischen zwei `%`). Den Benutzernamen musst du nicht kennen.'
+      answer: 'cd %USERPROFILE%'
+      explain: '`%USERPROFILE%` wird zu `C:\Users\Student`, und `cd` bringt dich von `C:\` in genau diesen persönlichen Ordner.'
+    - id: P47b
+      start: 'C:\Users\Student'
+      task: 'Zeige den Inhalt des Ordners für temporäre Dateien mit der Variable `%TEMP%` an.'
+      checks: [{type: inputIncludes, value: '%temp%'}, {type: lastOutputIncludes, value: 'log1.tmp'}]
+      hints:
+        - 'Die Variable `%TEMP%` enthält den Pfad zum Ordner für temporäre Dateien. Statt diesen langen Pfad zu tippen, gib die Variable an `dir`.'
+        - 'Zwei Teile: Was tun? (`dir`) Für welchen Ordner? (die Variable TEMP zwischen zwei `%`).'
+      answer: 'dir %TEMP%'
+      explain: 'CMD ersetzt `%TEMP%` durch den Pfad zum Temp-Ordner, und `dir` listet seinen Inhalt auf, zum Beispiel `log1.tmp`.'
+  quiz:
+    - kind: mcq
+      q: 'Was ist `%USERPROFILE%` normalerweise auf einem Computer, dessen Benutzerin Sara heißt?'
+      options: ['C:\Users\Sara', 'C:\Sara', 'C:\Windows\Sara', 'Sara']
+      answer: 0
+      code_options: true
+      explain: 'Der persönliche Ordner jedes Benutzers liegt in `C:\Users`.'
+    - kind: type
+      q: 'Wechsle auf den Desktop des aktuellen Benutzers (mit Variable).'
+      accept: ['cd %userprofile%\desktop', 'cd "%userprofile%\desktop"', 'cd /d %userprofile%\desktop', 'cd /d "%userprofile%\desktop"']
+      show: 'cd %USERPROFILE%\Desktop'
+      explain: 'Variable + `\Desktop`'
+    - kind: tf
+      q: 'In einem Skript ist `%USERPROFILE%` besser als `C:\Users\Student` zu schreiben.'
+      answer: true
+      explain: 'So funktioniert das Skript auf jedem Computer und für jeden Benutzer.'
+  recap: '`%USERNAME%` Benutzername, `%USERPROFILE%` Benutzerordner, `%TEMP%` Temp-Ordner.'
+
+- n: 48
+  term: '%PATH%'
+  fullForm: 'PATH'
+  difficulty: 2
+  objective: 'Du verstehst, wo CMD Programme sucht, und wie du einen Ordner zum PATH hinzufügst.'
+  summary: 'PATH ist eine Liste von Ordnern, getrennt durch `;`. Wenn du einen Befehl eintippst, sucht CMD das Programm zuerst im aktuellen Ordner und dann in diesen Ordnern.'
+  meaning: 'Deshalb kannst du `ping` aus jedem Ordner starten: `ping.exe` liegt in `C:\Windows\System32`, und dieser Ordner steht im PATH. `set PATH=%PATH%;C:\Tools` fügt einen Ordner hinzu (nur für dieses Fenster).'
+  usage: 'Eigene Tools und Skripte von überall starten – und den Fehler `is not recognized` verstehen.'
+  syntax: "echo %PATH%\npath\nset PATH=%PATH%;C:\\Tools"
+  demo:
+    cmds: ['path', 'where ping']
+  examples:
+    - c: 'echo %PATH%'
+      d: 'PATH anzeigen.'
+    - c: 'path'
+      d: 'Dasselbe in kurz.'
+    - c: 'set PATH=%PATH%;C:\Tools'
+      d: 'C:\Tools für dieses Fenster hinzufügen.'
+  mistakes:
+    - '`set PATH=C:\Tools` ohne `%PATH%;`: Alle bisherigen Pfade werden gelöscht, und die meisten Befehle werden nicht mehr gefunden.'
+  tip: 'Um PATH dauerhaft zu ändern, nimmt man die Windows-Einstellungen oder den Befehl `setx` – aber mit Vorsicht.'
+  daily: 'PATH ist wie die Liste der Regale, in denen der Verkäufer nach einer Ware schaut. Ist sie in keinem davon, sagt er: „Haben wir nicht.“'
+  practice:
+    - id: P48a
+      start: 'C:\Users\Student'
+      task: 'Zeige den Wert von PATH an.'
+      checks: [{type: lastOutputIncludes, value: 'C:\Windows\system32'}]
+      hints:
+        - 'PATH ist auch eine Umgebungsvariable (Environment Variable). Ihren Wert kannst du wie bei jeder anderen Variable mit `echo` ausgeben (oder mit dem kurzen Befehl `path`).'
+        - 'Zwei Teile: Was tun? (`echo`) Was? (der Variablenname PATH zwischen zwei `%`). Die Ausgabe ist eine Liste von Ordnern, getrennt durch `;`.'
+      answer: 'echo %PATH%'
+      explain: '`%PATH%` wird durch die Liste der Suchordner von CMD ersetzt, und `echo` gibt sie aus; die Ordner sind durch `;` getrennt.'
+    - id: P48b
+      start: 'C:\Users\Student'
+      files: [{path: 'C:\Tools\hello.bat', content: "@echo off\necho Hello from Tools\n"}]
+      task: 'In `C:\Tools` gibt es ein Skript namens `hello.bat`. Füge den Ordner `C:\Tools` zum PATH hinzu (ohne die bisherigen Pfade zu löschen) und starte das Skript dann von hier aus, indem du nur `hello` eintippst.'
+      multi: true
+      checks: [{type: envIncludes, name: PATH, value: 'C:\Tools'}, {type: envIncludes, name: PATH, value: 'System32'}, {type: lastOutputIncludes, value: 'Hello from Tools'}]
+      hints:
+        - 'Der neue Wert von PATH muss „aktueller PATH + `;` + neuer Ordner“ sein, sonst werden die bisherigen Pfade gelöscht. Danach startest du das Programm `hello` nur mit seinem Namen.'
+        - 'Zeile 1: `set`, dann `PATH=`, dann der aktuelle Wert (`%PATH%`), dann `;` und `C:\Tools`. Zeile 2: nur der Name des Skripts, ohne Pfad und ohne `.bat`.'
+      answer: ['set PATH=%PATH%;C:\Tools', 'hello']
+      explain: 'In der ersten Zeile behält `%PATH%` den bisherigen Wert, und `;C:\Tools` hängt den neuen Ordner hinten an. Jetzt sucht CMD auch in `C:\Tools`, findet `hello` und führt es aus.'
+  quiz:
+    - kind: mcq
+      q: 'Mit welchem Zeichen werden die Ordner im PATH getrennt?'
+      options: [';', ',', '|', '\']
+      answer: 0
+      code_options: true
+      explain: 'Mit dem Semikolon.'
+    - kind: fix
+      q: 'Nach diesem Befehl funktioniert `ping` nicht mehr. Warum?'
+      code: 'set PATH=C:\Tools'
+      options: ['Alle bisherigen Pfade im PATH wurden gelöscht', 'C:\Tools existiert nicht', 'ping wurde gelöscht', 'Man muss neu starten (Restart)']
+      answer: 0
+      explain: 'Richtig: `set PATH=%PATH%;C:\Tools`'
+    - kind: tf
+      q: 'CMD sucht ein Programm zuerst im aktuellen Ordner, noch vor dem PATH.'
+      answer: true
+      explain: 'Erst der aktuelle Ordner, dann die Ordner im PATH.'
+  recap: 'PATH = die Ordner, in denen CMD Programme findet. Hinzufügen: `set PATH=%PATH%;Ordner`'
+
+- n: 49
+  term: whoami
+  fullForm: 'whoami · hostname'
+  difficulty: 2
+  objective: 'Du findest heraus, mit welchem Benutzer und an welchem Computer du arbeitest.'
+  summary: '`whoami` zeigt den Benutzernamen in der Form `computer\user`. `hostname` zeigt nur den Namen des Computers.'
+  meaning: '`whoami /groups` zeigt, in welchen Gruppen der Benutzer Mitglied ist, zum Beispiel Administrators. Das ist wichtig, wenn du den Fehler `Access is denied` untersuchst (Lektion 63).'
+  usage: 'Zugriffsprobleme untersuchen, Infos für den technischen Support liefern, sicherstellen, dass du am richtigen Computer arbeitest.'
+  syntax: "whoami [/user] [/groups]\nhostname"
+  demo:
+    cmds: ['whoami', 'hostname', 'whoami /user']
+  examples:
+    - c: 'whoami'
+      d: 'Der aktuelle Benutzer.'
+    - c: 'hostname'
+      d: 'Der Name des Computers.'
+    - c: 'whoami /groups'
+      d: 'Die Gruppen des Benutzers.'
+  mistakes:
+    - 'Denken, dass `hostname NEWNAME` den Computernamen ändert. Nein, es zeigt ihn nur an.'
+  tip: '`whoami` und `%USERNAME%` zeigen meist denselben Namen, aber `whoami` enthält zusätzlich den Computer- oder Domain-Namen.'
+  practice:
+    - id: P49a
+      start: 'C:\Users\Student'
+      task: 'Zeige den Namen des aktuellen Benutzers mit dem passenden Befehl an.'
+      checks: [{type: anyCmd, value: whoami}, {type: lastOutputIncludes, value: 'student'}]
+      hints:
+        - 'Es gibt einen eigenen Befehl, der nur eine Frage beantwortet: „Wer bin ich?“. Sein Name ist genau dieser englische Satz, zusammengeschrieben.'
+        - 'Ein Wort, ohne Argument: who, am und i, ohne Leerzeichen dazwischen.'
+      answer: 'whoami'
+      explain: '`whoami` (Who am I) zeigt den aktuellen Benutzer, meist in der Form „Computername\Benutzername“.'
+    - id: P49b
+      start: 'C:\Users\Student'
+      task: 'Speichere den Namen des Computers in der Datei `pcname.txt`.'
+      checks: [{type: fileContains, path: 'C:\Users\Student\pcname.txt', value: 'ACADEMY-PC'}]
+      hints:
+        - 'Der Befehl `hostname` gibt den Computernamen aus. Um ihn zu speichern, leitest du die Ausgabe mit einer Umleitung (Redirect) `>` in eine Datei um.'
+        - 'Drei Teile: der Befehl, der den Computernamen liefert (`hostname`), das Zeichen `>`, der Name der Zieldatei (`pcname.txt`).'
+      answer: 'hostname > pcname.txt'
+      explain: '`hostname` erzeugt den Computernamen (`ACADEMY-PC`), und `>` schreibt ihn statt auf den Bildschirm in `pcname.txt`.'
+  quiz:
+    - kind: predict
+      q: 'Was gibt `whoami` auf diesem Computer aus?'
+      code: 'whoami'
+      options: ['academy-pc\student', 'Student', 'ACADEMY-PC', 'C:\Users\Student']
+      answer: 0
+      code_options: true
+      explain: 'Die Form `computer\user`.'
+    - kind: mcq
+      q: 'Welcher Befehl zeigt, ob der Benutzer Mitglied der Gruppe Administrators ist?'
+      options: ['whoami /groups', 'hostname', 'whoami /user', 'echo %USERNAME%']
+      answer: 0
+      code_options: true
+      explain: '`/groups` zeigt die Gruppen.'
+    - kind: type
+      q: 'Zeige den Namen des Computers an.'
+      accept: ['hostname', 'echo %computername%']
+      explain: '`hostname`'
+  recap: '`whoami` = Benutzer, `whoami /groups` = Gruppen, `hostname` = Computername.'
+
+- n: 50
+  term: systeminfo
+  fullForm: 'ver · systeminfo'
+  difficulty: 2
+  objective: 'Du siehst die Windows-Version und alle Systemdaten und filterst nur den Teil heraus, den du brauchst.'
+  summary: '`ver` zeigt die Versionsnummer von Windows. `systeminfo` liefert einen vollständigen Bericht über das System: Version, Installationsdatum, Arbeitsspeicher, Netzwerk und Hotfixes.'
+  meaning: 'Die Ausgabe von `systeminfo` ist lang; meist filtert man sie mit `find` oder `findstr`.'
+  usage: 'Infos für den Support, Arbeitsspeicher und Version vor einer Installation prüfen, herausfinden, wann der letzte Neustart (Restart) war.'
+  syntax: "ver\nsysteminfo\nsysteminfo | find \"Memory\""
+  demo:
+    cmds: ['ver', 'systeminfo | find "OS Name"', 'systeminfo | findstr /c:"Total Physical Memory"']
+  examples:
+    - c: 'ver'
+      d: 'Die Versionsnummer.'
+    - c: 'systeminfo'
+      d: 'Der vollständige Bericht.'
+    - c: 'systeminfo | find "Boot Time"'
+      d: 'Wann wurde der Computer eingeschaltet?'
+    - c: 'systeminfo > info.txt'
+      d: 'Den Bericht speichern.'
+  mistakes:
+    - 'Die ganze Ausgabe lesen, statt sie zu filtern.'
+  tip: '`systeminfo | more` ist auch praktisch, um seitenweise zu lesen.'
+  practice:
+    - id: P50a
+      start: 'C:\Users\Student'
+      task: 'Zeige aus der Ausgabe von `systeminfo` nur die Zeile mit dem Namen des Betriebssystems (`OS Name`) an.'
+      checks: [{type: usedOp, value: '|'}, {type: lastOutputIncludes, value: 'Windows 11'}, {type: lastOutputExcludes, value: 'Host Name'}]
+      hints:
+        - 'Die Ausgabe von `systeminfo` ist sehr lang. Gib sie mit einer Pipe an `find` weiter, damit nur die Zeile mit OS Name übrig bleibt.'
+        - 'Drei Teile: der Befehl für Systeminfos (`systeminfo`), das Zeichen `|`, der Filterbefehl (`find` + OS Name in `" "`). Weil der Ausdruck ein Leerzeichen enthält, brauchst du Anführungszeichen.'
+      answer: 'systeminfo | find "OS Name"'
+      explain: '`systeminfo` liefert alle Systeminfos, und `|` schickt sie an `find "OS Name"`, das nur die Zeile mit dem Namen des Betriebssystems behält.'
+    - id: P50b
+      start: 'C:\Users\Student'
+      task: 'Zeige die Windows-Version mit dem kürzesten Befehl an.'
+      checks: [{type: anyCmd, value: ver}]
+      hints:
+        - '`systeminfo` liefert viele Infos, aber für nur die Windows-Version gibt es einen viel kürzeren Befehl – den kennst du aus Lektion 1.'
+        - 'Ein Wort, ohne Argument: die ersten drei Buchstaben von Version.'
+      answer: 'ver'
+      explain: '`ver` ist die Kurzform von Version und zeigt nur eine Zeile: die Windows-Version.'
+  quiz:
+    - kind: mcq
+      q: 'Welcher Befehl zeigt, wann der Computer zuletzt eingeschaltet wurde?'
+      options: ['systeminfo | find "Boot Time"', 'ver', 'hostname', 'time /t']
+      answer: 0
+      code_options: true
+      explain: '`System Boot Time` in systeminfo.'
+    - kind: type
+      q: 'Speichere den vollständigen systeminfo-Bericht in der Datei `info.txt`.'
+      accept: ['systeminfo > info.txt', 'systeminfo >info.txt']
+      show: 'systeminfo > info.txt'
+      explain: 'Umleitung (Redirect) mit `>`.'
+    - kind: tf
+      q: '`ver` zeigt Informationen über den Arbeitsspeicher (RAM).'
+      answer: false
+      explain: 'Nur die Version; den Arbeitsspeicher findest du in systeminfo.'
+  recap: '`ver` = Version. `systeminfo` = alles; filtere es mit `find`.'
+
+- n: 51
+  term: tasklist
+  fullForm: 'Task List'
+  difficulty: 2
+  objective: 'Du siehst die laufenden Programme und findest die PID eines Programms.'
+  summary: '`tasklist` zeigt alle Prozesse (Processes, also laufende Programme) mit Name, PID und Speicherverbrauch.'
+  meaning: 'Die PID (Process ID) ist die eindeutige Nummer jedes Prozesses. Ein Programm wie Chrome kann mehrere Prozesse haben. `/fi` filtert, zum Beispiel `"imagename eq notepad.exe"` oder `"memusage gt 100000"`.'
+  usage: 'Das Programm finden, das den Computer langsam macht, und die PID für `taskkill` herausfinden.'
+  syntax: "tasklist\ntasklist /fi \"imagename eq name.exe\"\ntasklist | find \"name\""
+  demo:
+    cmds: ['tasklist /fi "imagename eq notepad.exe"', 'tasklist | find "chrome"']
+  examples:
+    - c: 'tasklist'
+      d: 'Alle Prozesse.'
+    - c: 'tasklist /fi "imagename eq chrome.exe"'
+      d: 'Nur Chrome.'
+    - c: 'tasklist /fi "memusage gt 100000"'
+      d: 'Prozesse, die mehr als 100 MB Arbeitsspeicher verbrauchen.'
+    - c: 'tasklist /fi "status eq not responding"'
+      d: 'Programme, die nicht reagieren.'
+  mistakes:
+    - 'Die Anführungszeichen um den Filter vergessen.'
+    - 'Beim Filter `imagename eq` den Namen ohne `.exe` schreiben.'
+  tip: '`eq` heißt gleich, `ne` ungleich, `gt` größer und `lt` kleiner.'
+  practice:
+    - id: P51a
+      start: 'C:\Users\Student'
+      task: 'Finde die PID des Programms Notepad (`notepad.exe`).'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: '7344'}, {type: lastOutputExcludes, value: 'chrome'}]
+      hints:
+        - '`tasklist` zeigt alle Prozesse. Mit dem Switch (Schalter) `/fi` (Filter) behältst du nur den Prozess, dessen Dateiname (imagename) gleich (`eq`) `notepad.exe` ist.'
+        - 'Der Reihe nach: Befehl (`tasklist`), Filter-Switch (`/fi`) und die Bedingung in `" "`: das Wort imagename, dann `eq`, dann `notepad.exe`. Die PID steht in der zweiten Spalte der Ausgabe.'
+      answer: 'tasklist /fi "imagename eq notepad.exe"'
+      explain: '`/fi` filtert die Ausgabe von `tasklist`, und die Bedingung `"imagename eq notepad.exe"` bedeutet „nur der Prozess namens notepad.exe“ – so siehst du seine PID (7344).'
+    - id: P51b
+      start: 'C:\Users\Student'
+      task: 'Zeige nur die Prozesse an, die mehr als `100000` Kilobyte Arbeitsspeicher verbrauchen.'
+      checks: [{type: anyCmd, value: tasklist}, {type: lastOutputIncludes, value: 'MsMpEng.exe'}, {type: lastOutputExcludes, value: 'notepad.exe'}]
+      hints:
+        - 'Wieder `tasklist` mit dem Switch `/fi`, aber diesmal filterst du nach Speicher (memusage) und brauchst die Bedingung „größer als“ (`gt`).'
+        - 'Der Reihe nach: Befehl (`tasklist`), Switch (`/fi`) und die Bedingung in `" "`: memusage, dann `gt`, dann die Zahl 100000 (ohne KB und ohne Tausenderpunkt).'
+      answer: 'tasklist /fi "memusage gt 100000"'
+      explain: 'Die Bedingung `"memusage gt 100000"` bedeutet „Speicherverbrauch über 100000 Kilobyte“ – so bleiben nur speicherhungrige Prozesse wie `MsMpEng.exe` übrig.'
+  quiz:
+    - kind: mcq
+      q: 'Was ist eine PID?'
+      options: ['Die eindeutige Nummer jedes Prozesses', 'Das Passwort eines Programms', 'Die Größe eines Programms', 'Der Installationspfad eines Programms']
+      answer: 0
+      explain: 'Process ID.'
+    - kind: tf
+      q: 'Ein Programm kann mehrere Prozesse mit verschiedenen PIDs haben.'
+      answer: true
+      explain: 'Zum Beispiel Chrome, das für jeden Tab einen eigenen Prozess hat.'
+    - kind: type
+      q: 'Zeige mit einem Filter nur die Prozesse von `explorer.exe` an.'
+      accept: ['tasklist /fi "imagename eq explorer.exe"', 'tasklist /fi "imagename eq explorer.exe" /v']
+      show: 'tasklist /fi "imagename eq explorer.exe"'
+      explain: 'Der Filter `imagename eq`.'
+  recap: '`tasklist` = laufende Programme. Die PID ist die Nummer jedes Prozesses. `/fi "..."` = Filter.'
+
+- n: 52
+  term: taskkill
+  fullForm: 'Task Kill'
+  difficulty: 2
+  objective: 'Du beendest ein Programm per Name oder PID und weißt, welche Prozesse du nicht beenden darfst.'
+  summary: '`taskkill` beendet einen Prozess: mit `/im` nach Name oder mit `/pid` nach Nummer. `/f` beendet das Programm erzwungen.'
+  meaning: 'Ohne `/f` bekommt das Programm die Nachricht „bitte schließen“ (es hat Zeit zum Speichern). Ein Programm, das nicht reagiert (Not Responding), lässt sich nur mit `/f` beenden. Lebenswichtige Windows-Prozesse lassen sich gar nicht beenden.'
+  usage: 'Ein hängendes Programm beenden, alle Fenster eines Programms mit einem einzigen Befehl schließen.'
+  syntax: "taskkill /im name.exe [/f]\ntaskkill /pid number [/f]"
+  warning: 'Mit `/f` geht alles verloren, was in diesem Programm nicht gespeichert ist. Beende auf einem echten Computer niemals Systemprozesse wie `csrss.exe`, `winlogon.exe` oder `svchost.exe`.'
+  demo:
+    cmds: ['taskkill /im notepad.exe', 'taskkill /pid 7810', 'taskkill /pid 7810 /f', 'taskkill /im csrss.exe']
+  examples:
+    - c: 'taskkill /im notepad.exe'
+      d: 'Notepad beenden.'
+    - c: 'taskkill /pid 7810 /f'
+      d: 'Einen Prozess per PID erzwungen beenden.'
+    - c: 'taskkill /im chrome.exe /f'
+      d: 'Alle Chrome-Prozesse beenden.'
+  mistakes:
+    - 'Den Namen ohne `.exe` schreiben: `taskkill /im notepad` findet nichts.'
+    - '`/f` benutzen, bevor du das normale Beenden versucht hast.'
+  tip: 'Finde zuerst mit `tasklist` die PID und beende dann mit `taskkill /pid`. So beendest du nicht aus Versehen das falsche Programm.'
+  practice:
+    - id: P52a
+      start: 'C:\Users\Student'
+      task: 'Beende das Programm Notepad (`notepad.exe`) über seinen Namen.'
+      checks: [{type: procGone, value: 'notepad.exe'}]
+      hints:
+        - 'Um einen Prozess zu beenden, nimmst du `taskkill`. Mit dem Switch (Schalter) `/im` (Image name) sagst du, welches Programm es anhand seines Namens beenden soll.'
+        - 'Drei Teile: Was tun? (`taskkill`) Wie erkennen? (Switch `/im`) Welches Programm? (der Dateiname `notepad.exe`).'
+      answer: 'taskkill /im notepad.exe'
+      explain: '`taskkill` beendet einen Prozess, und `/im notepad.exe` sagt, dass der Prozess namens notepad.exe beendet werden soll.'
+    - id: P52b
+      start: 'C:\Users\Student'
+      task: 'Spotify hängt (Not Responding). Finde zuerst seine PID und beende es dann per PID erzwungen.'
+      multi: true
+      checks: [{type: procGone, value: 'Spotify.exe'}, {type: anyCmd, value: tasklist}, {type: switch, value: '/f', cmd: taskkill, anyRun: true}, {type: argIncludes, cmd: taskkill, value: '7810'}]
+      hints:
+        - 'Zwei Schritte: Finde zuerst mit `tasklist` und einer Pipe zu `find` die Zeile von Spotify mit seiner PID. Beende es dann mit `taskkill` und dem Switch `/pid`; ein hängendes Programm lässt sich nur mit dem Erzwingen-Switch `/f` beenden.'
+        - 'Zeile 1: `tasklist`, das Zeichen `|`, dann `find` + Spotify in `" "`. Zeile 2: `taskkill`, Switch `/pid` + die Nummer aus Zeile 1 und am Ende `/f`.'
+      answer: ['tasklist | find "Spotify"', 'taskkill /pid 7810 /f']
+      explain: '`tasklist | find "Spotify"` zeigt die Zeile von Spotify mit seiner PID (7810). Danach findet `taskkill /pid 7810 /f` genau diesen Prozess über seine Nummer, und `/f` beendet ihn erzwungen.'
+  quiz:
+    - kind: predict
+      q: 'Programm X reagiert nicht. Was passiert bei diesem Befehl?'
+      code: 'taskkill /im X.exe'
+      options: ['Fehler: lässt sich nur mit /F beenden', 'Es wird beendet', 'Es startet neu (Restart)', 'Der Computer schaltet sich aus']
+      answer: 0
+      explain: 'Ein Programm im Zustand Not Responding reagiert nicht auf die normale Nachricht.'
+    - kind: mcq
+      q: 'Welcher Befehl beendet den Prozess mit der PID 4321 erzwungen?'
+      options: ['taskkill /pid 4321 /f', 'taskkill /im 4321', 'tasklist /pid 4321', 'taskkill 4321']
+      answer: 0
+      code_options: true
+      explain: '`/pid` für die Nummer, `/f` zum Erzwingen.'
+    - kind: tf
+      q: 'Man kann `csrss.exe` mit `taskkill /f` beenden, damit der Computer schneller wird.'
+      answer: false
+      explain: 'Lebenswichtige Prozesse lassen sich nicht beenden, und es zu versuchen ist gefährlich.'
+    - kind: sim
+      q: 'Beende Notepad; alle anderen Programme sollen offen bleiben.'
+      start: 'C:\Users\Student'
+      checks: [{type: procGone, value: 'notepad.exe'}, {type: not, check: {type: procGone, value: 'chrome.exe'}}]
+      answer: 'taskkill /im notepad.exe'
+      explain: '`/im` mit dem Programmnamen.'
+  recap: '`taskkill /im Name.exe` oder `/pid Nummer`. `/f` = erzwingen. Beende keine Systemprozesse.'
