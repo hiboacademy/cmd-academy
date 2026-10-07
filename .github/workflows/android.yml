@@ -27,6 +27,8 @@ jobs:
       - run: pip install pyyaml
       - run: npm ci
       - name: Build web app and copy it into the Android project
+        env:
+          VERSION_NAME: 1.0.${{ github.run_number }}
         run: |
           python3 build.py
           node --test test/*.test.js

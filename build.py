@@ -5,7 +5,8 @@ import json, glob, yaml, pathlib
 R = pathlib.Path(__file__).parent
 def y(p): return yaml.safe_load(open(R / p, encoding="utf8"))
 import i18n_check
-VERSION = "1.1.0"
+import os
+VERSION = os.environ.get("VERSION_NAME") or "1.1.0"   # CI sets VERSION_NAME so Settings shows the release number
 LANGS = ["fa", "de", "en"]          # Persian is the source; de/en must match its structure
 
 def load_lang(lang):

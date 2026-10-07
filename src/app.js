@@ -86,13 +86,13 @@ const App = (() => {
     const root = document.documentElement;
     const bundle = JSON.parse(document.getElementById("cmd-content").textContent);
     Store.load();
-    // UI language: saved choice, else Persian (the course's original language)
     // ?lang=de in the address (or a test hook) picks a language and remembers it
     let asked = null;
     try { asked = new URLSearchParams(location.search).get("lang"); } catch (e) {}
     asked = asked || window.__CMD_LANG__ || null;
     if (asked && bundle[asked] && asked !== Store.settings().lang) Store.setSetting("lang", asked);
-    const lang = bundle[Store.settings().lang] ? Store.settings().lang : "fa";
+    // the saved choice wins; English only when the learner never picked a language
+    const lang = bundle[Store.settings().lang] ? Store.settings().lang : DEFAULT_LANG;
     setLang(lang);
     root.setAttribute("dir", isRTL() ? "rtl" : "ltr");
     root.setAttribute("lang", lang);

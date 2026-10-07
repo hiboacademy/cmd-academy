@@ -68,7 +68,7 @@ function SettingsView() {
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_theme")), segOf("theme", [["dark", T("theme_dark")], ["light", T("theme_light")], ["system", T("theme_system")]], applySettings)),
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_font")), segOf("font", [[0.9, "A−"], [1, "A"], [1.12, "A+"], [1.25, "A++"]], applySettings, true)),
       h("div", { class: "set-row" }, h("div", { class: "lab" }, T("set_lang")), h("div", { class: "seg", role: "group", "aria-label": T("set_lang") },
-        [["fa", "فارسی"], ["de", "Deutsch"], ["en", "English"]].map(([code, name]) =>
+        [["en", "English"], ["de", "Deutsch"], ["fa", "فارسی"]].map(([code, name]) =>
           h("button", { "aria-pressed": LANG === code ? "true" : "false", lang: code, dir: code === "fa" ? "rtl" : "ltr", onClick: () => {
             if (LANG === code) return;
             Store.setSetting("lang", code);

@@ -35,6 +35,7 @@ jobs:
           pip install playwright
           python -m playwright install --with-deps chromium
           python3 test/ui_check.py
+          python3 test/lang_check.py
       - uses: actions/upload-pages-artifact@v3
         with: { path: docs }
 

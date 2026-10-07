@@ -114,3 +114,18 @@ test("search works in each language", () => {
     assert.strictEqual(Content.search("robocopy")[0].id, "robocopy");
   }
 });
+
+test("language selector: English default, all three languages enabled, no 'coming soon'", () => {
+  const dom = fs.readFileSync(path.join(ROOT, "src/ui/dom.js"), "utf8");
+  const app = fs.readFileSync(path.join(ROOT, "src/app.js"), "utf8");
+  const settings = fs.readFileSync(path.join(ROOT, "src/ui/views-progress.js"), "utf8");
+  assert.match(dom, /const DEFAULT_LANG = "en";/, "English is the default language");
+  assert.match(app, /bundle\[Store\.settings\(\)\.lang\] \? Store\.settings\(\)\.lang : DEFAULT_LANG/, "a saved language wins over the default");
+  const row = settings.slice(settings.indexOf('T("set_lang")'), settings.indexOf('T("set_sim")'));
+  assert.match(row, /\[\["en", "English"\], \["de", "Deutsch"\], \["fa", "فارسی"\]\]/, "selector lists English, Deutsch, فارسی");
+  assert.ok(!/coming_soon|disabled/.test(row), "no disabled or 'coming soon' language buttons");
+  assert.match(row, /Store\.setSetting\("lang", code\)/, "the choice is saved");
+  for (const l of LANGS) assert.ok(B[l].lessons.length === 100 && B[l].ui.set_lang, `${l} bundle is complete`);
+  // the page starts in the default language before any script runs
+  for (const t of ["src/index.template.html", "src/pwa/index.template.html"]) assert.match(fs.readFileSync(path.join(ROOT, t), "utf8"), /dir="ltr" lang="en"/, t);
+});

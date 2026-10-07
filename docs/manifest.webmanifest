@@ -1,9 +1,9 @@
 {
   "name": "CMD Academy",
   "short_name": "CMD Academy",
-  "description": "آموزش Windows CMD از صفر تا پیشرفته",
-  "lang": "fa",
-  "dir": "rtl",
+  "description": "Learn Windows CMD step by step — in English, Deutsch or فارسی",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

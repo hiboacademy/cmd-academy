@@ -36,7 +36,8 @@ function fmt(text) {
 }
 /* Current UI language. Persian is right-to-left and uses Persian digits;
    German and English are left-to-right. Code is always left-to-right. */
-let LANG = "fa";
+const DEFAULT_LANG = "en";
+let LANG = DEFAULT_LANG;
 const setLang = (l) => { LANG = l; };
 const isRTL = () => LANG === "fa";
 const fa = (n) => (LANG === "fa" ? String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]) : String(n));
