@@ -17,15 +17,19 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    // Signing key: from CI secrets when they exist, otherwise the key in this
-    // repository (fine for installing on your own phone; use a private key for Play Store).
+    // Release signing comes ONLY from the CI environment (GitHub Actions secrets).
+    // No key and no password is stored in this repository. Without all four
+    // values a release build stops with an error instead of signing with
+    // anything else.
     signingConfigs {
         release {
             def ks = System.getenv("ANDROID_KEYSTORE_PATH")
-            storeFile ks ? file(ks) : file("cmd-academy.keystore")
-            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: "REMOVED"
-            keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: "REMOVED"
-            keyPassword System.getenv("ANDROID_KEY_PASSWORD") ?: "REMOVED"
+            if (ks) {
+                storeFile file(ks)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            }
         }
     }
     buildTypes {
@@ -64,4 +68,14 @@ try {
     }
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
+
+// Fail safely: a release build without signing secrets must not produce an APK.
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.name.toLowerCase().contains("release") }) {
+        def missing = ["ANDROID_KEYSTORE_PATH", "ANDROID_KEYSTORE_PASSWORD", "ANDROID_KEY_ALIAS", "ANDROID_KEY_PASSWORD"].findAll { !System.getenv(it) }
+        if (!missing.isEmpty() || !file(System.getenv("ANDROID_KEYSTORE_PATH")).exists()) {
+            throw new GradleException("Release signing is not configured (missing: " + (missing ?: ["keystore file"]).join(", ") + "). Set the ANDROID_* signing secrets.")
+        }
+    }
 }

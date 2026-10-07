@@ -2,3 +2,14 @@ dist/
 node_modules/
 __pycache__/
 *.png.tmp
+
+# secrets and signing material - never commit these
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.pem
+key.properties
+google-services.json

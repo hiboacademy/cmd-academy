@@ -1,5 +1,5 @@
 # Builds the Android app (APK) and attaches it to the "latest" release.
-# Optional secrets for your own signing key: ANDROID_KEYSTORE_BASE64,
+# Required secrets (the build fails without them): ANDROID_KEYSTORE_BASE64,
 # ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD.
 name: Build Android APK
 
@@ -33,14 +33,20 @@ jobs:
           python3 build.py
           node --test test/*.test.js
           npx cap sync android
-      - name: Use the signing key from secrets (if set)
+      - name: Load the signing key from secrets (required)
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -n "$KEYSTORE_B64" ]; then
-            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
-            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
-          fi
+          # stop here if any signing secret is missing; never fall back to another key
+          for v in KEYSTORE_B64 KS_PASS KEY_ALIAS KEY_PASS; do
+            if [ -z "${!v}" ]; then echo "::error::Signing secret for $v is not set. Add the ANDROID_* secrets in Settings > Secrets and variables > Actions."; exit 1; fi
+          done
+          umask 077
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
       - name: Build APK
         working-directory: android
         env:
@@ -53,6 +59,9 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
           cp app/build/outputs/apk/release/app-release.apk ../CMD-Academy.apk
+      - name: Remove the signing key from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
       - uses: actions/upload-artifact@v4
         with:
           name: CMD-Academy-apk

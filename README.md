@@ -34,9 +34,10 @@ The content tests run every practice answer, challenge, quiz simulator task and
   On the phone, open the site in Chrome → menu → **Add to Home screen**.
 - **Android APK:** every push to `main` builds `CMD-Academy.apk` and attaches it to the
   **latest** release. Open the release on the phone, download the APK and install it.
-  APKs are signed with `android/app/cmd-academy.keystore` so each new one installs as an update.
-  For Play Store publishing, create your own key and add it as the secrets
+  The APK is signed with a private key that is **not** in this repository. The build reads it
+  from four GitHub Actions secrets and fails if any is missing:
   `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+  Keep a private backup of the keystore: every future update must be signed with the same key.
 
 ## Languages
 The app is available in Persian (fa, right-to-left), German (de) and English (en); the
